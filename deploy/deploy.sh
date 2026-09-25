@@ -17,14 +17,24 @@ SSH=ssh
 [ -x /c/Windows/System32/OpenSSH/ssh.exe ] && SSH=/c/Windows/System32/OpenSSH/ssh.exe
 
 EXCLUDES=(
-    --exclude=./.git --exclude=./deploy --exclude=./backups --exclude=./config.php
-    --exclude='./db/*.sqlite*' --exclude=./db/log --exclude=./db/og_cache --exclude=./db/backups
-    --exclude=./_composer_vendor
+    --exclude=.git --exclude=deploy --exclude=backups --exclude=config.php
+    --exclude='db/*.sqlite' --exclude='db/*.sqlite-*' --exclude=db/log --exclude=db/og_cache --exclude=db/backups
+    --exclude=_composer_vendor
 )
 if [ "${1:-}" != "--initial" ]; then
-    EXCLUDES+=(--exclude=./db/cache --exclude=./db/sitemap_cache.xml)
+    EXCLUDES+=(--exclude=db/cache --exclude=db/sitemap_cache.xml)
 fi
 
+# Archive the folder's *contents*, not "." itself: extracting "." would reset
+# the mode of the site root on the Pi and drop its setgid bit.
+# Afterwards: everything we own goes to group www-data (PHP reads it), folders
+# keep setgid so new files inherit that group, and db/ stays writable by PHP.
+REMOTE="umask 022 && tar -xzf - -C $SITE --no-overwrite-dir \
+ && find $SITE -user \$(id -un) ! -group www-data -exec chgrp www-data {} + \
+ && find $SITE -user \$(id -un) -type d -exec chmod g+s {} + \
+ && chmod 2750 $SITE && chmod 2770 $SITE/db $SITE/db/cache $SITE/db/log $SITE/db/og_cache $SITE/db/backups"
+
 echo "Uploading to $HOST:$SITE …"
-tar "${EXCLUDES[@]}" -czf - . | "$SSH" "$HOST" "umask 022 && tar -xzf - -C $SITE --no-overwrite-dir"
+# shellcheck disable=SC2046  # top-level names contain no spaces
+tar "${EXCLUDES[@]}" -czf - $(ls -A) | "$SSH" "$HOST" "$REMOTE"
 echo "Done."
