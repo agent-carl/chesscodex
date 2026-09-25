@@ -249,6 +249,7 @@ CSS;
         <small><?= t('footer.data') ?></small><br>
         <small style="color:var(--muted)">
             <a href="<?= $baseEsc ?>/about">About</a> ·
+            <a href="mailto:info@chesscodex.org">Contact</a> ·
             Powered by <a href="https://stockfishchess.org/" rel="noopener">Stockfish</a> (GPL-3.0) ·
             <a href="https://github.com/lichess-org/chessground" rel="noopener">chessground</a> (GPL-3.0) ·
             <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD-2)

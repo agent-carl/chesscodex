@@ -106,6 +106,10 @@ ob_start();
             form on any opening page. Bug reports, missing openings, wrong moves —
             everything goes there.
         </p>
+        <p>
+            For anything else, write to
+            <a href="mailto:info@chesscodex.org">info@chesscodex.org</a>.
+        </p>
     </section>
 </article>
 <?php
