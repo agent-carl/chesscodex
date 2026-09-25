@@ -35,7 +35,8 @@ it('en passant capture', function () {
         'rnbqkbnr/1pp1pppp/p2P4/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3',
         $e->fen()
     );
-    assert_eq('e5d6', end($e->uciHistory()));
+    $uci = $e->uciHistory();
+    assert_eq('e5d6', end($uci));
 });
 
 it('kingside castling', function () {

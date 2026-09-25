@@ -26,6 +26,75 @@ class Opening
         return $row ?: null;
     }
 
+    /** The opening's move list ("1. e4 c5 2. Nf3"), or null for an unknown id. */
+    public static function movesById(int $id): ?string
+    {
+        $stmt = chess_codex_db()->prepare('SELECT pgn_moves FROM codex_openings WHERE id = :id LIMIT 1');
+        $stmt->execute(['id' => $id]);
+        $moves = $stmt->fetchColumn();
+        return $moves === false ? null : (string) $moves;
+    }
+
+    /**
+     * Lichess gives several distinct move orders the same name and ECO code
+     * (14 lines are all "Italian Game: Classical Variation, Giuoco
+     * Pianissimo", C54). For those, returns the shortest run of final moves
+     * that no other line with that name ends with, e.g. "6…a6 7. Re1", so
+     * titles and descriptions can tell the pages apart. '' when the name +
+     * ECO pair is unique.
+     */
+    public static function distinguishingTail(array $opening): string
+    {
+        $stmt = chess_codex_db()->prepare(
+            'SELECT pgn_moves FROM codex_openings WHERE name = :n AND eco = :e AND id <> :id'
+        );
+        $stmt->execute(['n' => $opening['name'], 'e' => $opening['eco'], 'id' => $opening['id']]);
+        $others = array_map([self::class, 'sanTokens'], $stmt->fetchAll(PDO::FETCH_COLUMN));
+        if (empty($others)) return '';
+
+        $mine = self::sanTokens((string) $opening['pgn_moves']);
+        $n = count($mine);
+        for ($k = min(2, $n); $k < $n; $k++) {
+            $tail = self::formatPlies(array_slice($mine, -$k), $n - $k);
+            $clash = false;
+            foreach ($others as $t) {
+                if (count($t) >= $k && self::formatPlies(array_slice($t, -$k), count($t) - $k) === $tail) {
+                    $clash = true;
+                    break;
+                }
+            }
+            if (!$clash) return $tail;
+        }
+        // Only the whole line is unique (move numbers from 1 make it so).
+        return self::formatPlies($mine, 0);
+    }
+
+    /** "1. e4 c5 2. Nf3" → ['e4', 'c5', 'Nf3'] (check marks kept). */
+    private static function sanTokens(string $pgn): array
+    {
+        $tokens = preg_split('/\s+/', trim($pgn)) ?: [];
+        $sans = [];
+        foreach ($tokens as $t) {
+            $t = (string) preg_replace('/^\d+\.+/', '', $t);  // "1." or "12...Nf6"
+            if ($t !== '') $sans[] = $t;
+        }
+        return $sans;
+    }
+
+    /** Numbered SAN starting at 0-based ply $firstPly: "6…a6 7. Re1". */
+    private static function formatPlies(array $sans, int $firstPly): string
+    {
+        $out = [];
+        foreach (array_values($sans) as $i => $san) {
+            $ply = $firstPly + $i;
+            $num = intdiv($ply, 2) + 1;
+            if ($ply % 2 === 0) $out[] = $num . '. ' . $san;
+            elseif ($i === 0)   $out[] = $num . '…' . $san;
+            else                $out[] = $san;
+        }
+        return implode(' ', $out);
+    }
+
     /** Direct children (depth + 1), sorted by name. */
     public static function children(int $parentId): array
     {

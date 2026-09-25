@@ -60,6 +60,16 @@ if ($baseUrl !== '' && strpos($rawPath, $baseUrl) === 0) {
 }
 if ($rawPath === '' || $rawPath === false) $rawPath = '/';
 
+// One URL per page: "/openings/x/" answers 301 → "/openings/x" instead of
+// serving a duplicate. Only plain [a-z0-9-] segments, so a crafted path like
+// "/\evil.com/" can't turn this into an open redirect.
+if (preg_match('#^(/[a-z0-9-]+)+/$#', $rawPath)
+    && in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) {
+    $query = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_QUERY);
+    header('Location: ' . $baseUrl . rtrim($rawPath, '/') . ($query !== '' ? '?' . $query : ''), true, 301);
+    exit;
+}
+
 // I18n::detect is now a pass-through (English-only); keep the call so the
 // shape of the dispatch is unchanged if locales ever come back.
 [$locale, $path] = I18n::detect($rawPath);

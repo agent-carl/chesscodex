@@ -311,7 +311,7 @@ const dataNode = document.getElementById('opening-data');
 if (!dataNode) {
     // Not on an opening page — nothing to do.
 } else {
-    const { pgn, statsApiUrl } = JSON.parse(dataNode.textContent);
+    const { id, pgn, statsApiUrl } = JSON.parse(dataNode.textContent);
 
     // Replay the PGN through chess.js to get the FEN at every ply,
     // plus the from/to squares of the move that produced each position
@@ -481,9 +481,8 @@ if (!dataNode) {
     // ----------------------------------------------------------------
     const statsEl = document.getElementById('opening-stats');
     if (statsEl && statsApiUrl) {
-        const uciList = history.map((m) => m.from + m.to + (m.promotion || ''));
-        if (uciList.length > 0) {
-            loadStats(statsEl, statsApiUrl, uciList).catch((err) => {
+        if (history.length > 0) {
+            loadStats(statsEl, statsApiUrl, id).catch((err) => {
                 console.error('stats fetch failed', err);
                 renderStatsError(statsEl, 'Statistics could not be loaded.');
             });
@@ -493,14 +492,21 @@ if (!dataNode) {
     }
 }
 
-async function loadStats(rootEl, apiUrl, uciList) {
-    const url = apiUrl + '?play=' + encodeURIComponent(uciList.join(','));
+// The server derives the moves from the opening id. It fetches from Lichess
+// one request at a time and answers 503 + Retry-After while another one is
+// in flight, so retry a couple of times before giving up.
+async function loadStats(rootEl, apiUrl, id, attempt = 1) {
+    const url = apiUrl + '?id=' + encodeURIComponent(id);
     const res = await fetch(url, { headers: { Accept: 'application/json' } });
+    const retryAfter = Number(res.headers.get('Retry-After'));
+    if (res.status === 503 && retryAfter > 0 && attempt < 4) {
+        await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+        return loadStats(rootEl, apiUrl, id, attempt + 1);
+    }
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     if (data.error) {
-        if (data.detail) console.warn('[stats] server detail:', data.detail);
-        renderStatsError(rootEl, data.error, data.detail);
+        renderStatsError(rootEl, data.error);
         return;
     }
     renderStats(rootEl, data);
@@ -561,17 +567,9 @@ function renderStats(rootEl, data) {
     attribution.hidden = false;
 }
 
-function renderStatsError(rootEl, message, detail) {
+function renderStatsError(rootEl, message) {
     rootEl.setAttribute('aria-busy', 'false');
     const status = rootEl.querySelector('.stats-status');
     status.textContent = message;
     status.dataset.state = 'error';
-    if (detail) {
-        const small = document.createElement('small');
-        small.style.display = 'block';
-        small.style.marginTop = '0.25rem';
-        small.style.color = 'var(--muted)';
-        small.textContent = detail;
-        status.appendChild(small);
-    }
 }

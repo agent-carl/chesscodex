@@ -17,10 +17,12 @@ final class StatsCache
 
     /**
      * Returns ['white'=>int, 'black'=>int, 'draws'=>int, 'top_moves'=>array, 'cached_at'=>string].
-     * On Lichess failure with no cache: returns ['error' => '...'].
+     * On Lichess failure with no cache: returns ['error' => '...', 'busy' => bool];
+     * busy means another request to Lichess was in flight — try again shortly.
      * On Lichess failure with stale cache: returns the stale data.
+     * $wait queues for the Lichess lock instead (batch jobs like prewarm.php).
      */
-    public static function getOrFetch(array $uciMoves): array
+    public static function getOrFetch(array $uciMoves, bool $wait = false): array
     {
         $key  = self::keyFor($uciMoves);
         $row  = self::loadRow($key);
@@ -34,10 +36,12 @@ final class StatsCache
             if ($ageDays < self::TTL_HARD_MAX_DAYS) {
                 // Stale-but-acceptable: try to refresh, fall back to stale.
                 try {
-                    $fresh = self::refresh($key, $uciMoves);
+                    $fresh = self::refresh($key, $uciMoves, $wait);
                     return self::shape($fresh);
                 } catch (Throwable $e) {
-                    error_log('StatsCache stale-refresh failed: ' . $e->getMessage());
+                    if (!$e instanceof LichessBusyException) {
+                        error_log('StatsCache stale-refresh failed: ' . $e->getMessage());
+                    }
                     return self::shape($row);
                 }
             }
@@ -45,14 +49,17 @@ final class StatsCache
 
         // No cache or hard-expired: must fetch.
         try {
-            $fresh = self::refresh($key, $uciMoves);
+            $fresh = self::refresh($key, $uciMoves, $wait);
             return self::shape($fresh);
         } catch (Throwable $e) {
-            error_log('StatsCache hard-fetch failed: ' . $e->getMessage());
+            $busy = $e instanceof LichessBusyException;
+            if (!$busy) error_log('StatsCache hard-fetch failed: ' . $e->getMessage());
             if ($row !== null) return self::shape($row); // return very stale rather than nothing
+            // The exception text stays in the server log: it named internals
+            // ("Lichess HTTP 400 (curl)") and the page showed it to visitors.
             return [
-                'error'  => 'Statistics unavailable right now.',
-                'detail' => $e->getMessage(),
+                'error' => 'Statistics unavailable right now.',
+                'busy'  => $busy,
             ];
         }
     }
@@ -74,9 +81,9 @@ final class StatsCache
     }
 
     /** Hits Lichess, writes a fresh row, returns the row in DB shape. */
-    private static function refresh(string $key, array $uciMoves): array
+    private static function refresh(string $key, array $uciMoves, bool $wait): array
     {
-        $data = LichessExplorer::fetch($uciMoves);
+        $data = LichessExplorer::fetch($uciMoves, $wait);
         $white  = (int) ($data['white']  ?? 0);
         $black  = (int) ($data['black']  ?? 0);
         $draws  = (int) ($data['draws']  ?? 0);
