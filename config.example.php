@@ -4,6 +4,14 @@
 
 return [
     'db' => [
+        // 'mysql' (MySQL 8 / MariaDB) or 'sqlite' (one file, no DB server —
+        // what the Raspberry Pi uses). Create the tables + openings with
+        // `php tools/seed.php` in either case.
+        'driver'   => 'mysql',
+        // sqlite only: the database file. Keep it under db/, which is never
+        // served over HTTP; PHP needs write access to the file AND the folder.
+        'path'     => __DIR__ . '/db/chesscodex.sqlite',
+        // mysql only:
         'host'     => '127.0.0.1',
         'port'     => 3306,
         'name'     => 'chess_codex',

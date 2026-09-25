@@ -1,0 +1,19 @@
+#!/bin/sh
+# Chess Codex database backup (/usr/local/sbin/chesscodex-backup).
+# ".backup" takes a consistent copy while the site keeps running (WAL mode),
+# then it's gzipped; the 14 newest copies are kept.
+# Copies live on the same SD card — pull one to another machine now and then
+# (deploy/pull-backup.sh on the laptop).
+set -eu
+
+DB=/var/www/chesscodex/db/chesscodex.sqlite
+DIR=/var/backups/chesscodex
+DAY=$(date +%F)
+
+install -d -m 750 -g www-data "$DIR"     # readable by the site owner for pull-backup.sh
+TMP="$DIR/.chesscodex-$DAY.sqlite"
+sqlite3 "$DB" ".backup '$TMP'"
+sqlite3 "$TMP" "PRAGMA integrity_check;" | grep -qx ok
+gzip -f "$TMP"
+mv -f "$TMP.gz" "$DIR/chesscodex-$DAY.sqlite.gz"
+ls -1t "$DIR"/chesscodex-*.sqlite.gz | tail -n +15 | xargs -r rm -f

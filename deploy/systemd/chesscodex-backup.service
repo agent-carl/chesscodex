@@ -1,0 +1,9 @@
+# Nightly copy of the Chess Codex database (/etc/systemd/system/chesscodex-backup.service).
+[Unit]
+Description=Back up the Chess Codex SQLite database
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/chesscodex-backup
+Nice=10
+IOSchedulingClass=idle

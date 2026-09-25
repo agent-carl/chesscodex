@@ -1,0 +1,32 @@
+# Cloudflare Tunnel for chesscodex.org (/etc/systemd/system/cloudflared.service).
+# Unlike `cloudflared service install <token>`, this runs as a throwaway
+# unprivileged user and keeps the token in a root-only file instead of the
+# command line (where any local user could read it from the process list).
+# Set the token with: sudo bash deploy/set-tunnel-token.sh
+
+[Unit]
+Description=Cloudflare Tunnel (chesscodex.org)
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/etc/cloudflared/tunnel.env
+
+[Service]
+DynamicUser=yes
+EnvironmentFile=/etc/cloudflared/tunnel.env
+Environment=HOME=/var/lib/cloudflared
+StateDirectory=cloudflared
+ExecStart=/usr/bin/cloudflared --no-autoupdate tunnel run
+Restart=on-failure
+RestartSec=5
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target
