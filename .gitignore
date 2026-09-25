@@ -2,3 +2,8 @@ config.php
 db/*.tsv
 .DS_Store
 *.log
+
+# SQLite database and local backup copies (deploy/pull-backup.sh)
+db/*.sqlite
+db/*.sqlite-*
+backups/
