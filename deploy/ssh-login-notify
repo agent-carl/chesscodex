@@ -1,0 +1,25 @@
+#!/bin/sh
+# Telegram message on every SSH login that doesn't come from the home network
+# (/usr/local/sbin/ssh-login-notify, run by PAM: pam_exec in /etc/pam.d/sshd).
+# Bot token, chat id and ignored address prefixes: /etc/ssh-login-notify.conf
+# (root-only; set with set-notify-token.sh).
+[ "$PAM_TYPE" = "open_session" ] || exit 0
+CONF=/etc/ssh-login-notify.conf
+[ -r "$CONF" ] || exit 0
+. "$CONF"
+for p in $IGNORE; do case "$PAM_RHOST" in "$p"*) exit 0 ;; esac; done
+
+# The in-browser terminal (ssh.chesscodex.org) reaches sshd through the
+# Cloudflare Tunnel, so those logins come from localhost.
+case "$PAM_RHOST" in
+    127.0.0.1|::1) FROM="терминал в браузере (Cloudflare Access)" ;;
+    *)             FROM="$PAM_RHOST" ;;
+esac
+
+TEXT="🔐 Вход на Pi по SSH
+Пользователь: $PAM_USER
+Откуда: $FROM
+Время: $(date '+%d.%m.%Y %H:%M:%S')"
+curl -fsS -m 10 -o /dev/null --data-urlencode "chat_id=$CHAT_ID" --data-urlencode "text=$TEXT" \
+  "https://api.telegram.org/bot$TOKEN/sendMessage" >/dev/null 2>&1 &
+exit 0
