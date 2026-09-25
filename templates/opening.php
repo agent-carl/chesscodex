@@ -751,14 +751,15 @@ if ($parent) {
 $breadcrumbs[] = ['name' => $o['name'], 'url' => $canonical];
 
 $siteRootUrl  = $siteUrl . $baseUrl . I18n::url('/');
-$todayIso     = date('Y-m-d');
+// Full ISO 8601 with offset — Google flags date-only values as invalid date-times.
+$todayIso     = date('Y-m-d\T00:00:00P');
 $publisherLd  = [
     '@type' => 'Organization',
     'name'  => t('site.name'),
     'url'   => $siteRootUrl,
     'logo'  => [
         '@type' => 'ImageObject',
-        'url'   => $siteUrl . $baseUrl . '/public/favicon.svg',
+        'url'   => $siteUrl . $baseUrl . '/public/icon-512.png',
     ],
 ];
 
@@ -788,7 +789,7 @@ $jsonLd = [
                 'chess theory',
                 $parent['name'] ?? null,
             ])),
-            'datePublished' => '2026-01-01',
+            'datePublished' => '2026-01-01T00:00:00+01:00',
             'dateModified'  => $todayIso,
             'author'        => $publisherLd,
             'publisher'     => $publisherLd,

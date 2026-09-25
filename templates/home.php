@@ -115,7 +115,7 @@ $publisherLd = [
     'url'   => $canonical,
     'logo'  => [
         '@type' => 'ImageObject',
-        'url'   => $siteUrl . $baseUrl . '/public/favicon.svg',
+        'url'   => $siteUrl . $baseUrl . '/public/icon-512.png',
     ],
 ];
 $jsonLd = [
@@ -143,7 +143,7 @@ $jsonLd = [
             '@type'        => 'Organization',
             'name'         => t('site.name'),
             'url'          => $canonical,
-            'logo'         => $siteUrl . $baseUrl . '/public/favicon.svg',
+            'logo'         => $siteUrl . $baseUrl . '/public/icon-512.png',
         ],
     ],
 ];
