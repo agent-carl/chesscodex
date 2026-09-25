@@ -7,10 +7,15 @@ declare(strict_types=1);
  * play sequence via ChessEngine (which is already populated), then asks
  * StatsCache to fetch — populating codex_stats_cache as a side effect.
  *
- * Usage:
+ * Usage (the token may also go in a POST body, which keeps it out of the
+ * access log: curl -d token=… "http://127.0.0.1:8081/prewarm.php?n=60"):
  *   /prewarm.php?token=<seed_token>          ← process up to ~25s worth
  *   /prewarm.php?token=...&n=50              ← target N openings this run
  *   /prewarm.php?token=...&n=200&offset=500  ← continue from offset
+ *
+ * The last lines are machine-readable for a driver loop:
+ *   NEXT_OFFSET=<n>   run again from there;  RETRY_AFTER=<s>  Lichess is busy
+ *   or cooling down after a 429 — wait, then repeat the same offset.
  *
  * Strategy: each run grabs `n` openings ordered by id ascending starting
  * from `offset`. Skips any whose stats are already cached (cheap check).
@@ -27,7 +32,7 @@ require_once __DIR__ . '/lib/StatsCache.php';
 $config = require __DIR__ . '/config.php';
 
 $expected = (string) ($config['seed_token'] ?? '');
-$given    = (string) ($_GET['token'] ?? '');
+$given    = (string) ($_POST['token'] ?? $_GET['token'] ?? '');
 if ($expected === '' || !hash_equals($expected, $given)) {
     http_response_code(403);
     header('Content-Type: text/plain; charset=utf-8');
@@ -86,7 +91,8 @@ if (count($rows) === 0) {
 
 $cacheCheck = $pdo->prepare("SELECT 1 FROM codex_stats_cache WHERE fen_hash = :h LIMIT 1");
 
-$fetched = $skipped = $failed = 0;
+$fetched = $skipped = $failed = $processed = 0;
+$retryAfter = 0;
 $startTs = microtime(true);
 
 foreach ($rows as $row) {
@@ -106,27 +112,44 @@ foreach ($rows as $row) {
         if ($cacheCheck->fetchColumn()) { $skipped++; continue; }
 
         $data = StatsCache::getOrFetch($uci, true);   // wait for the Lichess lock
+        if (!empty($data['busy'])) {
+            // Lichess is cooling us down after a 429: stop, don't hammer it.
+            $retryAfter = max(1, (int) ($data['retry_after'] ?? 60));
+            emit("[busy] {$row['slug']}: Lichess asked to slow down");
+            break;
+        }
         if (isset($data['error'])) {
             $failed++;
             emit("[fail] {$row['slug']}: " . $data['error']);
         } else {
             $fetched++;
         }
+        // Leave the lock free for a moment so visitors' requests get a turn.
+        usleep(300_000);
     } catch (Throwable $e) {
         $failed++;
         emit("[fail] {$row['slug']}: " . $e->getMessage());
+    } finally {
+        if ($retryAfter === 0) $processed++;
     }
 }
 
 emit("");
 emit("fetched=$fetched  skipped(already-cached)=$skipped  failed=$failed");
-emit("processed " . count($rows) . " rows in " . round(microtime(true) - $startTs, 2) . "s");
+emit("processed $processed rows in " . round(microtime(true) - $startTs, 2) . "s");
 
-$nextOffset = $offset + count($rows);
-if ($nextOffset < $total) {
+// Continue after the rows actually handled: a run cut short by the time
+// budget or a busy Lichess used to skip the rest of its batch.
+$nextOffset = $offset + $processed;
+if ($retryAfter > 0) {
+    emit("");
+    emit("RETRY_AFTER=$retryAfter");
+    emit("NEXT_OFFSET=$nextOffset");
+} elseif ($nextOffset < $total) {
     emit("");
     emit("Not done yet. Continue with:");
     emit("  /prewarm.php?token=...&n=$n&offset=$nextOffset");
+    emit("NEXT_OFFSET=$nextOffset");
 } else {
     emit("");
     emit("Reached end of table. Cache fully warmed.");

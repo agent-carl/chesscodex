@@ -34,6 +34,9 @@ $o = $opening;
 // page has its own <title> instead of up to 14 identical ones.
 $lineTail = Opening::distinguishingTail($o);
 $title = $o['name'] . ' (' . $o['eco'] . ')' . ($lineTail !== '' ? ' – ' . $lineTail : '');
+// Short titles also name what the page offers ("Sicilian Defense (B20): Moves
+// & Win Rates"); on long ones search results would only cut it off.
+if ($lineTail === '' && mb_strlen($title) <= 42) $title .= ': Moves & Win Rates';
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 
 // ----------------------------------------------------------------------
@@ -398,46 +401,83 @@ $island = [
             <span class="opening-overview-notice-icon" aria-hidden="true">&#9998;</span>
             <span>
                 <strong>This overview is generated automatically</strong> from the opening's metadata.
-                A more detailed, human-written description is on the way — and you can speed it up
-                by <a href="#suggest-form-details" class="opening-overview-notice-cta">suggesting one yourself</a>.
+                Know this line well? <a href="#suggest-form-details" class="opening-overview-notice-cta">Write
+                a description</a> — submissions are reviewed before publishing.
             </span>
         </p>
     </section>
     <?php endif; ?>
 
-    <section class="opening-stats" id="opening-stats" aria-busy="true" aria-live="polite">
+    <?php
+    // Lichess numbers from the server-side cache, printed into the HTML: they
+    // show at once, and search engines see them at all (/api/ is closed to
+    // crawlers). app.js fetches only when nothing is cached yet or the
+    // numbers are over a week old — same markup as its renderStats().
+    require_once __DIR__ . '/../lib/ChessEngine.php';
+    require_once __DIR__ . '/../lib/StatsCache.php';
+    $stats      = StatsCache::cached(ChessEngine::fromPgn((string) $o['pgn_moves'])->uciHistory());
+    $statsTotal = $stats ? $stats['white'] + $stats['black'] + $stats['draws'] : 0;
+    $pct        = static fn (int $n, int $of): string => number_format($of > 0 ? $n * 100 / $of : 0, 1, '.', '');
+    $barLabel   = static fn (string $w, string $d, string $b): string => "White $w% · Draw $d% · Black $b%";
+    [$wPct, $dPct, $bPct] = [$pct($stats['white'] ?? 0, $statsTotal), $pct($stats['draws'] ?? 0, $statsTotal), $pct($stats['black'] ?? 0, $statsTotal)];
+    $statsRows  = [];
+    foreach ($stats['top_moves'] ?? [] as $m) {
+        $mt = (int) $m['white'] + (int) $m['black'] + (int) $m['draws'];
+        if ($mt > 0) $statsRows[] = [$m['san'], $mt, $pct((int) $m['white'], $mt), $pct((int) $m['draws'], $mt), $pct((int) $m['black'], $mt)];
+    }
+    ?>
+    <section class="opening-stats" id="opening-stats" aria-busy="<?= $stats ? 'false' : 'true' ?>" aria-live="polite"
+             data-stats="<?= $stats ? ($stats['fresh'] ? 'fresh' : 'stale') : 'none' ?>">
         <h2><?= htmlspecialchars(t('opening.stats.title'), ENT_QUOTES, 'UTF-8') ?></h2>
-        <p class="stats-status" data-state="loading"><?= htmlspecialchars(t('opening.stats.loading'), ENT_QUOTES, 'UTF-8') ?></p>
-        <div class="stats-bar" hidden>
-            <span class="stats-bar-w" style="width:0%"></span>
-            <span class="stats-bar-d" style="width:0%"></span>
-            <span class="stats-bar-b" style="width:0%"></span>
+        <?php if ($stats && $statsTotal === 0): ?>
+            <p class="stats-status" data-state="empty"><?= htmlspecialchars(t('opening.stats.no_games'), ENT_QUOTES, 'UTF-8') ?></p>
+        <?php elseif ($stats): ?>
+            <p class="stats-status" data-state="done" hidden></p>
+        <?php else: ?>
+            <p class="stats-status" data-state="loading"><?= htmlspecialchars(t('opening.stats.loading'), ENT_QUOTES, 'UTF-8') ?></p>
+        <?php endif; ?>
+        <div class="stats-bar" role="img"<?= $statsTotal > 0 ? ' aria-label="' . htmlspecialchars($barLabel($wPct, $dPct, $bPct), ENT_QUOTES, 'UTF-8') . '"' : ' hidden' ?>>
+            <span class="stats-bar-w" style="width:<?= $wPct ?>%"></span>
+            <span class="stats-bar-d" style="width:<?= $dPct ?>%"></span>
+            <span class="stats-bar-b" style="width:<?= $bPct ?>%"></span>
         </div>
-        <p class="stats-totals" hidden></p>
-        <table class="stats-moves" hidden>
+        <p class="stats-totals"<?= $statsTotal > 0 ? '' : ' hidden' ?>><?php if ($statsTotal > 0): ?><?= number_format($statsTotal) ?> games · White <?= $wPct ?>% / Draw <?= $dPct ?>% / Black <?= $bPct ?>%<?php endif; ?></p>
+        <table class="stats-moves"<?= $statsTotal > 0 && $statsRows ? '' : ' hidden' ?>>
             <thead>
                 <tr><th><?= htmlspecialchars(t('opening.moves'), ENT_QUOTES, 'UTF-8') ?></th><th>Games</th><th>W / D / B</th></tr>
             </thead>
-            <tbody></tbody>
+            <tbody><?php foreach ($statsTotal > 0 ? $statsRows : [] as [$san, $mt, $mw, $md, $mb]): ?>
+                <tr><td><?= htmlspecialchars((string) $san, ENT_QUOTES, 'UTF-8') ?></td><td><?= number_format($mt) ?></td><td><div class="stats-bar inline" role="img" aria-label="<?= htmlspecialchars($barLabel($mw, $md, $mb), ENT_QUOTES, 'UTF-8') ?>"><span class="stats-bar-w" style="width:<?= $mw ?>%"></span><span class="stats-bar-d" style="width:<?= $md ?>%"></span><span class="stats-bar-b" style="width:<?= $mb ?>%"></span></div></td></tr>
+            <?php endforeach; ?></tbody>
         </table>
-        <p class="stats-attribution" hidden><small><?= htmlspecialchars(t('opening.stats.attribution'), ENT_QUOTES, 'UTF-8') ?> <span class="stats-cached-at"></span></small></p>
+        <p class="stats-attribution"<?= $statsTotal > 0 ? '' : ' hidden' ?>><small><?= htmlspecialchars(t('opening.stats.attribution'), ENT_QUOTES, 'UTF-8') ?> <span class="stats-cached-at"><?= $statsTotal > 0 ? htmlspecialchars((string) $stats['cached_at'], ENT_QUOTES, 'UTF-8') : '' ?></span></small></p>
     </section>
 
+    <?php
+    // Admin-only inline edit link. Same trick as in layout.php — only touch
+    // the session if the admin cookie is present, otherwise we turn every
+    // public opening page into a Set-Cookie + uncacheable.
+    $isAdmin = false;
+    if (isset($_COOKIE['codex_admin'])) {
+        require_once __DIR__ . '/../lib/Auth.php';
+        $isAdmin = Auth::isLoggedIn();
+    }
+    $editLink = $isAdmin
+        ? '<a class="admin-edit-link" href="' . $baseEsc . '/admin/edit/' . htmlspecialchars($o['slug'], ENT_QUOTES, 'UTF-8') . '">'
+          . (empty($o['description']) ? 'Write description →' : 'Edit description →') . '</a>'
+        : '';
+    ?>
     <section class="opening-description">
+        <?php /* No "Description" heading without a description: an empty
+                 section on every page reads as thin content. */ ?>
+        <?php if (!empty($o['description'])): ?>
         <h2>
             <?= htmlspecialchars(t('opening.description.title'), ENT_QUOTES, 'UTF-8') ?>
-            <?php
-            // Admin-only inline edit link. Same trick as in layout.php — only
-            // touch the session if the admin cookie is present, otherwise we
-            // turn every public opening page into a Set-Cookie + uncacheable.
-            if (isset($_COOKIE['codex_admin'])) {
-                require_once __DIR__ . '/../lib/Auth.php';
-                if (Auth::isLoggedIn()):
-                ?>
-                    <a class="admin-edit-link" href="<?= $baseEsc ?>/admin/edit/<?= htmlspecialchars($o['slug'], ENT_QUOTES, 'UTF-8') ?>">Edit description →</a>
-                <?php endif;
-            } ?>
+            <?= $editLink ?>
         </h2>
+        <?php elseif ($editLink !== ''): ?>
+        <p><?= $editLink ?></p>
+        <?php endif; ?>
         <?php if (!empty($o['description'])):
             require_once __DIR__ . '/../vendor/Parsedown.php';
             $pd = new Parsedown();
@@ -485,8 +525,7 @@ $island = [
             <div class="description-body"><?= $renderedDesc ?></div>
         <?php endif; ?>
         <?php /* No placeholder text here when description is empty — the
-                 Overview section above already explains that a proper
-                 description is on the way. Showing both was redundant. */ ?>
+                 Overview section above already invites readers to write one. */ ?>
 
         <details class="suggest-form" id="suggest-form-details">
             <summary>
