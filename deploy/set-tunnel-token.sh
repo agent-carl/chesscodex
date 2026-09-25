@@ -14,8 +14,22 @@ read -rsp "Tunnel token (or the whole install command): " INPUT
 echo
 TOKEN=$(printf '%s' "$INPUT" | grep -oE 'eyJ[A-Za-z0-9+/=_-]+' | head -n1 || true)
 unset INPUT
-if [ ${#TOKEN} -lt 100 ]; then
-    echo "That doesn't look like a tunnel token (it starts with eyJ… and is 150+ characters). Nothing changed."
+# A tunnel token is base64 JSON with "a" (account), "t" (tunnel id) and
+# "s" (secret). Check that before saving — never printing the token itself.
+CHECK=$(printf '%s' "$TOKEN" | python3 -c '
+import base64, json, sys
+t = sys.stdin.read().strip()
+try:
+    d = json.loads(base64.b64decode(t + "=" * (-len(t) % 4)))
+    missing = [k for k in ("a", "t", "s") if not d.get(k)]
+    print("ok" if not missing else "fields missing: " + ",".join(missing))
+except Exception as e:
+    print("does not decode (" + type(e).__name__ + ") — the paste is probably cut or mangled")
+')
+if [ "$CHECK" != "ok" ]; then
+    echo "Not a valid tunnel token: $CHECK. Got ${#TOKEN} characters starting with 'eyJ'."
+    echo "Copy it again with the copy button next to the command in Cloudflare. Nothing changed."
+    systemctl stop cloudflared 2>/dev/null || true
     exit 1
 fi
 
