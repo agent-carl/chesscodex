@@ -106,6 +106,33 @@ $renderStrip(
     $gambits
 );
 ?>
+
+<section class="about-section home-intro">
+    <h2>How the openings are organised</h2>
+    <p>
+        Every opening here carries a code from the ECO system, which files chess openings into
+        five volumes: <strong>A</strong> — flank openings such as the English and the Réti, plus
+        the Dutch and the Benoni; <strong>B</strong> — semi-open games such as the Sicilian, the
+        Caro-Kann and the Pirc; <strong>C</strong> — open games after 1.e4 e5, plus the French
+        Defense; <strong>D</strong> — closed and semi-closed games after 1.d4 d5, such as the
+        Queen's Gambit, plus the Grünfeld; <strong>E</strong> — Indian defenses such as the
+        Catalan, the Nimzo-Indian and the King's Indian.
+    </p>
+    <p>
+        Names and move orders come from the Lichess chess-openings dataset:
+        <?= htmlspecialchars($totalFmt, ENT_QUOTES, 'UTF-8') ?> named lines spread over almost all of
+        the 500 ECO codes. Each
+        opening page shows the moves on an interactive board, where the line sits in the opening
+        tree, its sub-variations, and how it scores in Lichess games between players rated 1600 to
+        2500 — so you can see how an opening actually does, not just how it starts.
+    </p>
+    <p>
+        Know the moves but not the name?
+        <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>">Search by moves or by FEN</a>.
+        Want to practise? Every line can be played out against Stockfish at six strengths, right in
+        your browser.
+    </p>
+</section>
 <?php
 $body = ob_get_clean();
 $title = t('home.title');
@@ -130,16 +157,7 @@ $jsonLd = [
             'description' => $description,
             'inLanguage'  => I18n::locale(),
             'publisher'   => $publisherLd,
-            // SearchAction is the schema that gets Google to render an
-            // in-result sitelinks search-box for the homepage.
-            'potentialAction' => [
-                '@type'       => 'SearchAction',
-                'target'      => [
-                    '@type'       => 'EntryPoint',
-                    'urlTemplate' => $siteUrl . $baseUrl . I18n::url('/search') . '?moves={search_term_string}',
-                ],
-                'query-input' => 'required name=search_term_string',
-            ],
+            // No SearchAction: Google retired the sitelinks search box it fed.
         ],
         [
             '@type'        => 'Organization',

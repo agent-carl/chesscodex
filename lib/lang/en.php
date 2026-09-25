@@ -15,12 +15,12 @@ return [
     'group.E'                  => 'Indian Defenses',
 
     // Home page
-    'home.title'               => 'Chess Codex — Encyclopaedia of Chess Openings',
+    'home.title'               => 'Chess Openings Explorer — Moves, Win Rates & ECO Codes | Chess Codex',
     'home.hero.h1'             => 'The Chess Openings Encyclopedia',
-    'home.hero.lede'           => 'An open reference of every opening in the Encyclopaedia of Chess Openings, with interactive boards and live statistics from Lichess.',
+    'home.hero.lede'           => 'A free, ad-free reference of named chess openings and variations: moves on an interactive board, ECO codes, and win rates from millions of Lichess games.',
     'home.hero.meta'           => '{count} openings indexed · 5 ECO groups · A–E',
     'home.card.openings'       => '{count} openings',
-    'home.description'         => 'Browse and study {count}+ chess openings indexed from the Encyclopaedia of Chess Openings. Interactive boards, win-rate statistics from Lichess, six engine difficulty levels.',
+    'home.description'         => 'Explore {count} chess openings, from the Sicilian to rare gambits: moves on an interactive board, ECO codes, Lichess win rates and every variation. Free, no ads.',
 
     // Opening page
     'opening.parent'           => 'Parent:',

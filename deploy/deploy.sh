@@ -17,7 +17,7 @@ SSH=ssh
 [ -x /c/Windows/System32/OpenSSH/ssh.exe ] && SSH=/c/Windows/System32/OpenSSH/ssh.exe
 
 EXCLUDES=(
-    --exclude=.git --exclude=deploy --exclude=backups --exclude=config.php
+    --exclude=.git --exclude=deploy --exclude=docs --exclude=backups --exclude=config.php
     --exclude='db/*.sqlite' --exclude='db/*.sqlite-*' --exclude=db/log --exclude=db/og_cache --exclude=db/backups
     --exclude=_composer_vendor
 )

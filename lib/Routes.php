@@ -22,14 +22,15 @@ final class Routes
         // Explicit Allow for the indexable namespaces, then Disallow the
         // dynamic / private ones. Putting Allow first makes Google's parser
         // unambiguously treat /openings as crawlable.
+        // /play/ and /search are NOT disallowed: they carry <meta robots
+        // noindex>, which crawlers can only obey if they may fetch the page —
+        // blocked, the 3,690 linked /play/ URLs could be indexed without content.
         echo "User-agent: *\n";
         echo "Allow: /\n";
         echo "Allow: /openings\n";
         echo "Allow: /about\n";
         echo "Disallow: /admin\n";
         echo "Disallow: /api/\n";
-        echo "Disallow: /play/\n";
-        echo "Disallow: /search\n";
         echo "Disallow: /random\n\n";
 
         // Common abusive crawlers — block to save bandwidth + reduce noise
@@ -75,7 +76,7 @@ final class Routes
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
         $xml .= $row($base . '/');
         $xml .= $row($base . '/openings');
-        // /search is Disallowed in robots.txt, so it stays out of the sitemap.
+        // /search is noindex, so it stays out of the sitemap.
         $xml .= $row($base . '/about');
         foreach ($stmt as $r) {
             $xml .= $row($base . '/openings/' . $r['slug']);
@@ -203,7 +204,7 @@ final class Routes
         if (isset($stats['error'])) {
             http_response_code(503);
             header('Cache-Control: no-store');
-            if (!empty($stats['busy'])) header('Retry-After: 2');
+            if (!empty($stats['busy'])) header('Retry-After: ' . (int) ($stats['retry_after'] ?? 2));
             echo json_encode(['error' => $stats['error']]);
             return;
         }

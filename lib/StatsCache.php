@@ -17,8 +17,9 @@ final class StatsCache
 
     /**
      * Returns ['white'=>int, 'black'=>int, 'draws'=>int, 'top_moves'=>array, 'cached_at'=>string].
-     * On Lichess failure with no cache: returns ['error' => '...', 'busy' => bool];
-     * busy means another request to Lichess was in flight — try again shortly.
+     * On Lichess failure with no cache: returns ['error' => '...', 'busy' => bool,
+     * 'retry_after' => seconds]; busy means another request to Lichess was in
+     * flight, or Lichess asked us to slow down — try again after retry_after.
      * On Lichess failure with stale cache: returns the stale data.
      * $wait queues for the Lichess lock instead (batch jobs like prewarm.php).
      */
@@ -52,16 +53,30 @@ final class StatsCache
             $fresh = self::refresh($key, $uciMoves, $wait);
             return self::shape($fresh);
         } catch (Throwable $e) {
-            $busy = $e instanceof LichessBusyException;
-            if (!$busy) error_log('StatsCache hard-fetch failed: ' . $e->getMessage());
+            $busy = $e instanceof LichessBusyException || $e instanceof LichessRateLimitedException;
+            if (!$e instanceof LichessBusyException) error_log('StatsCache hard-fetch failed: ' . $e->getMessage());
             if ($row !== null) return self::shape($row); // return very stale rather than nothing
             // The exception text stays in the server log: it named internals
             // ("Lichess HTTP 400 (curl)") and the page showed it to visitors.
             return [
-                'error' => 'Statistics unavailable right now.',
-                'busy'  => $busy,
+                'error'       => 'Statistics unavailable right now.',
+                'busy'        => $busy,
+                'retry_after' => $e instanceof LichessBusyException ? $e->retryAfter : 60,
             ];
         }
+    }
+
+    /**
+     * What's cached for a line, without contacting Lichess: the getOrFetch()
+     * shape plus 'fresh' (younger than TTL_FRESH_DAYS), or null when nothing
+     * is cached. Lets the opening page print the numbers into its HTML.
+     */
+    public static function cached(array $uciMoves): ?array
+    {
+        $row = self::loadRow(self::keyFor($uciMoves));
+        if ($row === null) return null;
+        $ageDays = (time() - strtotime($row['fetched_at'])) / 86400;
+        return self::shape($row) + ['fresh' => $ageDays < self::TTL_FRESH_DAYS];
     }
 
     public static function keyFor(array $uciMoves): string

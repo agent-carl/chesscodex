@@ -9,18 +9,26 @@ declare(strict_types=1);
  * visitor who finds a request in flight gets LichessBusyException right
  * away (the API answers 503 + Retry-After and the page retries) instead
  * of queueing on the lock: a queue of blocked PHP workers let a few
- * clients stall the whole site, whose pool has only 4.
+ * clients stall the whole site, whose pool has only 4. After an HTTP 429
+ * everyone backs off for a full minute, as the Lichess API asks.
  *
  * Errors (timeout, non-200, malformed JSON) bubble up as exceptions so the
  * caller can choose between serving stale cache or surfacing the failure.
  */
-final class LichessBusyException extends RuntimeException {}
+final class LichessBusyException extends RuntimeException
+{
+    /** Seconds until it's worth trying again. */
+    public int $retryAfter = 2;
+}
+
+final class LichessRateLimitedException extends RuntimeException {}
 
 final class LichessExplorer
 {
     private const ENDPOINT     = 'https://explorer.lichess.ovh/lichess';
     private const TIMEOUT_S    = 5;
     private const THROTTLE_MS  = 600;
+    private const COOLDOWN_S   = 60;    // after a 429
     private const TOP_MOVES    = 8;
 
     private static ?string $token = null;
@@ -59,12 +67,16 @@ final class LichessExplorer
         $url = self::ENDPOINT . '?' . $params;
 
         $lock = self::lock($wait);
+        $pauseUntil = 0.0;
         try {
             $body = function_exists('curl_init')
                 ? self::fetchViaCurl($url)
                 : self::fetchViaStream($url);
+        } catch (LichessRateLimitedException $e) {
+            $pauseUntil = microtime(true) + self::COOLDOWN_S;
+            throw $e;
         } finally {
-            self::unlock($lock);
+            self::unlock($lock, $pauseUntil);
         }
 
         $data = json_decode($body, true);
@@ -99,6 +111,9 @@ final class LichessExplorer
         if ($body === false) {
             throw new RuntimeException("curl error $errno: $err");
         }
+        if ($code === 429) {
+            throw new LichessRateLimitedException('Lichess HTTP 429 (curl)');
+        }
         if ($code !== 200) {
             throw new RuntimeException("Lichess HTTP $code (curl)");
         }
@@ -126,6 +141,9 @@ final class LichessExplorer
         }
         // $http_response_header is auto-populated by the stream wrapper.
         $statusLine = $http_response_header[0] ?? '';
+        if (preg_match('#HTTP/[\d.]+ 429#', $statusLine)) {
+            throw new LichessRateLimitedException("Lichess HTTP 429 (stream)");
+        }
         if (!preg_match('#HTTP/[\d.]+ 200#', $statusLine)) {
             throw new RuntimeException("Lichess HTTP non-200 (stream): $statusLine");
         }
@@ -134,8 +152,10 @@ final class LichessExplorer
 
     /**
      * Take the Lichess lock and wait out the rest of THROTTLE_MS since the
-     * previous request. The timestamp of that request is the lock file's
-     * content. Returns null when the lock file can't be opened (best-effort).
+     * previous request. The lock file holds the time the next request may
+     * start at the earliest: the previous request's end, or the end of the
+     * cool-down after a 429. Returns null when the lock file can't be opened
+     * (best-effort).
      *
      * @return resource|null
      */
@@ -148,18 +168,27 @@ final class LichessExplorer
             throw new LichessBusyException('Another Lichess request is in progress.');
         }
         $last = (float) (stream_get_contents($fh) ?: '0');
-        $waitMs = (int) max(0, self::THROTTLE_MS - (int) ((microtime(true) - $last) * 1000));
+        $now  = microtime(true);
+        if ($last > $now + 1) {
+            // Cooling down after a 429: don't sleep a worker for a minute.
+            flock($fh, LOCK_UN);
+            fclose($fh);
+            $e = new LichessBusyException('Lichess asked us to slow down.');
+            $e->retryAfter = (int) ceil($last - $now);
+            throw $e;
+        }
+        $waitMs = (int) max(0, self::THROTTLE_MS - (int) (($now - $last) * 1000));
         if ($waitMs > 0) usleep($waitMs * 1000);
         return $fh;
     }
 
     /** @param resource|null $fh */
-    private static function unlock($fh): void
+    private static function unlock($fh, float $pauseUntil = 0.0): void
     {
         if ($fh === null) return;
         ftruncate($fh, 0);
         rewind($fh);
-        fwrite($fh, (string) microtime(true));
+        fwrite($fh, (string) max(microtime(true), $pauseUntil));
         fflush($fh);
         flock($fh, LOCK_UN);
         fclose($fh);
