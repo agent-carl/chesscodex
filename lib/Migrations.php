@@ -52,8 +52,8 @@ final class Migrations
                     if ($stmt === '') continue;
                     $pdo->exec($stmt);
                 }
-                $pdo->prepare("INSERT INTO codex_migrations (version, applied_at) VALUES (:v, NOW())")
-                    ->execute(['v' => $version]);
+                $pdo->prepare("INSERT INTO codex_migrations (version, applied_at) VALUES (:v, :now)")
+                    ->execute(['v' => $version, 'now' => date('Y-m-d H:i:s')]);
                 $results[] = ['version' => $version, 'status' => 'applied'];
             } catch (Throwable $e) {
                 $results[] = ['version' => $version, 'status' => 'fail', 'reason' => $e->getMessage()];
@@ -65,19 +65,26 @@ final class Migrations
 
     private static function ensureTrackingTable(PDO $pdo): void
     {
+        $tableOptions = chess_codex_db_driver() === 'sqlite'
+            ? ''
+            : 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci';
         $pdo->exec(
             "CREATE TABLE IF NOT EXISTS codex_migrations (
                 version    VARCHAR(20)  NOT NULL,
                 applied_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (version)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+            ) $tableOptions"
         );
     }
 
-    /** @return array<string, string> version => filepath, sorted ascending */
+    /**
+     * @return array<string, string> version => filepath, sorted ascending.
+     * MySQL migrations live in db/migrations/, SQLite ones in db/migrations/sqlite/
+     * — DDL syntax differs too much between the two to share files.
+     */
     private static function availableFiles(): array
     {
-        $dir = __DIR__ . '/../db/migrations';
+        $dir = __DIR__ . '/../db/migrations' . (chess_codex_db_driver() === 'sqlite' ? '/sqlite' : '');
         if (!is_dir($dir)) return [];
         $out = [];
         foreach (scandir($dir) ?: [] as $name) {

@@ -19,13 +19,14 @@ final class Submissions
         $stmt = chess_codex_db()->prepare(
             "INSERT INTO codex_submissions
                 (opening_id, author_name, author_email, markdown, status, created_at, ip_address)
-             VALUES (:oid, :name, :email, :md, 'pending', NOW(), :ip)"
+             VALUES (:oid, :name, :email, :md, 'pending', :now, :ip)"
         );
         $stmt->execute([
             'oid'   => $openingId,
             'name'  => $authorName !== null && $authorName !== '' ? mb_substr($authorName, 0, 100) : null,
             'email' => $authorEmail !== null && $authorEmail !== '' ? mb_substr($authorEmail, 0, 255) : null,
             'md'    => $markdown,
+            'now'   => date('Y-m-d H:i:s'),
             'ip'    => $ip,
         ]);
         return (int) chess_codex_db()->lastInsertId();
@@ -68,7 +69,7 @@ final class Submissions
             $params['oq2'] = $like;
         }
         if (!empty($filters['author_q'])) {
-            $where[] = '(COALESCE(s.author_name, "") LIKE :aq OR COALESCE(s.author_email, "") LIKE :aq2)';
+            $where[] = "(COALESCE(s.author_name, '') LIKE :aq OR COALESCE(s.author_email, '') LIKE :aq2)";
             $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], (string) $filters['author_q']) . '%';
             $params['aq']  = $like;
             $params['aq2'] = $like;
@@ -129,9 +130,9 @@ final class Submissions
                 ->execute(['d' => $sub['markdown'], 'id' => (int) $sub['opening_id']]);
             $pdo->prepare(
                 "UPDATE codex_submissions
-                 SET status = 'accepted', reviewed_at = NOW(), review_notes = :n
+                 SET status = 'accepted', reviewed_at = :now, review_notes = :n
                  WHERE id = :id"
-            )->execute(['n' => $notes, 'id' => $id]);
+            )->execute(['now' => date('Y-m-d H:i:s'), 'n' => $notes, 'id' => $id]);
             $pdo->commit();
             Logger::info('admin.submission.accept', [
                 'submission_id' => $id,
@@ -152,10 +153,10 @@ final class Submissions
     {
         $stmt = chess_codex_db()->prepare(
             "UPDATE codex_submissions
-             SET status = 'rejected', reviewed_at = NOW(), review_notes = :n
+             SET status = 'rejected', reviewed_at = :now, review_notes = :n
              WHERE id = :id AND status = 'pending'"
         );
-        $stmt->execute(['n' => $notes, 'id' => $id]);
+        $stmt->execute(['now' => date('Y-m-d H:i:s'), 'n' => $notes, 'id' => $id]);
         $ok = $stmt->rowCount() > 0;
         if ($ok) {
             Logger::info('admin.submission.reject', [

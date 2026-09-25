@@ -19,7 +19,7 @@ class Opening
     public static function findById(int $id): ?array
     {
         $stmt = chess_codex_db()->prepare(
-            'SELECT id, eco, name, slug FROM codex_openings WHERE id = :id LIMIT 1'
+            'SELECT id, eco, name, slug, depth FROM codex_openings WHERE id = :id LIMIT 1'
         );
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch();
@@ -45,7 +45,7 @@ class Opening
     {
         return Cache::remember('counts_by_group', 3600, static function (): array {
             $rows = chess_codex_db()->query(
-                "SELECT LEFT(eco, 1) AS grp, COUNT(*) AS n FROM codex_openings GROUP BY grp"
+                "SELECT SUBSTR(eco, 1, 1) AS grp, COUNT(*) AS n FROM codex_openings GROUP BY grp"
             )->fetchAll();
             $counts = [];
             foreach ($rows as $r) $counts[$r['grp']] = (int) $r['n'];
@@ -61,7 +61,7 @@ class Opening
     {
         $stmt = chess_codex_db()->prepare(
             "SELECT slug FROM codex_openings
-             WHERE LEFT(eco, 1) = :g AND parent_id IS NULL
+             WHERE SUBSTR(eco, 1, 1) = :g AND parent_id IS NULL
              ORDER BY id LIMIT 1"
         );
         $stmt->execute(['g' => $groupLetter]);
@@ -117,10 +117,13 @@ class Opening
      */
     public static function searchByFen(string $fen): array
     {
-        // Compare only the placement+turn+castling+ep portion of the FEN —
-        // halfmove and fullmove counters differ between transpositions but
-        // the position is the same. Strip them with a LIKE pattern.
-        $core = preg_replace('/\s+\d+\s+\d+$/', '', trim($fen));
+        // Compare only placement + side to move + castling. Halfmove/fullmove
+        // counters differ between transpositions, and the en-passant field
+        // depends on the tool that wrote the FEN: chess.js (and our stored
+        // FENs) always set it after a double pawn push, Lichess only when the
+        // capture is legal — so a FEN pasted from Lichess would never match.
+        $parts = preg_split('/\s+/', trim($fen)) ?: [];
+        $core  = implode(' ', array_slice($parts, 0, 3)) . ' ';
         $stmt = chess_codex_db()->prepare(
             "SELECT id, eco, name, slug, depth, move_count, fen
              FROM codex_openings
@@ -130,7 +133,12 @@ class Opening
         );
         $stmt->bindValue(':pat', $core . '%', PDO::PARAM_STR);
         $stmt->execute();
-        return $stmt->fetchAll();
+        // LIKE is case-insensitive (by collation on MySQL, by our function on
+        // SQLite), but FEN case means colour — re-check with exact comparison.
+        return array_values(array_filter(
+            $stmt->fetchAll(),
+            static fn ($r) => strncmp((string) $r['fen'], $core, strlen($core)) === 0
+        ));
     }
 
     /**
@@ -387,11 +395,14 @@ class Opening
         $pdo  = chess_codex_db();
 
         // Preferred set: openings that have a substantial curated description.
+        // Characters, not bytes: CHAR_LENGTH on MySQL; SQLite has no CHAR_LENGTH
+        // but its LENGTH already counts characters for text.
+        $charLength = chess_codex_db_driver() === 'sqlite' ? 'LENGTH' : 'CHAR_LENGTH';
         $candidates = $pdo->query(
             "SELECT id, eco, name, slug, move_count, description
              FROM codex_openings
              WHERE description IS NOT NULL
-               AND CHAR_LENGTH(description) > 200
+               AND $charLength(description) > 200
              ORDER BY id"
         )->fetchAll();
 
@@ -426,19 +437,21 @@ class Opening
 
         $pdo = chess_codex_db();
 
-        // Stage 1: pull a candidate pool — openings whose slug contains ANY
-        // of the tokens. Keep it small with a LIMIT so this stays cheap.
+        // Stage 1: pull a candidate pool — openings whose slug contains the
+        // first 4 letters of ANY token, so a typo later in the word
+        // ("sicilan", "defence") still reaches the right rows. Tokens are
+        // [a-z0-9] only after the clean-up above, so nothing to escape.
         $where = [];
         $params = [];
         foreach (array_slice($tokens, 0, 4) as $i => $t) {
             $where[] = "slug LIKE :t$i";
-            $params["t$i"] = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $t) . '%';
+            $params["t$i"] = '%' . substr($t, 0, 4) . '%';
         }
         $sql = "SELECT id, eco, name, slug, move_count
                 FROM codex_openings
                 WHERE " . implode(' OR ', $where) . "
                 ORDER BY move_count ASC, popularity DESC
-                LIMIT 60";
+                LIMIT 300";
         $stmt = $pdo->prepare($sql);
         foreach ($params as $k => $v) $stmt->bindValue(':' . $k, $v, PDO::PARAM_STR);
         $stmt->execute();
@@ -450,12 +463,23 @@ class Opening
         foreach ($rows as &$row) {
             $score = 0;
             $slug  = (string) $row['slug'];
+            $words = explode('-', $slug);
             foreach ($tokens as $t) {
                 if (strpos($slug, $t) !== false) $score += 4;          // substring
                 if (strpos($slug, $t . '-') === 0 || $slug === $t)
                     $score += 3;                                       // exact prefix
                 // Bonus: token also appears at a word boundary
                 if (strpos('-' . $slug . '-', '-' . $t . '-') !== false) $score += 2;
+                // Typo: a slug word within 2 edits of the token
+                // ("sicilan" ~ "sicilian", "defence" ~ "defense").
+                if (strlen($t) >= 5) {
+                    foreach ($words as $w) {
+                        if ($w !== $t && abs(strlen($w) - strlen($t)) <= 2 && levenshtein($t, $w) <= 2) {
+                            $score += 3;
+                            break;
+                        }
+                    }
+                }
             }
             // Penalise wildly different lengths so "sicilian-defense" doesn't
             // win over "sicilian" when query was just "sicilian".
@@ -474,10 +498,11 @@ class Opening
      */
     public static function randomSlug(): ?string
     {
+        $random = chess_codex_db_driver() === 'sqlite' ? 'RANDOM()' : 'RAND()';
         $stmt = chess_codex_db()->query(
             "SELECT slug FROM codex_openings
              WHERE move_count >= 2
-             ORDER BY RAND()
+             ORDER BY $random
              LIMIT 1"
         );
         $s = $stmt->fetchColumn();

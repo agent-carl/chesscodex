@@ -20,12 +20,16 @@ final class Views
         if (self::shouldSkip()) return;
 
         try {
+            $upsert = chess_codex_db_driver() === 'sqlite'
+                ? 'ON CONFLICT (log_date, page_type, opening_id) DO UPDATE SET views = views + 1'
+                : 'ON DUPLICATE KEY UPDATE views = views + 1';
             $stmt = chess_codex_db()->prepare(
                 "INSERT INTO codex_view_log (log_date, page_type, opening_id, views)
-                 VALUES (CURDATE(), :pt, :oid, 1)
-                 ON DUPLICATE KEY UPDATE views = views + 1"
+                 VALUES (:d, :pt, :oid, 1)
+                 $upsert"
             );
             $stmt->execute([
+                'd'   => date('Y-m-d'),
                 'pt'  => substr($pageType, 0, 20),
                 'oid' => $openingId ?? 0,
             ]);
@@ -41,9 +45,10 @@ final class Views
     public static function todayCount(): int
     {
         try {
-            $stmt = chess_codex_db()->query(
-                "SELECT COALESCE(SUM(views), 0) FROM codex_view_log WHERE log_date = CURDATE()"
+            $stmt = chess_codex_db()->prepare(
+                "SELECT COALESCE(SUM(views), 0) FROM codex_view_log WHERE log_date = :d"
             );
+            $stmt->execute(['d' => date('Y-m-d')]);
             return (int) $stmt->fetchColumn();
         } catch (Throwable $e) { return 0; }
     }
@@ -54,9 +59,9 @@ final class Views
         try {
             $stmt = chess_codex_db()->prepare(
                 "SELECT COALESCE(SUM(views), 0) FROM codex_view_log
-                 WHERE log_date >= DATE_SUB(CURDATE(), INTERVAL :d DAY)"
+                 WHERE log_date >= :since"
             );
-            $stmt->bindValue(':d', max(1, $days), PDO::PARAM_INT);
+            $stmt->bindValue(':since', self::since($days), PDO::PARAM_STR);
             $stmt->execute();
             return (int) $stmt->fetchColumn();
         } catch (Throwable $e) { return 0; }
@@ -74,11 +79,11 @@ final class Views
             $stmt = chess_codex_db()->prepare(
                 "SELECT log_date, SUM(views) AS v
                  FROM codex_view_log
-                 WHERE log_date >= DATE_SUB(CURDATE(), INTERVAL :d DAY)
+                 WHERE log_date >= :since
                  GROUP BY log_date
                  ORDER BY log_date ASC"
             );
-            $stmt->bindValue(':d', max(1, $days), PDO::PARAM_INT);
+            $stmt->bindValue(':since', self::since($days), PDO::PARAM_STR);
             $stmt->execute();
             $byDate = [];
             foreach ($stmt as $r) $byDate[(string) $r['log_date']] = (int) $r['v'];
@@ -102,14 +107,14 @@ final class Views
                 "SELECT o.id, o.slug, o.name, o.eco, SUM(v.views) AS total
                  FROM codex_view_log v
                  INNER JOIN codex_openings o ON o.id = v.opening_id
-                 WHERE v.log_date >= DATE_SUB(CURDATE(), INTERVAL :d DAY)
+                 WHERE v.log_date >= :since
                    AND v.page_type = 'opening'
                    AND v.opening_id > 0
                  GROUP BY o.id, o.slug, o.name, o.eco
                  ORDER BY total DESC
                  LIMIT :lim"
             );
-            $stmt->bindValue(':d',   max(1, $days), PDO::PARAM_INT);
+            $stmt->bindValue(':since', self::since($days), PDO::PARAM_STR);
             $stmt->bindValue(':lim', max(1, min(100, $limit)), PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetchAll();
@@ -126,16 +131,26 @@ final class Views
             $stmt = chess_codex_db()->prepare(
                 "SELECT page_type, SUM(views) AS v
                  FROM codex_view_log
-                 WHERE log_date >= DATE_SUB(CURDATE(), INTERVAL :d DAY)
+                 WHERE log_date >= :since
                  GROUP BY page_type
                  ORDER BY v DESC"
             );
-            $stmt->bindValue(':d', max(1, $days), PDO::PARAM_INT);
+            $stmt->bindValue(':since', self::since($days), PDO::PARAM_STR);
             $stmt->execute();
             $out = [];
             foreach ($stmt as $r) $out[(string) $r['page_type']] = (int) $r['v'];
             return $out;
         } catch (Throwable $e) { return []; }
+    }
+
+    /**
+     * First day (Y-m-d) of an N-day window — what `DATE_SUB(CURDATE(), INTERVAL
+     * N DAY)` used to compute in SQL. Done in PHP so the query runs on MySQL
+     * and SQLite alike, and "today" follows PHP's timezone.
+     */
+    private static function since(int $days): string
+    {
+        return date('Y-m-d', strtotime('-' . max(1, $days) . ' day'));
     }
 
     // ----------------------------------------------------------------------

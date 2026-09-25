@@ -17,7 +17,7 @@ if ($siteUrl === '') {
     $siteUrl = $scheme . '://' . $host;
 }
 
-set_exception_handler(function (Throwable $e) use ($baseUrl) {
+set_exception_handler(function (Throwable $e) use ($baseUrl, $siteUrl) {
     error_log('[chess-codex] uncaught: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
     if (!headers_sent()) {
         http_response_code(500);
@@ -36,7 +36,7 @@ set_exception_handler(function (Throwable $e) use ($baseUrl) {
 // own fixed copy + similar-opening suggestions, so the message argument is
 // ignored. The argument is kept for source-readability — `$render404('No
 // such opening.')` reads better than `$render404()`.
-$render404 = static function (string $reason = '') use ($baseUrl) {
+$render404 = static function (string $reason = '') use ($baseUrl, $siteUrl) {
     http_response_code(404);
     $title = t('error.404.title');
     $suggestions  = [];

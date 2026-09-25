@@ -91,23 +91,33 @@ final class StatsCache
             ];
         }
         $json = json_encode($topMoves, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $now  = date('Y-m-d H:i:s');
 
-        $stmt = chess_codex_db()->prepare(
-            'INSERT INTO codex_stats_cache (fen_hash, white_wins, black_wins, draws, top_moves_json, fetched_at)
-             VALUES (:k, :w, :b, :d, :tm, NOW())
-             ON DUPLICATE KEY UPDATE
+        $upsert = chess_codex_db_driver() === 'sqlite'
+            ? 'ON CONFLICT (fen_hash) DO UPDATE SET
+                white_wins = excluded.white_wins,
+                black_wins = excluded.black_wins,
+                draws      = excluded.draws,
+                top_moves_json = excluded.top_moves_json,
+                fetched_at = excluded.fetched_at'
+            : 'ON DUPLICATE KEY UPDATE
                 white_wins = VALUES(white_wins),
                 black_wins = VALUES(black_wins),
                 draws      = VALUES(draws),
                 top_moves_json = VALUES(top_moves_json),
-                fetched_at = VALUES(fetched_at)'
+                fetched_at = VALUES(fetched_at)';
+        $stmt = chess_codex_db()->prepare(
+            "INSERT INTO codex_stats_cache (fen_hash, white_wins, black_wins, draws, top_moves_json, fetched_at)
+             VALUES (:k, :w, :b, :d, :tm, :now)
+             $upsert"
         );
         $stmt->execute([
-            'k'  => $key,
-            'w'  => $white,
-            'b'  => $black,
-            'd'  => $draws,
-            'tm' => $json,
+            'k'   => $key,
+            'w'   => $white,
+            'b'   => $black,
+            'd'   => $draws,
+            'tm'  => $json,
+            'now' => $now,
         ]);
 
         return [
@@ -116,7 +126,7 @@ final class StatsCache
             'black_wins'     => $black,
             'draws'          => $draws,
             'top_moves_json' => $json,
-            'fetched_at'     => date('Y-m-d H:i:s'),
+            'fetched_at'     => $now,
         ];
     }
 
