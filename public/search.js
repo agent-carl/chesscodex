@@ -124,6 +124,9 @@ if (dataNode) {
     const playedListEl = document.getElementById('search-played-list');
     const resultEl = document.getElementById('search-result');
     const continuationsEl = document.getElementById('search-continuations');
+    // The FEN search relabels this list "Other transpositions"; move lookups
+    // put the original heading back.
+    const continuationsTitle = continuationsEl.querySelector('h2').textContent;
 
     const turnColor = (c) => (c.turn() === 'w' ? 'white' : 'black');
 
@@ -254,7 +257,8 @@ if (dataNode) {
                 meta.textContent = `Exact match — you're playing this opening.`;
             } else {
                 const extra = playedPlies - data.match.plies;
-                meta.textContent = `Closest known opening, ${extra} ${extra === 1 ? 'move' : 'moves'} past documented theory.`;
+                // extra counts half-moves, hence "plies" (as on opening pages).
+                meta.textContent = `Closest known opening, ${extra} ${extra === 1 ? 'ply' : 'plies'} past documented theory.`;
             }
         } else {
             resultEl.dataset.state = 'unknown';
@@ -263,6 +267,7 @@ if (dataNode) {
             matchEl.hidden = true;
         }
 
+        continuationsEl.querySelector('h2').textContent = continuationsTitle;
         const ulEl = continuationsEl.querySelector('ul');
         ulEl.innerHTML = '';
         if (data.continuations && data.continuations.length > 0) {
@@ -306,6 +311,61 @@ if (dataNode) {
     });
 
     renderEmpty();
+
+    // ---- Paste moves / PGN ---------------------------------------------------
+    // Reads move text or a whole PGN (headers, comments and move numbers are
+    // fine) and replays it on the board, so the lookup runs exactly as for
+    // moves played by hand. The deepest named line is 36 plies, so a full game
+    // is cut to its first MAX_PLIES.
+    const MAX_PLIES = 40;
+    const pasteForm = document.getElementById('search-paste-form');
+    const pasteInput = document.getElementById('search-paste-input');
+    const pasteStatus = document.getElementById('search-paste-status');
+
+    function showPasteStatus(text) {
+        pasteStatus.textContent = text;
+        pasteStatus.hidden = text === '';
+    }
+
+    function loadMoves(text) {
+        const parsed = new Chess();
+        if (!parsed.load_pgn(text, { sloppy: true }) || parsed.history().length === 0) {
+            showPasteStatus('Couldn’t read those moves. Use standard notation, e.g. 1. e4 c5 2. Nf3.');
+            return;
+        }
+        if (parsed.header().FEN) {
+            showPasteStatus('Only games from the standard starting position can be identified.');
+            return;
+        }
+        const moves = parsed.history({ verbose: true });
+        chess.reset();
+        moves.slice(0, MAX_PLIES).forEach((m) => chess.move({ from: m.from, to: m.to, promotion: m.promotion }));
+        showPasteStatus(moves.length > MAX_PLIES
+            ? `Showing the first ${MAX_PLIES / 2} moves — no named opening goes deeper.`
+            : '');
+        syncBoardAndQuery();
+    }
+
+    if (pasteForm && pasteInput && pasteStatus) {
+        pasteForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = pasteInput.value.trim();
+            if (text) loadMoves(text);
+        });
+        // Enter identifies; Shift+Enter starts a new line.
+        pasteInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                pasteForm.requestSubmit();
+            }
+        });
+        // /search?moves=1.e4+c5 opens with those moves filled in and looked up.
+        const preset = new URLSearchParams(location.search).get('moves');
+        if (preset) {
+            pasteInput.value = preset;
+            loadMoves(preset);
+        }
+    }
 
     // ---- FEN search form (transposition lookup) -----------------------------
     const fenForm = document.getElementById('search-fen-form');

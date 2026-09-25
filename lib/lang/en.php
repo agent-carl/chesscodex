@@ -39,9 +39,12 @@ return [
     'opening.variations.hide'  => 'Show fewer',
 
     // Search page
-    'search.title'             => 'Find your opening · Chess Codex',
-    'search.h1'                => 'Find your opening',
-    'search.lede'              => 'Play moves on the board to identify which opening you\'re walking into. The closest match updates after every move.',
+    'search.title'             => 'Chess Opening Identifier — Find Any Opening by Moves or FEN',
+    'search.h1'                => 'Chess Opening Identifier',
+    'search.lede'              => 'Paste the moves of a game, play them on the board, or enter a FEN position to get the opening\'s name and ECO code — and the lines that continue from it.',
+    'search.paste.label'       => 'Paste moves or a PGN',
+    'search.paste.hint'        => 'Standard notation, with or without move numbers — a whole PGN with headers works too. Only the opening moves are used.',
+    'search.paste.find'        => 'Identify',
     'search.fen.label'         => 'Search by FEN position',
     'search.fen.hint'          => 'Paste any FEN to find every opening that reaches that exact position — regardless of move order. Useful for transpositions.',
     'search.fen.find'          => 'Find',

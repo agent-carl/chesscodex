@@ -9,6 +9,27 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
         <h1><?= htmlspecialchars(t('search.h1'), ENT_QUOTES, 'UTF-8') ?></h1>
         <p class="lede"><?= htmlspecialchars(t('search.lede'), ENT_QUOTES, 'UTF-8') ?></p>
 
+        <details class="search-fen search-paste" open>
+            <summary>
+                <span class="search-fen-icon" aria-hidden="true">&#9998;</span>
+                <span class="search-fen-label"><?= htmlspecialchars(t('search.paste.label'), ENT_QUOTES, 'UTF-8') ?></span>
+                <span class="search-fen-chevron" aria-hidden="true">&#8250;</span>
+            </summary>
+            <div class="search-fen-body">
+                <p class="search-fen-hint"><?= htmlspecialchars(t('search.paste.hint'), ENT_QUOTES, 'UTF-8') ?></p>
+                <form id="search-paste-form" autocomplete="off">
+                    <textarea id="search-paste-input" rows="2" spellcheck="false"
+                              aria-label="<?= htmlspecialchars(t('search.paste.label'), ENT_QUOTES, 'UTF-8') ?>"
+                              placeholder="1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6"></textarea>
+                    <button type="submit">
+                        <span aria-hidden="true">&#128269;</span>
+                        <span><?= htmlspecialchars(t('search.paste.find'), ENT_QUOTES, 'UTF-8') ?></span>
+                    </button>
+                </form>
+                <p class="search-paste-status" id="search-paste-status" aria-live="polite" hidden></p>
+            </div>
+        </details>
+
         <div class="search-by-name">
             <label for="search-name-input" class="search-by-name-label">Search by name</label>
             <div class="search-by-name-field">
@@ -78,6 +99,44 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
             </section>
         </aside>
     </div>
+
+    <?php
+    // Worked examples: the moves open this page with them filled in, the name
+    // goes straight to the opening.
+    $examples = [
+        ['1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6', 'sicilian-defense-najdorf-variation', 'Sicilian Defense: Najdorf Variation', 'B90'],
+        ['1. e4 e5 2. Nf3 Nc6 3. Bb5 a6', 'ruy-lopez-morphy-defense', 'Ruy Lopez: Morphy Defense', 'C70'],
+        ['1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 Be7 5. Bg5 O-O 6. e3 Nbd7', 'queens-gambit-declined-orthodox-defense', "Queen's Gambit Declined: Orthodox Defense", 'D60'],
+        ['1. e4 c6 2. d4 d5 3. e5', 'caro-kann-defense-advance-variation', 'Caro-Kann Defense: Advance Variation', 'B12'],
+    ];
+    $searchUrl = $baseUrl . I18n::url('/search');
+    ?>
+    <section class="about-section search-about">
+        <h2>How the identifier works</h2>
+        <p>
+            Every one of the 3,690 named lines in the Lichess chess-openings dataset is indexed by
+            its moves. The identifier finds the longest named line that your moves begin with, so a
+            game that leaves known theory early still gets the name of the opening it started as —
+            along with how many moves past documented theory it went.
+        </p>
+        <p>
+            Different move orders can reach the same position. Search by FEN to list every named
+            line that arrives at a position, whatever the order of moves; the move counters and the
+            en-passant field are ignored. The name search matches parts of names, with or without
+            accents (<em>najdorf</em>, <em>grunfeld</em>), and ECO codes such as <em>B20</em>.
+        </p>
+        <h2>Examples</h2>
+        <ul class="search-examples">
+            <?php foreach ($examples as [$moves, $slug, $name, $eco]): ?>
+            <li>
+                <a href="<?= htmlspecialchars($searchUrl . '?moves=' . rawurlencode($moves), ENT_QUOTES, 'UTF-8') ?>"><code><?= htmlspecialchars($moves, ENT_QUOTES, 'UTF-8') ?></code></a>
+                →
+                <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $slug), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></a>
+                (<?= htmlspecialchars($eco, ENT_QUOTES, 'UTF-8') ?>)
+            </li>
+            <?php endforeach; ?>
+        </ul>
+    </section>
 </article>
 
 <script type="application/json" id="search-data">
@@ -92,5 +151,29 @@ $body = ob_get_clean();
 $needsBoard = true;
 $title = t('search.title');
 $description = t('search.lede');
-$noindex = true;
+// Indexable: it's the page for "which opening is this?" searches. Links with
+// ?moves=… all point their canonical here.
+$canonical = $siteUrl . $baseUrl . I18n::url('/search');
+$jsonLd = [
+    '@context' => 'https://schema.org',
+    '@graph'   => [
+        [
+            '@type'               => 'WebApplication',
+            'name'                => t('search.h1'),
+            'url'                 => $canonical,
+            'description'         => t('search.lede'),
+            'applicationCategory' => 'GameApplication',
+            'operatingSystem'     => 'Any',
+            'isAccessibleForFree' => true,
+            'inLanguage'          => I18n::locale(),
+        ],
+        [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => t('search.h1'), 'item' => $canonical],
+            ],
+        ],
+    ],
+];
 require __DIR__ . '/layout.php';
