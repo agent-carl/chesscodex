@@ -17,7 +17,7 @@ declare(strict_types=1);
  *   NEXT_OFFSET=<n>   run again from there;  RETRY_AFTER=<s>  Lichess is busy
  *   or cooling down after a 429 — wait, then repeat the same offset.
  *
- * Strategy: each run grabs `n` openings ordered by id ascending starting
+ * Strategy: each run grabs `n` openings, shortest lines first, starting
  * from `offset`. Skips any whose stats are already cached (cheap check).
  * A pause of ~3 s per fetch keeps under Lichess's rate limit (~8 fetches/run).
  *
@@ -77,7 +77,9 @@ $pdo = chess_codex_db();
 $total = (int) $pdo->query("SELECT COUNT(*) FROM codex_openings")->fetchColumn();
 emit("total openings: $total");
 
-$stmt = $pdo->prepare("SELECT id, slug, pgn_moves FROM codex_openings ORDER BY id LIMIT :n OFFSET :o");
+// Shortest lines first: the main openings people search for (Sicilian,
+// Ruy Lopez, Queen's Gambit…) get their statistics before deep sidelines.
+$stmt = $pdo->prepare("SELECT id, slug, pgn_moves FROM codex_openings ORDER BY move_count, id LIMIT :n OFFSET :o");
 $stmt->bindValue(':n', $n, PDO::PARAM_INT);
 $stmt->bindValue(':o', $offset, PDO::PARAM_INT);
 $stmt->execute();
