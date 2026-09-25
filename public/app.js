@@ -5,8 +5,8 @@ import { Chessground } from '../vendor/chessground.min.js';
 // Recently viewed openings — passive browser-history-style log of the
 // last N openings the user opened. Pure localStorage, no auth, no server.
 // Auto-records on every opening-page load, rendered into the strip on
-// /openings/<slug> (excluding the current one) and into "Pick up where
-// you left off" on the homepage.
+// /openings/<slug> (excluding the current one). The homepage's "Pick up
+// where you left off" reads the same list from public/home.js.
 // ----------------------------------------------------------------------
 const RecentHistory = (function () {
     const KEY = 'codex-recent';
@@ -28,8 +28,7 @@ const RecentHistory = (function () {
         list.unshift({ slug, name, eco, ts: Date.now() });
         save(list);
     }
-    function clear() { try { localStorage.removeItem(KEY); } catch (e) {} }
-    return { load, record, clear };
+    return { load, record };
 })();
 
 // Hook 1: on an opening page, record the visit.
@@ -66,40 +65,6 @@ const RecentHistory = (function () {
         list.appendChild(li);
     });
     strip.hidden = false;
-})();
-
-// Hook 3: render the homepage "Pick up where you left off" section.
-(function () {
-    const sec = document.getElementById('home-recent');
-    if (!sec) return;
-    const ul  = document.getElementById('home-recent-list');
-    const clearBtn = document.getElementById('home-recent-clear');
-    function render() {
-        const items = RecentHistory.load();
-        ul.innerHTML = '';
-        if (items.length === 0) { sec.hidden = true; return; }
-        sec.hidden = false;
-        items.forEach((it) => {
-            const li = document.createElement('li');
-            const a  = document.createElement('a');
-            a.href = '/openings/' + encodeURIComponent(it.slug);
-            const tag = document.createElement('span');
-            tag.className = 'eco-tag';
-            tag.textContent = it.eco || '?';
-            a.appendChild(tag);
-            const name = document.createElement('span');
-            name.className = 'home-recent-name';
-            name.textContent = it.name || it.slug;
-            a.appendChild(name);
-            li.appendChild(a);
-            ul.appendChild(li);
-        });
-    }
-    render();
-    if (clearBtn) clearBtn.addEventListener('click', () => {
-        RecentHistory.clear();
-        render();
-    });
 })();
 
 // ----------------------------------------------------------------------

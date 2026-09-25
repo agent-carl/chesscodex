@@ -31,6 +31,8 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
     </header>
     <ul class="home-recent-list" id="home-recent-list"></ul>
 </section>
+<?php /* Not deferred: fills the section before the content below is painted. */ ?>
+<script src="<?= $baseEsc ?>/public/home.min.js?v=<?= @filemtime(__DIR__ . '/../public/home.min.js') ?: 1 ?>" data-base="<?= $baseEsc ?>"></script>
 
 <?php if ($featured): ?>
 <section class="home-featured">

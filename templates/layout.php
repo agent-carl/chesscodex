@@ -28,6 +28,21 @@ if (mb_strlen($description) > 160) {
 
 $esc = static fn ($s) => htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
 
+// Admin-only quick link with pending-count badge (null = not logged in).
+// Anonymous visitors don't have a session cookie, so we skip both the
+// session start AND the COUNT query entirely — that keeps public pages
+// cacheable and Set-Cookie-free. Checked here, before any output: started
+// from the header markup, session_start() failed with "headers already
+// sent" (PHP-FPM flushes after 4 KB) and the link never appeared.
+$adminPending = null;
+if (isset($_COOKIE['codex_admin'])) {
+    require_once __DIR__ . '/../lib/Auth.php';
+    if (Auth::isLoggedIn()) {
+        require_once __DIR__ . '/../lib/Submissions.php';
+        $adminPending = (int) (Submissions::counts()['pending'] ?? 0);
+    }
+}
+
 $projectRoot = realpath(__DIR__ . '/..');
 // Asset URL helper. Cache-bust uses a content hash (first 8 hex of SHA-1
 // over the first 64 KB) so versioned URLs only change when content actually
@@ -203,28 +218,14 @@ CSS;
                     <span aria-hidden="true">&#127922;</span>
                     Random
                 </a>
-                <?php
-                // Admin-only quick link with pending-count badge. Anonymous
-                // visitors don't have a session cookie, so we skip both the
-                // session start AND the COUNT query entirely — that keeps
-                // public pages cacheable and Set-Cookie-free.
-                if (isset($_COOKIE['codex_admin'])) {
-                    require_once __DIR__ . '/../lib/Auth.php';
-                    if (Auth::isLoggedIn()) {
-                        require_once __DIR__ . '/../lib/Submissions.php';
-                        $adminCounts  = Submissions::counts();
-                        $adminPending = (int) ($adminCounts['pending'] ?? 0);
-                        ?>
-                        <a class="admin-link" href="<?= $baseEsc ?>/admin">
-                            Admin
-                            <?php if ($adminPending > 0): ?>
-                                <span class="admin-link-badge" title="<?= $adminPending ?> pending submissions"><?= $adminPending ?></span>
-                            <?php endif; ?>
-                        </a>
-                        <?php
-                    }
-                }
-                ?>
+                <?php if ($adminPending !== null): ?>
+                <a class="admin-link" href="<?= $baseEsc ?>/admin">
+                    Admin
+                    <?php if ($adminPending > 0): ?>
+                        <span class="admin-link-badge" title="<?= $adminPending ?> pending submissions"><?= $adminPending ?></span>
+                    <?php endif; ?>
+                </a>
+                <?php endif; ?>
             </nav>
             <button class="theme-toggle" type="button" aria-label="<?= $esc(t('nav.toggle_theme.dark')) ?>" id="theme-toggle"
                     data-label-dark="<?= $esc(t('nav.toggle_theme.dark')) ?>" data-label-light="<?= $esc(t('nav.toggle_theme.light')) ?>">

@@ -42,16 +42,11 @@ ob_start();
                 everything you see in the "Statistics from Lichess" panel.
             </li>
             <li>
-                <strong>Engine evaluations</strong> — Stockfish, via the
-                <a href="https://lichess.org/api#tag/Tablebase/operation/apiCloudeval" rel="noopener">Lichess
-                Cloud Eval API</a>, cached per opening. Only positions Lichess has already
-                analysed return an evaluation.
-            </li>
-            <li>
                 <strong>Play vs the engine</strong> — uses
                 <a href="https://github.com/lichess-org/stockfish.wasm" rel="noopener">Stockfish.wasm</a>
-                running entirely in your browser. Nothing is sent to a server for this; the
-                engine is loaded once and runs locally.
+                running entirely in your browser, including the evaluation shown while you
+                play. Nothing is sent to a server for this; the engine is loaded once and runs
+                locally.
             </li>
             <li>
                 <strong>Editorial descriptions</strong> — when an opening has a prose
