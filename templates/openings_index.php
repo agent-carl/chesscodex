@@ -13,7 +13,8 @@ ob_start();
             <?= number_format($total) ?> openings indexed.
             Jump to any letter, or use
             <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>">search</a>
-            if you know the moves.
+            if you know the moves, or browse by
+            <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco'), ENT_QUOTES, 'UTF-8') ?>">ECO code</a>.
         </p>
         <nav class="openings-jump" aria-label="Jump to letter">
             <?php foreach ($grouped as $letter => $rows): ?>

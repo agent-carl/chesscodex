@@ -963,7 +963,8 @@ button {
     display: flex;
     gap: var(--space-2);
 }
-.search-fen input[type="text"] {
+.search-fen input[type="text"],
+.search-fen textarea {
     flex: 1;
     min-width: 0; /* allow flex item to shrink below intrinsic min-width */
     padding: var(--space-2) var(--space-3);
@@ -975,8 +976,11 @@ button {
     font-size: 0.85rem;
     transition: border-color 0.1s, box-shadow 0.1s;
 }
-.search-fen input[type="text"]::placeholder { color: var(--muted); opacity: 0.7; }
-.search-fen input[type="text"]:focus {
+.search-fen textarea { resize: vertical; min-height: 2.6rem; line-height: 1.4; }
+.search-fen input[type="text"]::placeholder,
+.search-fen textarea::placeholder { color: var(--muted); opacity: 0.7; }
+.search-fen input[type="text"]:focus,
+.search-fen textarea:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-soft);
     outline: none;
@@ -1002,6 +1006,13 @@ button {
     .search-fen form { flex-direction: column; }
     .search-fen button { justify-content: center; }
 }
+.search-paste-status {
+    margin: var(--space-2) 0 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+.search-about { text-align: left; }
+.search-examples code { font-size: 0.85rem; }
 
 .search-grid {
     display: grid;
@@ -1068,8 +1079,9 @@ button {
 }
 .search-played .move-list li::before { content: none; }
 .search-played .move-list li:nth-child(odd)::before {
+    /* The li itself already increments the counter (.move-list rule above);
+       incrementing here too numbered the moves 2, 4, 6… */
     content: counter(move-counter) ".";
-    counter-increment: move-counter;
     color: var(--muted);
     font-size: 0.85em;
     margin-right: 0.15em;
@@ -3909,3 +3921,35 @@ html[data-theme="light"] { background: #faf7f0; }
     font-size: 0.78rem;
     color: var(--muted);
 }
+
+/* ==========================================================================
+   ECO code pages (/eco/B20): the named lines filed under one code.
+   ========================================================================== */
+.eco-back { margin: 0 0 var(--space-3); font-size: 0.9rem; }
+.eco-lines {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--space-4) 0;
+    font-size: 0.95rem;
+}
+.eco-lines th,
+.eco-lines td {
+    text-align: left;
+    vertical-align: top;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border);
+}
+.eco-lines th { color: var(--muted); font-weight: 500; font-size: 0.85rem; }
+.eco-lines code { font-family: var(--font-mono); font-size: 0.85rem; color: var(--fg-soft); }
+.eco-lines td:last-child { color: var(--muted); white-space: nowrap; }
+.eco-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+}
+@media (max-width: 600px) {
+    .eco-lines th:last-child,
+    .eco-lines td:last-child { display: none; }
+}
+a.eco-tag:hover { background: var(--accent); color: var(--bg-elevated); }

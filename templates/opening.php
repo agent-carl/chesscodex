@@ -298,7 +298,8 @@ $island = [
     </details>
     <?php endif; ?>
     <header class="opening-header">
-        <span class="eco-tag"><?= htmlspecialchars($o['eco'], ENT_QUOTES, 'UTF-8') ?></span>
+        <a class="eco-tag" href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco/' . $o['eco']), ENT_QUOTES, 'UTF-8') ?>"
+           title="All openings under ECO <?= htmlspecialchars($o['eco'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($o['eco'], ENT_QUOTES, 'UTF-8') ?></a>
         <h1><?= htmlspecialchars($o['name'], ENT_QUOTES, 'UTF-8') ?></h1>
         <?php
         // Share row — no third-party JS, no tracking. Each button is a plain
@@ -380,7 +381,7 @@ $island = [
         <h2>Overview</h2>
         <div class="opening-overview-body"><?= $overviewHtml ?></div>
         <dl class="opening-facts">
-            <div><dt>ECO code</dt><dd><?= htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8') ?></dd></div>
+            <div><dt>ECO code</dt><dd><a href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco/' . $o['eco']), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8') ?></a></dd></div>
             <div><dt>Group</dt><dd><?= htmlspecialchars((string) $ecoGroupLabel, ENT_QUOTES, 'UTF-8') ?> (<?= htmlspecialchars($ecoGroup, ENT_QUOTES, 'UTF-8') ?>)</dd></div>
             <div><dt>Plies</dt><dd><?= $plies ?></dd></div>
             <?php if ($parent): ?>
@@ -709,7 +710,7 @@ $ogImageUrl = $siteUrl . $baseUrl . '/og.php?slug=' . urlencode($o['slug']);
 
 $breadcrumbs = [
     ['name' => t('site.name'), 'url' => $siteUrl . $baseUrl . I18n::url('/')],
-    ['name' => 'ECO ' . substr($o['eco'], 0, 1), 'url' => $siteUrl . $baseUrl . I18n::url('/')],
+    ['name' => 'ECO ' . $o['eco'], 'url' => $siteUrl . $baseUrl . I18n::url('/eco/' . $o['eco'])],
 ];
 if ($parent) {
     $breadcrumbs[] = ['name' => $parent['name'], 'url' => $siteUrl . $baseUrl . I18n::url('/openings/' . $parent['slug'])];

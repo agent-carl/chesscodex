@@ -69,6 +69,61 @@ class Opening
         return self::formatPlies($mine, 0);
     }
 
+    /**
+     * Every ECO code that has named lines, in code order: code => [
+     *   'count' => lines filed under it,
+     *   'label' => the opening most of them belong to — "X & Y" or
+     *              "X, Y & more" when the code mixes several (A00 has 143
+     *              lines from over a dozen irregular openings),
+     *   'slug'  => its shortest line,
+     * ]. Cached on disk for an hour.
+     */
+    public static function ecoCodes(): array
+    {
+        return Cache::remember('eco_codes', 3600, static function (): array {
+            $rows = chess_codex_db()->query(
+                'SELECT eco, name, slug FROM codex_openings ORDER BY eco, move_count, id'
+            )->fetchAll();
+            $codes = [];
+            foreach ($rows as $r) {
+                $e = (string) $r['eco'];
+                $family = self::family((string) $r['name']);
+                $codes[$e]['count'] = ($codes[$e]['count'] ?? 0) + 1;
+                $codes[$e]['slug'] ??= (string) $r['slug'];
+                $codes[$e]['families'][$family] = ($codes[$e]['families'][$family] ?? 0) + 1;
+            }
+            foreach ($codes as &$c) {
+                arsort($c['families']);   // stable: ties keep shortest-line order
+                $names = array_keys($c['families']);
+                $c['label'] = match (true) {
+                    count($names) === 1 => $names[0],
+                    count($names) === 2 => $names[0] . ' & ' . $names[1],
+                    default             => $names[0] . ', ' . $names[1] . ' & more',
+                };
+                unset($c['families']);
+            }
+            unset($c);
+            return $codes;
+        });
+    }
+
+    /** All lines filed under one ECO code, shortest first. */
+    public static function byEco(string $eco): array
+    {
+        $stmt = chess_codex_db()->prepare(
+            'SELECT id, eco, name, slug, pgn_moves, move_count FROM codex_openings
+             WHERE eco = :e ORDER BY move_count, name, id'
+        );
+        $stmt->execute(['e' => $eco]);
+        return $stmt->fetchAll();
+    }
+
+    /** "Sicilian Defense: Najdorf Variation" → "Sicilian Defense". */
+    public static function family(string $name): string
+    {
+        return trim(preg_split('/[:,]/', $name, 2)[0]);
+    }
+
     /** "1. e4 c5 2. Nf3" → ['e4', 'c5', 'Nf3'] (check marks kept). */
     private static function sanTokens(string $pgn): array
     {

@@ -19,6 +19,7 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
     <p class="hero-actions">
         <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings'), ENT_QUOTES, 'UTF-8') ?>">Browse all openings A–Z →</a>
         <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>">Search by moves or name →</a>
+        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco'), ENT_QUOTES, 'UTF-8') ?>">Browse by ECO code →</a>
     </p>
 </section>
 
@@ -110,7 +111,8 @@ $renderStrip(
 <section class="about-section home-intro">
     <h2>How the openings are organised</h2>
     <p>
-        Every opening here carries a code from the ECO system, which files chess openings into
+        Every opening here carries a code from the
+        <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco'), ENT_QUOTES, 'UTF-8') ?>">ECO system</a>, which files chess openings into
         five volumes: <strong>A</strong> — flank openings such as the English and the Réti, plus
         the Dutch and the Benoni; <strong>B</strong> — semi-open games such as the Sicilian, the
         Caro-Kann and the Pirc; <strong>C</strong> — open games after 1.e4 e5, plus the French

@@ -22,9 +22,10 @@ final class Routes
         // Explicit Allow for the indexable namespaces, then Disallow the
         // dynamic / private ones. Putting Allow first makes Google's parser
         // unambiguously treat /openings as crawlable.
-        // /play/ and /search are NOT disallowed: they carry <meta robots
-        // noindex>, which crawlers can only obey if they may fetch the page —
-        // blocked, the 3,690 linked /play/ URLs could be indexed without content.
+        // /play/ is NOT disallowed: its pages carry <meta robots noindex>,
+        // which crawlers can only obey if they may fetch them — blocked, the
+        // 3,690 linked /play/ URLs could be indexed without content. /search
+        // (the opening identifier) is an ordinary indexable page.
         echo "User-agent: *\n";
         echo "Allow: /\n";
         echo "Allow: /openings\n";
@@ -76,8 +77,12 @@ final class Routes
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
         $xml .= $row($base . '/');
         $xml .= $row($base . '/openings');
-        // /search is noindex, so it stays out of the sitemap.
+        $xml .= $row($base . '/search');   // the opening identifier
         $xml .= $row($base . '/about');
+        $xml .= $row($base . '/eco');
+        foreach (Opening::ecoCodes() as $code => $c) {
+            if ($c['count'] > 1) $xml .= $row($base . '/eco/' . $code);   // single-line codes are noindex
+        }
         foreach ($stmt as $r) {
             $xml .= $row($base . '/openings/' . $r['slug']);
         }
@@ -268,6 +273,35 @@ final class Routes
         $grouped = Opening::allAlphabetical();
         $total = 0; foreach ($grouped as $rows) $total += count($rows);
         require __DIR__ . '/../templates/openings_index.php';
+    }
+
+    /** All ECO codes, A00–E99, grouped by volume. */
+    public static function ecoIndex(): void
+    {
+        global $baseUrl, $siteUrl;
+        Views::track('eco');
+        $codes = Opening::ecoCodes();
+        require __DIR__ . '/../templates/eco_index.php';
+    }
+
+    /** One ECO code: the named lines filed under it. */
+    public static function eco(string $code): void
+    {
+        global $baseUrl, $siteUrl, $render404;
+        if ($code !== strtoupper($code)) {           // /eco/b20 → /eco/B20
+            header('Location: ' . $baseUrl . I18n::url('/eco/' . strtoupper($code)), true, 301);
+            exit;
+        }
+        $codes = Opening::ecoCodes();
+        if (!isset($codes[$code])) $render404('No named lines under that ECO code.');
+        Views::track('eco');
+        $info  = $codes[$code];
+        $lines = Opening::byEco($code);
+        $keys  = array_keys($codes);
+        $pos   = (int) array_search($code, $keys, true);
+        $prevCode = $keys[$pos - 1] ?? null;
+        $nextCode = $keys[$pos + 1] ?? null;
+        require __DIR__ . '/../templates/eco.php';
     }
 
     public static function search(): void

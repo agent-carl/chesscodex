@@ -61,9 +61,9 @@ if ($baseUrl !== '' && strpos($rawPath, $baseUrl) === 0) {
 if ($rawPath === '' || $rawPath === false) $rawPath = '/';
 
 // One URL per page: "/openings/x/" answers 301 → "/openings/x" instead of
-// serving a duplicate. Only plain [a-z0-9-] segments, so a crafted path like
-// "/\evil.com/" can't turn this into an open redirect.
-if (preg_match('#^(/[a-z0-9-]+)+/$#', $rawPath)
+// serving a duplicate. Only plain [A-Za-z0-9-] segments ("/eco/B20/"), so a
+// crafted path like "/\evil.com/" can't turn this into an open redirect.
+if (preg_match('#^(/[A-Za-z0-9-]+)+/$#', $rawPath)
     && in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) {
     $query = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_QUERY);
     header('Location: ' . $baseUrl . rtrim($rawPath, '/') . ($query !== '' ? '?' . $query : ''), true, 301);
@@ -93,6 +93,8 @@ $router->add('/admin/preview',       [Routes::class, 'adminPreview']);
 $router->add('/admin/bulk',          [Routes::class, 'adminBulk']);
 $router->add('/search',              [Routes::class, 'search']);
 $router->add('/openings',            [Routes::class, 'openingsIndex']);
+$router->add('/eco',                 [Routes::class, 'ecoIndex']);
+$router->add('#^/eco/([A-Ea-e][0-9]{2})$#', [Routes::class, 'eco']);
 $router->add('/about',               [Routes::class, 'about']);
 $router->add('/',                    [Routes::class, 'home']);
 $router->add('#^/openings/([a-z0-9-]+)/?$#', [Routes::class, 'opening']);
