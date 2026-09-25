@@ -9,10 +9,10 @@ CONF=/etc/ssh-login-notify.conf
 . "$CONF"
 for p in $IGNORE; do case "$PAM_RHOST" in "$p"*) exit 0 ;; esac; done
 
-# The in-browser terminal (ssh.chesscodex.org) reaches sshd through the
-# Cloudflare Tunnel, so those logins come from localhost.
+# SSH via ssh.chesscodex.org (cloudflared on the laptop → Cloudflare Access →
+# tunnel) reaches sshd from localhost.
 case "$PAM_RHOST" in
-    127.0.0.1|::1) FROM="терминал в браузере (Cloudflare Access)" ;;
+    127.0.0.1|::1) FROM="через Cloudflare (ssh.chesscodex.org)" ;;
     *)             FROM="$PAM_RHOST" ;;
 esac
 
