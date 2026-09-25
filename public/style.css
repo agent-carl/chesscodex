@@ -92,6 +92,13 @@ html, body {
 
 a { color: var(--accent); text-decoration: none; }
 a:hover { color: var(--accent-hover); text-decoration: underline; }
+/* Links inside running text are underlined, so they don't rely on colour
+   alone (Lighthouse "links rely on color"). Styled links opt out via a class. */
+p a:not([class]) {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
 
 /* Keyboard focus — visible outline on tab navigation, hidden on mouse click. */
 :focus { outline: none; }
@@ -3693,6 +3700,9 @@ html[data-theme="light"] { background: #faf7f0; }
     scrollbar-width: none;
 }
 .recent-strip::-webkit-scrollbar { display: none; }
+/* display:flex above would otherwise override the [hidden] attribute that
+   app.js clears only when there is history to show. */
+.recent-strip[hidden] { display: none; }
 .recent-strip-label {
     color: var(--muted);
     font-size: 0.78rem;

@@ -65,13 +65,8 @@ RewriteRule ^ index.php [L]
     # Set "always" so it's emitted even on error responses.
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 
-    # HTTP/2 server-push hints — emitted on HTML responses so the browser
-    # starts fetching style.min.css before parsing <head>. Modern browsers
-    # treat `Link: rel=preload` as a strong hint even without H/2.
-    <FilesMatch "\.(php|html)$">
-        Header add Link "</public/style.min.css>; rel=preload; as=style"
-        Header add Link "</public/favicon.svg>; rel=preload; as=image; type=image/svg+xml"
-    </FilesMatch>
+    # Stylesheet preload hint: sent by templates/layout.php with the versioned
+    # URL (a static unversioned one here made browsers fetch the CSS twice).
 
     # Cross-Origin policies — modern browser hardening. COOP isolates the
     # browsing context (no SharedArrayBuffer leak to embedders); CORP
