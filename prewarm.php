@@ -19,7 +19,7 @@ declare(strict_types=1);
  *
  * Strategy: each run grabs `n` openings ordered by id ascending starting
  * from `offset`. Skips any whose stats are already cached (cheap check).
- * Throttle in LichessExplorer (600 ms) limits us to ~50 fetches/run.
+ * A pause of ~2 s per fetch keeps under Lichess's rate limit (~12 fetches/run).
  *
  * Run multiple times until "no new entries needed" appears. Or set up a
  * cron via OVH panel to hit this URL daily.
@@ -124,8 +124,9 @@ foreach ($rows as $row) {
         } else {
             $fetched++;
         }
-        // Leave the lock free for a moment so visitors' requests get a turn.
-        usleep(300_000);
+        // ~2 s per opening: Lichess answered 429 after ~30 requests at 1/s.
+        // The gap also leaves the lock free so visitors' requests get a turn.
+        usleep(1_700_000);
     } catch (Throwable $e) {
         $failed++;
         emit("[fail] {$row['slug']}: " . $e->getMessage());
