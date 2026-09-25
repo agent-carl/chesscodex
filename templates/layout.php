@@ -43,6 +43,19 @@ if (isset($_COOKIE['codex_admin'])) {
     }
 }
 
+// Pages anonymous visitors see may be kept by Cloudflare for 10 minutes, and
+// served from its cache for up to a day if the Pi can't answer. Browsers
+// still check back every time (max-age=0). Admins, the admin area, errors
+// and anything but GET/HEAD send no such header, so they're never cached.
+// (Pages served from the cache don't reach Views::track().)
+$pagePath = (string) (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/');
+if (!headers_sent() && $adminPending === null
+    && in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)
+    && in_array(http_response_code(), [200, 404], true)
+    && !preg_match('#^' . preg_quote($baseUrl, '#') . '/admin(/|$)#', $pagePath)) {
+    header('Cache-Control: public, max-age=0, s-maxage=600, stale-if-error=86400');
+}
+
 $projectRoot = realpath(__DIR__ . '/..');
 // Asset URL helper. Cache-bust uses a content hash (first 8 hex of SHA-1
 // over the first 64 KB) so versioned URLs only change when content actually
