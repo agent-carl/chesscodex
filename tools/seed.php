@@ -59,6 +59,11 @@ if ($driver === 'sqlite') {
     }
     $pdo->exec((string) file_get_contents($root . '/db/schema.sqlite.sql'));
     $pdo->exec('PRAGMA journal_mode = WAL');   // persistent: readers never block the writer
+    // SQLite creates the file 0644 whatever the umask. When the web server runs
+    // as another user in the file's group (www-data on the Pi), it needs group
+    // write — and the -wal/-shm files inherit the database file's mode.
+    $file = (string) $pdo->query('PRAGMA database_list')->fetch()['file'];
+    if ($file !== '') @chmod($file, 0664);
 } else {
     $sql = (string) file_get_contents($root . '/db/schema.sql');
     $sql = preg_replace('/^\s*--.*$/m', '', $sql) ?? $sql;
