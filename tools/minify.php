@@ -8,7 +8,7 @@ declare(strict_types=1);
  *
  * Produces:
  *   public/style.min.css   ← from public/style.css
- *   public/<foo>.min.js    ← from public/<foo>.js (app, search, play, sw, theme, opening, admin)
+ *   public/<foo>.min.js    ← from public/<foo>.js (app, search, play, sw, theme, opening, admin, home)
  *
  * Re-run after every edit to a source file. Templates reference the .min
  * variants (with ?v=mtime cache-bust), so updates ship correctly.
@@ -65,6 +65,7 @@ $tasks = [
     ['theme.js',    'theme.min.js',    'js'],
     ['opening.js',  'opening.min.js',  'js'],
     ['admin.js',    'admin.min.js',    'js'],
+    ['home.js',     'home.min.js',     'js'],
 ];
 
 $totalSrc = 0; $totalMin = 0;
