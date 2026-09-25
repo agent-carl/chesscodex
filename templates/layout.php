@@ -45,8 +45,14 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
     return $cache[$path] = $baseEsc . htmlspecialchars($path, ENT_QUOTES, 'UTF-8') . '?v=' . $ver;
 };
 
+// Preload hint with the exact versioned URL the <link> below uses, so the
+// browser (and Cloudflare Early Hints) fetch the stylesheet once, early.
+if (!headers_sent()) {
+    header('Link: <' . $asset('/public/style.min.css') . '>; rel=preload; as=style', false);
+}
+
 // Critical CSS inlined for first paint — covers header, brand, base typography,
-// hero. Full stylesheet loads async right after.
+// hero. The full stylesheet is linked right after it (render-blocking).
 $criticalCss = <<<'CSS'
 :root{--font-body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--font-display:ui-serif,"Iowan Old Style","Source Serif Pro","Apple Garamond",Georgia,"Times New Roman",serif;--font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;--bg:#faf7f0;--bg-elevated:#fff;--bg-subtle:#f1ecdf;--fg:#1a1a1a;--fg-soft:#3a3a3a;--muted:#6b6b6b;--border:#e6e0d4;--border-strong:#c8bfa9;--accent:#2a5d8f;--accent-soft:#e8eef6;--accent-hover:#1d4773;--radius-sm:3px;--radius:6px;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.5rem;--space-6:2rem}
 [data-theme="dark"]{--bg:#16181d;--bg-elevated:#1f2228;--bg-subtle:#1a1d22;--fg:#e8e6e1;--fg-soft:#c8c5be;--muted:#9a978e;--border:#2c3038;--border-strong:#3a3f48;--accent:#6ea3d4;--accent-soft:#1e2a38;--accent-hover:#95bce0}
@@ -130,8 +136,10 @@ CSS;
     <?php endif; ?>
 
     <style id="critical-css"><?= $criticalCss ?></style>
-    <link rel="preload" href="<?= $asset('/public/style.min.css') ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="<?= $asset('/public/style.min.css') ?>"></noscript>
+    <?php /* Render-blocking on purpose: loading it async let the page paint with
+             only the critical CSS and then reflow (PageSpeed CLS 0.72 on mobile).
+             It's ~12 KB brotli from Cloudflare's cache. */ ?>
+    <link rel="stylesheet" href="<?= $asset('/public/style.min.css') ?>">
     <?php
     // Chessground board CSS — only loaded on pages that actually render a
     // board. Set $needsBoard = true in templates that mount Chessground
@@ -168,7 +176,10 @@ CSS;
     <script type="application/ld+json"><?= json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?></script>
     <?php endif; ?>
 </head>
-<body>
+<?php /* has-board keeps the empty #board placeholder at its full square size
+         until Chessground mounts (see ".opening-board:empty" in style.css);
+         without it the board popped in late and shifted the page. */ ?>
+<body<?= !empty($needsBoard) ? ' class="has-board"' : '' ?>>
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <header class="site-header">
         <div class="site-header-inner">
