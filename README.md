@@ -4,7 +4,7 @@ A free, ad-free encyclopedia of every named chess opening — 3,690 lines from t
 [Lichess `chess-openings` dataset](https://github.com/lichess-org/chess-openings),
 each with an interactive board, live statistics from Lichess, and play-vs-Stockfish.
 
-Live: <https://test.av-webdevs.com>
+Live: <https://chesscodex.org>
 
 ## Quick start
 
@@ -13,8 +13,9 @@ Live: <https://test.av-webdevs.com>
 cp config.example.php config.php
 # Fill in db credentials, lichess_token, admin credentials.
 
-# 2. Upload to your PHP 8.1+ host (we use OVH shared hosting).
-#    Apache + mod_rewrite recommended; .htaccess wires up the pretty URLs.
+# 2. Upload to your PHP 8.1+ host. Production is a Raspberry Pi (nginx +
+#    PHP-FPM + SQLite behind Cloudflare Tunnel) — see deploy/. On Apache,
+#    .htaccess wires up the pretty URLs.
 
 # 3. Run schema + data import (one-shot, token-protected):
 #    a) Open https://your-site/migrate.php?token=<seed_token>
@@ -36,8 +37,8 @@ php tests/unit.php             # PHP unit tests (no HTTP)
 | Layer | What |
 |---|---|
 | Language | PHP 8.1+, plain ES-module JavaScript |
-| Database | MySQL 8 (uses CTE for recursive subtree queries) |
-| Hosting | OVH mutualisé (shared). Apache, FTP-only deploy |
+| Database | SQLite 3 in production (`db.driver`); MySQL 8 still supported |
+| Hosting | Raspberry Pi 5 at home: nginx, PHP 8.4-FPM, Cloudflare Tunnel + Access |
 | Board UI | [chessground](https://github.com/lichess-org/chessground) (Lichess) |
 | Move validation | [chess.js](https://github.com/jhlywa/chess.js) |
 | Engine | [stockfish.wasm](https://github.com/lichess-org/stockfish.wasm) — runs in-browser, no server |

@@ -83,7 +83,8 @@ final class Routes
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
         $xml .= $row($base . '/',         '1.0', 'weekly',  $today);
         $xml .= $row($base . '/openings', '0.8', 'weekly',  $today);
-        $xml .= $row($base . '/search',   '0.7', 'yearly',  $today);
+        // /search is Disallowed in robots.txt, so it stays out of the sitemap.
+        $xml .= $row($base . '/about',    '0.3', 'yearly',  $today);
         foreach ($stmt as $r) {
             // 1-2 ply → 0.8 (root openings like Sicilian, Italian)
             // 3-5 ply → 0.6 (main variations)

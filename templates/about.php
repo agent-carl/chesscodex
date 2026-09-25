@@ -66,10 +66,10 @@ ob_start();
     <section class="about-section">
         <h2>How it's built</h2>
         <p>
-            Vanilla PHP 8.1, MySQL, plain JavaScript (ES modules). No framework, no build
-            step, no bundler — minified by a tiny in-repo PHP script. Hosted on shared OVH
-            for a few euros a month. Source-first, optimised for being readable rather than
-            clever.
+            Vanilla PHP 8.4, SQLite, plain JavaScript (ES modules). No framework, no build
+            step, no bundler — minified by a tiny in-repo PHP script. Self-hosted on a
+            Raspberry Pi 5 at home, served through Cloudflare. Source-first, optimised for
+            being readable rather than clever.
         </p>
         <p>
             Open-source libraries that do the heavy lifting:
