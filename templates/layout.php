@@ -102,7 +102,10 @@ CSS;
     <meta name="twitter:image" content="<?= $esc($ogImg) ?>">
 
     <link rel="icon" type="image/svg+xml" href="<?= $asset('/public/favicon.svg') ?>">
-    <link rel="apple-touch-icon" href="<?= $asset('/public/favicon.svg') ?>">
+    <?php /* Raster fallbacks: Google Search wants a multiple of 48 px, iOS needs PNG. */ ?>
+    <link rel="icon" type="image/png" sizes="192x192" href="<?= $asset('/public/icon-192.png') ?>">
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= $asset('/public/apple-touch-icon.png') ?>">
     <link rel="manifest" href="<?= $asset('/public/manifest.webmanifest') ?>">
 
     <meta name="author" content="<?= $esc(t('site.name')) ?>">
