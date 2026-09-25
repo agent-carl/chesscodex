@@ -30,7 +30,10 @@ $opening_short_name = static function (string $name, ?string $parentName): strin
 };
 
 $o = $opening;
-$title = $o['name'] . ' (' . $o['eco'] . ')';
+// Lines that share a name + ECO code get their final moves appended, so each
+// page has its own <title> instead of up to 14 identical ones.
+$lineTail = Opening::distinguishingTail($o);
+$title = $o['name'] . ' (' . $o['eco'] . ')' . ($lineTail !== '' ? ' – ' . $lineTail : '');
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 
 // ----------------------------------------------------------------------
@@ -206,6 +209,7 @@ $overviewParts = array_filter([$intro, $groupSentence, $moveSentence, $parentSen
 $overviewHtml  = '<p>' . implode('</p><p>', $overviewParts) . '</p>';
 
 $island = [
+    'id'          => (int) $o['id'],
     'pgn'         => $o['pgn_moves'],
     'name'        => $o['name'],
     'statsApiUrl' => $baseUrl . '/api/stats',
@@ -353,7 +357,8 @@ $island = [
                         aria-label="Flip board orientation">
                     <span aria-hidden="true">⇅</span> Flip
                 </button>
-                <a class="board-cta" href="<?= htmlspecialchars($baseUrl . I18n::url('/play/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars(t('opening.board.cta'), ENT_QUOTES, 'UTF-8') ?></a>
+                <a class="board-cta" href="<?= htmlspecialchars($baseUrl . I18n::url('/play/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"
+                   data-prefetch="<?= $baseEsc ?>/vendor/stockfish.js <?= $baseEsc ?>/vendor/stockfish.wasm"><?= htmlspecialchars(t('opening.board.cta'), ENT_QUOTES, 'UTF-8') ?></a>
                 <span class="board-hint"><?= htmlspecialchars(t('opening.board.hint'), ENT_QUOTES, 'UTF-8') ?></span>
             </div>
         </div>
@@ -578,7 +583,9 @@ $island = [
     <?php if ($descendantCount > count($children)): ?>
     <?php $subtreeLazy = empty($descendants); ?>
     <section class="opening-subtree">
-        <details<?= $subtreeLazy ? ' data-lazy="' . (int) $o['id'] . '"' : '' ?>
+        <details<?= $subtreeLazy ? ' data-lazy="' . (int) $o['id'] . '"'
+                     . ' data-api="' . $baseEsc . '/api/subtree/"'
+                     . ' data-href="' . $baseEsc . htmlspecialchars(I18n::url('/openings/'), ENT_QUOTES, 'UTF-8') . '"' : '' ?>
                  data-parent-depth="<?= (int) $o['depth'] ?>">
             <summary>
                 <span class="opening-subtree-icon" aria-hidden="true">&#9660;</span>
@@ -619,95 +626,7 @@ $island = [
     <?php endif; ?>
 </article>
 
-<script>
-// Lazy-load the descendant subtree on first <details> open. Only fires when
-// the section has a data-lazy="N" attribute (set by the PHP template when
-// the subtree exceeds the inline-render threshold).
-(function () {
-    const details = document.querySelector('.opening-subtree details[data-lazy]');
-    if (!details) return;
-    let loaded = false;
-    details.addEventListener('toggle', async () => {
-        if (!details.open || loaded) return;
-        loaded = true;
-        const id = details.dataset.lazy;
-        const parentDepth = Number(details.dataset.parentDepth || 0);
-        const ul = details.querySelector('.opening-subtree-list');
-        const status = details.querySelector('.opening-subtree-status');
-        const statusText = status && status.querySelector('.opening-subtree-status-text');
-        try {
-            const res = await fetch('<?= $baseEsc ?>/api/subtree/' + encodeURIComponent(id), { headers: { Accept: 'application/json' } });
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const data = await res.json();
-            const rows = data.subtree || [];
-            const frag = document.createDocumentFragment();
-            rows.forEach((d) => {
-                const li = document.createElement('li');
-                li.style.setProperty('--depth-indent', Math.max(0, d.depth - parentDepth - 1));
-                const a = document.createElement('a');
-                a.href = '<?= $baseEsc ?>' + '<?= htmlspecialchars(I18n::url('/openings/'), ENT_QUOTES, 'UTF-8') ?>' + encodeURIComponent(d.slug);
-                a.title = d.name;
-                const tag = document.createElement('span');
-                tag.className = 'eco-tag';
-                tag.textContent = d.eco;
-                a.appendChild(tag);
-                const name = document.createElement('span');
-                name.className = 'opening-subtree-name';
-                name.textContent = shortName(d.name, d.parent_name);
-                a.appendChild(name);
-                const plies = document.createElement('span');
-                plies.className = 'opening-subtree-plies';
-                plies.textContent = d.move_count + '-ply';
-                a.appendChild(plies);
-                li.appendChild(a);
-                frag.appendChild(li);
-            });
-            ul.appendChild(frag);
-            ul.hidden = false;
-            ul.setAttribute('aria-busy', 'false');
-            if (status) status.hidden = true;
-        } catch (e) {
-            loaded = false; // allow retry on next open
-            if (statusText) statusText.textContent = 'Could not load sub-variations. Try again.';
-            if (status) status.dataset.state = 'error';
-        }
-    });
-    // Same delta-name logic as the PHP $opening_short_name helper.
-    function shortName(name, parentName) {
-        if (!parentName) return name;
-        for (const sep of [': ', ', ']) {
-            const prefix = parentName + sep;
-            if (name.indexOf(prefix) === 0) return name.slice(prefix.length);
-        }
-        return name;
-    }
-})();
-</script>
-<script>
-// Lazy-prefetch Stockfish only if the user signals intent to play (hovers or
-// focuses the "Play vs Stockfish" CTA, or interacts with the page). Saves
-// ~560 KB of background traffic for the 90 % of visitors who only read.
-(function () {
-    var cta = document.querySelector('.board-cta');
-    if (!cta) return;
-    var loaded = false;
-    function preload() {
-        if (loaded) return;
-        loaded = true;
-        ['<?= $baseEsc ?>/vendor/stockfish.js', '<?= $baseEsc ?>/vendor/stockfish.wasm'].forEach(function (href) {
-            var l = document.createElement('link');
-            l.rel = 'prefetch';
-            l.href = href;
-            if (href.endsWith('.wasm')) { l.as = 'fetch'; l.crossOrigin = 'anonymous'; }
-            else { l.as = 'script'; }
-            document.head.appendChild(l);
-        });
-    }
-    cta.addEventListener('mouseenter', preload, { once: true });
-    cta.addEventListener('focus', preload, { once: true });
-    cta.addEventListener('touchstart', preload, { once: true, passive: true });
-})();
-</script>
+<script defer src="<?= $baseEsc ?>/public/opening.min.js?v=<?= @filemtime(__DIR__ . '/../public/opening.min.js') ?: 1 ?>"></script>
 
 <script type="application/json" id="opening-data">
 <?= htmlspecialchars(json_encode($island, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), ENT_NOQUOTES, 'UTF-8') ?>
@@ -724,12 +643,20 @@ $canonical = $siteUrl . $baseUrl . I18n::url('/openings/' . $o['slug']);
 
 // SEO description: front-load the keywords search engines and humans both
 // scan — full name, ECO code, group, plies, opening moves, variations
-// count. Kept under ~160 chars so it isn't truncated in SERPs.
+// count. layout.php trims it to 160 chars at a word boundary.
+// The first moves, cut after a whole move ("1. e4 e5 2. Nf3 Nc6…").
 $moveSnippet = $movesPretty;
-if (strlen($moveSnippet) > 22) $moveSnippet = rtrim(substr($moveSnippet, 0, 22), ' .') . '…';
+if (mb_strlen($moveSnippet) > 24) {
+    $cut = mb_substr($moveSnippet, 0, 25);
+    $cut = mb_substr($cut, 0, (int) mb_strrpos($cut, ' '));
+    $moveSnippet = preg_replace('/\s*\d+\.+$/', '', $cut) . '…';   // no dangling "3."
+}
 $descParts = [];
 $descParts[] = $o['name'] . ' (ECO ' . $o['eco'] . ', ' . $ecoGroupLabel . ')';
-$descParts[] = $plyCountText . ' chess opening starting ' . $moveSnippet;
+// Same-name lines share their first moves; their ending is what differs.
+$descParts[] = $lineTail !== ''
+    ? $plyCountText . ' line ending ' . $lineTail
+    : $plyCountText . ' chess opening starting ' . $moveSnippet;
 if ($parent && empty($ancestors) === false) {
     $descParts[] = 'variation of ' . $parent['name'];
 }
@@ -751,8 +678,6 @@ if ($parent) {
 $breadcrumbs[] = ['name' => $o['name'], 'url' => $canonical];
 
 $siteRootUrl  = $siteUrl . $baseUrl . I18n::url('/');
-// Full ISO 8601 with offset — Google flags date-only values as invalid date-times.
-$todayIso     = date('Y-m-d\T00:00:00P');
 $publisherLd  = [
     '@type' => 'Organization',
     'name'  => t('site.name'),
@@ -768,7 +693,7 @@ $jsonLd = [
     '@graph'   => [
         [
             '@type'            => 'Article',
-            'headline'         => $o['name'] . ' (' . $o['eco'] . ')',
+            'headline'         => $title,
             'name'             => $o['name'],
             'description'      => $description,
             'url'              => $canonical,
@@ -789,8 +714,11 @@ $jsonLd = [
                 'chess theory',
                 $parent['name'] ?? null,
             ])),
+            // Full ISO 8601 with offset — Google flags date-only values.
+            // Edits aren't tracked, so dateModified stays at the publish
+            // date: "today" on every crawl is a fake freshness signal.
             'datePublished' => '2026-01-01T00:00:00+01:00',
-            'dateModified'  => $todayIso,
+            'dateModified'  => '2026-01-01T00:00:00+01:00',
             'author'        => $publisherLd,
             'publisher'     => $publisherLd,
             'isPartOf'      => [

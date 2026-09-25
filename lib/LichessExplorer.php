@@ -4,14 +4,18 @@ declare(strict_types=1);
 /**
  * Thin wrapper around https://explorer.lichess.ovh/lichess.
  *
- * Lichess publishes the explorer API openly with no auth required, but
- * imposes ~10 req/min per IP. We protect that with a file-lock throttle:
- * every call to fetch() acquires the lock, sleeps until at least
- * THROTTLE_MS have passed since the previous call, then proceeds.
+ * Lichess rate-limits the explorer, so requests go out one at a time,
+ * THROTTLE_MS apart, under a file lock held for the whole request. A
+ * visitor who finds a request in flight gets LichessBusyException right
+ * away (the API answers 503 + Retry-After and the page retries) instead
+ * of queueing on the lock: a queue of blocked PHP workers let a few
+ * clients stall the whole site, whose pool has only 4.
  *
  * Errors (timeout, non-200, malformed JSON) bubble up as exceptions so the
  * caller can choose between serving stale cache or surfacing the failure.
  */
+final class LichessBusyException extends RuntimeException {}
+
 final class LichessExplorer
 {
     private const ENDPOINT     = 'https://explorer.lichess.ovh/lichess';
@@ -32,16 +36,16 @@ final class LichessExplorer
 
     /**
      * @param string[] $uciMoves e.g. ['e2e4', 'c7c5', 'g1f3']
+     * @param bool $wait queue for the lock instead of throwing
+     *                   LichessBusyException (batch jobs like prewarm.php)
      * @return array<string, mixed> decoded JSON from Lichess
      */
-    public static function fetch(array $uciMoves): array
+    public static function fetch(array $uciMoves, bool $wait = false): array
     {
         $token = self::token();
         if ($token === '') {
             throw new RuntimeException('Lichess API token is not set in config.php (lichess_token).');
         }
-
-        self::throttle();
 
         $params = http_build_query([
             'play'       => implode(',', $uciMoves),
@@ -54,9 +58,14 @@ final class LichessExplorer
         ]);
         $url = self::ENDPOINT . '?' . $params;
 
-        $body = function_exists('curl_init')
-            ? self::fetchViaCurl($url)
-            : self::fetchViaStream($url);
+        $lock = self::lock($wait);
+        try {
+            $body = function_exists('curl_init')
+                ? self::fetchViaCurl($url)
+                : self::fetchViaStream($url);
+        } finally {
+            self::unlock($lock);
+        }
 
         $data = json_decode($body, true);
         if (!is_array($data)) {
@@ -72,7 +81,7 @@ final class LichessExplorer
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT        => self::TIMEOUT_S,
             CURLOPT_CONNECTTIMEOUT => self::TIMEOUT_S,
-            CURLOPT_USERAGENT      => 'chess-codex/1.0 (https://test.av-webdevs.com)',
+            CURLOPT_USERAGENT      => 'chess-codex/1.0 (https://chesscodex.org)',
             CURLOPT_HTTPHEADER     => [
                 'Accept: application/json',
                 'Authorization: Bearer ' . self::token(),
@@ -105,7 +114,7 @@ final class LichessExplorer
             'http' => [
                 'method'  => 'GET',
                 'timeout' => self::TIMEOUT_S,
-                'header'  => "User-Agent: chess-codex/1.0\r\n"
+                'header'  => "User-Agent: chess-codex/1.0 (https://chesscodex.org)\r\n"
                            . "Accept: application/json\r\n"
                            . 'Authorization: Bearer ' . self::token() . "\r\n",
             ],
@@ -124,27 +133,35 @@ final class LichessExplorer
     }
 
     /**
-     * File-lock throttle. Stores last-call timestamp in the lock file's
-     * contents; sleeps the difference if the previous call was too recent.
+     * Take the Lichess lock and wait out the rest of THROTTLE_MS since the
+     * previous request. The timestamp of that request is the lock file's
+     * content. Returns null when the lock file can't be opened (best-effort).
+     *
+     * @return resource|null
      */
-    private static function throttle(): void
+    private static function lock(bool $wait)
     {
-        $path = sys_get_temp_dir() . '/chess_codex_lichess.lock';
-        $fh   = fopen($path, 'c+');
-        if ($fh === false) return; // best-effort
-
-        if (flock($fh, LOCK_EX)) {
-            $last = (float) (stream_get_contents($fh) ?: '0');
-            $now  = microtime(true);
-            $waitMs = (int) max(0, self::THROTTLE_MS - (int) (($now - $last) * 1000));
-            if ($waitMs > 0) usleep($waitMs * 1000);
-
-            ftruncate($fh, 0);
-            rewind($fh);
-            fwrite($fh, (string) microtime(true));
-            fflush($fh);
-            flock($fh, LOCK_UN);
+        $fh = @fopen(sys_get_temp_dir() . '/chess_codex_lichess.lock', 'c+');
+        if ($fh === false) return null;
+        if (!flock($fh, $wait ? LOCK_EX : LOCK_EX | LOCK_NB)) {
+            fclose($fh);
+            throw new LichessBusyException('Another Lichess request is in progress.');
         }
+        $last = (float) (stream_get_contents($fh) ?: '0');
+        $waitMs = (int) max(0, self::THROTTLE_MS - (int) ((microtime(true) - $last) * 1000));
+        if ($waitMs > 0) usleep($waitMs * 1000);
+        return $fh;
+    }
+
+    /** @param resource|null $fh */
+    private static function unlock($fh): void
+    {
+        if ($fh === null) return;
+        ftruncate($fh, 0);
+        rewind($fh);
+        fwrite($fh, (string) microtime(true));
+        fflush($fh);
+        flock($fh, LOCK_UN);
         fclose($fh);
     }
 }

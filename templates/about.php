@@ -93,9 +93,16 @@ ob_start();
             fingerprint. Bots and the admin's own visits are excluded from those counts.
         </p>
         <p>
+            If you suggest a description, the site stores what you send — the text, plus
+            your name and email address if you give them (the email is never published) —
+            together with your IP address, which is used only to fight spam. Like any web
+            server, it also keeps access logs (IP address, page, time and browser) for about
+            two weeks.
+        </p>
+        <p>
             The only outbound requests the site makes are to <code>lichess.org</code> for
-            statistics and engine evaluations, and only server-side — your browser never
-            talks to Lichess directly.
+            opening statistics, and only server-side — your browser never talks to Lichess
+            directly.
         </p>
     </section>
 

@@ -42,7 +42,6 @@ final class Routes
         echo "User-agent: PetalBot\nDisallow: /\n\n";
 
         echo "Sitemap: {$siteUrl}{$baseUrl}/sitemap.xml\n";
-        echo "Host: " . preg_replace('#^https?://#', '', $siteUrl) . "\n";
     }
 
     public static function sitemap(): void
@@ -60,42 +59,26 @@ final class Routes
         }
 
         require_once __DIR__ . '/db.php';
-        // Pull move_count so we can weight priority by depth — shallow
-        // (popular) openings get higher priority so Google crawls them first.
         $stmt = chess_codex_db()->query(
-            "SELECT slug, move_count FROM codex_openings ORDER BY move_count ASC, id"
+            "SELECT slug FROM codex_openings ORDER BY move_count ASC, id"
         );
         $base   = $siteUrl . $baseUrl;
-        $today  = date('Y-m-d');
         $escUrl = static fn (string $u): string => htmlspecialchars($u, ENT_QUOTES | ENT_XML1, 'UTF-8');
 
-        // Build one <url> entry. (English-only — no hreflang alternates.)
-        $row = static function (string $loc, string $priority, string $changefreq, string $lastmod) use ($escUrl) {
-            return "  <url>\n"
-                 . "    <loc>" . $escUrl($loc) . "</loc>\n"
-                 . "    <lastmod>" . $lastmod . "</lastmod>\n"
-                 . "    <changefreq>" . $changefreq . "</changefreq>\n"
-                 . "    <priority>" . $priority . "</priority>\n"
-                 . "  </url>\n";
-        };
+        // <loc> only. Google ignores <changefreq> and <priority>, and trusts
+        // <lastmod> only when it's accurate — the site doesn't track edits,
+        // and stamping today's date on all 3,693 URLs every day taught search
+        // engines to ignore it. (English-only — no hreflang alternates.)
+        $row = static fn (string $loc): string => '  <url><loc>' . $escUrl($loc) . "</loc></url>\n";
 
         $xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
-        $xml .= $row($base . '/',         '1.0', 'weekly',  $today);
-        $xml .= $row($base . '/openings', '0.8', 'weekly',  $today);
+        $xml .= $row($base . '/');
+        $xml .= $row($base . '/openings');
         // /search is Disallowed in robots.txt, so it stays out of the sitemap.
-        $xml .= $row($base . '/about',    '0.3', 'yearly',  $today);
+        $xml .= $row($base . '/about');
         foreach ($stmt as $r) {
-            // 1-2 ply → 0.8 (root openings like Sicilian, Italian)
-            // 3-5 ply → 0.6 (main variations)
-            // 6-9 ply → 0.5 (sub-variations)
-            // 10+ ply → 0.4 (deep theory branches)
-            $ply = (int) $r['move_count'];
-            if ($ply <= 2)      $p = '0.8';
-            elseif ($ply <= 5)  $p = '0.6';
-            elseif ($ply <= 9)  $p = '0.5';
-            else                $p = '0.4';
-            $xml .= $row($base . '/openings/' . $r['slug'], $p, 'monthly', $today);
+            $xml .= $row($base . '/openings/' . $r['slug']);
         }
         $xml .= '</urlset>' . "\n";
 
@@ -195,29 +178,37 @@ final class Routes
     public static function apiStats(): void
     {
         require_once __DIR__ . '/RateLimit.php';
+        header('Content-Type: application/json; charset=utf-8');
         if (!RateLimit::check('stats', 30)) {
             http_response_code(429);
-            header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['error' => 'Rate limit exceeded.']);
             return;
         }
-        header('Content-Type: application/json; charset=utf-8');
-        header('Cache-Control: public, max-age=300');
 
-        $play = (string) ($_GET['play'] ?? '');
-        if ($play === '' || !preg_match('/^([a-h][1-8][a-h][1-8][qrbn]?)(,[a-h][1-8][a-h][1-8][qrbn]?)*$/', $play)) {
+        // Stats exist only for openings in the database: the page sends the
+        // opening's id and the moves come from the database. Accepting any
+        // move list from the URL let anyone make the site query Lichess for
+        // arbitrary positions, burning the API quota and PHP workers.
+        $id    = (int) ($_GET['id'] ?? 0);
+        $moves = $id > 0 ? Opening::movesById($id) : null;
+        if ($moves === null) {
             http_response_code(400);
-            echo json_encode(['error' => 'Invalid play parameter']);
+            echo json_encode(['error' => 'Unknown opening']);
             return;
         }
-        $uciMoves = explode(',', $play);
-        if (count($uciMoves) > 60) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Too many moves']);
-            return;
-        }
+        require_once __DIR__ . '/ChessEngine.php';
         require_once __DIR__ . '/StatsCache.php';
-        echo json_encode(StatsCache::getOrFetch($uciMoves));
+        $stats = StatsCache::getOrFetch(ChessEngine::fromPgn($moves)->uciHistory());
+
+        if (isset($stats['error'])) {
+            http_response_code(503);
+            header('Cache-Control: no-store');
+            if (!empty($stats['busy'])) header('Retry-After: 2');
+            echo json_encode(['error' => $stats['error']]);
+            return;
+        }
+        header('Cache-Control: public, max-age=300');
+        echo json_encode($stats);
     }
 
     public static function home(): void

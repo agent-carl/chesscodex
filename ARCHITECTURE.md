@@ -134,7 +134,7 @@ All URLs are pretty (Apache mod_rewrite). Route patterns in
 /search                    → board + name + FEN search
 /random                    → 302 to a random opening
 /api/search                → JSON: moves / fen / name autocomplete
-/api/stats                 → JSON: Lichess opening explorer (cached)
+/api/stats?id=<id>         → JSON: Lichess opening explorer (cached; 503 + Retry-After while busy)
 /api/subtree/<id>          → JSON: descendants (lazy-loaded)
 /api/suggest               → POST: queue a description for review
 /admin/...                 → admin dashboard, review, edit, bulk

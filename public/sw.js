@@ -5,14 +5,16 @@
  *   - static assets (/vendor, /public + .js/.css/.wasm/.svg/.woff2…)
  *     stale-while-revalidate, capped at MAX_STATIC entries
  *   - HTML pages: network-first with cache fallback, capped at MAX_HTML
- *   - API / sitemap / robots: never cached
+ *   - API / sitemap / robots / admin: never cached (admin pages carry CSRF
+ *     tokens and submitters' emails — they must not linger in Cache Storage)
  *
  * Cache name has a version suffix so deploys (which flip the asset-URL
  * `?v=<hash>` query) end up with new entries; old caches are pruned on
  * activate. Bump CACHE_VERSION when changing the strategy itself.
  */
 
-const CACHE_VERSION  = 'codex-v3';
+// v4: purges v3 caches, which could hold /admin pages.
+const CACHE_VERSION  = 'codex-v4';
 const STATIC_PATTERN = /\/(?:vendor|public)\/.+\.(?:js|css|wasm|svg|woff2|woff|png|jpg|jpeg|gif)(?:\?.*)?$/;
 
 // Per-cache entry caps. When exceeded, oldest entries are pruned. Prevents
@@ -27,8 +29,11 @@ self.addEventListener('install', () => {
 
 self.addEventListener('activate', (event) => {
     event.waitUntil((async () => {
+        // Keep this version's caches ("codex-v4-static", "codex-v4-html").
+        // Comparing against CACHE_VERSION itself matched neither name, so
+        // every activation used to wipe them.
         const keys = await caches.keys();
-        await Promise.all(keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k)));
+        await Promise.all(keys.filter((k) => !k.startsWith(CACHE_VERSION + '-')).map((k) => caches.delete(k)));
         await self.clients.claim();
     })());
 });
@@ -51,8 +56,9 @@ self.addEventListener('fetch', (event) => {
     const url = new URL(req.url);
     if (url.origin !== self.location.origin) return;
 
-    // API + dynamic — always fresh from network, never cached.
+    // API + dynamic + admin — always fresh from network, never cached.
     if (url.pathname.startsWith('/api/') ||
+        url.pathname === '/admin' || url.pathname.startsWith('/admin/') ||
         url.pathname === '/sitemap.xml' ||
         url.pathname === '/robots.txt') {
         return;
@@ -79,7 +85,8 @@ self.addEventListener('fetch', (event) => {
     event.respondWith((async () => {
         try {
             const fresh = await fetch(req);
-            if (fresh && fresh.status === 200) {
+            const type = (fresh && fresh.headers.get('Content-Type')) || '';
+            if (fresh && fresh.status === 200 && type.startsWith('text/html')) {
                 const cache = await caches.open(CACHE_VERSION + '-html');
                 await cache.put(req, fresh.clone());
                 await trim(cache, MAX_HTML);

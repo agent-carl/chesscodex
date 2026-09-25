@@ -105,7 +105,7 @@ foreach ($rows as $row) {
         $cacheCheck->execute(['h' => $key]);
         if ($cacheCheck->fetchColumn()) { $skipped++; continue; }
 
-        $data = StatsCache::getOrFetch($uci);
+        $data = StatsCache::getOrFetch($uci, true);   // wait for the Lichess lock
         if (isset($data['error'])) {
             $failed++;
             emit("[fail] {$row['slug']}: " . $data['error']);

@@ -16,8 +16,14 @@ $jsonLd      = $jsonLd ?? null;
 $ogType      = $ogType ?? 'website';   // templates may override to 'article'
 $locale      = I18n::locale();
 
-if (strlen($description) > 160) {
-    $description = rtrim(substr($description, 0, 157), " ,.;:-") . '…';
+// Search results show ~160 characters. Cut at a word boundary, counting
+// characters rather than bytes: a byte cut through a "·" or "ü" left invalid
+// UTF-8, which htmlspecialchars() turns into an empty description.
+if (mb_strlen($description) > 160) {
+    $cut = mb_substr($description, 0, 159);
+    $space = mb_strrpos($cut, ' ');
+    if ($space !== false && $space > 100) $cut = mb_substr($cut, 0, $space);
+    $description = preg_replace('/[\s,.;:·-]+$/u', '', $cut) . '…';
 }
 
 $esc = static fn ($s) => htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
@@ -47,6 +53,7 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
 // browser (and Cloudflare Early Hints) fetch the stylesheet once, early.
 if (!headers_sent()) {
     header('Link: <' . $asset('/public/style.min.css') . '>; rel=preload; as=style', false);
+    header('Link: <' . $asset('/public/theme.min.js') . '>; rel=preload; as=script', false);
 }
 
 // Critical CSS inlined for first paint — covers header, brand, base typography,
@@ -116,13 +123,9 @@ CSS;
     <meta name="theme-color" content="#2a5d8f" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#16181d" media="(prefers-color-scheme: dark)">
 
-    <!-- Preconnect: Lichess Explorer is hit from /api/stats which we proxy
-         server-side, but lichess.org is also referenced from footer + JSON-LD
-         attribution. Cheap dns-prefetch + preconnect saves ~200 ms on repeat
-         visitors who click through. -->
-    <link rel="preconnect" href="https://lichess.org" crossorigin>
-    <link rel="dns-prefetch" href="https://explorer.lichess.ovh">
-
+    <?php /* No preconnect to lichess.org: the Lichess API is called only by the
+             server (/api/stats), and a preconnect would make every visitor's
+             browser contact Lichess — the About page promises it never does. */ ?>
     <!-- Modulepreload for the shared vendor deps every board page imports.
          Browser starts parsing chess.js + chessground while the HTML is
          still streaming, shaving ~150-300 ms off time-to-interactive on
@@ -134,6 +137,9 @@ CSS;
     <?php endif; ?>
 
     <style id="critical-css"><?= $criticalCss ?></style>
+    <?php /* Blocking on purpose: applies the saved theme before the first paint.
+             An external file, not inline, so the CSP can forbid inline scripts. */ ?>
+    <script src="<?= $asset('/public/theme.min.js') ?>" data-base="<?= $baseEsc ?>"></script>
     <?php /* Render-blocking on purpose: loading it async let the page paint with
              only the critical CSS and then reflow (PageSpeed CLS 0.72 on mobile).
              It's ~12 KB brotli from Cloudflare's cache. */ ?>
@@ -162,16 +168,9 @@ CSS;
           integrity="sha384-t0l6ORC8cGo8/GMWCsKb4kVgvWzfwkDU8W9CXOh6Ai8dvgfMdhWl5UYMddaI835A"
           crossorigin="anonymous">
     <?php endif; ?>
-    <script>
-        (function () {
-            var saved = null;
-            try { saved = localStorage.getItem('codex-theme'); } catch (e) {}
-            var theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            document.documentElement.dataset.theme = theme;
-        })();
-    </script>
     <?php if ($jsonLd): ?>
-    <script type="application/ld+json"><?= json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?></script>
+    <?php /* JSON_HEX_TAG: a "</script>" inside any value can't end the block early. */ ?>
+    <script type="application/ld+json"><?= json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
     <?php endif; ?>
 </head>
 <?php /* has-board keeps the empty #board placeholder at its full square size
@@ -227,7 +226,8 @@ CSS;
                 }
                 ?>
             </nav>
-            <button class="theme-toggle" type="button" aria-label="<?= $esc(t('nav.toggle_theme.dark')) ?>" id="theme-toggle">
+            <button class="theme-toggle" type="button" aria-label="<?= $esc(t('nav.toggle_theme.dark')) ?>" id="theme-toggle"
+                    data-label-dark="<?= $esc(t('nav.toggle_theme.dark')) ?>" data-label-light="<?= $esc(t('nav.toggle_theme.light')) ?>">
                 <span class="theme-icon-light" aria-hidden="true">&#9728;</span>
                 <span class="theme-icon-dark" aria-hidden="true">&#9790;</span>
             </button>
@@ -270,30 +270,5 @@ CSS;
             <?php endif; ?>
         </small>
     </footer>
-    <script>
-        (function () {
-            var btn = document.getElementById('theme-toggle');
-            function syncPressed() {
-                if (!btn) return;
-                var dark = document.documentElement.dataset.theme === 'dark';
-                btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
-                btn.setAttribute('aria-label', dark ? <?= json_encode(t('nav.toggle_theme.light')) ?> : <?= json_encode(t('nav.toggle_theme.dark')) ?>);
-            }
-            syncPressed();
-            if (btn) btn.addEventListener('click', function () {
-                var next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-                document.documentElement.dataset.theme = next;
-                try { localStorage.setItem('codex-theme', next); } catch (e) {}
-                syncPressed();
-            });
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function () {
-                    // Explicit scope '/' — works thanks to the
-                    // Service-Worker-Allowed: / header set in .htaccess.
-                    navigator.serviceWorker.register('<?= $baseEsc ?>/public/sw.js', { scope: '<?= $baseEsc ?>/' }).catch(function () {});
-                });
-            }
-        })();
-    </script>
 </body>
 </html>
