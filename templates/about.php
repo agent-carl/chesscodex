@@ -85,7 +85,9 @@ ob_start();
     <section class="about-section">
         <h2>Privacy</h2>
         <p>
-            No tracking, no cookies for analytics, no third-party scripts. The site stores
+            No ad trackers and no cookies for analytics. The only third-party script is
+            Cloudflare Web Analytics, which counts page views without cookies or
+            fingerprinting. The site stores
             a single cookie only if you log in as admin (that's not you). Visit counts in
             the admin dashboard are aggregate-only — no IP addresses, no sessions, no
             fingerprint. Bots and the admin's own visits are excluded from those counts.
