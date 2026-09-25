@@ -2,18 +2,44 @@
 # Chess Codex database backup (/usr/local/sbin/chesscodex-backup).
 # ".backup" takes a consistent copy while the site keeps running (WAL mode),
 # then it's gzipped; the 14 newest copies are kept.
-# Copies live on the same SD card — pull one to another machine now and then
-# (deploy/pull-backup.sh on the laptop).
+# If /etc/chesscodex-backup-r2.conf exists (set-r2-backup.sh), the copy is also
+# uploaded to a Cloudflare R2 bucket, so a dead SD card doesn't take the
+# backups with it. The bucket's lifecycle rule deletes old copies there.
+# A failed backup or upload sends a Telegram message via the bot from
+# /etc/ssh-login-notify.conf, when that file exists.
 set -eu
 
 DB=/var/www/chesscodex/db/chesscodex.sqlite
 DIR=/var/backups/chesscodex
 DAY=$(date +%F)
+R2_CONF=/etc/chesscodex-backup-r2.conf
+TG_CONF=/etc/ssh-login-notify.conf
+
+alert() {
+    echo "$1" >&2
+    [ -r "$TG_CONF" ] || return 0
+    ( . "$TG_CONF"
+      curl -fsS -m 10 -o /dev/null --data-urlencode "chat_id=$CHAT_ID" \
+        --data-urlencode "text=⚠️ Pi: $1" \
+        "https://api.telegram.org/bot$TOKEN/sendMessage" ) >/dev/null 2>&1 || true
+}
+trap 'alert "бэкап базы chesscodex не удался ($DAY), см. journalctl -u chesscodex-backup"' EXIT
 
 install -d -m 750 -g www-data "$DIR"     # readable by the site owner for pull-backup.sh
 TMP="$DIR/.chesscodex-$DAY.sqlite"
 sqlite3 "$DB" ".backup '$TMP'"
 sqlite3 "$TMP" "PRAGMA integrity_check;" | grep -qx ok
 gzip -f "$TMP"
-mv -f "$TMP.gz" "$DIR/chesscodex-$DAY.sqlite.gz"
+FILE="$DIR/chesscodex-$DAY.sqlite.gz"
+mv -f "$TMP.gz" "$FILE"
 ls -1t "$DIR"/chesscodex-*.sqlite.gz | tail -n +15 | xargs -r rm -f
+
+if [ -r "$R2_CONF" ]; then
+    . "$R2_CONF"
+    # Credentials go to curl on stdin (-K -), never on the command line.
+    printf 'user = "%s:%s"\n' "$R2_KEY_ID" "$R2_SECRET" | curl -fsS -m 120 --retry 3 \
+        -K - --aws-sigv4 "aws:amz:auto:s3" -T "$FILE" -o /dev/null \
+        "https://$R2_ACCOUNT.r2.cloudflarestorage.com/$R2_BUCKET/$(basename "$FILE")"
+    echo "uploaded $(basename "$FILE") to R2 bucket $R2_BUCKET"
+fi
+trap - EXIT
