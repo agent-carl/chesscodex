@@ -1,0 +1,4 @@
+Require all denied
+<Files "minify.php">
+    Require all granted
+</Files>

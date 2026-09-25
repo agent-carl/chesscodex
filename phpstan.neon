@@ -1,0 +1,23 @@
+parameters:
+    level: 5
+    paths:
+        - lib
+        - templates
+        - tests
+        - index.php
+        - migrate.php
+        - prewarm.php
+        - og.php
+    excludePaths:
+        - vendor/*
+        - public/*
+    ignoreErrors:
+        # PHP super-globals and chess_codex_db() are used everywhere — not
+        # worth annotating each.
+        - '#Variable \$_(GET|POST|SERVER|SESSION|COOKIE) on undefined index#'
+        # PDO::fetch() and friends return mixed; we trust the schema.
+        - '#Cannot access offset .+ on mixed#'
+    # File-level autoload for the class-map. Without this PHPStan won't
+    # find e.g. `Auth`, `Opening`, etc. when they're first referenced.
+    bootstrapFiles:
+        - lib/Autoload.php

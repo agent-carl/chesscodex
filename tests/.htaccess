@@ -1,0 +1,5 @@
+# run.php is exposed via top-level URL but enforces token; deny direct
+# access to test_*.php files which would just dump source.
+<FilesMatch "^test_.*\.php$">
+    Require all denied
+</FilesMatch>

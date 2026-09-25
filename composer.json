@@ -1,0 +1,23 @@
+{
+    "name": "av-webdevs/chess-codex",
+    "description": "Free, ad-free encyclopedia of every named chess opening.",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.1"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.10"
+    },
+    "scripts": {
+        "test:unit":  "php tests/unit.php",
+        "test:smoke": "php tests/smoke.php",
+        "test":       ["@test:unit", "@test:smoke"],
+        "analyse":    "phpstan analyse"
+    },
+    "config": {
+        "vendor-dir": "_composer_vendor",
+        "preferred-install": "dist",
+        "sort-packages": true
+    }
+}

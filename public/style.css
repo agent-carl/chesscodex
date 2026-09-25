@@ -1,0 +1,3901 @@
+/* =============================================================================
+   Chess Codex — design tokens
+   All colors, spacing, radii, shadows live here. Swap palette by overriding
+   tokens, not by hunting through the rest of the file.
+   ========================================================================== */
+
+:root {
+    /* Typography */
+    --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-display: ui-serif, "Iowan Old Style", "Source Serif Pro", "Apple Garamond", Georgia, "Times New Roman", serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+    /* Light theme palette (paper-cream + sea blue) */
+    --bg:            #faf7f0;
+    --bg-elevated:   #ffffff;
+    --bg-subtle:     #f1ecdf;
+    --fg:            #1a1a1a;
+    --fg-soft:       #3a3a3a;
+    --muted:         #6b6b6b;
+    --border:        #e6e0d4;
+    --border-strong: #c8bfa9;
+    --accent:        #2a5d8f;
+    --accent-soft:   #e8eef6;
+    --accent-hover:  #1d4773;
+    --danger:        #b03030;
+
+    /* Stats bars (light) */
+    --stats-w:       #efe4cd;
+    --stats-w-edge:  #c8bfa9;
+    --stats-d:       #8c8377;
+    --stats-b:       #2f2f2f;
+
+    /* Geometry */
+    --radius-sm: 3px;
+    --radius:    6px;
+    --radius-lg: 10px;
+
+    /* Spacing scale (8-base) */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-8: 3rem;
+
+    /* Elevation */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow:    0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] {
+    --bg:            #16181d;
+    --bg-elevated:   #1f2228;
+    --bg-subtle:     #1a1d22;
+    --fg:            #e8e6e1;
+    --fg-soft:       #c8c5be;
+    --muted:         #9a978e;
+    --border:        #2c3038;
+    --border-strong: #3a3f48;
+    --accent:        #6ea3d4;
+    --accent-soft:   #1e2a38;
+    --accent-hover:  #95bce0;
+    --danger:        #e08585;
+
+    --stats-w:       #c9bfa9;
+    --stats-w-edge:  #9a917e;
+    --stats-d:       #6e6759;
+    --stats-b:       #0c0c0c;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow:    0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+/* =============================================================================
+   Reset & base
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); text-decoration: underline; }
+
+/* Keyboard focus — visible outline on tab navigation, hidden on mouse click. */
+:focus { outline: none; }
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--fg);
+    letter-spacing: -0.005em;
+    margin: 0 0 var(--space-3);
+}
+h1 { font-size: 1.75rem; line-height: 1.2; }
+h2 { font-size: 1.2rem; line-height: 1.3; margin-top: var(--space-6); }
+h3 { font-size: 1.05rem; line-height: 1.35; }
+
+button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+/* =============================================================================
+   Layout chrome — header, footer, container
+   ========================================================================== */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: saturate(180%) blur(8px);
+}
+.site-header-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+}
+.brand {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    color: var(--fg);
+    text-decoration: none;
+    font-weight: 600;
+}
+.brand:hover { text-decoration: none; color: var(--fg); }
+.brand-mark {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--accent);
+    transform: translateY(2px);
+}
+.brand-name { font-size: 1.05rem; }
+
+.site-nav {
+    margin-left: auto;
+    margin-right: var(--space-3);
+    display: flex;
+    gap: var(--space-4);
+}
+.site-nav a {
+    color: var(--fg-soft);
+    font-size: 0.95rem;
+}
+.site-nav a:hover { color: var(--accent); text-decoration: none; }
+
+.theme-toggle {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--fg-soft);
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.1s, background 0.1s;
+}
+.theme-toggle:hover { border-color: var(--accent); background: var(--accent-soft); }
+.theme-toggle .theme-icon-dark  { display: none; }
+[data-theme="dark"] .theme-toggle .theme-icon-light { display: none; }
+[data-theme="dark"] .theme-toggle .theme-icon-dark  { display: inline; }
+
+.container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--space-5) var(--space-4) var(--space-8);
+}
+
+.site-footer {
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    text-align: center;
+    padding: var(--space-4);
+    margin-top: var(--space-8);
+    font-size: 0.85rem;
+}
+
+/* =============================================================================
+   Homepage
+   ========================================================================== */
+
+.hero {
+    text-align: center;
+    padding: var(--space-6) 0 var(--space-5);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--space-6);
+}
+.hero h1 {
+    font-size: 2.4rem;
+    margin-bottom: var(--space-2);
+}
+.hero .lede {
+    color: var(--muted);
+    max-width: 36em;
+    margin: 0 auto var(--space-3);
+    font-size: 1.05rem;
+}
+.hero-meta {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-family: var(--font-mono);
+}
+
+.group-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: var(--space-3);
+}
+.group-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg);
+    text-decoration: none;
+    transition: transform 0.12s ease, border-color 0.12s, box-shadow 0.12s;
+}
+.group-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    color: var(--fg);
+}
+.group-card.is-empty { opacity: 0.5; pointer-events: none; }
+.group-letter {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--accent);
+}
+.group-label { font-weight: 500; font-size: 0.95rem; }
+.group-count {
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-family: var(--font-mono);
+}
+
+/* =============================================================================
+   Opening page
+   ========================================================================== */
+
+.opening-header {
+    margin-bottom: var(--space-5);
+}
+.opening-header h1 { margin-bottom: var(--space-1); }
+.parent-link { color: var(--muted); margin: var(--space-1) 0 0; font-size: 0.95rem; }
+
+/* Two-column on desktop: board on the left, narrow meta column on the right.
+   Stacks below 900px. */
+.opening-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+}
+@media (min-width: 900px) {
+    .opening-grid {
+        grid-template-columns: minmax(0, 1fr) 280px;
+        align-items: start;
+    }
+}
+
+.opening-board-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+.opening-board {
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 1 / 1;
+    /* Touch-action: none lets chessground handle drag gestures itself.
+       Without it mobile browsers intercept the gesture as a scroll/zoom
+       and pieces won't move. Applied to the wrapper AND the inner
+       chessground elements (the actual draggable surface). */
+    touch-action: none;
+}
+.opening-board .cg-wrap,
+.opening-board cg-board,
+.opening-board piece { touch-action: none; }
+.board-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    max-width: 480px;
+}
+#board-reset {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    transition: border-color 0.1s, background 0.1s;
+}
+#board-reset:hover { border-color: var(--accent); background: var(--accent-soft); }
+.board-cta {
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius);
+    background: var(--accent);
+    color: var(--bg-elevated);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background 0.1s;
+}
+.board-cta:hover { background: var(--accent-hover); color: var(--bg-elevated); text-decoration: none; }
+.board-hint { color: var(--muted); font-size: 0.85rem; }
+
+.eco-tag {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    margin-right: var(--space-2);
+}
+
+.opening-moves h2 { margin-top: 0; }
+.move-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+}
+/* Chess move numbering: increment on odd children (white plies) only,
+   so the list reads "1. Nh3 d5  2. g3 e5  ..." — proper SAN notation. */
+.move-list { counter-reset: move-counter; }
+.move-list li:nth-child(odd) { counter-increment: move-counter; }
+.move-list li:nth-child(odd)::before {
+    content: counter(move-counter) ".";
+    color: var(--muted);
+    font-size: 0.85em;
+    margin-right: 0.15em;
+}
+.move-list button {
+    background: none;
+    border: none;
+    /* Mobile-friendly touch target. The previous 0.1rem padding made the
+       hit box ~5 px tall — under the 24-px minimum that mobile browsers
+       reliably register taps on. Padding + min-height bring each move
+       button to at least 32 px high without making the desktop list
+       look bloated. */
+    padding: 0.35rem 0.55rem;
+    min-height: 2rem;
+    color: var(--accent);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font: inherit;
+    font-family: var(--font-mono);
+    /* Kill the 300 ms tap-delay on iOS Safari + Android Chrome and
+       suppress the grey flash on tap. */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+.move-list button:hover,
+.move-list button:focus-visible { background: var(--accent-soft); outline: none; }
+.move-list button:active { background: var(--accent); color: var(--bg-elevated); }
+.move-list button.is-active { background: var(--accent); color: var(--bg-elevated); }
+
+.opening-description .placeholder {
+    color: var(--muted);
+    border-left: 3px solid var(--border-strong);
+    padding-left: var(--space-3);
+    font-style: italic;
+}
+
+/* =============================================================================
+   Suggest-description form (public)
+   ========================================================================== */
+
+.suggest-form {
+    margin-top: var(--space-5);
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-4);
+}
+.suggest-form summary {
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 0.95rem;
+    list-style: none;
+    user-select: none;
+}
+.suggest-form summary::-webkit-details-marker { display: none; }
+.suggest-form summary:hover { text-decoration: underline; }
+.suggest-form summary::before {
+    content: '+ ';
+    color: var(--muted);
+    margin-right: 0.25em;
+}
+.suggest-form[open] summary::before { content: '– '; }
+
+.suggest-form-body {
+    margin-top: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.suggest-hint {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 0 0 var(--space-3);
+}
+.suggest-hint code {
+    background: var(--bg-subtle);
+    padding: 0.05rem 0.3rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.9em;
+}
+#suggest-form label {
+    display: block;
+    margin-bottom: var(--space-3);
+    color: var(--fg-soft);
+    font-size: 0.9rem;
+}
+#suggest-form input[type="text"],
+#suggest-form input[type="email"],
+#suggest-form textarea {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    border-radius: var(--radius);
+    font: inherit;
+}
+#suggest-form textarea {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    resize: vertical;
+}
+#suggest-form input:focus,
+#suggest-form textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.suggest-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+}
+@media (max-width: 600px) {
+    .suggest-row { grid-template-columns: 1fr; }
+}
+.suggest-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0;
+}
+#suggest-form button {
+    padding: var(--space-2) var(--space-4);
+    background: var(--accent);
+    color: var(--bg-elevated);
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 500;
+    cursor: pointer;
+}
+#suggest-form button:hover { background: var(--accent-hover); }
+#suggest-form button:disabled { opacity: 0.6; cursor: progress; }
+.suggest-status { font-size: 0.9rem; color: var(--muted); }
+.suggest-status[data-state="ok"] { color: var(--accent); }
+.suggest-status[data-state="error"] { color: var(--danger); }
+
+/* =============================================================================
+   Admin panel
+   ========================================================================== */
+
+.admin-login {
+    max-width: 360px;
+    margin: var(--space-8) auto;
+    padding: var(--space-5);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.admin-login h1 {
+    font-size: 1.3rem;
+    margin-bottom: var(--space-4);
+}
+.admin-login label {
+    display: block;
+    margin-bottom: var(--space-3);
+    color: var(--fg-soft);
+    font-size: 0.9rem;
+}
+.admin-login input {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--fg);
+    border-radius: var(--radius);
+    font: inherit;
+}
+.admin-login button {
+    width: 100%;
+    padding: var(--space-3);
+    background: var(--accent);
+    color: var(--bg-elevated);
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: var(--space-2);
+}
+.admin-login button:hover { background: var(--accent-hover); }
+.admin-error {
+    background: rgba(176, 48, 48, 0.1);
+    color: var(--danger);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    margin-bottom: var(--space-3);
+}
+
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+.admin-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    font-size: 0.9rem;
+    color: var(--muted);
+    flex-wrap: wrap;
+}
+.admin-meta strong { color: var(--accent); }
+.admin-logout button {
+    padding: 0.25rem 0.6rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--fg-soft);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.admin-logout button:hover { border-color: var(--accent); color: var(--accent); }
+
+.admin-empty {
+    color: var(--muted);
+    font-style: italic;
+    padding: var(--space-5);
+    text-align: center;
+    background: var(--bg-elevated);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+.admin-table th,
+.admin-table td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+}
+.admin-table th {
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.admin-table tbody tr:hover { background: var(--bg-subtle); }
+.admin-preview {
+    color: var(--fg-soft);
+    max-width: 320px;
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+}
+.admin-review-link {
+    white-space: nowrap;
+    color: var(--accent);
+    text-decoration: none;
+}
+.admin-review-link:hover { text-decoration: underline; }
+
+.admin-review .admin-fields {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--space-2) var(--space-4);
+    margin: var(--space-4) 0;
+    padding: var(--space-3);
+    background: var(--bg-subtle);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+}
+.admin-review dt { color: var(--muted); }
+.admin-review dd { margin: 0; color: var(--fg-soft); }
+
+.admin-rendered {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    background: var(--bg-elevated);
+    margin-bottom: var(--space-4);
+}
+.admin-raw {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-3);
+    font-size: 0.85rem;
+    color: var(--fg-soft);
+    white-space: pre-wrap;
+    overflow-x: auto;
+    max-height: 18rem;
+}
+
+.admin-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+}
+@media (max-width: 600px) {
+    .admin-actions { grid-template-columns: 1fr; }
+}
+.admin-actions form {
+    padding: var(--space-3);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.admin-actions label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: var(--space-2);
+}
+.admin-actions input[type="text"] {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--fg);
+    border-radius: var(--radius);
+    font: inherit;
+}
+.admin-actions button {
+    width: 100%;
+    padding: var(--space-3);
+    border: none;
+    border-radius: var(--radius);
+    color: var(--bg-elevated);
+    font-weight: 500;
+    cursor: pointer;
+}
+.admin-btn-accept { background: #2f8a4a; }
+.admin-btn-accept:hover { background: #266d3b; }
+.admin-btn-reject { background: var(--danger); }
+.admin-btn-reject:hover { filter: brightness(0.9); }
+
+.admin-resolved {
+    margin-top: var(--space-4);
+    padding: var(--space-3);
+    background: var(--bg-subtle);
+    border-radius: var(--radius);
+    color: var(--muted);
+}
+
+/* Rendered description (markdown → HTML via Parsedown). */
+.description-body h3 {
+    font-size: 1.05rem;
+    margin-top: var(--space-5);
+    margin-bottom: var(--space-2);
+    color: var(--fg);
+}
+.description-body h3:first-child { margin-top: 0; }
+.description-body p {
+    margin: 0 0 var(--space-3);
+    line-height: 1.65;
+}
+.description-body ul {
+    margin: 0 0 var(--space-3);
+    padding-left: var(--space-5);
+}
+.description-body li {
+    margin-bottom: var(--space-1);
+    line-height: 1.55;
+}
+.description-body li strong {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--accent);
+}
+.description-body a {
+    color: var(--accent);
+    word-break: break-word;
+}
+.description-body a:hover { color: var(--accent-hover); }
+/* Citation refs at the bottom — render as compact source list. */
+.description-body p:last-of-type {
+    font-size: 0.85rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-3);
+    margin-top: var(--space-4);
+}
+
+/* =============================================================================
+   Lichess stats panel
+   ========================================================================== */
+
+.opening-stats {
+    margin-top: var(--space-6);
+    /* Reserve vertical space so the asynchronously-loaded stats panel
+       doesn't push later sections down on arrival (CLS / Core Web Vitals). */
+    min-height: 180px;
+}
+.stats-status { color: var(--muted); margin: var(--space-1) 0; }
+.stats-status[data-state="error"] { color: var(--danger); }
+
+.stats-bar {
+    display: flex;
+    width: min(480px, 100%);
+    height: 16px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--border);
+    margin: var(--space-2) 0;
+    box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+.stats-bar.inline {
+    width: 140px;
+    height: 10px;
+    margin: 0;
+    box-shadow: none;
+}
+.stats-bar > span { display: block; height: 100%; }
+.stats-bar-w { background: var(--stats-w); box-shadow: inset 0 0 0 1px var(--stats-w-edge); }
+.stats-bar-d { background: var(--stats-d); }
+.stats-bar-b { background: var(--stats-b); }
+
+.stats-totals {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: var(--space-1) 0 var(--space-3);
+    font-family: var(--font-mono);
+}
+
+.stats-moves {
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    margin-top: var(--space-2);
+    width: 100%;
+    max-width: 480px;
+}
+.stats-moves th,
+.stats-moves td {
+    padding: var(--space-1) var(--space-3);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+.stats-moves th { color: var(--muted); font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.stats-moves tbody tr:hover { background: var(--bg-subtle); }
+.stats-moves td:first-child {
+    font-family: var(--font-mono);
+    color: var(--accent);
+}
+.stats-moves td:nth-child(2) {
+    font-family: var(--font-mono);
+    color: var(--muted);
+    text-align: right;
+    width: 1%;
+    white-space: nowrap;
+}
+.stats-attribution { color: var(--muted); margin-top: var(--space-3); font-size: 0.8rem; }
+
+/* =============================================================================
+   Variations list
+   ========================================================================== */
+
+.child-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-2);
+}
+.child-list a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg);
+    text-decoration: none;
+    transition: border-color 0.1s, background 0.1s;
+}
+.child-list a:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    text-decoration: none;
+}
+.child-list-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* The ply suffix disambiguates entries that share the same shortened
+   name (a Lichess data quirk — same variation name appears at multiple
+   depths). Subtle styling so it doesn't dominate the chip. */
+.child-list-plies {
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.children-toggle {
+    margin-top: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--accent);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    transition: border-color 0.1s, background 0.1s;
+}
+.children-toggle:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+/* =============================================================================
+   Search page
+   ========================================================================== */
+
+.search-header { margin-bottom: var(--space-5); text-align: center; }
+.search-header h1 { font-size: 2rem; margin-bottom: var(--space-2); }
+.search-header .lede { color: var(--muted); max-width: 40em; margin: 0 auto; }
+
+/* FEN-search panel — collapsed by default, expands into a card-style form. */
+.search-fen {
+    margin-top: var(--space-4);
+    text-align: left;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-fen[open] {
+    border-color: var(--accent);
+    box-shadow: var(--shadow);
+}
+/* Hide the default disclosure triangle in every browser. */
+.search-fen summary { list-style: none; }
+.search-fen summary::-webkit-details-marker { display: none; }
+
+.search-fen summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    cursor: pointer;
+    color: var(--fg);
+    font-weight: 500;
+    transition: background 0.15s;
+    user-select: none;
+}
+.search-fen summary:hover { background: var(--accent-soft); }
+.search-fen[open] summary { border-bottom: 1px solid var(--border); }
+
+.search-fen-icon {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--accent);
+    line-height: 1;
+}
+.search-fen-label { flex: 1; }
+.search-fen-chevron {
+    color: var(--muted);
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+}
+.search-fen[open] .search-fen-chevron {
+    transform: rotate(90deg);
+    color: var(--accent);
+}
+
+.search-fen-body { padding: var(--space-4); }
+
+.search-fen-hint {
+    color: var(--muted);
+    margin: 0 0 var(--space-3);
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.search-fen form {
+    display: flex;
+    gap: var(--space-2);
+}
+.search-fen input[type="text"] {
+    flex: 1;
+    min-width: 0; /* allow flex item to shrink below intrinsic min-width */
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--fg);
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    transition: border-color 0.1s, box-shadow 0.1s;
+}
+.search-fen input[type="text"]::placeholder { color: var(--muted); opacity: 0.7; }
+.search-fen input[type="text"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    outline: none;
+}
+.search-fen button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: var(--space-2) var(--space-4);
+    background: var(--accent);
+    color: var(--bg-elevated);
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.1s, transform 0.08s;
+    white-space: nowrap;
+}
+.search-fen button:hover { background: var(--accent-hover); }
+.search-fen button:active { transform: scale(0.97); }
+
+@media (max-width: 480px) {
+    .search-fen form { flex-direction: column; }
+    .search-fen button { justify-content: center; }
+}
+
+.search-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+}
+@media (min-width: 900px) {
+    .search-grid {
+        grid-template-columns: minmax(0, 1fr) 320px;
+        align-items: start;
+    }
+}
+
+.search-board-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.search-sidebar > section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+.search-sidebar h2 {
+    margin-top: 0;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-weight: 500;
+}
+
+.search-empty {
+    color: var(--muted);
+    font-style: italic;
+    margin: 0;
+}
+.search-result[data-state="error"] .search-empty { color: var(--danger); font-style: normal; }
+
+.search-match-link {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--accent-soft);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--fg);
+    margin-bottom: var(--space-2);
+}
+.search-match-link:hover { text-decoration: none; background: var(--bg-subtle); }
+.search-match-name { font-weight: 500; }
+.search-result[data-state="exact"] .search-match-link { box-shadow: inset 0 0 0 2px var(--accent); }
+.search-match-meta { color: var(--muted); font-size: 0.9rem; margin: 0; }
+
+.search-played .move-list {
+    max-height: 12rem;
+    overflow-y: auto;
+}
+.search-played .move-list li::before { content: none; }
+.search-played .move-list li:nth-child(odd)::before {
+    content: counter(move-counter) ".";
+    counter-increment: move-counter;
+    color: var(--muted);
+    font-size: 0.85em;
+    margin-right: 0.15em;
+}
+.search-played .move-list { counter-reset: move-counter; }
+.search-played .move-list li > span {
+    padding: 0.05rem 0.3rem;
+    font-family: var(--font-mono);
+    color: var(--accent);
+}
+
+#search-undo, #search-reset {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    transition: border-color 0.1s, background 0.1s;
+}
+#search-undo:hover, #search-reset:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+/* =============================================================================
+   Play page (Stockfish)
+   ========================================================================== */
+
+.play-header { margin-bottom: var(--space-5); }
+.play-header h1 { font-size: 1.6rem; }
+.play-header .parent-link a { color: var(--muted); }
+
+.play-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+}
+@media (min-width: 900px) {
+    .play-grid {
+        grid-template-columns: minmax(0, 1fr) 320px;
+        align-items: start;
+    }
+}
+
+.play-board-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+.play-board-wrap .board-controls { flex-wrap: wrap; }
+.play-board-wrap button {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    transition: border-color 0.1s, background 0.1s;
+}
+.play-board-wrap button:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+.play-sidebar > section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+.play-sidebar h2 {
+    margin-top: 0;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-weight: 500;
+}
+.play-engine-state {
+    color: var(--muted);
+    margin: 0;
+    font-size: 0.95rem;
+}
+.play-engine-state[data-state="thinking"] {
+    color: var(--accent);
+}
+.play-engine-state[data-state="error"] { color: var(--danger); }
+
+/* Always-visible level indicator. Subtle background pulse on change so the
+   user gets unambiguous feedback that something happened. */
+.play-current-level {
+    margin: var(--space-3) 0 var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-subtle);
+    border-radius: var(--radius);
+    border-left: 3px solid var(--accent);
+    font-size: 0.9rem;
+    color: var(--fg-soft);
+    transition: background 0.3s;
+}
+.play-current-level strong {
+    color: var(--accent);
+    font-weight: 600;
+    margin: 0 0.25em;
+}
+.play-current-level-elo {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    margin-left: 0.5em;
+}
+@keyframes level-flash {
+    0%   { background: var(--bg-subtle); }
+    35%  { background: var(--accent-soft); }
+    100% { background: var(--bg-subtle); }
+}
+.play-current-level.is-changed {
+    animation: level-flash 0.9s ease-in-out;
+}
+
+.play-difficulty {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+}
+.play-difficulty button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: var(--space-2) 4px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--fg-soft);
+    transition: border-color 0.12s, background 0.12s, color 0.12s, transform 0.08s;
+    min-height: 50px;
+}
+.play-difficulty button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+.play-difficulty button:active {
+    transform: scale(0.96);
+}
+.play-difficulty button.is-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-elevated);
+    box-shadow: 0 2px 6px rgba(42, 93, 143, 0.25);
+}
+.play-difficulty button.is-active:hover { color: var(--bg-elevated); background: var(--accent-hover); }
+.play-difficulty .diff-name {
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.1;
+    text-align: center;
+    /* Allow soft hyphens to break "Inter­mediate" on narrow buttons. */
+    hyphens: manual;
+}
+.play-difficulty .diff-elo {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+.play-difficulty-desc {
+    margin: var(--space-2) 0 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-style: italic;
+    min-height: 1.2em; /* prevent layout jump when text changes */
+}
+
+.play-eval {
+    margin: var(--space-2) 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--fg-soft);
+}
+.play-turn {
+    margin: 0;
+    color: var(--fg-soft);
+}
+.play-result {
+    margin: var(--space-2) 0 0;
+    padding: var(--space-2) var(--space-3);
+    background: var(--accent-soft);
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+    font-weight: 500;
+}
+#play-moves {
+    max-height: 14rem;
+    overflow-y: auto;
+    margin-top: var(--space-2);
+}
+
+/* =============================================================================
+   Mobile pass
+   ========================================================================== */
+
+@media (max-width: 480px) {
+    .container { padding: var(--space-4) var(--space-3) var(--space-6); }
+    .hero h1 { font-size: 1.85rem; }
+    .group-letter { font-size: 2rem; }
+    h1 { font-size: 1.5rem; }
+}
+
+/* =============================================================================
+   Admin link + pending badge in main nav (logged-in admin only).
+   ========================================================================== */
+.admin-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--fg-soft);
+    font-size: 0.95rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border-strong);
+}
+.admin-link:hover { color: var(--accent); border-color: var(--accent); }
+.admin-link-badge {
+    display: inline-flex;
+    min-width: 1.4em;
+    height: 1.4em;
+    padding: 0 0.4em;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+/* "Edit description →" link next to the section heading on opening pages. */
+.admin-edit-link {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--accent);
+    margin-left: var(--space-3);
+    vertical-align: middle;
+    font-family: var(--font-body);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+.admin-edit-link:hover { color: var(--accent-hover); }
+
+/* Admin edit-description page */
+.admin-edit-form textarea {
+    width: 100%;
+    min-height: 24rem;
+    padding: var(--space-3);
+    font: 0.95rem/1.55 var(--font-mono);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    resize: vertical;
+    box-sizing: border-box;
+}
+.admin-edit-form textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.admin-edit-hint {
+    display: block;
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.15rem;
+}
+.admin-edit-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+}
+.admin-edit-actions button {
+    padding: 0.55rem 1.2rem;
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+}
+.admin-edit-actions button:hover { background: var(--accent-hover); }
+.admin-edit-cancel { color: var(--muted); }
+
+.admin-flash {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius);
+    margin: var(--space-3) 0;
+}
+.admin-flash-ok { background: #e6f4ea; color: #1e6f3a; border-left: 3px solid #2ea759; }
+.admin-flash-error { background: #fde7e7; color: #8a1f1f; border-left: 3px solid #b03030; }
+
+[data-theme="dark"] .admin-flash-ok    { background: #1c2a22; color: #88dfa6; }
+[data-theme="dark"] .admin-flash-error { background: #2a1818; color: #f0a6a6; }
+
+/* =============================================================================
+   Home page — quick-action links + popular openings strip
+   ========================================================================== */
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-5);
+    margin-top: var(--space-3);
+    flex-wrap: wrap;
+}
+.hero-action-link {
+    color: var(--accent);
+    font-weight: 500;
+    border-bottom: 1px dashed var(--border-strong);
+}
+.hero-action-link:hover { color: var(--accent-hover); border-bottom-color: var(--accent); }
+
+.home-popular {
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+}
+.home-popular-head { text-align: center; margin-bottom: var(--space-5); }
+.home-popular-head h2 { margin: 0 0 var(--space-2); }
+.home-popular-lede { color: var(--muted); margin: 0; }
+.home-popular-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-3);
+}
+.home-popular-list li { margin: 0; }
+.home-popular-list a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg);
+    text-decoration: none;
+    transition: border-color .12s, transform .12s;
+}
+.home-popular-list a:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+.home-popular-name { flex: 1; font-weight: 500; }
+.home-popular-plies { color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+
+/* =============================================================================
+   /openings — alphabetical index
+   ========================================================================== */
+.openings-index-header { margin-bottom: var(--space-6); }
+.openings-jump {
+    margin-top: var(--space-4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+.openings-jump a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg);
+    font-weight: 600;
+    font-family: var(--font-display);
+}
+.openings-jump a:hover { border-color: var(--accent); color: var(--accent); }
+.openings-jump-count {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+.openings-letter {
+    scroll-margin-top: 80px;
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+    margin-top: var(--space-5);
+}
+.openings-letter h2 {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    font-size: 1.75rem;
+}
+.openings-letter-count {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+.openings-letter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-2);
+}
+.openings-letter-list a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.5rem 0.75rem;
+    color: var(--fg);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+}
+.openings-letter-list a:hover { background: var(--bg-subtle); color: var(--accent); }
+.openings-letter-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.openings-letter-plies { color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+
+/* =============================================================================
+   Opening page — breadcrumbs + subtree
+   ========================================================================== */
+.opening-breadcrumbs {
+    margin-bottom: var(--space-4);
+    font-size: 0.9rem;
+}
+.opening-breadcrumbs ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.6rem;
+    align-items: center;
+}
+.opening-breadcrumbs li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--muted);
+}
+.opening-breadcrumbs li + li::before {
+    content: "\203A";
+    margin-right: 0.3rem;
+    color: var(--border-strong);
+}
+.opening-breadcrumbs a {
+    color: var(--fg-soft);
+    text-decoration: none;
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-sm);
+}
+.opening-breadcrumbs a:hover { background: var(--bg-subtle); color: var(--accent); }
+.opening-breadcrumbs [aria-current="page"] { color: var(--fg); font-weight: 500; }
+
+.opening-subtree {
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border);
+}
+.opening-subtree summary {
+    cursor: pointer;
+    padding: var(--space-2) 0;
+    color: var(--accent);
+    font-weight: 500;
+    list-style: none;
+}
+.opening-subtree summary::-webkit-details-marker { display: none; }
+.opening-subtree-icon {
+    display: inline-block;
+    margin-right: 0.4rem;
+    transition: transform .15s;
+    font-size: 0.7em;
+}
+.opening-subtree details[open] .opening-subtree-icon { transform: rotate(180deg); }
+.opening-subtree-list {
+    list-style: none;
+    padding: var(--space-3) 0 0;
+    margin: 0;
+}
+.opening-subtree-list li {
+    margin-left: calc(var(--depth-indent, 0) * 1.2rem);
+}
+.opening-subtree-list a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.35rem 0.5rem;
+    color: var(--fg-soft);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-size: 0.92rem;
+}
+.opening-subtree-list a:hover { background: var(--bg-subtle); color: var(--accent); }
+.opening-subtree-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opening-subtree-plies { color: var(--muted); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+
+/* =============================================================================
+   Search page — name autocomplete
+   ========================================================================== */
+.search-by-name {
+    position: relative;
+    margin: var(--space-4) auto var(--space-3);
+    max-width: 560px;
+    text-align: left;
+}
+.search-by-name-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+    text-align: center;
+}
+.search-by-name-field { position: relative; }
+.search-by-name-field input {
+    width: 100%;
+    padding: 0.65rem 2.5rem 0.65rem 0.9rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--fg);
+    font: inherit;
+    box-sizing: border-box;
+}
+.search-by-name-field input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.search-by-name-icon {
+    position: absolute;
+    right: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+}
+.search-by-name-results {
+    position: absolute;
+    z-index: 5;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: 0.25rem 0 0;
+    padding: 0.25rem;
+    list-style: none;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    max-height: 24rem;
+    overflow-y: auto;
+}
+.search-by-name-results li { margin: 0; }
+.search-by-name-results a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.45rem 0.6rem;
+    color: var(--fg);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+}
+.search-by-name-results a:hover,
+.search-by-name-results a:focus { background: var(--bg-subtle); color: var(--accent); outline: none; }
+.search-by-name-result-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.search-by-name-result-plies { color: var(--muted); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+.search-by-name-empty {
+    padding: 0.55rem 0.8rem;
+    color: var(--muted);
+    font-style: italic;
+}
+
+/* =============================================================================
+   Opening page — vertical tree-path widget (replaces flat breadcrumb).
+   Indented list with └ connectors and a highlighted "you are here" row.
+   ========================================================================== */
+.opening-tree {
+    margin: 0 0 var(--space-5);
+    padding: var(--space-3) var(--space-4) var(--space-2);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.opening-tree-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-body);
+    font-weight: 600;
+}
+.opening-tree-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.opening-tree-item {
+    position: relative;
+    padding-left: calc(var(--depth, 0) * 1.4rem);
+    line-height: 1.65;
+    font-size: 0.92rem;
+}
+/* └ tree connector before each non-root item. Positioned absolute relative
+   to the li, anchored to the indent column of THIS item. */
+.opening-tree-item + .opening-tree-item::before {
+    content: '\2514';
+    position: absolute;
+    left: calc((var(--depth, 0) - 1) * 1.4rem + 0.35rem);
+    top: 0.05rem;
+    color: var(--border-strong);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    user-select: none;
+}
+.opening-tree-item a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.15rem 0.55rem;
+    color: var(--fg-soft);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    max-width: 100%;
+}
+.opening-tree-item a:hover {
+    background: var(--bg-elevated);
+    color: var(--accent);
+}
+.opening-tree-icon {
+    font-size: 0.95em;
+    line-height: 1;
+    color: var(--muted);
+}
+.opening-tree-eco {
+    margin-left: auto;
+    font-size: 0.7rem;
+    opacity: 0.85;
+}
+
+/* Current row — highlighted "you are here". Stretches full width so the
+   highlight reads as a row, not just a chip. */
+.opening-tree-item.is-current {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-left: calc(var(--depth, 0) * 1.4rem + 0.55rem);
+    padding-right: var(--space-3);
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+    margin-top: 0.15rem;
+    margin-bottom: 0.15rem;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.opening-tree-item.is-current .opening-tree-name {
+    color: var(--fg);
+    font-weight: 600;
+}
+.opening-tree-item.is-current .opening-tree-marker {
+    color: var(--accent);
+    font-size: 0.8em;
+    margin-right: 0.1rem;
+}
+.opening-tree-item.is-current .opening-tree-here {
+    margin-left: auto;
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-variant: small-caps;
+    letter-spacing: 0.04em;
+}
+
+/* Mobile: shrink the indent so 6-level paths still fit. */
+@media (max-width: 480px) {
+    .opening-tree-item { padding-left: calc(var(--depth, 0) * 0.85rem); font-size: 0.88rem; }
+    .opening-tree-item + .opening-tree-item::before {
+        left: calc((var(--depth, 0) - 1) * 0.85rem + 0.2rem);
+    }
+    .opening-tree-item.is-current {
+        padding-left: calc(var(--depth, 0) * 0.85rem + 0.45rem);
+    }
+    .opening-tree-here { display: none; }
+}
+
+/* Keep the old breadcrumb class blank in case any other page still emits it. */
+.opening-breadcrumbs { display: none; }
+
+/* =============================================================================
+   Opening tree — collapsible <details> wrapper around the vertical tree.
+   Closed state shows a compact one-line summary with depth badge + path
+   preview; opens to the full indented tree below.
+   ========================================================================== */
+.opening-tree-details {
+    margin: 0 0 var(--space-5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-subtle);
+    overflow: hidden;
+}
+.opening-tree-summary {
+    list-style: none;
+    cursor: pointer;
+    padding: var(--space-2) var(--space-3);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    user-select: none;
+}
+.opening-tree-summary::-webkit-details-marker { display: none; }
+.opening-tree-summary:hover { background: var(--bg-elevated); }
+
+.opening-tree-summary-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.opening-tree-summary-depth {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.1rem 0.5rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.opening-tree-summary-preview {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--fg-soft);
+    font-size: 0.88rem;
+}
+.opening-tree-summary-chevron {
+    flex-shrink: 0;
+    color: var(--muted);
+    font-size: 0.85em;
+    transition: transform .15s ease;
+}
+.opening-tree-details[open] .opening-tree-summary-chevron {
+    transform: rotate(180deg);
+}
+.opening-tree-details[open] .opening-tree {
+    border-top: 1px solid var(--border);
+}
+
+/* Reset the inner widget so it sits flush inside the details container. */
+.opening-tree-details .opening-tree {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: var(--space-3) var(--space-4) var(--space-3);
+}
+
+/* Mobile: hide the path preview when there's no room (depth badge + label
+   still shown so the user knows what they're toggling). */
+@media (max-width: 540px) {
+    .opening-tree-summary-preview { display: none; }
+}
+
+/* =============================================================================
+   Home page — make the two popular strips visually distinct so the second
+   one (Famous gambits) doesn't feel like a duplicate of the first.
+   ========================================================================== */
+.home-popular + .home-popular {
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+}
+.home-popular-gambits .home-popular-head h2 { color: var(--accent); }
+.home-popular-gambits .home-popular-list a { border-color: var(--accent-soft); }
+.home-popular-gambits .home-popular-list a:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+/* Keyboard-highlighted row in the name autocomplete dropdown. Matches hover
+   styles so users get visual parity between mouse and arrow-key navigation. */
+.search-by-name-results li.is-active a {
+    background: var(--bg-subtle);
+    color: var(--accent);
+    outline: none;
+}
+
+/* Lazy-loaded subtree status row (Loading… / error message) */
+.opening-subtree-status {
+    margin: var(--space-3) 0;
+    padding: var(--space-2) var(--space-3);
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-style: italic;
+}
+.opening-subtree-status[data-state="error"] {
+    color: var(--danger);
+    font-style: normal;
+}
+
+/* =============================================================================
+   Opening overview — auto-generated "Quick facts" panel.
+   Adds 100-200 words of factual content + a definition list so every page
+   has unique content, not just an empty Description.
+   ========================================================================== */
+.opening-overview {
+    margin-top: var(--space-5);
+    padding: var(--space-4);
+    background: var(--bg-subtle);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+.opening-overview h2 {
+    margin: 0 0 var(--space-3);
+    font-size: 1.35rem;
+}
+.opening-overview-body p {
+    margin: 0 0 var(--space-3);
+    line-height: 1.65;
+}
+.opening-overview-body p:last-child { margin-bottom: var(--space-4); }
+.opening-overview-body a { color: var(--accent); }
+.opening-overview-body a:hover { color: var(--accent-hover); text-decoration: underline; }
+.opening-overview-moves {
+    font-family: var(--font-mono);
+    background: var(--bg-elevated);
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.92em;
+    word-break: break-word;
+}
+
+.opening-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-2) var(--space-4);
+    margin: 0;
+    padding: var(--space-3) 0 0;
+    border-top: 1px solid var(--border);
+}
+.opening-facts > div {
+    display: flex;
+    flex-direction: column;
+}
+.opening-facts dt {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 0 0 0.1rem;
+}
+.opening-facts dd {
+    margin: 0;
+    color: var(--fg);
+    font-weight: 500;
+}
+.opening-facts dd a { color: var(--accent); }
+
+/* =============================================================================
+   Related variations (siblings) — internal-link section between Variations
+   and Show-all-subtree. Same chip style as .child-list.
+   ========================================================================== */
+.opening-related {
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border);
+}
+.opening-related h2 {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+.opening-related-meta {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+.opening-related-lede {
+    color: var(--muted);
+    margin: 0 0 var(--space-3);
+    font-size: 0.92rem;
+}
+.opening-related-lede a { color: var(--accent); }
+
+/* "This overview is auto-generated" notice at the bottom of the Overview
+   section. Sits below the Quick Facts grid, with a soft accent rule on the
+   left to distinguish it from the factual content above. */
+.opening-overview-notice {
+    margin: var(--space-4) 0 0;
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-elevated);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    color: var(--fg-soft);
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+.opening-overview-notice-icon {
+    color: var(--accent);
+    font-size: 1.1em;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+.opening-overview-notice strong { color: var(--fg); }
+.opening-overview-notice-cta {
+    color: var(--accent);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+.opening-overview-notice-cta:hover { color: var(--accent-hover); }
+
+/* =============================================================================
+   Admin diff (side-by-side review of current vs submitted markdown)
+   ========================================================================== */
+.admin-diff {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin: var(--space-3) 0;
+}
+.admin-diff-col {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    overflow: hidden;
+}
+.admin-diff-col-new { border-left: 3px solid var(--accent); }
+.admin-diff-heading {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-subtle);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--fg-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+}
+.admin-diff-meta { color: var(--muted); font-weight: 400; font-size: 0.8rem; text-transform: none; letter-spacing: 0; }
+.admin-diff-empty { color: var(--muted); font-weight: 400; font-style: italic; text-transform: none; letter-spacing: 0; }
+.admin-diff-empty-body { color: var(--muted); padding: var(--space-3); }
+.admin-diff-col .admin-rendered { padding: var(--space-3); }
+.admin-raw-details { margin-top: var(--space-3); }
+.admin-raw-details summary { cursor: pointer; color: var(--accent); padding: 0.3rem 0; }
+
+/* Admin edit page: split markdown / preview */
+.admin-edit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+}
+.admin-edit-side { display: flex; flex-direction: column; }
+.admin-edit-side-md textarea { min-height: 30rem; height: 100%; }
+.admin-edit-side-preview {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    min-height: 30rem;
+}
+.admin-edit-preview-heading {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-subtle);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--fg-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+#admin-edit-preview { padding: var(--space-3); overflow-y: auto; max-height: calc(100% - 3rem); }
+.admin-preview-empty { color: var(--muted); }
+
+/* Admin bulk bar */
+.admin-bulk-form { margin-top: var(--space-3); }
+.admin-bulk-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.admin-bulk-checkall { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; color: var(--fg-soft); }
+.admin-bulk-selected { color: var(--muted); font-size: 0.9rem; margin-right: auto; }
+.admin-cell-check { width: 2.5rem; text-align: center; }
+.admin-btn-accept, .admin-btn-reject {
+    padding: 0.4rem 0.9rem;
+    border: 0;
+    border-radius: var(--radius);
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+}
+.admin-btn-accept { background: #2ea759; }
+.admin-btn-accept:hover:not(:disabled) { background: #248a47; }
+.admin-btn-reject { background: var(--danger); }
+.admin-btn-reject:hover:not(:disabled) { background: #8a2424; }
+.admin-btn-accept:disabled, .admin-btn-reject:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* =============================================================================
+   Mobile-first responsiveness pass — touch-up of every grid that was
+   originally two-column on desktop. Each one stacks on phones.
+   ========================================================================== */
+@media (max-width: 768px) {
+    .admin-diff      { grid-template-columns: 1fr; }
+    .admin-edit-grid { grid-template-columns: 1fr; }
+    .admin-edit-side-md textarea { min-height: 18rem; }
+    .admin-edit-side-preview     { min-height: 14rem; }
+    .opening-grid    { grid-template-columns: 1fr; }
+    .site-nav        { gap: var(--space-3); font-size: 0.88rem; }
+}
+
+@media (max-width: 540px) {
+    .admin-bulk-bar { font-size: 0.85rem; }
+    .admin-table th, .admin-table td { padding: 0.4rem 0.5rem; font-size: 0.85rem; }
+    .admin-bulk-selected { width: 100%; order: 99; }
+    .opening-header h1 { font-size: 1.4rem; }
+}
+
+/* =============================================================================
+   Dark-theme chess board polish — chessground's brown squares are designed
+   for light backgrounds. In dark mode we soften their brightness and add a
+   subtle shadow under the pieces so they don't look pasted on.
+   ========================================================================== */
+[data-theme="dark"] .cg-wrap {
+    filter: brightness(0.92) contrast(1.02);
+}
+[data-theme="dark"] .cg-wrap piece {
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
+}
+[data-theme="dark"] .cg-wrap cg-board {
+    box-shadow: 0 0 0 1px var(--border-strong);
+}
+
+/* =============================================================================
+   Admin Visit Stats panel
+   ========================================================================== */
+.admin-stats {
+    margin: var(--space-5) 0;
+    padding: var(--space-4);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.admin-stats-head h2 { margin: 0 0 var(--space-1); }
+.admin-stats-note { color: var(--muted); font-size: 0.85rem; margin: 0 0 var(--space-4); }
+.admin-stats-sub {
+    margin: var(--space-5) 0 var(--space-2);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--fg-soft);
+    font-weight: 600;
+}
+
+/* KPI cards row */
+.admin-stats-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-3);
+}
+.admin-stats-kpi {
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-align: center;
+}
+.admin-stats-kpi-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+}
+.admin-stats-kpi-value {
+    font-family: var(--font-display);
+    font-size: 1.85rem;
+    font-weight: 600;
+    color: var(--fg);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Daily chart — pure CSS bars. Each <li> contains a full-height `track`
+   and the actual `bar` inside it. The track is what gives the bar a
+   100%-height parent so its inline `height: X%` actually scales relative
+   to the chart height. The previous version used flex:1 on the bar, which
+   overrode the inline height and made every bar fill the column — that's
+   why "0 views" looked identical to "3 views". */
+.admin-stats-chart {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(30, 1fr);
+    gap: 2px;
+    align-items: stretch;
+    height: 9rem;
+    padding-top: 1.2rem; /* room for the value labels */
+    position: relative;
+}
+.admin-stats-chart li {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    min-width: 0;
+}
+.admin-stats-chart-track {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    /* Faint 1-px baseline so 0-view days still read as "0" not "missing". */
+    background: linear-gradient(to top, var(--border) 0, var(--border) 1px, transparent 1px);
+}
+.admin-stats-chart-bar {
+    width: 100%;
+    background: var(--accent);
+    border-radius: 2px 2px 0 0;
+    position: relative;
+}
+.admin-stats-chart-bar.is-empty {
+    background: transparent;
+    height: 0 !important;
+}
+.admin-stats-chart-bar:hover { background: var(--accent-hover); }
+.admin-stats-chart-value {
+    position: absolute;
+    top: -1.05rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity .12s;
+}
+.admin-stats-chart li:hover .admin-stats-chart-value { opacity: 1; }
+.admin-stats-chart-label {
+    font-size: 0.6rem;
+    text-align: center;
+    color: var(--muted);
+    margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+    /* Show only every ~5th day's label to avoid overlap */
+    visibility: hidden;
+}
+.admin-stats-chart li:nth-child(5n+1) .admin-stats-chart-label { visibility: visible; }
+
+/* Page-type breakdown */
+.admin-stats-types {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+.admin-stats-types li {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+}
+.admin-stats-type-name {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+.admin-stats-type-value { font-weight: 600; color: var(--fg); }
+
+/* Top viewed openings list */
+.admin-stats-top {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: top-rank;
+}
+.admin-stats-top li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    counter-increment: top-rank;
+}
+.admin-stats-top li:last-child { border-bottom: 0; }
+.admin-stats-top li::before {
+    content: counter(top-rank);
+    min-width: 1.4em;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
+    text-align: right;
+}
+.admin-stats-top a {
+    flex: 1;
+    color: var(--fg);
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.admin-stats-top a:hover { color: var(--accent); }
+.admin-stats-top-count {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+@media (max-width: 540px) {
+    .admin-stats-chart { grid-template-columns: repeat(30, 1fr); height: 7rem; }
+    .admin-stats-chart-label { display: none; }
+}
+
+/* =============================================================================
+   About page
+   ========================================================================== */
+.about-page { max-width: 720px; }
+.about-page h1 { margin-bottom: var(--space-2); }
+.about-header .lede { color: var(--muted); margin: 0 0 var(--space-5); font-size: 1.05rem; }
+.about-section { margin: var(--space-6) 0; }
+.about-section h2 { margin-bottom: var(--space-3); font-size: 1.25rem; }
+.about-section p { line-height: 1.65; margin: 0 0 var(--space-3); }
+.about-section ul { padding-left: 1.3rem; line-height: 1.6; }
+.about-section li { margin-bottom: var(--space-2); }
+.about-section a { color: var(--accent); }
+.about-section a:hover { color: var(--accent-hover); text-decoration: underline; }
+.about-section code {
+    background: var(--bg-subtle);
+    padding: 0.05rem 0.35rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.92em;
+}
+
+/* =============================================================================
+   Opening of the day card (homepage hero strip)
+   ========================================================================== */
+.home-featured {
+    margin: var(--space-5) 0;
+    padding: 0;
+}
+.home-featured-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+}
+.home-featured-tag {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    font-weight: 600;
+}
+.home-featured-date { color: var(--muted); font-size: 0.85rem; }
+.home-featured-card {
+    display: block;
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    color: var(--fg);
+    text-decoration: none;
+    transition: border-color .12s, transform .12s;
+}
+.home-featured-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+.home-featured-name {
+    display: inline-block;
+    margin-left: var(--space-2);
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--fg);
+}
+.home-featured-snippet {
+    display: block;
+    margin: var(--space-3) 0 var(--space-2);
+    color: var(--fg-soft);
+    line-height: 1.55;
+}
+.home-featured-cta { color: var(--accent); font-weight: 500; font-size: 0.92rem; }
+
+/* =============================================================================
+   Share buttons on opening page
+   ========================================================================== */
+.opening-share {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: var(--space-3);
+    font-size: 0.85rem;
+}
+.opening-share-label { color: var(--muted); margin-right: 0.2rem; }
+.opening-share-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.7rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--fg-soft);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color .12s, color .12s;
+}
+.opening-share-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    text-decoration: none;
+}
+.opening-share-btn.is-copied {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+/* =============================================================================
+   Play page: explicit colour picker (separate from the Flip button)
+   ========================================================================== */
+.play-color-pick {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: var(--space-3);
+}
+.play-color-pick-label {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-right: 0.2rem;
+}
+.play-color-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg-soft);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+    transition: border-color .12s, color .12s, background .12s;
+}
+.play-color-btn:hover { border-color: var(--accent); color: var(--accent); }
+.play-color-btn.is-active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+.play-color-piece { font-size: 1.1em; line-height: 1; }
+
+/* =============================================================================
+   Polish pass — small consistency fixes across the site. Intentionally
+   doesn't redesign anything; it touches up alignment, transitions, focus
+   states, and a few mobile breakpoints that were uneven.
+   ========================================================================== */
+
+/* --- 1. Visible keyboard-focus rings ---------------------------------------
+   The site relied on browser defaults, which Chromium-based browsers hide
+   when keyboard nav is in mixed mouse/keyboard use. Force an accent-coloured
+   ring on every interactive element when focused via keyboard. */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+/* Inputs draw their own ring via box-shadow — disable the global outline so
+   we don't get a double indicator. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible { outline-color: transparent; }
+
+/* --- 2. Honour prefers-reduced-motion --------------------------------------
+   Disable card hover translates + smooth scroll for users who request it. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .home-popular-list a:hover,
+    .home-featured-card:hover { transform: none; }
+}
+
+/* --- 3. Consistent transitions ---------------------------------------------
+   Bump every 100 ms transition up to 150 ms so hover state changes feel
+   intentional rather than blink-fast. Tactile sweet spot per design lit. */
+.group-card,
+.child-list a,
+.home-popular-list a,
+.home-featured-card,
+.openings-letter-list a,
+.openings-jump a,
+#board-reset,
+.board-cta,
+.opening-share-btn,
+.play-color-btn { transition: border-color .15s, background .15s, color .15s, transform .15s; }
+
+/* --- 4. Board controls — align Reset + Play CTA + Hint on one row ---------
+   #board-reset was 38 px tall, .board-cta was 36 px (different padding +
+   border setup). Reading two near-equal-but-not-quite buttons side-by-side
+   looks crooked. Same min-height makes them snap to a single baseline. */
+.board-controls {
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+}
+#board-reset,
+.board-cta,
+#play-new,
+#play-undo,
+#play-flip,
+#play-resign,
+#search-undo,
+#search-reset {
+    min-height: 2.25rem;       /* 36 px */
+    padding: 0.4rem 0.9rem;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+#board-reset,
+#play-new,
+#play-undo,
+#play-flip,
+#play-resign,
+#search-undo,
+#search-reset {
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border-color: var(--border);
+}
+#board-reset:hover,
+#play-new:hover,
+#play-undo:hover,
+#play-flip:hover,
+#play-resign:hover,
+#search-undo:hover,
+#search-reset:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+.board-cta {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+.board-cta:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: #fff;
+}
+
+/* --- 5. ECO tag — drop the margin-right that fights flex gaps -------------
+   .eco-tag had margin-right: var(--space-2). Inside lists with `display:
+   flex; gap` the gap + margin double up, making the tag look detached. We
+   now rely on parent gap; the few inline contexts that need spacing still
+   work because the tag is inline-block and word-spacing kicks in. */
+.eco-tag {
+    margin-right: 0;
+    line-height: 1.5;
+    vertical-align: baseline;
+}
+/* Restore old behaviour only in contexts that need explicit spacing and
+   that AREN'T flex layouts (the breadcrumb-style header text). */
+.opening-header .eco-tag,
+.play-header .eco-tag,
+.about-page .eco-tag { margin-right: var(--space-2); }
+
+/* --- 6. Long move sequences (Overview) wrap on mobile --------------------
+   1.d4 d5 2.c4 dxc4 3.e3 e5 4.Bxc4 ... easily exceeds 360 px. */
+.opening-overview-moves {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+/* --- 7. Header nav: collapse smoothly on narrow screens -------------------
+   The header is `flex: justify-content: space-between` with Brand on the
+   left, nav + theme on the right. On 360 px screens the row
+   overflows. Wrap onto a second line gracefully. */
+.site-header-inner {
+    flex-wrap: wrap;
+    row-gap: var(--space-2);
+}
+.site-nav {
+    flex-wrap: wrap;
+    row-gap: var(--space-1);
+}
+@media (max-width: 540px) {
+    .site-header-inner {
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-3);
+    }
+    .site-nav { font-size: 0.85rem; gap: var(--space-2); }
+    .brand-name { font-size: 0.95rem; }
+    .brand-mark { font-size: 1.4rem; }
+    .theme-toggle { width: 32px; height: 32px; }
+}
+
+/* --- 8. Container — shrink padding on phones so content uses full width --- */
+@media (max-width: 540px) {
+    .container { padding: var(--space-4) var(--space-3) var(--space-5); }
+    .hero { padding: var(--space-4) 0 var(--space-3); }
+    .hero h1 { font-size: 1.65rem; line-height: 1.18; }
+    .hero .lede { font-size: 0.95rem; }
+}
+
+/* --- 9. Buttons in suggest / admin — same min-height ---------------------
+   Different form buttons across the site used different paddings — now they
+   all read as the same "primary action" component. */
+#suggest-form button,
+.admin-edit-actions button,
+.admin-login button,
+.admin-actions button,
+.admin-logout button,
+.admin-btn-accept,
+.admin-btn-reject {
+    min-height: 2.25rem;
+    line-height: 1.2;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* --- 10. Eco-tag chip in lists — fix vertical alignment with flex parents -
+   Inside .opening-related-list, .child-list, etc the tag was 0.5 px off
+   baseline because of monospace metrics. Adding a tiny line-height alignment
+   makes the chip + text optically centred. */
+.child-list a .eco-tag,
+.openings-letter-list a .eco-tag,
+.opening-related-list a .eco-tag,
+.opening-subtree-list a .eco-tag,
+.search-by-name-results a .eco-tag,
+.home-popular-list a .eco-tag {
+    flex-shrink: 0;
+}
+
+/* --- 11. Suggest-form inputs — match border-radius and padding to buttons - */
+#suggest-form input[type="text"],
+#suggest-form input[type="email"],
+#suggest-form textarea,
+.admin-login input,
+.admin-actions input[type="text"] {
+    padding: 0.5rem 0.7rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    font: inherit;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+}
+#suggest-form input[type="text"]:focus,
+#suggest-form input[type="email"]:focus,
+#suggest-form textarea:focus,
+.admin-login input:focus,
+.admin-actions input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* --- 12. Headings — slightly tighter on tags/related sections ------------- */
+.opening-related h2,
+.opening-subtree h2,
+.openings-letter h2 { margin-top: var(--space-4); }
+
+/* --- 13. Selection highlight matches the accent system -------------------- */
+::selection {
+    background: var(--accent);
+    color: #fff;
+}
+[data-theme="dark"] ::selection {
+    background: var(--accent);
+    color: var(--bg);
+}
+
+/* --- 14. Skip link for keyboard / screen reader users --------------------- */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius);
+    z-index: 1000;
+    font-weight: 600;
+}
+.skip-link:focus { left: var(--space-3); top: var(--space-3); }
+
+/* --- 15. Header backdrop-filter — fallback for browsers that don't support
+   it (Firefox without the flag, older WebViews). Use a slightly opaque
+   solid background so text remains legible. */
+@supports not (backdrop-filter: blur(1px)) {
+    .site-header { background: var(--bg-elevated); }
+}
+
+/* --- 16. Image rendering — avoid blurry SVG on retina --------------------- */
+.brand-mark { image-rendering: -webkit-optimize-contrast; }
+
+/* --- 17. Loading status messages — softer color and consistent style ------ */
+.stats-status,
+.search-empty,
+.admin-empty,
+.opening-subtree-status,
+.suggest-status {
+    font-size: 0.92rem;
+}
+
+/* --- 18. Print styles — strip nav, board controls, share buttons --------- */
+@media print {
+    .site-header, .site-footer, .opening-share, .board-controls,
+    .suggest-form, .opening-tree-details,
+    .admin-link { display: none !important; }
+    .container { padding: 0; max-width: none; }
+    a { color: #000; text-decoration: underline; }
+    .opening-board { max-width: 360px; }
+    body { background: #fff; color: #000; }
+}
+
+/* =============================================================================
+   POLISH PASS 2 — finer-grained refinement across pages.
+   Goals: subtler hover, consistent radii, softer selection, polished forms,
+   loading affordances, better print pagination, and dark-mode contrast nits.
+   ========================================================================== */
+
+/* --- 1. Easing variables --------------------------------------------------
+   Standard "ease-out" feels more natural for hover/press than the default
+   ease, which is too perky at the start. */
+:root {
+    --ease-out:  cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* --- 2. Selection — softer than full accent ------------------------------- */
+::selection {
+    background: var(--accent-soft);
+    color: var(--accent);
+    text-shadow: none;
+}
+[data-theme="dark"] ::selection {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+/* --- 3. Card hover — unify across every "card" component ------------------ */
+.group-card,
+.home-popular-list a,
+.home-featured-card,
+.child-list a,
+.openings-letter-list a {
+    transition:
+        transform   .18s var(--ease-out),
+        border-color .15s,
+        box-shadow  .15s,
+        background  .15s,
+        color       .15s;
+}
+.group-card:hover,
+.home-popular-list a:hover,
+.home-featured-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+.child-list a:hover,
+.openings-letter-list a:hover {
+    transform: translateY(-1px);
+}
+
+/* --- 4. Disabled state across the site ------------------------------------ */
+button:disabled,
+button[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+/* --- 5. Loading spinner — reusable CSS-only --------------------------------
+   Inject a spinning circle next to "Loading…" status text. The .stats-status,
+   .opening-subtree-status, and similar use data-state="loading" to opt in. */
+@keyframes codex-spin {
+    to { transform: rotate(360deg); }
+}
+.stats-status[data-state="loading"],
+.opening-subtree-status[data-state="loading"],
+.opening-subtree-status[data-state="idle"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+.stats-status[data-state="loading"]::before,
+.opening-subtree-status[data-state="idle"]::before,
+.opening-subtree-status[data-state="loading"]::before {
+    content: '';
+    width: 0.9em;
+    height: 0.9em;
+    border: 2px solid var(--border-strong);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: codex-spin 0.8s linear infinite;
+    flex-shrink: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+    .stats-status[data-state="loading"]::before,
+    .opening-subtree-status[data-state="loading"]::before,
+    .opening-subtree-status[data-state="idle"]::before {
+        animation: none;
+        border-top-color: var(--border-strong);
+    }
+}
+
+/* --- 6. Empty state base style -------------------------------------------- */
+.admin-empty,
+.search-empty {
+    padding: var(--space-5) var(--space-4);
+    background: var(--bg-subtle);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--muted);
+    text-align: center;
+    font-style: italic;
+}
+
+/* --- 7. Admin login — center vertically on the page, card-style box ------- */
+.admin-login {
+    max-width: 380px;
+    margin: var(--space-8) auto;
+    padding: var(--space-5);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+.admin-login h1 {
+    text-align: center;
+    margin-bottom: var(--space-4);
+    font-size: 1.4rem;
+}
+.admin-login label {
+    display: block;
+    margin-bottom: var(--space-3);
+    font-size: 0.88rem;
+    color: var(--fg-soft);
+}
+.admin-login label input {
+    display: block;
+    width: 100%;
+    margin-top: 0.3rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--bg);
+    color: var(--fg);
+    font: inherit;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.admin-login label input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.admin-login button {
+    width: 100%;
+    margin-top: var(--space-2);
+    padding: 0.6rem;
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: var(--radius);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    min-height: 2.5rem;
+}
+.admin-login button:hover { background: var(--accent-hover); }
+.admin-error {
+    margin-bottom: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: rgba(176, 48, 48, 0.08);
+    border-left: 3px solid var(--danger);
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    font-size: 0.9rem;
+}
+
+/* --- 8. Hero — slightly softer h1 size on desktop, tighter on phone ------- */
+.hero h1 { font-size: 2.2rem; letter-spacing: -0.01em; }
+@media (max-width: 768px) {
+    .hero h1 { font-size: 1.85rem; }
+}
+
+/* --- 9. Group cards — left-align numeric meta with the letter -------------
+   .group-letter was big and centered; on cards where the count text is short
+   the layout felt unbalanced. Add a touch of vertical rhythm. */
+.group-card { gap: var(--space-2); }
+.group-letter { margin-bottom: 0.1rem; }
+
+/* --- 10. Code in descriptions — softer background, padding ---------------- */
+.description-body code {
+    background: var(--bg-subtle);
+    padding: 0.05rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.92em;
+    color: var(--fg);
+}
+.description-body pre {
+    background: var(--bg-subtle);
+    padding: var(--space-3);
+    border-radius: var(--radius);
+    overflow-x: auto;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+.description-body pre code {
+    background: transparent;
+    padding: 0;
+}
+.description-body blockquote {
+    margin: var(--space-3) 0;
+    padding: 0.2rem 0 0.2rem var(--space-4);
+    border-left: 3px solid var(--border-strong);
+    color: var(--fg-soft);
+    font-style: italic;
+}
+
+/* --- 11. Lichess stats — softer divider lines and totals ------------------ */
+.stats-totals { color: var(--fg-soft); }
+.stats-moves th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+}
+.stats-moves td {
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+}
+.stats-moves tr:last-child td { border-bottom: 0; }
+
+/* --- 12. Suggest form — tighter spacing, no awkward gap ------------------- */
+.suggest-form summary {
+    cursor: pointer;
+    color: var(--accent);
+    padding: var(--space-2) 0;
+    list-style: none;
+}
+.suggest-form summary::-webkit-details-marker { display: none; }
+.suggest-form summary::before {
+    content: '+ ';
+    color: var(--accent);
+    margin-right: 0.1rem;
+}
+.suggest-form[open] summary::before { content: '− '; }
+
+/* --- 13. Tree-path summary preview — tighten typography ------------------- */
+.opening-tree-summary { gap: var(--space-2); }
+.opening-tree-summary-preview {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+/* --- 14. Print: avoid bad page-breaks ------------------------------------- */
+@media print {
+    .home-featured,
+    .home-popular,
+    .group-grid,
+    .opening-overview,
+    .opening-stats,
+    .opening-description,
+    .opening-related,
+    .group-card,
+    .stats-moves,
+    .opening-tree-list,
+    .home-popular-list li {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    h1, h2, h3 {
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+    .opening-board { max-width: 320px; margin: 0 auto; }
+    .description-body { font-size: 11pt; }
+}
+
+/* --- 16. Children-toggle — match button family aesthetic ------------------ */
+.children-toggle {
+    margin-top: var(--space-3);
+    padding: 0.4rem 0.9rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg-soft);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+    min-height: 2.25rem;
+    transition: border-color .15s, color .15s, background .15s;
+}
+.children-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+/* --- 17. Search-by-name dropdown — softer shadow + open-state animation -- */
+.search-by-name-results {
+    animation: codex-fadein .12s var(--ease-out);
+}
+@keyframes codex-fadein {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .search-by-name-results { animation: none; }
+}
+
+/* --- 19. Dark mode contrast: ECO tag was a little washed out -------------- */
+[data-theme="dark"] .eco-tag {
+    background: rgba(110, 163, 212, 0.18);
+    color: var(--accent);
+}
+
+/* --- 20. Better focus ring inside cards/links — use box-shadow not outline
+   when the card has rounded corners so the ring follows the curve. */
+.group-card:focus-visible,
+.home-popular-list a:focus-visible,
+.home-featured-card:focus-visible,
+.child-list a:focus-visible,
+.openings-letter-list a:focus-visible,
+.opening-share-btn:focus-visible,
+.play-color-btn:focus-visible,
+.children-toggle:focus-visible,
+#board-reset:focus-visible,
+.board-cta:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-soft), 0 0 0 4px var(--accent);
+}
+
+/* --- 21. Stats bar segments — clearer color separation -------------------- */
+.stats-bar {
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+}
+.stats-bar > span:not(:last-child) { box-shadow: 1px 0 0 var(--bg-elevated); }
+
+/* --- 22. Header sticky shadow when scrolled ------------------------------- */
+.site-header {
+    transition: box-shadow .15s, border-color .15s;
+}
+.site-header:has(+ * .container:not(:hover)) {
+    /* No-op selector, kept for future scroll-based class hook */
+}
+/* Light shadow below sticky header so content beneath isn't visually glued */
+.site-header { box-shadow: 0 1px 0 var(--border); border-bottom: 0; }
+
+/* --- 24. Mobile play page — buttons row alignment ------------------------- */
+@media (max-width: 540px) {
+    .board-controls > * { flex: 1; min-width: 5.5rem; }
+    .board-controls .board-hint { flex: 1 0 100%; text-align: center; }
+    .play-color-pick { justify-content: center; }
+    .play-color-btn { flex: 1; justify-content: center; }
+}
+
+/* --- 25. About page — slightly tighter headings + paragraph rhythm -------- */
+.about-section h2 { margin-top: 0; }
+.about-section p:last-child { margin-bottom: 0; }
+.about-section + .about-section {
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+}
+
+/* =============================================================================
+   404 / error page
+   ========================================================================== */
+.error-page {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: var(--space-5);
+}
+.error-page-icon {
+    font-size: 4.5rem;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.6;
+    margin-bottom: var(--space-3);
+}
+.error-page h1 {
+    font-size: 1.85rem;
+    margin-bottom: var(--space-3);
+}
+.error-page .lede {
+    color: var(--muted);
+    margin: 0 auto var(--space-5);
+    font-size: 1rem;
+}
+.error-page code {
+    background: var(--bg-subtle);
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.92em;
+    color: var(--fg);
+}
+.error-suggestions {
+    margin: var(--space-6) 0;
+    text-align: left;
+}
+.error-suggestions h2 {
+    font-size: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+.error-actions {
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+}
+.error-actions h2 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+.error-actions p {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0;
+}
+.error-action-secondary {
+    background: var(--bg-elevated) !important;
+    color: var(--fg) !important;
+    border: 1px solid var(--border) !important;
+}
+.error-action-secondary:hover {
+    border-color: var(--accent) !important;
+    background: var(--accent-soft) !important;
+    color: var(--accent) !important;
+}
+
+/* =============================================================================
+   Keyboard shortcut hint — small kbd-style chip next to the search nav link
+   ========================================================================== */
+.kbd-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.05rem 0.35rem;
+    margin-left: 0.3rem;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+@media (max-width: 768px) {
+    .kbd-hint { display: none; }   /* Mobile has no physical keyboard */
+}
+
+/* =============================================================================
+   Final cleanup: drop selectors that referenced removed Bookmarks classes.
+   Browsers ignore unknown selectors fine, but they bloat the CSS and confuse
+   future devtools-driven debugging. (CSS doesn't have "remove" syntax —
+   these are just here as documentation of the cleanup decision.)
+   ========================================================================== */
+
+/* =============================================================================
+   Polished hover on home featured card — subtler scale instead of pop-out
+   ========================================================================== */
+.home-featured-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(42, 93, 143, 0.15);
+}
+
+/* =============================================================================
+   Subtler scroll behavior — smooth scroll for in-page anchor navigation
+   (Tree path links, suggestion form anchor, etc). Respects reduce-motion.
+   ========================================================================== */
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+}
+
+/* =============================================================================
+   Better visual rhythm for opening-related (siblings) — denser grid on wide
+   screens because there can be many siblings, but breathe on mobile.
+   ========================================================================== */
+@media (min-width: 1024px) {
+    .opening-related-list { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+}
+
+/* =============================================================================
+   Stats panel "no games found" — friendlier empty state
+   ========================================================================== */
+.stats-status[data-state="empty"] {
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-subtle);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--muted);
+    font-style: italic;
+    text-align: center;
+}
+
+/* =============================================================================
+   Opening tools row — Copy FEN, Copy PGN, Open in Lichess, Embed snippet.
+   Sits above the share row on the opening page header.
+   ========================================================================== */
+.opening-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: var(--space-3);
+    font-size: 0.85rem;
+}
+.opening-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--fg-soft);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color .15s, color .15s, background .15s;
+}
+.opening-tool-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    text-decoration: none;
+}
+.opening-tool-btn:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+.opening-tool-btn.is-copied {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.opening-tool-btn-summary {
+    list-style: none;
+}
+.opening-tool-btn-summary::-webkit-details-marker { display: none; }
+
+/* =============================================================================
+   Back-to-top floating button — bottom-right, slides in on scroll
+   ========================================================================== */
+.back-to-top {
+    position: fixed;
+    right: var(--space-4);
+    bottom: var(--space-4);
+    z-index: 20;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18), 0 2px 4px rgba(42, 93, 143, 0.25);
+    cursor: pointer;
+    font-size: 1.4rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9;
+    transition: opacity .15s, transform .15s var(--ease-out), background .15s;
+}
+.back-to-top:hover {
+    background: var(--accent-hover);
+    opacity: 1;
+    transform: translateY(-2px);
+}
+.back-to-top[hidden] {
+    display: none;          /* `hidden` attr might be overridden by flex */
+}
+
+@media (max-width: 540px) {
+    .back-to-top {
+        right: var(--space-3);
+        bottom: var(--space-3);
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1.2rem;
+    }
+}
+
+/* Suppress when print — never need a floating UI button on paper. */
+@media print {
+    .back-to-top { display: none !important; }
+    .opening-tools { display: none !important; }
+}
+
+/* =============================================================================
+   Toast notification region — bottom-center floating bar. Used by Toast.show()
+   in app.js for clipboard success / error feedback. Stacks if multiple at once.
+   ========================================================================== */
+.toast-region {
+    position: fixed;
+    left: 50%;
+    bottom: var(--space-5);
+    transform: translateX(-50%);
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    pointer-events: none;
+}
+.toast {
+    pointer-events: auto;
+    padding: 0.55rem 1.1rem;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: var(--radius);
+    font-size: 0.92rem;
+    font-weight: 500;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .18s var(--ease-out), transform .18s var(--ease-out);
+    max-width: 90vw;
+}
+.toast.is-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+.toast-error {
+    background: var(--danger);
+    color: #fff;
+}
+[data-theme="dark"] .toast {
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border: 1px solid var(--border-strong);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+@media (prefers-reduced-motion: reduce) {
+    .toast { transition: opacity .12s; transform: none; }
+    .toast.is-in { transform: none; }
+}
+@media print { .toast-region { display: none !important; } }
+
+/* =============================================================================
+   Visited opening links — subtle indicator so users track what they've read
+   ========================================================================== */
+.child-list a:visited .child-list-name,
+.openings-letter-list a:visited .openings-letter-name,
+.home-popular-list a:visited .home-popular-name,
+.opening-related-list a:visited .child-list-name {
+    color: var(--muted);
+}
+.child-list a:visited::after,
+.openings-letter-list a:visited::after,
+.home-popular-list a:visited::after {
+    content: ' ✓';
+    color: var(--accent);
+    opacity: 0.6;
+    font-size: 0.8em;
+    margin-left: auto;
+    padding-left: 0.3rem;
+    flex-shrink: 0;
+}
+
+/* =============================================================================
+   Print-only canonical URL banner. Shows the URL where the page lives,
+   so a printed PDF or paper reference points back to the source.
+   ========================================================================== */
+.print-only { display: none; }
+@media print {
+    .print-only { display: block; }
+    .print-canonical {
+        position: fixed;
+        top: 0.4cm;
+        right: 0.4cm;
+        font-size: 9pt;
+        color: #666;
+        font-family: ui-monospace, monospace;
+        margin: 0;
+    }
+}
+
+/* =============================================================================
+   Better focus-visible on details summary + smoother open animation feel
+   (browser controls the actual open, but we can ease in the contents).
+   ========================================================================== */
+details > summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+details[open] > :not(summary) {
+    animation: codex-detail-in .18s var(--ease-out);
+}
+@keyframes codex-detail-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    details[open] > :not(summary) { animation: none; }
+}
+
+/* =============================================================================
+   Custom tooltip — CSS-only, attaches to any element with [data-tip="..."].
+   Replaces native browser title= UX which is laggy and ugly in dark mode.
+   To use:  <button data-tip="Copy the FEN">…</button>
+   The native title= attribute should be REMOVED on the same element to
+   avoid double tooltips; existing code keeps title= as a fallback for
+   screen readers and assistive tech, but visually the CSS one shows.
+   ========================================================================== */
+[data-tip] { position: relative; }
+[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    padding: 0.3rem 0.55rem;
+    background: var(--fg);
+    color: var(--bg);
+    font-size: 0.78rem;
+    line-height: 1.3;
+    font-weight: 400;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    max-width: 240px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .12s var(--ease-out), transform .12s var(--ease-out);
+    z-index: 30;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+[data-tip]:hover::after,
+[data-tip]:focus-visible::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+[data-theme="dark"] [data-tip]::after {
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border: 1px solid var(--border-strong);
+}
+/* Tooltips that need a wider target — multi-line text — use data-tip-wide. */
+[data-tip-wide]::after {
+    white-space: normal;
+    width: 220px;
+}
+@media (max-width: 540px) {
+    /* Tap-to-show tooltips on mobile would block clicks. Hide them. */
+    [data-tip]::after { display: none; }
+}
+@media print {
+    [data-tip]::after { display: none; }
+}
+
+/* =============================================================================
+   Better cursor affordance on details summary (currently it's just default
+   pointer; sometimes browsers show text-cursor depending on contents).
+   ========================================================================== */
+details > summary { cursor: pointer; }
+details > summary > * { pointer-events: none; }  /* clicks pass to summary */
+details > summary input,
+details > summary textarea,
+details > summary button { pointer-events: auto; }
+
+/* =============================================================================
+   Move-list keyboard hint — small line under the move buttons on opening
+   page. Just a hint, not interactive itself. Uses the existing .kbd-hint
+   chip style for the arrow keys.
+   ========================================================================== */
+.move-list-hint {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin: var(--space-3) 0 0;
+    line-height: 1.5;
+}
+.move-list-hint .kbd-hint {
+    display: inline-flex;
+    margin: 0 0.1rem;
+}
+/* Don't show the arrow-key hint on mobile — there are no physical arrow keys. */
+@media (max-width: 768px) {
+    .move-list-hint { display: none; }
+}
+
+/* =============================================================================
+   Visited link styling — refine: on chips inside .child-list and
+   .opening-related-list, the ✓ checkmark sometimes drops to a new line
+   because the chip is flex with wrap. Lock it to the end of the row.
+   ========================================================================== */
+.child-list a,
+.opening-related-list a {
+    flex-wrap: nowrap;
+}
+.child-list a:visited::after,
+.opening-related-list a:visited::after {
+    margin-left: 0.3rem;
+}
+
+/* =============================================================================
+   Hide chessground-related .opening-board placeholder on pages without
+   $needsBoard. Defence-in-depth: should never render anyway since those
+   pages don't include the markup, but if a stray <div class="opening-board">
+   sneaks in via description Markdown, don't show a weird empty square.
+   ========================================================================== */
+body:not(.has-board) .opening-board:empty { display: none; }
+
+/* =============================================================================
+   Subtle improvement: move-list buttons get a thin outline on the
+   currently-active position instead of solid fill. Active = where the
+   board's currently displayed. Less visually heavy than the previous
+   "filled accent" which dominated the move list.
+   ========================================================================== */
+.move-list button.is-active {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* =============================================================================
+   FOUC mitigation — set the initial background on <html> from the theme
+   data attribute set by the inline script in <head>. Without this, on
+   slow networks the page flashes WHITE before the dark stylesheet loads.
+   ========================================================================== */
+html[data-theme="dark"]  { background: #16181d; }
+html[data-theme="light"] { background: #faf7f0; }
+
+/* =============================================================================
+   Table of contents for long opening descriptions.
+   Auto-rendered by opening.php when the description has ≥ 3 H2/H3 headings.
+   Sits above the prose, like a Wikipedia article TOC.
+   ========================================================================== */
+.description-toc {
+    margin: 0 0 var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.92rem;
+}
+.description-toc-title {
+    margin: 0 0 var(--space-2);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+}
+.description-toc ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: toc-counter;
+}
+.description-toc li {
+    counter-increment: toc-counter;
+    margin: 0.2rem 0;
+}
+.description-toc li::before {
+    content: counter(toc-counter) '.';
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    margin-right: 0.4rem;
+    font-size: 0.85em;
+}
+.description-toc-h3 {
+    margin-left: var(--space-4);
+    font-size: 0.88em;
+}
+.description-toc-h3::before { content: '·'; color: var(--border-strong); }
+.description-toc a {
+    color: var(--accent);
+    text-decoration: none;
+}
+.description-toc a:hover {
+    text-decoration: underline;
+}
+@media print { .description-toc { display: none; } }
+
+/* Scroll-margin so anchored H2/H3 headings sit BELOW the sticky header
+   when clicked from TOC, not visually hidden behind it. */
+.description-body h2,
+.description-body h3 {
+    scroll-margin-top: 80px;
+}
+
+/* =============================================================================
+   /play page — mobile difficulty grid fix
+   ========================================================================== */
+.play-difficulty {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+}
+@media (max-width: 540px) {
+    .play-difficulty {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.4rem;
+    }
+    .play-difficulty button {
+        padding: 0.45rem 0.5rem;
+        font-size: 0.85rem;
+    }
+    /* Less verbose Stockfish difficulty UI on narrow screens — Elo numbers
+       still useful but the "Often blunders pieces" descriptor takes space. */
+    .play-difficulty-desc { font-size: 0.82rem; }
+}
+
+/* =============================================================================
+   "Game resumed" badge — small hint shown via JS when localStorage restored
+   an in-progress game so the user understands why the board isn't at the
+   opening's starting position.
+   ========================================================================== */
+.play-resume-hint {
+    display: inline-block;
+    margin-top: var(--space-2);
+    padding: 0.25rem 0.6rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* =============================================================================
+   Recently viewed — strip on opening page header (horizontal compact),
+   plus full section on homepage ("Pick up where you left off").
+   Populated entirely by client-side JS from localStorage.
+   ========================================================================== */
+
+/* --- 1. Opening page strip — sits BEFORE .opening — small breadcrumb-ish row */
+.recent-strip {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+    padding: 0.4rem 0;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    /* Hide scrollbar visually but keep functional on touch */
+    scrollbar-width: none;
+}
+.recent-strip::-webkit-scrollbar { display: none; }
+.recent-strip-label {
+    color: var(--muted);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+}
+.recent-strip-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: nowrap;
+}
+.recent-strip-list a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--fg-soft);
+    text-decoration: none;
+    white-space: nowrap;
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.recent-strip-list a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.recent-strip-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 10rem;
+}
+@media (max-width: 540px) {
+    .recent-strip-label { display: none; }   /* save room — pills are self-explanatory */
+}
+@media print { .recent-strip { display: none; } }
+
+/* --- 2. Homepage "Pick up where you left off" — between hero and groups */
+.home-recent {
+    margin: var(--space-5) 0 var(--space-4);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px dashed var(--border);
+}
+.home-recent-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--space-3);
+}
+.home-recent-head h2 {
+    margin: 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+}
+.home-recent-clear {
+    background: transparent;
+    border: 0;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.78rem;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+}
+.home-recent-clear:hover { color: var(--accent); }
+.home-recent-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-2);
+}
+.home-recent-list a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg);
+    text-decoration: none;
+    transition: border-color .15s, transform .15s var(--ease-out);
+}
+.home-recent-list a:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    color: var(--accent);
+}
+.home-recent-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.92rem;
+}
+@media print { .home-recent { display: none; } }
+
+/* =============================================================================
+   Flip board button on /openings/<slug> — matches the existing #board-reset
+   button family. Already covered by the general button-equalisation rules
+   from earlier polish passes; this just makes sure the new ID is included.
+   ========================================================================== */
+#board-flip {
+    min-height: 2.25rem;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border-radius: var(--radius);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color .15s, background .15s, color .15s;
+}
+#board-flip:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+/* =============================================================================
+   Admin: filter row above the submissions table
+   ========================================================================== */
+.admin-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-3);
+    margin: var(--space-3) 0;
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.admin-filters label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.admin-filters input,
+.admin-filters select {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    font: inherit;
+    font-size: 0.9rem;
+    min-width: 8rem;
+}
+.admin-filters input:focus,
+.admin-filters select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.admin-filters button {
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+}
+.admin-filters button:hover { background: var(--accent-hover); }
+
+/* =============================================================================
+   Site footer — version pill (faint, doesn't dominate the copyright row)
+   ========================================================================== */
+.footer-version {
+    display: inline-block;
+    padding: 0 0.3rem;
+    background: var(--bg-subtle);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+}
