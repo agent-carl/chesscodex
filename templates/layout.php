@@ -33,14 +33,12 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
     $abs = $projectRoot . $path;
     $ver = '1';
     if (is_file($abs)) {
-        $fp = @fopen($abs, 'rb');
-        if ($fp) {
-            $chunk = @fread($fp, 65536);
-            @fclose($fp);
-            if ($chunk !== false) $ver = substr(sha1($chunk), 0, 8);
-        } else {
-            $ver = (string) @filemtime($abs);
-        }
+        // Hash the whole file: hashing only the first 64 KB kept the version
+        // unchanged for edits near the end of style.min.css (73 KB), so
+        // Cloudflare and browsers kept serving the stale "immutable" copy.
+        // xxh3 is fast enough to run per request.
+        $hash = @hash_file('xxh3', $abs);
+        $ver  = $hash !== false ? substr($hash, 0, 8) : (string) @filemtime($abs);
     }
     return $cache[$path] = $baseEsc . htmlspecialchars($path, ENT_QUOTES, 'UTF-8') . '?v=' . $ver;
 };
