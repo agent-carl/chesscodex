@@ -64,7 +64,9 @@ $ecoEsc        = htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8');
 $groupEsc      = htmlspecialchars((string) $ecoGroupLabel, ENT_QUOTES, 'UTF-8');
 $movesEsc      = '<code class="opening-overview-moves">' . htmlspecialchars($movesPretty, ENT_QUOTES, 'UTF-8') . '</code>';
 $plyEsc        = htmlspecialchars($plyCountText, ENT_QUOTES, 'UTF-8');
-$isGambit      = stripos((string) $o['name'], 'Gambit') !== false;
+$isGambit      = Opening::isGambit((string) $o['name']);
+// "Queen's Gambit Declined: …" and the like: named after a gambit that isn't taken.
+$isDeclined    = !$isGambit && stripos((string) $o['name'], 'Gambit') !== false;
 
 // Stable per-opening rotation seed — same opening always gets the same
 // variants; different openings get different variants.
@@ -90,6 +92,13 @@ if ($isGambit) {
         '<strong>%s</strong> is a gambit, classified under ECO code %s within the %s family. As with all gambits, one side sacrifices material early — usually a pawn — in exchange for development, open lines, or initiative.',
         '<strong>%s</strong> is a sacrificial opening line filed under ECO %s in the %s group. The defining idea is the early concession of material to seize the initiative and unbalance the position.',
         '<strong>%s</strong> belongs to the gambit family of chess openings (ECO %s, %s). It trades material for attacking chances — a classic trade-off that has fascinated players from the Romantic era to modern correspondence chess.',
+    ];
+    $intro = sprintf($introTemplates[$rotation % count($introTemplates)], $nameEsc, $ecoEsc, $groupEsc);
+} elseif ($isDeclined) {
+    $introTemplates = [
+        '<strong>%s</strong> is a declined gambit, classified under ECO code %s within the %s family: the material offered is not taken, so the game goes on without the early imbalance a gambit is meant to create.',
+        '<strong>%s</strong> (ECO %s, %s) is a line in which the gambit is declined — the offered material is left alone and the position stays materially level.',
+        '<strong>%s</strong> is filed under ECO %s in the %s group. Here the gambit is declined: instead of taking the offered material, the defending side keeps to its own development.',
     ];
     $intro = sprintf($introTemplates[$rotation % count($introTemplates)], $nameEsc, $ecoEsc, $groupEsc);
 } elseif ($rootAncestor === null && $childCount >= 4) {
@@ -300,7 +309,9 @@ $island = [
     <header class="opening-header">
         <a class="eco-tag" href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco/' . $o['eco']), ENT_QUOTES, 'UTF-8') ?>"
            title="All openings under ECO <?= htmlspecialchars($o['eco'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($o['eco'], ENT_QUOTES, 'UTF-8') ?></a>
-        <h1><?= htmlspecialchars($o['name'], ENT_QUOTES, 'UTF-8') ?></h1>
+        <h1><?= htmlspecialchars($o['name'], ENT_QUOTES, 'UTF-8') ?><?php if ($lineTail !== ''): ?>
+            <?php /* Same-name lines: the moves that tell this one apart, as in the title. */ ?>
+            <span class="opening-title-tail"><?= htmlspecialchars($lineTail, ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?></h1>
         <?php
         // Share row — no third-party JS, no tracking. Each button is a plain
         // intent URL; "Copy link" uses navigator.clipboard via inline JS at
@@ -681,9 +692,9 @@ $ogType = 'article';
 
 $canonical = $siteUrl . $baseUrl . I18n::url('/openings/' . $o['slug']);
 
-// SEO description: front-load the keywords search engines and humans both
-// scan — full name, ECO code, group, plies, opening moves, variations
-// count. layout.php trims it to 160 chars at a word boundary.
+// SEO description, in the order searchers scan it: name and ECO code, how
+// the line scores on Lichess (the one thing the title can't say), its first
+// moves, the variations. layout.php trims it to 160 chars at a word boundary.
 // The first moves, cut after a whole move ("1. e4 e5 2. Nf3 Nc6…").
 $moveSnippet = $movesPretty;
 if (mb_strlen($moveSnippet) > 24) {
@@ -691,19 +702,19 @@ if (mb_strlen($moveSnippet) > 24) {
     $cut = mb_substr($cut, 0, (int) mb_strrpos($cut, ' '));
     $moveSnippet = preg_replace('/\s*\d+\.+$/', '', $cut) . '…';   // no dangling "3."
 }
-$descParts = [];
-$descParts[] = $o['name'] . ' (ECO ' . $o['eco'] . ', ' . $ecoGroupLabel . ')';
-// Same-name lines share their first moves; their ending is what differs.
-$descParts[] = $lineTail !== ''
-    ? $plyCountText . ' line ending ' . $lineTail
-    : $plyCountText . ' chess opening starting ' . $moveSnippet;
-if ($parent && empty($ancestors) === false) {
-    $descParts[] = 'variation of ' . $parent['name'];
+$descParts = [$o['name'] . ' (' . $o['eco'] . ')'];
+if ($statsTotal > 0) {
+    $descParts[] = sprintf('White wins %d%%, Black %d%%, draws %d%% in %s Lichess games',
+        (int) round((float) $wPct), (int) round((float) $bPct), (int) round((float) $dPct),
+        Rankings::compact($statsTotal));
 }
+// Same-name lines share their first moves; their ending is what differs.
+$descParts[] = $lineTail !== '' ? 'line ending ' . $lineTail : $moveSnippet;
 if ($childCount > 0) {
     $descParts[] = $childCount . ($childCount === 1 ? ' variation' : ' variations');
 }
-$description = implode(' · ', $descParts) . '. Interactive board, Lichess statistics, play vs Stockfish.';
+$description = implode(' · ', $descParts) . ' · Interactive board'
+    . ($statsTotal > 0 ? '' : ', Lichess statistics') . ', play vs Stockfish.';
 
 // OG image absolute URL for the JSON-LD `image`: the same URL as og:image in
 // layout.php, including its ?v= (hash of og.php).

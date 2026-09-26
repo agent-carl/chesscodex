@@ -1,0 +1,48 @@
+/* Ranking pages (/best-openings-for-white|black, /popular-openings, /gambits)
+   and the moves that tell same-name lines apart. */
+
+.ranking-page .lede,
+.ranking-method { max-width: 70ch; }
+.ranking-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    margin: var(--space-3) 0 var(--space-5);
+    font-size: .95rem;
+}
+.ranking-table-wrap { overflow-x: auto; margin-bottom: var(--space-5); }
+.ranking-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.ranking-table th,
+.ranking-table td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: middle;
+}
+.ranking-table th { color: var(--muted); font-size: .85rem; font-weight: 600; white-space: nowrap; }
+.ranking-table .ranking-num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ranking-name a { display: inline-flex; align-items: baseline; gap: var(--space-2); }
+.ranking-moves code { font-family: var(--font-mono); font-size: .85rem; color: var(--fg-soft); white-space: nowrap; }
+.ranking-result { display: inline-flex; align-items: center; gap: var(--space-2); white-space: nowrap; }
+.ranking-result .stats-bar.inline { width: 110px; }
+.ranking-pcts { color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; }
+.ranking-method { color: var(--muted); font-size: .9rem; }
+@media (max-width: 640px) {
+    .ranking-moves { display: none; }
+    .ranking-table th,
+    .ranking-table td { padding: var(--space-2) .3rem; }
+    .ranking-table th { white-space: normal; }
+    .ranking-name .eco-tag { display: none; }
+    .ranking-result { flex-direction: column; align-items: flex-start; gap: 2px; }
+    .ranking-result .stats-bar.inline { width: 60px; }
+}
+
+.opening-title-tail {
+    display: block;
+    margin-top: .2em;
+    font-family: var(--font-mono);
+    font-size: .5em;
+    font-weight: 400;
+    color: var(--muted);
+}
+.openings-letter-tail { margin-left: .4em; font-family: var(--font-mono); font-size: .85em; color: var(--muted); }

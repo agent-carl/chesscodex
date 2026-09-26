@@ -16,6 +16,7 @@ spl_autoload_register(static function (string $class): void {
         'Logger'           => __DIR__ . '/Logger.php',
         'Migrations'       => __DIR__ . '/Migrations.php',
         'Opening'          => __DIR__ . '/Opening.php',
+        'Rankings'         => __DIR__ . '/Rankings.php',
         'RateLimit'        => __DIR__ . '/RateLimit.php',
         'Router'           => __DIR__ . '/Router.php',
         'Routes'           => __DIR__ . '/Routes.php',

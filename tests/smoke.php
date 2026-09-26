@@ -35,6 +35,8 @@ $tests = [
     ['GET', '/',                                  200, 'Caissa Codex'],
     ['GET', '/about',                             200, 'high school student'],
     ['GET', '/openings',                          200, 'A–Z'],
+    ['GET', '/best-openings-for-white',           200, 'White score'],
+    ['GET', '/gambits',                           200, 'Gambit'],
     ['GET', '/openings/sicilian-defense',         200, 'Sicilian'],
     ['GET', '/search',                            200, 'search'],
     ['GET', '/play/sicilian-defense',             200, 'Stockfish'],

@@ -96,6 +96,7 @@ $router->add('/openings',            [Routes::class, 'openingsIndex']);
 $router->add('/eco',                 [Routes::class, 'ecoIndex']);
 $router->add('#^/eco/([A-Ea-e][0-9]{2})$#', [Routes::class, 'eco']);
 $router->add('/about',               [Routes::class, 'about']);
+$router->add('#^/(best-openings-for-white|best-openings-for-black|popular-openings|gambits)$#', [Routes::class, 'ranking']);
 $router->add('/',                    [Routes::class, 'home']);
 $router->add('#^/openings/([a-z0-9-]+)/?$#', [Routes::class, 'opening']);
 $router->add('#^/play/([a-z0-9-]+)/?$#',     [Routes::class, 'play']);

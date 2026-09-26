@@ -108,6 +108,22 @@ $renderStrip(
 );
 ?>
 
+<section class="home-popular home-rankings">
+    <header class="home-popular-head">
+        <h2>Rankings from Lichess games</h2>
+        <p class="home-popular-lede">Which openings score best for each side, which are played most, and the most-played gambits.</p>
+    </header>
+    <ul class="home-popular-list">
+        <?php foreach (Rankings::LABELS as $path => $label): ?>
+            <li>
+                <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/' . $path), ENT_QUOTES, 'UTF-8') ?>">
+                    <span class="home-popular-name"><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></span>
+                </a>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</section>
+
 <section class="about-section home-intro">
     <h2>How the openings are organised</h2>
     <p>

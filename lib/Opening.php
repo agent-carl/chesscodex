@@ -49,10 +49,46 @@ class Opening
             'SELECT pgn_moves FROM codex_openings WHERE name = :n AND eco = :e AND id <> :id'
         );
         $stmt->execute(['n' => $opening['name'], 'e' => $opening['eco'], 'id' => $opening['id']]);
-        $others = array_map([self::class, 'sanTokens'], $stmt->fetchAll(PDO::FETCH_COLUMN));
+        return self::tailAgainst((string) $opening['pgn_moves'], $stmt->fetchAll(PDO::FETCH_COLUMN));
+    }
+
+    /**
+     * distinguishingTail() for many rows at once, without a query per row:
+     * id => tail for each row (id, name, eco, pgn_moves) that shares its name
+     * and ECO code with another row of $rows.
+     */
+    public static function lineTails(array $rows): array
+    {
+        $groups = [];
+        foreach ($rows as $r) $groups[$r['name'] . "\n" . $r['eco']][(int) $r['id']] = (string) $r['pgn_moves'];
+        $tails = [];
+        foreach ($groups as $group) {
+            if (count($group) < 2) continue;
+            foreach ($group as $id => $pgn) {
+                $others = $group;
+                unset($others[$id]);
+                $tails[$id] = self::tailAgainst($pgn, array_values($others));
+            }
+        }
+        return $tails;
+    }
+
+    /**
+     * True when the line plays or accepts a gambit. "Queen's Gambit Declined"
+     * and other "… Gambit Declined" lines are not: nothing was sacrificed.
+     */
+    public static function isGambit(string $name): bool
+    {
+        return (bool) preg_match('/gambit(?!\s+declined)/i', $name);
+    }
+
+    /** The shortest numbered ending of $pgn that none of $otherPgns ends with. */
+    private static function tailAgainst(string $pgn, array $otherPgns): string
+    {
+        $others = array_map([self::class, 'sanTokens'], $otherPgns);
         if (empty($others)) return '';
 
-        $mine = self::sanTokens((string) $opening['pgn_moves']);
+        $mine = self::sanTokens($pgn);
         $n = count($mine);
         for ($k = min(2, $n); $k < $n; $k++) {
             $tail = self::formatPlies(array_slice($mine, -$k), $n - $k);
@@ -711,18 +747,23 @@ class Opening
     /**
      * Returns *all* openings grouped by the first letter of `name`. Used by the
      * alphabetical browse index. Cached on disk for 6h — data only changes on
-     * import. Output shape: ['A' => [row, ...], 'B' => [...], ...].
+     * import. Output shape: ['A' => [row, ...], 'B' => [...], ...]. Rows that
+     * share a name + ECO code carry their distinguishing moves in 'tail'
+     * (up to 14 rows would otherwise read the same).
      */
     public static function allAlphabetical(): array
     {
-        return Cache::remember('alphabetical', 21600, static function (): array {
-            $stmt = chess_codex_db()->query(
-                "SELECT id, eco, name, slug, move_count
+        return Cache::remember('alphabetical-tails', 21600, static function (): array {
+            $rows = chess_codex_db()->query(
+                "SELECT id, eco, name, slug, move_count, pgn_moves
                  FROM codex_openings
                  ORDER BY name ASC, id ASC"
-            );
+            )->fetchAll();
+            $tails = self::lineTails($rows);
             $grouped = [];
-            foreach ($stmt as $row) {
+            foreach ($rows as $row) {
+                $row['tail'] = $tails[(int) $row['id']] ?? '';
+                unset($row['pgn_moves']);
                 $first = mb_strtoupper(mb_substr((string) $row['name'], 0, 1));
                 if (!preg_match('/^[A-Z]$/u', $first)) $first = '#';
                 $grouped[$first][] = $row;
