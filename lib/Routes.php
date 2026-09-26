@@ -32,7 +32,8 @@ final class Routes
         echo "Allow: /about\n";
         echo "Disallow: /admin\n";
         echo "Disallow: /api/\n";
-        echo "Disallow: /random\n\n";
+        echo "Disallow: /random\n";
+        echo "Disallow: /*.pgn$\n\n";   // PGN downloads of opening trees
 
         // Common abusive crawlers — block to save bandwidth + reduce noise
         // in stats. These ignore robots.txt half the time but it documents
@@ -67,11 +68,14 @@ final class Routes
         $base   = $siteUrl . $baseUrl;
         $escUrl = static fn (string $u): string => htmlspecialchars($u, ENT_QUOTES | ENT_XML1, 'UTF-8');
 
-        // <loc> only. Google ignores <changefreq> and <priority>, and trusts
-        // <lastmod> only when it's accurate — the site doesn't track edits,
-        // and stamping today's date on all 3,693 URLs every day taught search
-        // engines to ignore it. (English-only — no hreflang alternates.)
-        $row = static fn (string $loc): string => '  <url><loc>' . $escUrl($loc) . "</loc></url>\n";
+        // No <changefreq> or <priority>: Google ignores them. <lastmod> only
+        // where it's accurate — stamping today's date on every URL every day
+        // taught search engines to ignore it. (English-only — no hreflang.)
+        $row = static fn (string $loc, ?string $lastmod = null): string => '  <url><loc>' . $escUrl($loc) . '</loc>'
+            . ($lastmod ? '<lastmod>' . $lastmod . '</lastmod>' : '') . "</url>\n";
+        // Opening pages change when their Lichess numbers are refreshed, so
+        // that date is their <lastmod>; the other pages carry none.
+        $updated = array_column(Rankings::all(), 'updated', 'slug');
 
         $xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
@@ -80,12 +84,16 @@ final class Routes
         $xml .= $row($base . '/search');   // the opening identifier
         $xml .= $row($base . '/about');
         $xml .= $row($base . '/eco');
+        foreach (array_keys(Opening::allAlphabetical()) as $letter) {
+            if (preg_match('/^[A-Z]$/', (string) $letter)) $xml .= $row($base . '/openings/letter/' . strtolower((string) $letter));
+        }
+        $xml .= $row($base . '/rankings');
         foreach (array_keys(Rankings::LABELS) as $path) $xml .= $row($base . '/' . $path);
         foreach (Opening::ecoCodes() as $code => $c) {
             if ($c['count'] > 1) $xml .= $row($base . '/eco/' . $code);   // single-line codes are noindex
         }
         foreach ($stmt as $r) {
-            $xml .= $row($base . '/openings/' . $r['slug']);
+            $xml .= $row($base . '/openings/' . $r['slug'], $updated[$r['slug']] ?? null);
         }
         $xml .= '</urlset>' . "\n";
 
@@ -271,9 +279,50 @@ final class Routes
     {
         global $baseUrl, $siteUrl;
         Views::track('index');
-        $grouped = Opening::allAlphabetical();
-        $total = 0; foreach ($grouped as $rows) $total += count($rows);
+        $counts   = array_map('count', Opening::allAlphabetical());
+        $total    = array_sum($counts);
+        $families = Opening::familiesByLetter();
         require __DIR__ . '/../templates/openings_index.php';
+    }
+
+    /** /openings/letter/a — every named line starting with that letter. */
+    public static function openingsLetter(string $letter): void
+    {
+        global $baseUrl, $siteUrl, $render404;
+        $grouped = Opening::allAlphabetical();
+        $letter  = strtoupper($letter);
+        if (!isset($grouped[$letter])) $render404('No openings start with that letter.');
+        Views::track('index');
+        $rows   = $grouped[$letter];
+        $counts = array_map('count', $grouped);
+        require __DIR__ . '/../templates/openings_letter.php';
+    }
+
+    /** /openings/<slug>.pgn — the line and its named continuations as one PGN tree. */
+    public static function openingPgn(string $slug): void
+    {
+        global $siteUrl, $baseUrl, $render404;
+        $o = Opening::findBySlug($slug);
+        if ($o === null) $render404('No opening by that name.');
+        $pgn = PgnTree::build(
+            Opening::withContinuations($o),
+            $o['name'] . ' — named lines',
+            $siteUrl . $baseUrl . I18n::url('/openings/' . $o['slug']),
+            ['ECO' => $o['eco'], 'Opening' => $o['name'], 'Annotator' => 'Caissa Codex (chesscodex.org)']
+        );
+        header('Content-Type: application/x-chess-pgn; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $o['slug'] . '.pgn"');
+        header('X-Robots-Tag: noindex');
+        header('Cache-Control: public, max-age=0, s-maxage=86400');
+        echo $pgn;
+    }
+
+    /** /rankings — the hub the header links to. */
+    public static function rankingsIndex(): void
+    {
+        global $baseUrl, $siteUrl;
+        Views::track('ranking');
+        require __DIR__ . '/../templates/rankings_index.php';
     }
 
     /** Rankings from the cached Lichess numbers: best for White / Black, most popular, gambits. */

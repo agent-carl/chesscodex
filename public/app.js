@@ -203,6 +203,21 @@ async function copyToClipboard(text) {
     });
 })();
 
+// "Share…" — the device's own share sheet (Web Share API), shown only where
+// the browser has one (mostly phones).
+(function () {
+    const btn = document.querySelector('[data-share-native]');
+    if (!btn || typeof navigator.share !== 'function') return;
+    const box = btn.closest('.opening-share');
+    btn.hidden = false;
+    btn.addEventListener('click', () => {
+        navigator.share({
+            title: (box && box.dataset.shareTitle) || document.title,
+            url: (box && box.dataset.shareUrl) || location.href,
+        }).catch(() => {});   // the user closed the sheet
+    });
+})();
+
 // Suggest-form anchor — when the Overview's "suggest one yourself" link is
 // clicked (href="#suggest-form-details"), the targeted <details> needs to be
 // programmatically opened, since browsers don't auto-open closed details

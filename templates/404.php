@@ -30,7 +30,7 @@ ob_start();
                            title="<?= htmlspecialchars($s['name'], ENT_QUOTES, 'UTF-8') ?>">
                             <span class="eco-tag"><?= htmlspecialchars($s['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                             <span class="child-list-name"><?= htmlspecialchars($s['name'], ENT_QUOTES, 'UTF-8') ?></span>
-                            <span class="child-list-plies"><?= (int) $s['move_count'] ?>-ply</span>
+                            <span class="child-list-plies"><?= Opening::movesLabel((int) $s['move_count']) ?></span>
                         </a>
                     </li>
                 <?php endforeach; ?>
