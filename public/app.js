@@ -129,47 +129,6 @@ const Toast = (function () {
     onScroll();
 })();
 
-// Global keyboard shortcuts:
-//   /  or  Cmd/Ctrl+K    → focus the page's main search input (name autocomplete
-//                            on /search, otherwise navigate to /search and focus there)
-//   Esc                  → blur the focused input
-// Inspired by GitHub / Lichess. Skips when the user is already typing in a
-// form field — except for Cmd/Ctrl+K which always wins (per macOS convention).
-(function () {
-    function focusSearch(forceNav) {
-        const input = document.getElementById('search-name-input');
-        if (input && !forceNav) {
-            input.focus();
-            input.select();
-            return true;
-        }
-        // No on-page search input — go to /search and focus the field there.
-        const base = document.querySelector('link[rel="canonical"]');
-        // Use a relative path; if locale prefix matters the layout's nav link
-        // would have it, but the absolute /search works for the default EN.
-        window.location.href = '/search';
-        return true;
-    }
-    document.addEventListener('keydown', (e) => {
-        const target = e.target;
-        const inField = target && target.matches && target.matches('input, textarea, select, [contenteditable]');
-
-        // Cmd/Ctrl+K — always intercepts, works from any context.
-        if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
-            e.preventDefault();
-            focusSearch(false);
-            return;
-        }
-        if (inField) return;
-        // Plain "/" — focus search.
-        if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey) {
-            e.preventDefault();
-            focusSearch(false);
-            return;
-        }
-    });
-})();
-
 // Generic clipboard helper used by share + tools buttons.
 async function copyToClipboard(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -203,32 +162,50 @@ async function copyToClipboard(text) {
     });
 })();
 
-// "+ Repertoire" on opening pages: saves the line to localStorage
-// ("codex-repertoire": { white: [line], black: [line] }) under the side that
-// makes its last move; /repertoire lists, drills and downloads them.
+// "My repertoire: + White / + Black" on opening pages: saves the line to
+// localStorage ("codex-repertoire": { white: [line], black: [line] }) for the
+// side you play; /repertoire lists, drills and downloads them.
 (function () {
-    const btn = document.querySelector('[data-repertoire-toggle]');
-    if (!btn) return;
+    const box = document.querySelector('.repertoire-toggle');
+    if (!box) return;
     const KEY = 'codex-repertoire';
     const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
-    const { slug, name, eco, pgn, side } = btn.dataset;
-    const has = () => (read()[side] || []).some((l) => l.slug === slug);
-    const label = () => {
-        btn.textContent = has() ? `✓ In repertoire (${side === 'white' ? 'White' : 'Black'})` : '+ Repertoire';
-        btn.setAttribute('aria-pressed', has() ? 'true' : 'false');
-    };
-    label();
-    btn.addEventListener('click', () => {
-        const rep = read();
-        const list = rep[side] || [];
-        rep[side] = has() ? list.filter((l) => l.slug !== slug) : list.concat([{ slug, name, eco, pgn }]);
-        try {
-            localStorage.setItem(KEY, JSON.stringify(rep));
-            Toast.show(has() ? 'Added to your repertoire' : 'Removed from your repertoire');
-        } catch (e) {
-            Toast.show('Your browser blocked local storage', 'error');
-        }
+    const { slug, name, eco, pgn } = box.dataset;
+    box.querySelectorAll('[data-repertoire-side]').forEach((btn) => {
+        const side = btn.dataset.repertoireSide;
+        const sideName = side === 'white' ? 'White' : 'Black';
+        const has = () => (read()[side] || []).some((l) => l.slug === slug);
+        const label = () => {
+            btn.textContent = (has() ? '✓ ' : '+ ') + sideName;
+            btn.setAttribute('aria-pressed', has() ? 'true' : 'false');
+        };
         label();
+        btn.addEventListener('click', () => {
+            const rep = read();
+            const list = rep[side] || [];
+            rep[side] = has() ? list.filter((l) => l.slug !== slug) : list.concat([{ slug, name, eco, pgn }]);
+            try {
+                localStorage.setItem(KEY, JSON.stringify(rep));
+                Toast.show((has() ? 'Added to your ' : 'Removed from your ') + sideName + ' repertoire');
+            } catch (e) {
+                Toast.show('Your browser blocked local storage', 'error');
+            }
+            label();
+        });
+    });
+})();
+
+// "Copy & export" menu: closes on a click outside it, on Escape, and after
+// one of its actions.
+(function () {
+    const menu = document.querySelector('.opening-more');
+    if (!menu) return;
+    document.addEventListener('click', (e) => { if (menu.open && !menu.contains(e.target)) menu.open = false; });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && menu.open) { menu.open = false; menu.querySelector('summary').focus(); }
+    });
+    menu.querySelectorAll('.opening-more-menu button, .opening-more-menu a').forEach((el) => {
+        el.addEventListener('click', () => { setTimeout(() => { menu.open = false; }, 0); });
     });
 })();
 
@@ -280,13 +257,24 @@ async function copyToClipboard(text) {
     });
 })();
 
-// Suggest-description form — AJAX submit so we can show inline status
-// instead of dumping JSON onto the page.
+// Suggest form — a description or a problem report (the "kind" radios switch
+// the hints, the label and the minimum length). AJAX submit so we can show
+// inline status instead of dumping JSON onto the page.
 (function () {
     const form = document.getElementById('suggest-form');
     if (!form) return;
     const status = form.querySelector('.suggest-status');
     const button = form.querySelector('button[type="submit"]');
+    const text = form.querySelector('textarea[name="markdown"]');
+    const syncKind = () => {
+        const checked = form.querySelector('input[name="kind"]:checked');
+        const kind = checked ? checked.value : 'description';
+        form.querySelectorAll('[data-kind-hint]').forEach((el) => { el.hidden = el.dataset.kindHint !== kind; });
+        text.minLength = kind === 'report' ? 10 : 30;
+        text.placeholder = kind === 'report' ? text.dataset.placeholderReport : text.dataset.placeholderDescription;
+    };
+    form.querySelectorAll('input[name="kind"]').forEach((r) => r.addEventListener('change', syncKind));
+    syncKind();
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         status.textContent = 'Sending…';
@@ -297,8 +285,10 @@ async function copyToClipboard(text) {
             const res = await fetch(form.action, { method: 'POST', body: fd });
             const data = await res.json();
             if (res.ok && data.ok) {
+                const wasReport = new FormData(form).get('kind') === 'report';
                 form.reset();
-                status.textContent = 'Thanks! Your suggestion will be reviewed.';
+                syncKind();
+                status.textContent = wasReport ? 'Thanks! Your report will be read.' : 'Thanks! Your suggestion will be reviewed.';
                 status.dataset.state = 'ok';
                 // Collapse the form so the page doesn't look "open" forever.
                 const details = form.closest('details');
@@ -316,11 +306,17 @@ async function copyToClipboard(text) {
     });
 })();
 
+// What renderStats() needs from the page: the number in front of the next
+// move ("3…"), and which next moves reach a named line.
+const statsContext = { moveNo: '', nextLines: {} };
+
 const dataNode = document.getElementById('opening-data');
 if (!dataNode) {
     // Not on an opening page — nothing to do.
 } else {
-    const { id, pgn, statsApiUrl } = JSON.parse(dataNode.textContent);
+    const { id, pgn, statsApiUrl, plies, nextLines } = JSON.parse(dataNode.textContent);
+    statsContext.moveNo = (Math.floor(plies / 2) + 1) + (plies % 2 === 0 ? '. ' : '…');
+    statsContext.nextLines = nextLines || {};
 
     // Replay the PGN through chess.js to get the FEN at every ply,
     // plus the from/to squares of the move that produced each position
@@ -379,17 +375,28 @@ if (!dataNode) {
         draggable: { showGhost: true },
     });
 
+    // One <li> per full move ("3. d4 cxd4"), so a move number never ends up
+    // on one line and its moves on the next.
     moveListEl.innerHTML = '';
+    let pair = null;
     for (let i = 1; i < positions.length; i++) {
-        const li = document.createElement('li');
+        if (i % 2 === 1 || !pair) {
+            pair = document.createElement('li');
+            const num = document.createElement('span');
+            num.className = 'move-no';
+            num.textContent = Math.ceil(i / 2) + (i % 2 === 1 ? '.' : '…');
+            pair.appendChild(num);
+            moveListEl.appendChild(pair);
+        }
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.textContent = positions[i].label;
         btn.dataset.idx = String(i);
         btn.addEventListener('click', () => setPosition(i));
-        li.appendChild(btn);
-        moveListEl.appendChild(li);
+        pair.appendChild(btn);
     }
+    const prevBtn = document.getElementById('board-prev');
+    const nextBtn = document.getElementById('board-next');
 
     function setPosition(i) {
         currentIdx = i;
@@ -403,9 +410,41 @@ if (!dataNode) {
         moveListEl.querySelectorAll('button').forEach((b) => {
             b.classList.toggle('is-active', Number(b.dataset.idx) === i);
         });
+        if (prevBtn) prevBtn.disabled = i === 0;
+        if (nextBtn) nextBtn.disabled = i === positions.length - 1;
+        document.querySelectorAll('.stats-move-btn.is-active').forEach((b) => b.classList.remove('is-active'));
+    }
+
+    // A move in the statistics table: shown on the board after the line's
+    // last move. ← or "‹" goes back into the line.
+    const statsSection = document.getElementById('opening-stats');
+    if (statsSection) {
+        statsSection.addEventListener('click', (e) => {
+            const btn = e.target.closest('.stats-move-btn');
+            if (!btn) return;
+            const last = positions.length - 1;
+            const c = new Chess(positions[last].fen);
+            const mv = c.move(btn.dataset.san, { sloppy: true });
+            if (!mv) return;
+            setPosition(last);
+            currentIdx = last + 1;   // one past the line: ← comes back to its end
+            board.set({
+                fen: c.fen(),
+                turnColor: turnColor(c.fen()),
+                lastMove: [mv.from, mv.to],
+                movable: { color: undefined, dests: new Map() },
+            });
+            if (prevBtn) prevBtn.disabled = false;
+            if (nextBtn) nextBtn.disabled = true;
+            btn.classList.add('is-active');
+            const r = boardEl.getBoundingClientRect();
+            if (r.bottom < 0 || r.top > window.innerHeight) boardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
     }
 
     resetBtn.addEventListener('click', () => setPosition(0));
+    if (prevBtn) prevBtn.addEventListener('click', () => { if (currentIdx > 0) setPosition(Math.min(currentIdx - 1, positions.length - 1)); });
+    if (nextBtn) nextBtn.addEventListener('click', () => { if (currentIdx < positions.length - 1) setPosition(currentIdx + 1); });
 
     // Flip-board button — toggles between white-bottom and black-bottom view.
     // Persisted per-browser in localStorage so the preference sticks across
@@ -472,7 +511,7 @@ if (!dataNode) {
         if (e.target.matches('input, textarea, [contenteditable]')) return;
         if (e.key === 'ArrowLeft' && currentIdx > 0) {
             e.preventDefault();
-            setPosition(currentIdx - 1);
+            setPosition(Math.min(currentIdx - 1, positions.length - 1));
         } else if (e.key === 'ArrowRight' && currentIdx < positions.length - 1) {
             e.preventDefault();
             setPosition(currentIdx + 1);
@@ -503,6 +542,12 @@ if (!dataNode) {
             renderStatsError(statsEl, 'No moves to query.');
         }
     }
+}
+
+// "Sep 25, 2026" from the cache's "2026-09-25 19:55:16".
+function updatedLabel(at) {
+    const d = at ? new Date(String(at).replace(' ', 'T')) : null;
+    return d && !isNaN(d) ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
 }
 
 // The server derives the moves from the opening id. It fetches from Lichess
@@ -544,6 +589,7 @@ function renderStats(rootEl, data) {
 
     const bar = rootEl.querySelector('.stats-bar');
     bar.setAttribute('aria-label', barLabel(wPct, dPct, bPct));
+    bar.title = barLabel(wPct, dPct, bPct);
     bar.querySelector('.stats-bar-w').style.width = wPct.toFixed(1) + '%';
     bar.querySelector('.stats-bar-d').style.width = dPct.toFixed(1) + '%';
     bar.querySelector('.stats-bar-b').style.width = bPct.toFixed(1) + '%';
@@ -558,19 +604,45 @@ function renderStats(rootEl, data) {
     data.top_moves.forEach((m) => {
         const moveTotal = m.white + m.black + m.draws;
         if (moveTotal === 0) return;
+        const [w, d, b] = [m.white * 100 / moveTotal, m.draws * 100 / moveTotal, m.black * 100 / moveTotal];
         const tr = document.createElement('tr');
-        const td1 = document.createElement('td'); td1.textContent = m.san; tr.appendChild(td1);
+        const td1 = document.createElement('td');
+        td1.className = 'stats-move';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'stats-move-btn';
+        btn.dataset.san = m.san;
+        btn.textContent = statsContext.moveNo + m.san;
+        btn.title = 'Show ' + btn.textContent + ' on the board';
+        td1.appendChild(btn);
+        const next = statsContext.nextLines[m.san];
+        if (next) {
+            const a = document.createElement('a');
+            a.className = 'stats-move-line';
+            a.href = next.url;
+            a.textContent = next.name;
+            td1.appendChild(document.createTextNode(' '));
+            td1.appendChild(a);
+        }
+        tr.appendChild(td1);
         const td2 = document.createElement('td'); td2.textContent = moveTotal.toLocaleString('en-US'); tr.appendChild(td2);
         const td3 = document.createElement('td');
         const inner = document.createElement('div');
         inner.className = 'stats-bar inline';
         inner.setAttribute('role', 'img');
-        inner.setAttribute('aria-label', barLabel(m.white * 100 / moveTotal, m.draws * 100 / moveTotal, m.black * 100 / moveTotal));
+        inner.setAttribute('aria-label', barLabel(w, d, b));
+        inner.title = barLabel(w, d, b);
         inner.innerHTML =
-            `<span class="stats-bar-w" style="width:${(m.white * 100 / moveTotal).toFixed(1)}%"></span>` +
-            `<span class="stats-bar-d" style="width:${(m.draws * 100 / moveTotal).toFixed(1)}%"></span>` +
-            `<span class="stats-bar-b" style="width:${(m.black * 100 / moveTotal).toFixed(1)}%"></span>`;
+            `<span class="stats-bar-w" style="width:${w.toFixed(1)}%"></span>` +
+            `<span class="stats-bar-d" style="width:${d.toFixed(1)}%"></span>` +
+            `<span class="stats-bar-b" style="width:${b.toFixed(1)}%"></span>`;
+        const pcts = document.createElement('span');
+        pcts.className = 'stats-pcts';
+        pcts.setAttribute('aria-hidden', 'true');
+        pcts.textContent = `${Math.round(w)} / ${Math.round(d)} / ${Math.round(b)}`;
         td3.appendChild(inner);
+        td3.appendChild(document.createTextNode(' '));
+        td3.appendChild(pcts);
         tr.appendChild(td3);
         tbody.appendChild(tr);
     });
@@ -579,7 +651,7 @@ function renderStats(rootEl, data) {
     }
 
     const attribution = rootEl.querySelector('.stats-attribution');
-    rootEl.querySelector('.stats-cached-at').textContent = data.cached_at || '';
+    rootEl.querySelector('.stats-cached-at').textContent = updatedLabel(data.cached_at);
     attribution.hidden = false;
 }
 

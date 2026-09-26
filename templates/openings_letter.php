@@ -31,13 +31,34 @@ ob_start();
         </nav>
     </header>
 
-    <section class="openings-letter">
+    <?php
+    // Grouped by opening, each line named by what follows the opening's name
+    // ("Queen's Gambit Accepted" › "Alekhine Defense") — the full names all
+    // start the same way and a list of them is unreadable.
+    $byFamily = [];
+    foreach ($rows as $row) $byFamily[Opening::family((string) $row['name'])][] = $row;
+    $familyId = static fn (string $f): string => 'opening-' . str_replace(' ', '-', Opening::nameKey($f));
+    ?>
+    <?php if (count($byFamily) > 1): ?>
+    <nav class="openings-families" aria-label="Openings starting with <?= $esc($letter) ?>">
+        <?php foreach ($byFamily as $family => $lines): ?>
+            <a href="#<?= $esc($familyId($family)) ?>"><?= $esc($family) ?> <span class="openings-jump-count"><?= count($lines) ?></span></a>
+        <?php endforeach; ?>
+    </nav>
+    <?php endif; ?>
+
+    <?php foreach ($byFamily as $family => $lines): ?>
+    <section class="openings-letter openings-family" id="<?= $esc($familyId($family)) ?>">
+        <h2><?= $esc($family) ?> <span class="openings-letter-count"><?= count($lines) === 1 ? '1 line' : count($lines) . ' lines' ?></span></h2>
         <ul class="openings-letter-list">
-            <?php foreach ($rows as $row): ?>
+            <?php foreach ($lines as $row):
+                $name  = (string) $row['name'];
+                $label = $name === $family ? $family : ltrim(substr($name, strlen($family)), ':, ');
+            ?>
                 <li>
-                    <a href="<?= $baseEsc . $esc(I18n::url('/openings/' . $row['slug'])) ?>">
+                    <a href="<?= $baseEsc . $esc(I18n::url('/openings/' . $row['slug'])) ?>" title="<?= $esc($name . ' (' . $row['eco'] . ')') ?>">
                         <span class="eco-tag"><?= $esc($row['eco']) ?></span>
-                        <span class="openings-letter-name"><?= $esc($row['name']) ?><?php if (($row['tail'] ?? '') !== ''): ?>
+                        <span class="openings-letter-name"><?= $esc($label) ?><?php if (($row['tail'] ?? '') !== ''): ?>
                             <span class="openings-letter-tail"><?= $esc($row['tail']) ?></span><?php endif; ?></span>
                         <span class="openings-letter-plies"><?= Opening::movesLabel((int) $row['move_count']) ?></span>
                     </a>
@@ -45,6 +66,7 @@ ob_start();
             <?php endforeach; ?>
         </ul>
     </section>
+    <?php endforeach; ?>
 </article>
 <?php
 $body = ob_get_clean();

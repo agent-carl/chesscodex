@@ -251,8 +251,9 @@ function self_first_existing_font(): ?string
  */
 function og_piece_font(): ?string
 {
+    // DejaVu on the Pi; Segoe UI Symbol for the local copy on Windows.
     foreach (['/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-              '/usr/share/fonts/dejavu/DejaVuSans.ttf'] as $f) {
+              '/usr/share/fonts/dejavu/DejaVuSans.ttf', 'C:/Windows/Fonts/seguisym.ttf'] as $f) {
         if (@is_file($f)) return $f;
     }
     return null;

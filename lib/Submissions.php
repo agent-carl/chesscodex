@@ -9,6 +9,9 @@ require_once __DIR__ . '/db.php';
  */
 final class Submissions
 {
+    /** Starts the text of a problem report (the suggest form's "A mistake on this page"). */
+    public const REPORT_MARK = '[report] ';
+
     public static function create(
         int $openingId,
         ?string $authorName,

@@ -23,7 +23,7 @@ final class Rankings
     /** One line each for the /rankings hub. */
     public const BLURBS = [
         'best-openings-for-white' => 'The 50 lines that score best for White, among those played a million times or more.',
-        'best-openings-for-black' => 'The 50 defences and replies that score best for Black, by the same rule.',
+        'best-openings-for-black' => 'The 50 defenses and replies that score best for Black, by the same rule.',
         'popular-openings'        => 'The 100 most-played named lines, from 1.e4 down.',
         'gambits'                 => 'The 100 most-played gambits and countergambits, with how often each side wins.',
     ];

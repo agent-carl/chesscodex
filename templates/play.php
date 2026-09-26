@@ -41,6 +41,16 @@ $island = [
         </p>
     </header>
 
+    <div class="play-color-pick" role="radiogroup" aria-label="Pick your color">
+        <span class="play-color-pick-label">Play as:</span>
+        <button type="button" class="play-color-btn is-active" data-play-color="white" aria-pressed="true">
+            <span class="play-color-piece" aria-hidden="true">&#9817;&#xFE0E;</span> White
+        </button>
+        <button type="button" class="play-color-btn" data-play-color="black" aria-pressed="false">
+            <span class="play-color-piece" aria-hidden="true">&#9823;&#xFE0E;</span> Black
+        </button>
+    </div>
+
     <div class="play-grid">
         <div class="play-board-wrap">
             <div id="play-board" class="opening-board"></div>
@@ -50,18 +60,17 @@ $island = [
                 <button id="play-flip" type="button"><?= htmlspecialchars(t('play.button.flip'), ENT_QUOTES, 'UTF-8') ?></button>
                 <button id="play-resign" type="button"><?= htmlspecialchars(t('play.button.resign'), ENT_QUOTES, 'UTF-8') ?></button>
             </div>
-            <div class="play-color-pick" role="radiogroup" aria-label="Pick your colour">
-                <span class="play-color-pick-label">Play as:</span>
-                <button type="button" class="play-color-btn is-active" data-play-color="white" aria-pressed="true">
-                    <span class="play-color-piece" aria-hidden="true">&#9817;</span> White
-                </button>
-                <button type="button" class="play-color-btn" data-play-color="black" aria-pressed="false">
-                    <span class="play-color-piece" aria-hidden="true">&#9823;</span> Black
-                </button>
-            </div>
         </div>
 
         <aside class="play-sidebar">
+            <section class="play-game" id="play-game">
+                <h2><?= htmlspecialchars(t('play.game'), ENT_QUOTES, 'UTF-8') ?></h2>
+                <p class="play-turn" aria-live="polite"></p>
+                <p class="play-result" hidden role="status" aria-live="assertive"></p>
+                <p class="play-eval" hidden></p>
+                <ol id="play-moves" class="move-list" aria-label="<?= htmlspecialchars(t('play.game'), ENT_QUOTES, 'UTF-8') ?>"></ol>
+            </section>
+
             <section class="play-status" id="play-status">
                 <h2><?= htmlspecialchars(t('play.engine'), ENT_QUOTES, 'UTF-8') ?></h2>
                 <p class="play-engine-state" data-state="loading" aria-live="polite"><?= htmlspecialchars(t('play.engine.loading'), ENT_QUOTES, 'UTF-8') ?></p>
@@ -97,15 +106,8 @@ $island = [
                     </button>
                 </div>
                 <p class="play-difficulty-desc" id="play-difficulty-desc"><?= htmlspecialchars(t('play.diff.intermediate.desc'), ENT_QUOTES, 'UTF-8') ?></p>
-                <p class="play-eval" hidden></p>
             </section>
 
-            <section class="play-game" id="play-game">
-                <h2><?= htmlspecialchars(t('play.game'), ENT_QUOTES, 'UTF-8') ?></h2>
-                <p class="play-turn" aria-live="polite"></p>
-                <p class="play-result" hidden role="status" aria-live="assertive"></p>
-                <ol id="play-moves" class="move-list" aria-label="<?= htmlspecialchars(t('play.game'), ENT_QUOTES, 'UTF-8') ?>"></ol>
-            </section>
         </aside>
     </div>
 </article>

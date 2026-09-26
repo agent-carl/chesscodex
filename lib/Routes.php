@@ -517,6 +517,7 @@ final class Routes
         $email     = trim((string) ($_POST['email'] ?? ''));
         $markdown  = trim((string) ($_POST['markdown'] ?? ''));
         $honeypot  = (string) ($_POST['website'] ?? ''); // hidden anti-bot field
+        $isReport  = ($_POST['kind'] ?? '') === 'report';   // a mistake on the page, not a description
 
         if ($honeypot !== '') {
             // Bot — pretend it worked, drop silently.
@@ -535,9 +536,11 @@ final class Routes
             echo json_encode(['error' => 'Unknown opening.']);
             return;
         }
-        if ($markdown === '' || mb_strlen($markdown) < 30) {
+        $minLength = $isReport ? 10 : 30;
+        if ($markdown === '' || mb_strlen($markdown) < $minLength) {
             http_response_code(400);
-            echo json_encode(['error' => 'Description is too short (minimum 30 characters).']);
+            echo json_encode(['error' => ($isReport ? 'Please say a little more' : 'Description is too short')
+                . " (minimum $minLength characters)."]);
             return;
         }
         if (mb_strlen($markdown) > 5000) {
@@ -556,7 +559,7 @@ final class Routes
                 $openingId,
                 $name ?: null,
                 $email ?: null,
-                $markdown,
+                $isReport ? Submissions::REPORT_MARK . $markdown : $markdown,
                 $_SERVER['REMOTE_ADDR'] ?? null
             );
             echo json_encode(['ok' => true, 'id' => $id]);

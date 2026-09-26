@@ -15,11 +15,17 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 <section class="hero">
     <h1><?= htmlspecialchars(t('home.hero.h1'), ENT_QUOTES, 'UTF-8') ?></h1>
     <p class="lede"><?= htmlspecialchars(t('home.hero.lede'), ENT_QUOTES, 'UTF-8') ?></p>
+    <?php /* The name search, with suggestions from site.js; without JavaScript
+             the form opens /search with the words filled in. */ ?>
+    <form class="hero-search" action="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>" method="get" role="search">
+        <?php $nameSearchId = 'hero-search'; require __DIR__ . '/partials/name_search.php'; ?>
+    </form>
     <p class="hero-meta"><?= htmlspecialchars(t('home.hero.meta', ['count' => $totalFmt]), ENT_QUOTES, 'UTF-8') ?></p>
     <p class="hero-actions">
         <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings'), ENT_QUOTES, 'UTF-8') ?>">Browse all openings A–Z →</a>
-        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>">Search by moves or name →</a>
+        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>">Identify an opening from moves →</a>
         <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco'), ENT_QUOTES, 'UTF-8') ?>">Browse by ECO code →</a>
+        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars(I18n::url('/random'), ENT_QUOTES, 'UTF-8') ?>" rel="nofollow">A random opening →</a>
     </p>
 </section>
 
@@ -27,7 +33,7 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
      first-time visitor doesn't see a blank slot. -->
 <section class="home-recent" id="home-recent" hidden aria-label="Recently viewed">
     <header class="home-recent-head">
-        <h2>Pick up where you left off</h2>
+        <h2 class="section-label">Pick up where you left off</h2>
         <button type="button" class="home-recent-clear" id="home-recent-clear" aria-label="Clear recently viewed history">Clear</button>
     </header>
     <ul class="home-recent-list" id="home-recent-list"></ul>
@@ -38,12 +44,15 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 <?php if ($featured): ?>
 <section class="home-featured">
     <header class="home-featured-head">
-        <span class="home-featured-tag">Opening of the day</span>
+        <h2 class="section-label">Opening of the day</h2>
         <span class="home-featured-date"><?= date('F j, Y') ?></span>
     </header>
     <a class="home-featured-card" href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $featured['slug']), ENT_QUOTES, 'UTF-8') ?>">
-        <span class="eco-tag"><?= htmlspecialchars($featured['eco'], ENT_QUOTES, 'UTF-8') ?></span>
-        <span class="home-featured-name"><?= htmlspecialchars($featured['name'], ENT_QUOTES, 'UTF-8') ?></span>
+        <span class="home-featured-title">
+            <span class="eco-tag"><?= htmlspecialchars($featured['eco'], ENT_QUOTES, 'UTF-8') ?></span>
+            <span class="home-featured-name"><?= htmlspecialchars($featured['name'], ENT_QUOTES, 'UTF-8') ?></span>
+        </span>
+        <code class="home-featured-moves"><?= htmlspecialchars(trim((string) ($featured['pgn_moves'] ?? '')), ENT_QUOTES, 'UTF-8') ?></code>
         <?php if (!empty($featured['description'])):
             // Snippet: first ~200 chars of description, plain-text only.
             $snippet = strip_tags((string) $featured['description']);
@@ -85,8 +94,10 @@ $renderStrip = static function (string $h2, string $lede, string $modifier, arra
                 <li>
                     <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $p['slug']), ENT_QUOTES, 'UTF-8') ?>">
                         <span class="eco-tag"><?= htmlspecialchars($p['eco'], ENT_QUOTES, 'UTF-8') ?></span>
-                        <span class="home-popular-name"><?= htmlspecialchars($p['name'], ENT_QUOTES, 'UTF-8') ?></span>
-                        <span class="home-popular-plies"><?= Opening::movesLabel((int) $p['move_count']) ?></span>
+                        <span class="home-popular-text">
+                            <span class="home-popular-name"><?= htmlspecialchars($p['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="home-popular-moves"><?= htmlspecialchars(Opening::movesFrom((string) $p['pgn_moves'], 0), ENT_QUOTES, 'UTF-8') ?></span>
+                        </span>
                     </a>
                 </li>
             <?php endforeach; ?>
@@ -95,7 +106,7 @@ $renderStrip = static function (string $h2, string $lede, string $modifier, arra
 <?php };
 
 $renderStrip(
-    'Most popular openings',
+    'Famous openings',
     'The lines you have probably heard of — start here if you do not know where to look.',
     'home-popular-classic',
     $popular
@@ -113,11 +124,11 @@ $renderStrip(
         <h2>Rankings from Lichess games</h2>
         <p class="home-popular-lede">Which openings score best for each side, which are played most, and the most-played gambits.</p>
     </header>
-    <ul class="home-popular-list">
+    <ul class="home-rankings-list">
         <?php foreach (Rankings::LABELS as $path => $label): ?>
             <li>
                 <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/' . $path), ENT_QUOTES, 'UTF-8') ?>">
-                    <span class="home-popular-name"><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></span>
+                    <?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?> →
                 </a>
             </li>
         <?php endforeach; ?>
@@ -125,7 +136,7 @@ $renderStrip(
 </section>
 
 <section class="about-section home-intro">
-    <h2>How the openings are organised</h2>
+    <h2>How the openings are organized</h2>
     <p>
         Every opening here carries a code from the
         <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco'), ENT_QUOTES, 'UTF-8') ?>">ECO system</a>, which files chess openings into
@@ -147,8 +158,8 @@ $renderStrip(
     <p>
         Know the moves but not the name?
         <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>">Search by moves or by FEN</a>.
-        Want to practise? Every line can be played out against Stockfish at six strengths, right in
-        your browser.
+        Want to practice? Every line can be drilled from memory, or played out against Stockfish at
+        six strengths, right in your browser.
     </p>
 </section>
 <?php

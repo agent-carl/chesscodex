@@ -19,7 +19,7 @@ class Opening
     public static function findById(int $id): ?array
     {
         $stmt = chess_codex_db()->prepare(
-            'SELECT id, eco, name, slug, depth FROM codex_openings WHERE id = :id LIMIT 1'
+            'SELECT id, eco, name, slug, depth, move_count, pgn_moves FROM codex_openings WHERE id = :id LIMIT 1'
         );
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch();
@@ -144,13 +144,15 @@ class Opening
      *              "X, Y & more" when the code mixes several (A00 has 143
      *              lines from over a dozen irregular openings),
      *   'slug'  => its shortest line,
+     *   'moves' => that line's moves ("1. c4 e5"), which tell apart the
+     *              many codes that share a label ("English Opening"),
      * ]. Cached on disk for an hour.
      */
     public static function ecoCodes(): array
     {
-        return Cache::remember('eco_codes', 3600, static function (): array {
+        return Cache::remember('eco_codes_v2', 3600, static function (): array {
             $rows = chess_codex_db()->query(
-                'SELECT eco, name, slug FROM codex_openings ORDER BY eco, move_count, id'
+                'SELECT eco, name, slug, pgn_moves FROM codex_openings ORDER BY eco, move_count, id'
             )->fetchAll();
             $codes = [];
             foreach ($rows as $r) {
@@ -158,6 +160,7 @@ class Opening
                 $family = self::family((string) $r['name']);
                 $codes[$e]['count'] = ($codes[$e]['count'] ?? 0) + 1;
                 $codes[$e]['slug'] ??= (string) $r['slug'];
+                $codes[$e]['moves'] ??= trim((string) $r['pgn_moves']);
                 $codes[$e]['families'][$family] = ($codes[$e]['families'][$family] ?? 0) + 1;
             }
             foreach ($codes as &$c) {
@@ -223,6 +226,16 @@ class Opening
         return $n === 1 ? '1 move' : $n . ' moves';
     }
 
+    /**
+     * The moves of $pgn from 0-based ply $fromPly on, numbered: the moves
+     * after the parent's position that reach a variation ("3…Bc5",
+     * "6. Bg5 e6"). '' when there are none.
+     */
+    public static function movesFrom(string $pgn, int $fromPly): string
+    {
+        return self::formatPlies(array_slice(self::sanTokens($pgn), max(0, $fromPly)), max(0, $fromPly));
+    }
+
     /** "Sicilian Defense: Najdorf Variation" → "Sicilian Defense". */
     public static function family(string $name): string
     {
@@ -259,7 +272,7 @@ class Opening
     public static function children(int $parentId): array
     {
         $stmt = chess_codex_db()->prepare(
-            'SELECT id, eco, name, slug, popularity FROM codex_openings
+            'SELECT id, eco, name, slug, popularity, move_count, pgn_moves FROM codex_openings
              WHERE parent_id = :pid ORDER BY name'
         );
         $stmt->execute(['pid' => $parentId]);
@@ -379,19 +392,21 @@ class Opening
      */
     public static function topPopular(int $limit = 12): array
     {
-        $cached = Cache::remember('popular', 21600,
+        // Keyed by the list itself, so an edit to it shows at once.
+        $cached = Cache::remember('popular_' . substr(md5(serialize(self::FAMOUS_OPENINGS)), 0, 8), 21600,
             static fn (): array => self::resolveCuratedNames(self::FAMOUS_OPENINGS, 50));
         return array_slice($cached, 0, $limit);
     }
 
     /**
-     * The homepage's gambit strip, curated for the same reason: by game count
+     * The homepage's gambit strip, curated for the same reason (and without
+     * Queen's Gambit Accepted, which the popular strip shows): by game count
      * seven of the top twelve "Gambit" names are Queen's Gambit lines, five
      * of them Declined variations.
      */
     public static function topGambits(int $limit = 12): array
     {
-        $cached = Cache::remember('gambits', 21600,
+        $cached = Cache::remember('gambits_' . substr(md5(serialize(self::FAMOUS_GAMBITS)), 0, 8), 21600,
             static fn (): array => self::resolveCuratedNames(self::FAMOUS_GAMBITS, 50));
         return array_slice($cached, 0, $limit);
     }
@@ -419,23 +434,25 @@ class Opening
         "Queen's Pawn Game",
     ];
 
+    // Lichess names in full: most famous gambits are a variation of another
+    // opening ("Italian Game: Evans Gambit"), and resolveCuratedNames() only
+    // matches a whole name or its "Name: …" lines.
     private const FAMOUS_GAMBITS = [
         "King's Gambit",
         "Queen's Gambit",
-        "Queen's Gambit Accepted",
-        'Evans Gambit',
-        'Smith-Morra Gambit',
+        'Italian Game: Evans Gambit',
+        'Sicilian Defense: Smith-Morra Gambit',
         'Latvian Gambit',
-        'Budapest Gambit',
-        'Albin Countergambit',
-        "Englund Gambit",
+        'Indian Defense: Budapest Defense',
+        "Queen's Gambit Declined: Albin Countergambit",
+        'Englund Gambit',
         'Benko Gambit',
         'Danish Gambit',
-        'Goring Gambit',
-        'Halloween Gambit',
+        'Scotch Game: Göring Gambit',
+        'Four Knights Game: Halloween Gambit',
         'Blackmar-Diemer Gambit',
-        'From Gambit',
-        'Marshall Gambit',
+        "Bird Opening: From's Gambit",
+        'Semi-Slav Defense: Marshall Gambit',
     ];
 
     /**
@@ -447,7 +464,7 @@ class Opening
     {
         $pdo  = chess_codex_db();
         $stmt = $pdo->prepare(
-            "SELECT id, eco, name, slug, depth, move_count, popularity
+            "SELECT id, eco, name, slug, depth, move_count, popularity, pgn_moves
              FROM codex_openings
              WHERE name = :n
                 OR name LIKE :prefix
@@ -474,11 +491,47 @@ class Opening
     }
 
     /**
-     * Name autocomplete. Splits the query into tokens and requires each token
-     * to be a substring of the name (LIKE %tok%). Sorted by exact-prefix-first,
-     * then popularity; each name appears once. ALSO matches the ECO code when
-     * the query looks like one (3 alphanumeric chars like "B20" or "C45") —
-     * handy chess-savvy shortcut.
+     * Common short names and spellings people type, in nameKey() form.
+     */
+    private const NAME_ALIASES = [
+        'qg'       => 'queens gambit',
+        'qga'      => 'queens gambit accepted',
+        'qgd'      => 'queens gambit declined',
+        'qid'      => 'queens indian defense',
+        'kid'      => 'kings indian defense',
+        'kia'      => 'kings indian attack',
+        'kga'      => 'kings gambit accepted',
+        'kgd'      => 'kings gambit declined',
+        'nid'      => 'nimzo indian defense',
+        'bdg'      => 'blackmar diemer gambit',
+        'spanish'  => 'ruy lopez',
+        'petroff'  => 'petrovs',
+        'petrov'   => 'petrovs',
+        'gruenfeld' => 'grunfeld',
+        'defence'  => 'defense',
+        'defences' => 'defense',
+    ];
+
+    /**
+     * A name or query reduced to plain lowercase words: accents folded,
+     * apostrophes dropped ("Queen's" → "queens"), everything else that is not
+     * a letter or digit turned into a space ("Caro-Kann" → "caro kann").
+     */
+    public static function nameKey(string $s): string
+    {
+        $s = str_replace(["'", '’', '‘'], '', chess_codex_fold($s));
+        return trim((string) preg_replace('/[^a-z0-9]+/', ' ', $s));
+    }
+
+    /**
+     * Name autocomplete. Every word of the query has to match a word of the
+     * name — as the whole word, its beginning, a part of it, or with one typo
+     * (two in long words); typo matches rank below the rest. A whole-name
+     * match comes first, then names that start with the query, then names
+     * where a query word opens a part of the name ("sicilian dragon" → the
+     * Dragon Variation before the Hyperaccelerated Dragon), then popularity.
+     * Each name appears once. ALSO matches the ECO code when the query looks
+     * like one ("B20", "C45").
      */
     public static function searchByName(string $q, int $limit = 10): array
     {
@@ -502,40 +555,100 @@ class Opening
             return $stmt->fetchAll();
         }
 
-        $tokens = array_values(array_filter(preg_split('/\s+/', $q) ?: []));
-        if (count($tokens) === 0 || count($tokens) > 6) return [];
+        $rows = Cache::remember('name-index', 21600, static function (): array {
+            $stmt = chess_codex_db()->query(
+                "SELECT id, eco, name, slug, depth, move_count, popularity FROM codex_openings"
+            );
+            return array_map([self::class, 'indexRow'], $stmt->fetchAll());
+        });
+        return self::rankByName($rows, $q, $limit);
+    }
 
-        $pdo = chess_codex_db();
-        $where = [];
-        $params = [];
-        foreach ($tokens as $i => $t) {
-            $where[] = "name LIKE :t$i";
-            $params["t$i"] = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $t) . '%';
+    /**
+     * Adds what rankByName() matches on: 'key' (nameKey of the name) and
+     * 'starts', the first word of each part of the name ("Sicilian Defense",
+     * "Dragon Variation", "Yugoslav Attack"), which gets a bonus.
+     */
+    public static function indexRow(array $r): array
+    {
+        $starts = [];
+        foreach (preg_split('/[:,]/', (string) $r['name']) ?: [] as $part) {
+            $w = explode(' ', self::nameKey($part))[0];
+            if ($w !== '') $starts[] = $w;
         }
-        // Prefer rows where the first token is a prefix of the whole name.
-        $params['prefix'] = str_replace(['%', '_'], ['\\%', '\\_'], $tokens[0]) . '%';
+        $r['key']    = self::nameKey((string) $r['name']);
+        $r['starts'] = $starts;
+        return $r;
+    }
 
-        $sql = "SELECT id, eco, name, slug, depth, move_count,
-                       (CASE WHEN name LIKE :prefix THEN 0 ELSE 1 END) AS rank_prefix
-                FROM codex_openings
-                WHERE " . implode(' AND ', $where) . "
-                ORDER BY rank_prefix ASC, popularity DESC, move_count ASC, name ASC
-                LIMIT :lim";
-        $limit = max(1, min(50, $limit));
-        $stmt = $pdo->prepare($sql);
-        foreach ($params as $k => $v) $stmt->bindValue(':' . $k, $v, PDO::PARAM_STR);
-        $stmt->bindValue(':lim', $limit * 4, PDO::PARAM_INT);
-        $stmt->execute();
+    /**
+     * The matching and ordering behind searchByName(), on rows prepared by
+     * indexRow(). Separate so the tests can run it without a database.
+     */
+    public static function rankByName(array $rows, string $q, int $limit = 10): array
+    {
+        $words = [];
+        foreach (explode(' ', self::nameKey($q)) as $w) {
+            if ($w === '') continue;
+            array_push($words, ...explode(' ', self::NAME_ALIASES[$w] ?? $w));
+        }
+        if (count($words) === 0 || count($words) > 8) return [];
+        $query = implode(' ', $words);
+
+        $scored = [];
+        foreach ($rows as $row) {
+            $nameWords = explode(' ', $row['key']);
+            $score = 0;
+            $fuzzy = false;
+            foreach ($words as $i => $qw) {
+                $best = 0;
+                foreach ($nameWords as $nw) {
+                    if ($nw === $qw) { $best = 3; break; }
+                    if (str_starts_with($nw, $qw)) { $best = max($best, 2); continue; }
+                    if ($best < 1 && strlen($qw) >= 3 && str_contains($nw, $qw)) { $best = 1; continue; }
+                    if ($best === 0 && self::isTypo($qw, $nw)) $best = -1;
+                }
+                if ($best === 0) continue 2;
+                if ($best < 0) { $fuzzy = true; $best = 1; }
+                $score += $best * 10;
+                foreach ($row['starts'] as $start) {
+                    if (str_starts_with($start, $qw)) { $score += 30; break; }
+                }
+            }
+            if ($row['key'] === $query) $score += 1000;
+            elseif (str_starts_with($row['key'], $query)) $score += 500;
+            if (str_starts_with($nameWords[0], $words[0])) $score += 200;
+            if ($fuzzy) $score -= 600;
+            $scored[] = [$score, (int) ($row['popularity'] ?? 0), count($row['starts']), (int) $row['move_count'], $row];
+        }
+        usort($scored, static fn ($a, $b) =>
+            [$b[0], $b[1], $a[2], $a[3], $a[4]['name']] <=> [$a[0], $a[1], $b[2], $b[3], $b[4]['name']]);
 
         // Several rows can share a name (one opening reached by different move
         // orders: four rows are "Sicilian Defense" — B20, B27 and B50 twice).
-        // Suggest each name once, as its most-played row.
+        // Suggest each name once, as its best-ranked (most-played) row.
+        $limit = max(1, min(50, $limit));
         $byName = [];
-        foreach ($stmt->fetchAll() as $row) {
+        foreach ($scored as [, , , , $row]) {
+            unset($row['key'], $row['starts']);
             $byName[$row['name']] ??= $row;
             if (count($byName) === $limit) break;
         }
         return array_values($byName);
+    }
+
+    /**
+     * One typo (two in words of 8+ letters) between a query word and a name
+     * word, or the same against the start of the name word while the query
+     * is still being typed. Short words (under 4 letters) never count.
+     */
+    private static function isTypo(string $qw, string $nw): bool
+    {
+        $len = strlen($qw);
+        if ($len < 4) return false;
+        $max = $len >= 8 ? 2 : 1;
+        if (abs(strlen($nw) - $len) <= $max && levenshtein($qw, $nw) <= $max) return true;
+        return $len >= 5 && strlen($nw) > $len && levenshtein($qw, substr($nw, 0, $len)) <= $max;
     }
 
     /**
@@ -612,7 +725,7 @@ class Opening
         // but its LENGTH already counts characters for text.
         $charLength = chess_codex_db_driver() === 'sqlite' ? 'LENGTH' : 'CHAR_LENGTH';
         $candidates = $pdo->query(
-            "SELECT id, eco, name, slug, move_count, description
+            "SELECT id, eco, name, slug, move_count, description, pgn_moves
              FROM codex_openings
              WHERE description IS NOT NULL
                AND $charLength(description) > 200
@@ -622,7 +735,7 @@ class Opening
         if (empty($candidates)) {
             // Fallback: just any shallow root opening (move_count <= 4).
             $candidates = $pdo->query(
-                "SELECT id, eco, name, slug, move_count, description
+                "SELECT id, eco, name, slug, move_count, description, pgn_moves
                  FROM codex_openings
                  WHERE move_count BETWEEN 2 AND 4
                  ORDER BY id"
@@ -731,7 +844,7 @@ class Opening
     {
         if ($parentId <= 0) return []; // root openings have no siblings here
         $stmt = chess_codex_db()->prepare(
-            "SELECT id, eco, name, slug, move_count
+            "SELECT id, eco, name, slug, move_count, pgn_moves
              FROM codex_openings
              WHERE parent_id = :pid AND id <> :self
              ORDER BY popularity DESC, name ASC

@@ -6,6 +6,9 @@
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 $csrf    = htmlspecialchars(Auth::csrfToken(), ENT_QUOTES, 'UTF-8');
 $s       = $submission;
+// Problem reports come through the same form, marked by Routes::apiSuggest();
+// they are read, never published.
+$isReport = str_starts_with((string) $s['markdown'], Submissions::REPORT_MARK);
 
 require_once __DIR__ . '/../vendor/Parsedown.php';
 $pd = new Parsedown();
@@ -20,7 +23,7 @@ ob_start();
 <div class="admin-page admin-review">
     <p><a href="<?= $baseEsc ?>/admin">← Back to dashboard</a></p>
 
-    <h1>Review submission #<?= (int) $s['id'] ?></h1>
+    <h1><?= $isReport ? 'Problem report' : 'Review submission' ?> #<?= (int) $s['id'] ?></h1>
 
     <dl class="admin-fields">
         <dt>Opening</dt>
@@ -80,15 +83,17 @@ ob_start();
     <?php if ($s['status'] === 'pending'): ?>
         <h2>Actions</h2>
         <div class="admin-actions">
+            <?php if (!$isReport): ?>
             <form method="post" action="<?= $baseEsc ?>/admin/review/<?= (int) $s['id'] ?>/accept">
                 <input type="hidden" name="csrf" value="<?= $csrf ?>">
                 <label>Optional reviewer note<input type="text" name="notes" maxlength="255"></label>
                 <button type="submit" class="admin-btn-accept">Accept &amp; publish</button>
             </form>
+            <?php endif; ?>
             <form method="post" action="<?= $baseEsc ?>/admin/review/<?= (int) $s['id'] ?>/reject">
                 <input type="hidden" name="csrf" value="<?= $csrf ?>">
-                <label>Optional reason for rejection<input type="text" name="notes" maxlength="255"></label>
-                <button type="submit" class="admin-btn-reject">Reject</button>
+                <label><?= $isReport ? 'Optional note (what you fixed)' : 'Optional reason for rejection' ?><input type="text" name="notes" maxlength="255"></label>
+                <button type="submit" class="admin-btn-reject"><?= $isReport ? 'Close the report' : 'Reject' ?></button>
             </form>
         </div>
     <?php else: ?>

@@ -22,7 +22,7 @@ $texts = [
     'best-openings-for-black' => [
         'title' => 'Best Chess Openings for Black, Ranked by Lichess Results',
         'h1'    => 'Best chess openings for Black',
-        'lede'  => 'Lines where Black makes the last move — the defences and replies Black can choose — ranked by Black\'s score: wins plus half the draws. Only lines played in at least a million games are ranked.',
+        'lede'  => 'Lines where Black makes the last move — the defenses and replies Black can choose — ranked by Black\'s score: wins plus half the draws. Only lines played in at least a million games are ranked.',
         'desc'  => 'The 50 openings that score best for Black in rated Lichess games, among lines played at least a million times, with White, draw and Black percentages for each.',
     ],
     'popular-openings' => [

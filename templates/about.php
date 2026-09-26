@@ -25,7 +25,7 @@ ob_start();
         </p>
         <p>
             It's a hobby project. I'm still learning. If something feels rough — it probably
-            is. Feedback is welcome via the <strong>Suggest an improvement</strong> form on
+            is. Feedback is welcome via the <strong>Write a description or report a mistake</strong> form on
             any opening page.
         </p>
     </section>
@@ -67,7 +67,7 @@ ob_start();
         <p>
             Vanilla PHP 8.4, SQLite, plain JavaScript (ES modules). No framework, no build
             step, no bundler — minified by a tiny in-repo PHP script. Self-hosted on a
-            Raspberry Pi 5 at home, served through Cloudflare. Source-first, optimised for
+            Raspberry Pi 5 at home, served through Cloudflare. Source-first, optimized for
             being readable rather than clever.
         </p>
         <p>
@@ -108,9 +108,9 @@ ob_start();
     <section class="about-section">
         <h2>Contact</h2>
         <p>
-            The fastest way to flag something is the <strong>Suggest an improvement</strong>
-            form on any opening page. Bug reports, missing openings, wrong moves —
-            everything goes there.
+            The fastest way to flag something is the <strong>Write a description or report a
+            mistake</strong> form on any opening page: pick “A mistake on this page” for wrong
+            moves, names or numbers. Reports are read, never published.
         </p>
         <p>
             For anything else, write to
