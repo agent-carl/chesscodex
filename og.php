@@ -2,10 +2,11 @@
 declare(strict_types=1);
 
 /**
- * Dynamic Open Graph / Twitter Card image generator. Produces a 1200×630 PNG
- * for either:
- *   /og.php             → site-wide branded card (homepage, search)
- *   /og.php?slug=<slug> → opening-specific card with ECO + name
+ * Dynamic Open Graph / Twitter Card image generator. Produces a PNG:
+ *   /og.php                          → 1200×630 site-wide card (homepage, search)
+ *   /og.php?slug=<slug>              → 1200×630 card: ECO, name and the position
+ *   /og.php?slug=<slug>&kind=diagram → 720×720 diagram of the position, shown on
+ *                                      the opening page (and to Google Images)
  *
  * Cached on disk (db/og_cache/) for 30 days per slug so repeated crawler
  * hits don't burn GD time. A card drawn before this file was last deployed
@@ -19,6 +20,7 @@ declare(strict_types=1);
  */
 
 require __DIR__ . '/lib/db.php';
+require __DIR__ . '/lib/ChessEngine.php';
 
 header('Content-Type: image/png');
 header('Cache-Control: public, max-age=2592000, immutable');
@@ -45,9 +47,15 @@ if ($slug !== '') {
     if ($stmtCheck->fetchColumn() !== false) $validatedSlug = $slug;
 }
 
+$diagram = ($_GET['kind'] ?? '') === 'diagram';
+if ($diagram && $validatedSlug === '') {   // nothing to draw
+    http_response_code(404);
+    exit;
+}
+
 $cacheDir = __DIR__ . '/db/og_cache';
 if (!is_dir($cacheDir)) @mkdir($cacheDir, 0755, true);
-$cacheKey  = $validatedSlug !== '' ? $validatedSlug : '__site__';
+$cacheKey  = ($diagram ? 'diagram-' : '') . ($validatedSlug !== '' ? $validatedSlug : '__site__');
 $cachePath = $cacheDir . '/' . $cacheKey . '.png';
 // Defensive: only treat the cached file as a hit if it's non-trivially sized.
 // A 0-byte file means a previous write was interrupted — better regenerate.
@@ -63,6 +71,44 @@ $slug = $validatedSlug;
 // ----------------------------------------------------------------------
 // Render
 // ----------------------------------------------------------------------
+$row = null;
+if ($slug !== '') {
+    $stmt = chess_codex_db()->prepare(
+        "SELECT eco, name, fen, pgn_moves FROM codex_openings WHERE slug = :s LIMIT 1"
+    );
+    $stmt->execute(['s' => $slug]);
+    $row = $stmt->fetch() ?: null;
+}
+$fen = $row ? (string) $row['fen'] : 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+try {
+    $history  = $row ? ChessEngine::fromPgn((string) $row['pgn_moves'])->uciHistory() : [];
+    $lastMove = $history ? (string) end($history) : null;
+} catch (Throwable) {
+    $lastMove = null;
+}
+$pieceFont = og_piece_font();
+
+if ($diagram) {
+    // 84 px squares, rank numbers on the left and files below.
+    $im = imagecreatetruecolor(720, 720);
+    imagefilledrectangle($im, 0, 0, 720, 720, imagecolorallocate($im, 0xfa, 0xf7, 0xf0));
+    og_draw_board($im, $fen, 32, 16, 84, $lastMove, $pieceFont);
+    $label = imagecolorallocate($im, 0x6b, 0x6b, 0x6b);
+    for ($i = 0; $i < 8; $i++) {
+        if ($pieceFont !== null) {
+            imagettftext($im, 13, 0, 10, 16 + $i * 84 + 48, $label, $pieceFont, (string) (8 - $i));
+            imagettftext($im, 13, 0, 32 + $i * 84 + 36, 712, $label, $pieceFont, chr(97 + $i));
+        } else {
+            imagestring($im, 4, 12, 16 + $i * 84 + 34, (string) (8 - $i), $label);
+            imagestring($im, 4, 32 + $i * 84 + 38, 696, chr(97 + $i), $label);
+        }
+    }
+    @imagepng($im, $cachePath, 6);
+    header('X-Cache: MISS');
+    imagepng($im, null, 6);
+    exit;
+}
+
 $W = 1200; $H = 630;
 $im = imagecreatetruecolor($W, $H);
 imageantialias($im, true);
@@ -74,42 +120,16 @@ $muted  = imagecolorallocate($im, 0x9a, 0xbb, 0xd9);
 
 imagefilledrectangle($im, 0, 0, $W, $H, $bg);
 
-// Subtle 8x8 board pattern across the right third.
+// The position on the right: the opening's, or the starting one on the site card.
 $sq = 60;
 $boardLeft = $W - $sq * 8 - 80;
-$boardTop  = ($H - $sq * 8) / 2;
-$light = imagecolorallocatealpha($im, 0xfa, 0xf7, 0xf0, 110);
-$dark  = imagecolorallocatealpha($im, 0x6e, 0xa3, 0xd4, 115);
-for ($r = 0; $r < 8; $r++) {
-    for ($c = 0; $c < 8; $c++) {
-        $color = (($r + $c) % 2 === 0) ? $light : $dark;
-        imagefilledrectangle(
-            $im,
-            (int) ($boardLeft + $c * $sq),
-            (int) ($boardTop  + $r * $sq),
-            (int) ($boardLeft + ($c + 1) * $sq),
-            (int) ($boardTop  + ($r + 1) * $sq),
-            $color
-        );
-    }
-}
+$boardTop  = intdiv($H - $sq * 8, 2);
+og_draw_board($im, $fen, $boardLeft, $boardTop, $sq, $lastMove, $pieceFont);
 
-// Pick text content.
-if ($slug !== '') {
-    $stmt = chess_codex_db()->prepare(
-        "SELECT eco, name FROM codex_openings WHERE slug = :s LIMIT 1"
-    );
-    $stmt->execute(['s' => $slug]);
-    $row = $stmt->fetch();
-    if ($row) {
-        $eco   = (string) $row['eco'];
-        $title = (string) $row['name'];
-        $sub   = 'Caissa Codex · chesscodex.org';
-    } else {
-        $eco   = '';
-        $title = 'Caissa Codex';
-        $sub   = 'Chess openings · chesscodex.org';
-    }
+if ($row) {
+    $eco   = (string) $row['eco'];
+    $title = (string) $row['name'];
+    $sub   = 'Caissa Codex · chesscodex.org';
 } else {
     $eco   = '';
     $title = 'Caissa Codex';
@@ -223,6 +243,68 @@ function self_first_existing_font(): ?string
         if (@is_file($c)) { $path = $c; return $path; }
     }
     return null;
+}
+
+/**
+ * A font with DejaVu's chess glyphs (U+2654–265F), as on the Pi. Not Segoe
+ * UI Symbol: its solid pawn has a hollow body and reads as a white one.
+ */
+function og_piece_font(): ?string
+{
+    foreach (['/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+              '/usr/share/fonts/dejavu/DejaVuSans.ttf'] as $f) {
+        if (@is_file($f)) return $f;
+    }
+    return null;
+}
+
+/**
+ * The position of $fen as a diagram: $sq-pixel squares from ($x, $y), the
+ * last move's squares tinted as on the site's board. A white piece is the
+ * solid glyph in white under the outline glyph in black; without a font the
+ * board is drawn empty.
+ */
+function og_draw_board(GdImage $im, string $fen, int $x, int $y, int $sq, ?string $lastMove, ?string $font): void
+{
+    $colors = [
+        'light' => imagecolorallocate($im, 0xf0, 0xd9, 0xb5), 'dark'   => imagecolorallocate($im, 0xb5, 0x88, 0x63),
+        'hiL'   => imagecolorallocate($im, 0xcd, 0xd2, 0x6a), 'hiD'    => imagecolorallocate($im, 0xaa, 0xa2, 0x3a),
+        'white' => imagecolorallocate($im, 0xff, 0xff, 0xff), 'black'  => imagecolorallocate($im, 0x00, 0x00, 0x00),
+    ];
+    $hi = $lastMove !== null ? [substr($lastMove, 0, 2), substr($lastMove, 2, 2)] : [];
+    for ($r = 0; $r < 8; $r++) {
+        for ($f = 0; $f < 8; $f++) {
+            $lightSq = ($r + $f) % 2 === 0;
+            $name    = chr(97 + $f) . (8 - $r);
+            $color   = in_array($name, $hi, true) ? ($lightSq ? $colors['hiL'] : $colors['hiD']) : ($lightSq ? $colors['light'] : $colors['dark']);
+            imagefilledrectangle($im, $x + $f * $sq, $y + $r * $sq, $x + ($f + 1) * $sq - 1, $y + ($r + 1) * $sq - 1, $color);
+        }
+    }
+    if ($font === null) return;
+
+    $solid   = ['k' => '♚', 'q' => '♛', 'r' => '♜', 'b' => '♝', 'n' => '♞', 'p' => '♟'];
+    $outline = ['k' => '♔', 'q' => '♕', 'r' => '♖', 'b' => '♗', 'n' => '♘', 'p' => '♙'];
+    $size    = $sq * 0.6;    // points; GD renders at 96 dpi, so ~0.8 of the square
+    // One baseline for every piece, from the king's box, as in printed diagrams.
+    $kb      = imagettfbbox($size, 0, $font, $solid['k']) ?: array_fill(0, 8, 0);
+    $baseOff = intdiv($sq - ($kb[1] - $kb[5]), 2) - $kb[5];
+    foreach (explode('/', explode(' ', $fen)[0]) as $r => $rank) {
+        $f = 0;
+        foreach (str_split($rank) as $ch) {
+            if (ctype_digit($ch)) { $f += (int) $ch; continue; }
+            $p  = strtolower($ch);
+            $b  = imagettfbbox($size, 0, $font, $solid[$p]) ?: array_fill(0, 8, 0);
+            $gx = $x + $f * $sq + intdiv($sq - ($b[2] - $b[0]), 2) - $b[0];
+            $gy = $y + $r * $sq + $baseOff;
+            if (ctype_upper($ch)) {
+                imagettftext($im, $size, 0, $gx, $gy, $colors['white'], $font, $solid[$p]);
+                imagettftext($im, $size, 0, $gx, $gy, $colors['black'], $font, $outline[$p]);
+            } else {
+                imagettftext($im, $size, 0, $gx, $gy, $colors['black'], $font, $solid[$p]);
+            }
+            $f++;
+        }
+    }
 }
 
 /** Width in px of $s drawn with imagettftext() from x = 0 (bearing included). */
