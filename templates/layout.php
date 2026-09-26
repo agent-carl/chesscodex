@@ -120,9 +120,12 @@ CSS;
     <?php endif; ?>
     <?php
     // Open Graph image: opening-specific slug if we're on an opening page, else
-    // the site-wide card. Cached on disk in db/og_cache/ for 30 days.
+    // the site-wide card. Cached for 30 days on disk, at Cloudflare and by
+    // social sites; ?v= (hash of og.php, same as opening.php) changes the URL
+    // whenever the card design does.
     $ogSlug = isset($opening['slug']) ? (string) $opening['slug'] : '';
-    $ogImg  = $siteUrl . $baseUrl . '/og.php' . ($ogSlug !== '' ? '?slug=' . urlencode($ogSlug) : '');
+    $ogVer  = substr((string) @hash_file('xxh3', $projectRoot . '/og.php'), 0, 8);
+    $ogImg  = $siteUrl . $baseUrl . '/og.php?' . ($ogSlug !== '' ? 'slug=' . urlencode($ogSlug) . '&' : '') . 'v=' . $ogVer;
     ?>
     <meta property="og:type" content="<?= $esc($ogType) ?>">
     <meta property="og:site_name" content="<?= $esc(t('site.name')) ?>">

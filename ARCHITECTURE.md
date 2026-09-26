@@ -1,6 +1,6 @@
 # Architecture
 
-A high-level walkthrough of how a request flows through Chess Codex, plus the
+A high-level walkthrough of how a request flows through Caissa Codex, plus the
 "why" behind key decisions. Read this when you need to extend the codebase
 without breaking something subtle.
 

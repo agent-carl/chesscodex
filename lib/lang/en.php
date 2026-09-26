@@ -1,7 +1,7 @@
 <?php
 return [
     // Site chrome
-    'site.name'                => 'Chess Codex',
+    'site.name'                => 'Caissa Codex',
     'nav.search'               => 'Search',
     'nav.toggle_theme.dark'    => 'Switch to dark theme',
     'nav.toggle_theme.light'   => 'Switch to light theme',
@@ -15,7 +15,7 @@ return [
     'group.E'                  => 'Indian Defenses',
 
     // Home page
-    'home.title'               => 'Chess Openings Explorer — Moves, Win Rates & ECO Codes | Chess Codex',
+    'home.title'               => 'Chess Openings Explorer — Moves, Win Rates & ECO Codes | Caissa Codex',
     'home.hero.h1'             => 'The Chess Openings Encyclopedia',
     'home.hero.lede'           => 'A free, ad-free reference of named chess openings and variations: moves on an interactive board, ECO codes, and win rates from millions of Lichess games.',
     'home.hero.meta'           => '{count} openings indexed · 5 ECO groups · A–E',
@@ -57,7 +57,7 @@ return [
     'search.played'            => 'Played',
 
     // Play page
-    'play.title'               => 'Play {name} · Chess Codex',
+    'play.title'               => 'Play {name} · Caissa Codex',
     'play.h1'                  => 'Play from {name}',
     'play.back'                => '← Back to opening',
     'play.engine'              => 'Engine',
@@ -97,8 +97,8 @@ return [
     'play.description'         => 'Play against Stockfish from the {name} starting position. Six difficulty levels from Novice to Master.',
 
     // Errors
-    'error.404.title'          => 'Not found · Chess Codex',
-    'error.500.title'          => 'Internal error · Chess Codex',
+    'error.404.title'          => 'Not found · Caissa Codex',
+    'error.500.title'          => 'Internal error · Caissa Codex',
     'error.500.h1'             => 'Something went wrong',
     'error.500.body'           => 'We hit an error rendering this page. The error has been logged and we\'ll look into it.',
     'error.back_home'          => 'Back to home',

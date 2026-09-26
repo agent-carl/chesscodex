@@ -47,8 +47,8 @@ ob_start();
 </article>
 <?php
 $body = ob_get_clean();
-$title = 'All openings A–Z · Chess Codex';
-$description = 'Alphabetical index of all ' . number_format($total) . ' chess openings indexed in Chess Codex.';
+$title = 'All openings A–Z · Caissa Codex';
+$description = 'Alphabetical index of all ' . number_format($total) . ' chess openings indexed in Caissa Codex.';
 $canonical = $siteUrl . $baseUrl . I18n::url('/openings');
 $jsonLd = [
     '@context' => 'https://schema.org',

@@ -155,6 +155,8 @@ $jsonLd = [
         [
             '@type'       => 'WebSite',
             'name'        => t('site.name'),
+            // Google's fallback site name if it doesn't take the main one.
+            'alternateName' => ['ChessCodex.org'],
             'url'         => $canonical,
             'description' => $description,
             'inLanguage'  => I18n::locale(),

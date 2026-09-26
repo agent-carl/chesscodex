@@ -1,6 +1,6 @@
 {
-    "name": "Chess Codex",
-    "short_name": "Codex",
+    "name": "Caissa Codex",
+    "short_name": "Caissa Codex",
     "description": "Interactive encyclopaedia of chess openings — 3,690 indexed lines with statistics and engine play.",
     "start_url": "/",
     "scope": "/",
