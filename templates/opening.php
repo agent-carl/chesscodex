@@ -56,6 +56,12 @@ $siblingCount  = count($siblings);
 $nameEsc       = htmlspecialchars((string) $o['name'], ENT_QUOTES, 'UTF-8');
 $ecoEsc        = htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8');
 $movesEsc      = '<code class="opening-overview-moves">' . htmlspecialchars($movesPretty, ENT_QUOTES, 'UTF-8') . '</code>';
+// og.php draws the share card and the diagram; ?v= changes when it does.
+$ogVer         = substr((string) @hash_file('xxh3', __DIR__ . '/../og.php'), 0, 8);
+$diagramUrl    = $baseUrl . '/og.php?slug=' . urlencode((string) $o['slug']) . '&kind=diagram&v=' . $ogVer;
+// "5…a6": the move that reaches the position.
+$sans          = preg_split('/\s+/', trim((string) preg_replace('/\d+\.+\s*/', ' ', $movesPretty))) ?: [];
+$lastMoveText  = $plies > 0 && $sans ? (intdiv($plies - 1, 2) + 1) . (($plies - 1) % 2 === 0 ? '. ' : '…') . end($sans) : '';
 $isGambit      = Opening::isGambit((string) $o['name']);
 // "Queen's Gambit Declined: …" and the like: named after a gambit that isn't taken.
 $isDeclined    = !$isGambit && stripos((string) $o['name'], 'Gambit') !== false;
@@ -276,6 +282,12 @@ $island = [
     <?php if (empty($o['description'])): ?>
     <section class="opening-overview">
         <h2>Overview</h2>
+        <figure class="opening-diagram">
+            <img src="<?= htmlspecialchars($diagramUrl, ENT_QUOTES, 'UTF-8') ?>" width="720" height="720"
+                 loading="lazy" decoding="async"
+                 alt="Chess diagram: <?= $nameEsc ?><?= $lastMoveText !== '' ? ' after ' . htmlspecialchars($lastMoveText, ENT_QUOTES, 'UTF-8') : '' ?>">
+            <?php if ($lastMoveText !== ''): ?><figcaption>After <?= htmlspecialchars($lastMoveText, ENT_QUOTES, 'UTF-8') ?></figcaption><?php endif; ?>
+        </figure>
         <div class="opening-overview-body"><?= $overviewHtml ?></div>
         <dl class="opening-facts">
             <div><dt>ECO code</dt><dd><a href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco/' . $o['eco']), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8') ?></a></dd></div>
@@ -615,8 +627,7 @@ $description = implode(' · ', $descParts) . ' · Interactive board'
 
 // OG image absolute URL for the JSON-LD `image`: the same URL as og:image in
 // layout.php, including its ?v= (hash of og.php).
-$ogImageUrl = $siteUrl . $baseUrl . '/og.php?slug=' . urlencode($o['slug'])
-            . '&v=' . substr((string) @hash_file('xxh3', __DIR__ . '/../og.php'), 0, 8);
+$ogImageUrl = $siteUrl . $baseUrl . '/og.php?slug=' . urlencode($o['slug']) . '&v=' . $ogVer;
 
 $breadcrumbs = [
     ['name' => t('site.name'), 'url' => $siteUrl . $baseUrl . I18n::url('/')],
@@ -649,10 +660,9 @@ $jsonLd = [
             'url'              => $canonical,
             'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonical],
             'image'            => [
-                '@type'  => 'ImageObject',
-                'url'    => $ogImageUrl,
-                'width'  => 1200,
-                'height' => 630,
+                // The square diagram too: Google prefers several aspect ratios.
+                ['@type' => 'ImageObject', 'url' => $siteUrl . $diagramUrl, 'width' => 720, 'height' => 720],
+                ['@type' => 'ImageObject', 'url' => $ogImageUrl, 'width' => 1200, 'height' => 630],
             ],
             'inLanguage'    => I18n::locale(),
             'articleSection'=> $ecoGroupLabel,
