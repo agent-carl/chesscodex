@@ -262,7 +262,7 @@ final class Routes
 
     /**
      * Random-opening redirector — picks a random slug and 302s to it.
-     * Used by the "🎲 Random" link in the header for casual discovery.
+     * Used by the "Random" link in the header for casual discovery.
      */
     public static function random(): void
     {

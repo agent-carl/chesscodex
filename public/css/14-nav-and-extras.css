@@ -1,7 +1,6 @@
 /* Header: with Openings, ECO and Rankings added, the links fit on a phone once
-   "Random" drops its label and Search its "/" hint. */
+   Search drops its "/" hint. */
 @media (max-width: 540px) {
-    .site-nav .site-nav-label,
     .site-nav .kbd-hint { display: none; }
 }
 
