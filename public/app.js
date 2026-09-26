@@ -203,6 +203,35 @@ async function copyToClipboard(text) {
     });
 })();
 
+// "+ Repertoire" on opening pages: saves the line to localStorage
+// ("codex-repertoire": { white: [line], black: [line] }) under the side that
+// makes its last move; /repertoire lists, drills and downloads them.
+(function () {
+    const btn = document.querySelector('[data-repertoire-toggle]');
+    if (!btn) return;
+    const KEY = 'codex-repertoire';
+    const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
+    const { slug, name, eco, pgn, side } = btn.dataset;
+    const has = () => (read()[side] || []).some((l) => l.slug === slug);
+    const label = () => {
+        btn.textContent = has() ? `✓ In repertoire (${side === 'white' ? 'White' : 'Black'})` : '+ Repertoire';
+        btn.setAttribute('aria-pressed', has() ? 'true' : 'false');
+    };
+    label();
+    btn.addEventListener('click', () => {
+        const rep = read();
+        const list = rep[side] || [];
+        rep[side] = has() ? list.filter((l) => l.slug !== slug) : list.concat([{ slug, name, eco, pgn }]);
+        try {
+            localStorage.setItem(KEY, JSON.stringify(rep));
+            Toast.show(has() ? 'Added to your repertoire' : 'Removed from your repertoire');
+        } catch (e) {
+            Toast.show('Your browser blocked local storage', 'error');
+        }
+        label();
+    });
+})();
+
 // "Share…" — the device's own share sheet (Web Share API), shown only where
 // the browser has one (mostly phones).
 (function () {

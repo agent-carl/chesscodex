@@ -1,0 +1,181 @@
+import { Chess } from '../vendor/chess.js';
+import { Chessground } from '../vendor/chessground.min.js';
+
+// Opening trainer (/train/<slug>): the user plays one side of a line, the
+// other side's moves are played for them. Lines come from the page (this
+// opening and its named continuations) or, with ?from=repertoire&side=…, from
+// the repertoire saved in localStorage. Results feed a Leitner-style review
+// schedule, also in localStorage — nothing leaves the browser.
+
+const node = document.getElementById('train-data');
+if (node) {
+    const cfg = JSON.parse(node.textContent);
+    const $ = (id) => document.getElementById(id);
+    const store = {
+        get(key) { try { return JSON.parse(localStorage.getItem(key)) || {}; } catch (e) { return {}; } },
+        set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* private mode */ } },
+    };
+
+    const params = new URLSearchParams(location.search);
+    const fromRepertoire = params.get('from') === 'repertoire';
+    let color = cfg.color;
+    let lines = cfg.lines;
+    if (fromRepertoire) {
+        color = params.get('side') === 'black' ? 'black' : 'white';
+        const saved = store.get('codex-repertoire')[color] || [];
+        if (saved.length) lines = saved;
+    }
+    let drillAll = fromRepertoire;
+    const allBox = $('train-all');
+    if (allBox) {
+        allBox.checked = drillAll;
+        allBox.addEventListener('change', () => { drillAll = allBox.checked; start(); });
+    }
+
+    // Review schedule: box 1–5, due again after these many days.
+    const DAYS = [0, 1, 3, 7, 16, 35];
+    function record(slug, clean) {
+        const all = store.get('codex-train');
+        const r = all[slug] || { box: 0, runs: 0 };
+        r.box = clean ? Math.min(r.box + 1, 5) : 1;
+        r.due = Date.now() + DAYS[r.box] * 86400000;
+        r.runs += 1;
+        all[slug] = r;
+        store.set('codex-train', all);
+    }
+    const isDue = (slug) => { const r = store.get('codex-train')[slug]; return !r || r.due <= Date.now(); };
+
+    function pickLine(previous) {
+        if (!drillAll) return lines[0];
+        const due = lines.filter((l) => isDue(l.slug) && l !== previous);
+        const pool = due.length ? due : lines.filter((l) => l !== previous);
+        return (pool.length ? pool : lines)[Math.floor(Math.random() * (pool.length || lines.length))];
+    }
+
+    const sansOf = (pgn) => { const c = new Chess(); c.load_pgn(pgn, { sloppy: true }); return c.history(); };
+    const plain = (san) => san.replace(/[+#?!]/g, '');
+    const label = (ply, san) => (Math.floor(ply / 2) + 1) + (ply % 2 === 0 ? '. ' : '…') + san;
+    const status = (text) => { $('train-status').textContent = text; };
+
+    const chess = new Chess();
+    let line = null, sans = [], ply = 0, mistakes = 0, wrongHere = 0, busy = false;
+
+    function dests() {
+        const map = new Map();
+        for (const m of chess.moves({ verbose: true })) {
+            if (!map.has(m.from)) map.set(m.from, []);
+            map.get(m.from).push(m.to);
+        }
+        return map;
+    }
+
+    const board = Chessground($('train-board'), {
+        orientation: color,
+        coordinates: true,
+        movable: { free: false, showDests: true, events: { after: onMove } },
+        draggable: { showGhost: true },
+    });
+
+    function sync() {
+        const turn = chess.turn() === 'w' ? 'white' : 'black';
+        const last = chess.history({ verbose: true }).slice(-1)[0];
+        const mine = turn === color && ply < sans.length && !busy;
+        board.set({
+            orientation: color,
+            fen: chess.fen(),
+            turnColor: turn,
+            lastMove: last ? [last.from, last.to] : undefined,
+            movable: { color: mine ? color : undefined, dests: mine ? dests() : new Map() },
+        });
+        $('train-progress').textContent = sans.length ? `Move ${Math.min(ply, sans.length)} of ${sans.length}` : '';
+    }
+
+    function start(previous) {
+        line = pickLine(previous);
+        sans = sansOf(line.pgn);
+        ply = 0; mistakes = 0; wrongHere = 0; busy = false;
+        chess.reset();
+        board.setAutoShapes([]);
+        const link = $('train-line');
+        link.textContent = `${line.name} (${line.eco})`;
+        link.href = `${cfg.base}/openings/${line.slug}`;
+        renderDue();
+        if (!sans.some((_, i) => (i % 2 === 0) === (color === 'white'))) {
+            status(`This line has no moves for ${color === 'white' ? 'White' : 'Black'} — play the other side.`);
+            sync();
+            return;
+        }
+        status(`You play ${color === 'white' ? 'White' : 'Black'}. Play the line's moves.`);
+        advance();
+    }
+
+    function advance() {
+        if (ply >= sans.length) { sync(); finish(); return; }
+        const turn = chess.turn() === 'w' ? 'white' : 'black';
+        if (turn === color) { sync(); return; }
+        busy = true;
+        sync();
+        setTimeout(() => {
+            chess.move(sans[ply]);
+            ply += 1;
+            busy = false;
+            advance();
+        }, 350);
+    }
+
+    function onMove(orig, dest) {
+        const move = chess.move({ from: orig, to: dest, promotion: 'q' });
+        if (!move) { sync(); return; }
+        if (plain(move.san) === plain(sans[ply])) {
+            ply += 1;
+            wrongHere = 0;
+            board.setAutoShapes([]);
+            status('Right.');
+            advance();
+            return;
+        }
+        chess.undo();
+        mistakes += 1;
+        wrongHere += 1;
+        if (wrongHere >= 2) showMove(); else status(`${move.san} is not this line's move — try again.`);
+        sync();
+    }
+
+    function showMove() {
+        const probe = new Chess(chess.fen());
+        const m = probe.move(sans[ply]);
+        if (m) board.setAutoShapes([{ orig: m.from, dest: m.to, brush: 'green' }]);
+        status(`The move is ${label(ply, sans[ply])}.`);
+    }
+
+    function finish() {
+        const clean = mistakes === 0;
+        record(line.slug, clean);
+        status(clean
+            ? 'Line complete, no mistakes. It comes back for review later.'
+            : `Line complete with ${mistakes} mistake${mistakes === 1 ? '' : 's'} — it comes back tomorrow.`);
+        renderDue();
+    }
+
+    function renderDue() {
+        const due = lines.filter((l) => { const r = store.get('codex-train')[l.slug]; return r && r.due <= Date.now(); });
+        $('train-due').textContent = lines.length > 1 && due.length
+            ? `${due.length} of these lines ${due.length === 1 ? 'is' : 'are'} due for review.` : '';
+    }
+
+    $('train-restart').addEventListener('click', () => {
+        ply = 0; mistakes = 0; wrongHere = 0; busy = false;
+        chess.reset(); board.setAutoShapes([]);
+        status('Again from the start.');
+        advance();
+    });
+    $('train-hint').addEventListener('click', () => {
+        if (ply < sans.length && !busy) { mistakes += 1; showMove(); }
+    });
+    const next = $('train-next');
+    if (lines.length < 2) next.hidden = true;
+    next.addEventListener('click', () => { drillAll = true; if (allBox) allBox.checked = true; start(line); });
+    $('train-color').addEventListener('click', () => { color = color === 'white' ? 'black' : 'white'; start(drillAll ? undefined : line); });
+
+    start();
+}

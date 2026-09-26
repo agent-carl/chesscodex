@@ -266,6 +266,18 @@ $island = [
                 </button>
                 <a class="board-cta" href="<?= htmlspecialchars($baseUrl . I18n::url('/play/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"
                    data-prefetch="<?= $baseEsc ?>/vendor/stockfish.js <?= $baseEsc ?>/vendor/stockfish.wasm"><?= htmlspecialchars(t('opening.board.cta'), ENT_QUOTES, 'UTF-8') ?></a>
+                <a class="board-cta board-cta-secondary" rel="nofollow"
+                   href="<?= htmlspecialchars($baseUrl . I18n::url('/train/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"
+                   title="Play this line's moves from memory, with review on a schedule">Practise the line</a>
+                <?php /* The side that makes the line's last move is the one choosing it. */ ?>
+                <button type="button" class="opening-tool-btn" data-repertoire-toggle
+                        data-slug="<?= htmlspecialchars((string) $o['slug'], ENT_QUOTES, 'UTF-8') ?>"
+                        data-name="<?= htmlspecialchars((string) $o['name'], ENT_QUOTES, 'UTF-8') ?>"
+                        data-eco="<?= htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8') ?>"
+                        data-pgn="<?= htmlspecialchars(trim((string) $o['pgn_moves']), ENT_QUOTES, 'UTF-8') ?>"
+                        data-side="<?= $plies % 2 === 1 ? 'white' : 'black' ?>"
+                        data-repertoire-url="<?= htmlspecialchars($baseUrl . I18n::url('/repertoire'), ENT_QUOTES, 'UTF-8') ?>">+ Repertoire</button>
+                <a class="board-repertoire-link" rel="nofollow" href="<?= htmlspecialchars($baseUrl . I18n::url('/repertoire'), ENT_QUOTES, 'UTF-8') ?>">My repertoire</a>
                 <span class="board-hint"><?= htmlspecialchars(t('opening.board.hint'), ENT_QUOTES, 'UTF-8') ?></span>
             </div>
         </div>
