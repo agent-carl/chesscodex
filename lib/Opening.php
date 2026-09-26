@@ -5,6 +5,35 @@ require_once __DIR__ . '/db.php';
 
 class Opening
 {
+    /**
+     * Lines played in fewer Lichess games than this are kept out of search
+     * engines (noindex, not in the sitemap): with no numbers to show, their
+     * pages are the generated text alone. 115 of 3,690 in September 2026.
+     */
+    public const THIN_GAMES = 100;
+
+    /**
+     * True for a line below THIN_GAMES (its popularity is the cached game
+     * count) — except mates and traps, which people search for as tactics
+     * however rarely rated games reach them (Fool's Mate: 0).
+     */
+    public static function isThin(array $opening): bool
+    {
+        return (int) ($opening['popularity'] ?? 0) < self::THIN_GAMES
+            && !preg_match('/\b(Mate|Trap)\b/', (string) ($opening['name'] ?? ''));
+    }
+
+    /**
+     * The position diagram og.php draws (720×720 PNG), path from the site
+     * root; ?v= is og.php's hash, so a changed drawing gets a new URL.
+     */
+    public static function diagramPath(string $slug): string
+    {
+        static $ver = null;
+        $ver ??= substr((string) @hash_file('xxh3', __DIR__ . '/../og.php'), 0, 8);
+        return '/og.php?slug=' . urlencode($slug) . '&kind=diagram&v=' . $ver;
+    }
+
     public static function findBySlug(string $slug): ?array
     {
         $stmt = chess_codex_db()->prepare(

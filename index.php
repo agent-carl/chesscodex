@@ -60,16 +60,6 @@ if ($baseUrl !== '' && strpos($rawPath, $baseUrl) === 0) {
 }
 if ($rawPath === '' || $rawPath === false) $rawPath = '/';
 
-// One URL per page: "/openings/x/" answers 301 → "/openings/x" instead of
-// serving a duplicate. Only plain [A-Za-z0-9-] segments ("/eco/B20/"), so a
-// crafted path like "/\evil.com/" can't turn this into an open redirect.
-if (preg_match('#^(/[A-Za-z0-9-]+)+/$#', $rawPath)
-    && in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) {
-    $query = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_QUERY);
-    header('Location: ' . $baseUrl . rtrim($rawPath, '/') . ($query !== '' ? '?' . $query : ''), true, 301);
-    exit;
-}
-
 // I18n::detect is now a pass-through (English-only); keep the call so the
 // shape of the dispatch is unchanged if locales ever come back.
 [$locale, $path] = I18n::detect($rawPath);
@@ -108,5 +98,21 @@ $router->add('#^/openings/([a-z0-9-]+)\.pgn$#', [Routes::class, 'openingPgn']);
 $router->add('#^/openings/([a-z0-9-]+)/?$#', [Routes::class, 'opening']);
 $router->add('#^/play/([a-z0-9-]+)/?$#',     [Routes::class, 'play']);
 $router->setNotFound(static function () use ($render404) { $render404(); });
+
+// One URL per page, answered with a 301 to it: "/openings/x/" → "/openings/x",
+// "/Openings/Italian-Game" → "/openings/italian-game". Only when the other
+// form is a page (so "/uk/" is a plain 404, not a redirect to one), and only
+// plain [A-Za-z0-9-] segments, so a crafted path like "/\evil.com/" can't
+// turn this into an open redirect.
+if (in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)
+    && preg_match('#^(/[A-Za-z0-9-]+)+/?$#', $path)) {
+    $target = rtrim($path, '/');
+    if (!$router->matches($target)) $target = strtolower($target);
+    if ($target !== '' && $target !== $path && $router->matches($target)) {
+        $query = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_QUERY);
+        header('Location: ' . $baseUrl . $target . ($query !== '' ? '?' . $query : ''), true, 301);
+        exit;
+    }
+}
 
 $router->dispatch($path);

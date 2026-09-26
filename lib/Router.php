@@ -23,6 +23,16 @@ final class Router
         $this->notFound = $handler;
     }
 
+    /** Whether some route (other than not-found) takes $path. */
+    public function matches(string $path): bool
+    {
+        foreach ($this->routes as $r) {
+            $p = $r['pattern'];
+            if ($p[0] !== '#' ? $p === $path : preg_match($p, $path) === 1) return true;
+        }
+        return false;
+    }
+
     public function dispatch(string $path): void
     {
         foreach ($this->routes as $r) {

@@ -1,0 +1,26 @@
+# Caissa Codex
+
+> A free, ad-free encyclopedia of the 3,690 named chess openings and variations in the Lichess chess-openings dataset (public domain), at https://chesscodex.org. Every line has its own page with the moves on an interactive board, its ECO code, where it sits in the opening tree, and how it scores in rated Lichess games — overall, by rating band and in master games.
+
+The statistics come from the Lichess opening explorer and masters database, cached on the server and refreshed within about a week. Page text is generated from that data. Built and run as a hobby project by a high school student in Norway.
+
+## Main pages
+
+- [List of chess openings A–Z](https://chesscodex.org/openings): all 140 openings and every named line, by letter
+- [ECO codes A00–E99](https://chesscodex.org/eco): the 500 ECO codes with the lines filed under each
+- [Chess opening identifier](https://chesscodex.org/search): name an opening from its moves, a PGN, a FEN position or part of its name
+- [Chess opening rankings](https://chesscodex.org/rankings): best openings for White and for Black (also by rating band), most popular openings, most-played gambits
+- [About](https://chesscodex.org/about): who made it, where the data comes from, privacy
+
+## Opening pages
+
+Each line lives at https://chesscodex.org/openings/<slug>, for example:
+
+- [Sicilian Defense](https://chesscodex.org/openings/sicilian-defense)
+- [Sicilian Defense: Najdorf Variation](https://chesscodex.org/openings/sicilian-defense-najdorf-variation)
+- [Italian Game](https://chesscodex.org/openings/italian-game)
+- [Ruy Lopez](https://chesscodex.org/openings/ruy-lopez)
+- [Queen's Gambit Declined](https://chesscodex.org/openings/queens-gambit-declined)
+- [King's Indian Defense](https://chesscodex.org/openings/kings-indian-defense)
+
+The full list of pages is in the [sitemap](https://chesscodex.org/sitemap.xml). A line and all its named continuations can be downloaded as PGN at https://chesscodex.org/openings/<slug>.pgn.

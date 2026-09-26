@@ -51,9 +51,17 @@ $o = $opening;
 // page has its own <title> instead of up to 14 identical ones.
 $lineTail = Opening::distinguishingTail($o);
 $title = $o['name'] . ' (' . $o['eco'] . ')' . ($lineTail !== '' ? ' – ' . $lineTail : '');
-// Short titles also name what the page offers ("Sicilian Defense (B20): Moves
-// & Win Rates"); on long ones search results would only cut it off.
-if ($lineTail === '' && mb_strlen($title) <= 42) $title .= ': Moves & Win Rates';
+// Titles also say what the page is and offers, in the words people search
+// with, as far as 60 characters allow: "Italian Game (C50) – Chess Opening
+// Moves & Win Rates", "Queen's Gambit Declined (D30): Chess Moves & Win
+// Rates", "Sicilian Defense: Najdorf Variation (B90): Moves & Win Rates".
+if ($lineTail === '') {
+    $suffixes = [': Chess Moves & Win Rates', ': Moves & Win Rates'];
+    if (stripos((string) $o['name'], 'Opening') === false) array_unshift($suffixes, ' – Chess Opening Moves & Win Rates');
+    foreach ($suffixes as $suffix) {
+        if (mb_strlen($title . $suffix) <= 60) { $title .= $suffix; break; }
+    }
+}
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 
 // ----------------------------------------------------------------------
@@ -75,7 +83,7 @@ $ecoEsc        = htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8');
 $movesEsc      = '<code class="opening-overview-moves">' . htmlspecialchars($movesPretty, ENT_QUOTES, 'UTF-8') . '</code>';
 // og.php draws the share card and the diagram; ?v= changes when it does.
 $ogVer         = substr((string) @hash_file('xxh3', __DIR__ . '/../og.php'), 0, 8);
-$diagramUrl    = $baseUrl . '/og.php?slug=' . urlencode((string) $o['slug']) . '&kind=diagram&v=' . $ogVer;
+$diagramUrl    = $baseUrl . Opening::diagramPath((string) $o['slug']);
 // "5…a6": the move that reaches the position.
 $sans          = preg_split('/\s+/', trim((string) preg_replace('/\d+\.+\s*/', ' ', $movesPretty))) ?: [];
 $lastMoveText  = $plies > 0 && $sans ? (intdiv($plies - 1, 2) + 1) . (($plies - 1) % 2 === 0 ? '. ' : '…') . end($sans) : '';
@@ -252,7 +260,8 @@ $island = [
             <ol id="move-list" class="move-list move-list-paired" aria-label="<?= htmlspecialchars(t('opening.moves'), ENT_QUOTES, 'UTF-8') ?>"></ol>
 
             <div class="opening-actions">
-                <a class="board-cta" href="<?= htmlspecialchars($baseUrl . I18n::url('/play/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"
+                <?php /* nofollow: the 3,690 play pages are noindex, no crawl needed. */ ?>
+                <a class="board-cta" rel="nofollow" href="<?= htmlspecialchars($baseUrl . I18n::url('/play/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"
                    data-prefetch="<?= $baseEsc ?>/vendor/stockfish.js <?= $baseEsc ?>/vendor/stockfish.wasm"><?= htmlspecialchars(t('opening.board.cta'), ENT_QUOTES, 'UTF-8') ?></a>
                 <a class="board-cta board-cta-secondary" rel="nofollow"
                    href="<?= htmlspecialchars($baseUrl . I18n::url('/train/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"
@@ -701,7 +710,8 @@ $canonical = $siteUrl . $baseUrl . I18n::url('/openings/' . $o['slug']);
 
 // SEO description, in the order searchers scan it: name and ECO code, how
 // the line scores on Lichess (the one thing the title can't say), its first
-// moves, the variations. layout.php trims it to 160 chars at a word boundary.
+// moves, the variations. Whole parts only, up to 160 characters, so search
+// results never show it cut mid-phrase.
 // The first moves, cut after a whole move ("1. e4 e5 2. Nf3 Nc6…").
 $moveSnippet = $movesPretty;
 if (mb_strlen($moveSnippet) > 24) {
@@ -720,8 +730,15 @@ $descParts[] = $lineTail !== '' ? 'line ending ' . $lineTail : $moveSnippet;
 if ($childCount > 0) {
     $descParts[] = $childCount . ($childCount === 1 ? ' variation' : ' variations');
 }
-$description = implode(' · ', $descParts) . ' · Interactive board'
-    . ($statsTotal > 0 ? '' : ', Lichess statistics') . ', play vs Stockfish.';
+$descParts[] = 'Interactive board' . ($statsTotal > 0 ? '' : ', Lichess statistics') . ', play vs Stockfish.';
+$description = '';
+foreach ($descParts as $i => $part) {
+    $next = $description === '' ? $part : $description . ' · ' . $part;
+    if (mb_strlen($next) > 160 && $i > 0) continue;   // skip a part that doesn't fit, try the shorter ones after it
+    $description = $next;
+}
+// Lines with almost no games stay out of search engines (and the sitemap).
+$noindex = Opening::isThin($o);
 
 // OG image absolute URL for the JSON-LD `image`: the same URL as og:image in
 // layout.php, including its ?v= (hash of og.php).
@@ -775,10 +792,11 @@ $jsonLd = [
             // Full ISO 8601 with offset — Google flags date-only values.
             // dateModified is when the Lichess numbers on the page were last
             // fetched: a real change, unlike "today" on every crawl.
-            'datePublished' => '2026-01-01T00:00:00+01:00',
+            // The site went live on 2026-09-25.
+            'datePublished' => '2026-09-25T12:00:00+02:00',
             'dateModified'  => $statsTotal > 0 && !empty($stats['cached_at'])
                 ? (new DateTimeImmutable((string) $stats['cached_at']))->format(DATE_ATOM)
-                : '2026-01-01T00:00:00+01:00',
+                : '2026-09-25T12:00:00+02:00',
             'author'        => $publisherLd,
             'publisher'     => $publisherLd,
             'isPartOf'      => [
