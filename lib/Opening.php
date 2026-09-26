@@ -187,19 +187,33 @@ class Opening
     }
 
     /**
-     * The line and every named line that continues it (name, eco, pgn_moves,
-     * popularity), shortest first — what a PGN download of the tree holds.
+     * The line and every named line that continues it (slug, name, eco,
+     * pgn_moves, popularity), shortest first — what a PGN download of the
+     * tree holds, and what the trainer drills.
      */
     public static function withContinuations(array $opening): array
     {
         require_once __DIR__ . '/parser.php';
         $canon = chess_codex_canonicalize_pgn((string) $opening['pgn_moves']);
         $stmt = chess_codex_db()->prepare(
-            "SELECT name, eco, pgn_moves, popularity FROM codex_openings
+            "SELECT slug, name, eco, pgn_moves, popularity FROM codex_openings
              WHERE pgn_canon = :c OR pgn_canon LIKE :p ORDER BY move_count, id"
         );
         $stmt->execute(['c' => $canon, 'p' => $canon . ' %']);
         return $stmt->fetchAll();
+    }
+
+    /** Rows (slug, name, eco, pgn_moves, popularity) for up to 200 slugs, in the order given. */
+    public static function bySlugs(array $slugs): array
+    {
+        $slugs = array_slice(array_values(array_unique(array_filter($slugs,
+            static fn ($s): bool => is_string($s) && preg_match('/^[a-z0-9-]{1,200}$/', $s) === 1))), 0, 200);
+        if ($slugs === []) return [];
+        $stmt = chess_codex_db()->prepare('SELECT slug, name, eco, pgn_moves, popularity FROM codex_openings WHERE slug IN ('
+            . implode(',', array_fill(0, count($slugs), '?')) . ')');
+        $stmt->execute($slugs);
+        $bySlug = array_column($stmt->fetchAll(), null, 'slug');
+        return array_values(array_filter(array_map(static fn (string $s): ?array => $bySlug[$s] ?? null, $slugs)));
     }
 
     /** "1 move", "3 moves": a line's length in full moves (move_count counts plies). */

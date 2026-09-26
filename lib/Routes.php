@@ -320,6 +320,44 @@ final class Routes
         echo $pgn;
     }
 
+    /** /train/<slug> — practise the line (or its named continuations) move by move. */
+    public static function train(string $slug): void
+    {
+        global $baseUrl, $siteUrl, $render404;
+        $opening = Opening::findBySlug($slug);
+        if ($opening === null) $render404('No opening matches that URL.');
+        Views::track('train', (int) $opening['id']);
+        $lines = array_slice(Opening::withContinuations($opening), 0, 300);
+        require __DIR__ . '/../templates/train.php';
+    }
+
+    /** /repertoire — the lines saved with "+ Repertoire" (kept in the browser). */
+    public static function repertoire(): void
+    {
+        global $baseUrl, $siteUrl;
+        Views::track('repertoire');
+        require __DIR__ . '/../templates/repertoire.php';
+    }
+
+    /** /api/pgn?slugs=a,b&side=white — chosen lines as one PGN tree (the repertoire download). */
+    public static function apiPgn(): void
+    {
+        global $siteUrl, $baseUrl;
+        $lines = Opening::bySlugs(explode(',', (string) ($_GET['slugs'] ?? '')));
+        $side  = ($_GET['side'] ?? '') === 'black' ? 'Black' : 'White';
+        if ($lines === []) {
+            http_response_code(400);
+            header('Content-Type: text/plain; charset=utf-8');
+            echo "No known openings in ?slugs=.\n";
+            return;
+        }
+        header('Content-Type: application/x-chess-pgn; charset=utf-8');
+        header('Content-Disposition: attachment; filename="repertoire-' . strtolower($side) . '.pgn"');
+        header('X-Robots-Tag: noindex');
+        echo PgnTree::build($lines, "My repertoire ($side)", $siteUrl . $baseUrl . I18n::url('/repertoire'),
+            ['Annotator' => 'Caissa Codex (chesscodex.org)']);
+    }
+
     /** /rankings — the hub the header links to. */
     public static function rankingsIndex(): void
     {
