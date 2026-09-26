@@ -8,10 +8,12 @@ declare(strict_types=1);
  *   /og.php?slug=<slug> → opening-specific card with ECO + name
  *
  * Cached on disk (db/og_cache/) for 30 days per slug so repeated crawler
- * hits don't burn GD time. A card older than this file is redrawn, and the
- * og:image URL carries ?v=<hash of this file> (layout.php, opening.php), so
- * after an edit Cloudflare and social sites fetch the new card instead of
- * the one they keep for 30 days.
+ * hits don't burn GD time. A card drawn before this file was last deployed
+ * is redrawn — by ctime, since rsync keeps the laptop's mtime, which can be
+ * older than cards the previous code drew. The og:image URL carries
+ * ?v=<hash of this file> (layout.php, opening.php), so after an edit
+ * Cloudflare and social sites fetch the new card instead of the one they
+ * keep for 30 days.
  *
  * Requires PHP GD with PNG + TTF support. OVH shared hosting ships both.
  */
@@ -50,7 +52,7 @@ $cachePath = $cacheDir . '/' . $cacheKey . '.png';
 // Defensive: only treat the cached file as a hit if it's non-trivially sized.
 // A 0-byte file means a previous write was interrupted — better regenerate.
 if (is_file($cachePath) && filesize($cachePath) > 1024 && (time() - filemtime($cachePath)) < 2592000
-    && filemtime($cachePath) >= filemtime(__FILE__)) {
+    && filemtime($cachePath) >= filectime(__FILE__)) {
     header('X-Cache: HIT');
     readfile($cachePath);
     exit;
