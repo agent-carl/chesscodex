@@ -1,0 +1,508 @@
+/* =============================================================================
+   Home page — quick-action links + popular openings strip
+   ========================================================================== */
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-5);
+    margin-top: var(--space-3);
+    flex-wrap: wrap;
+}
+.hero-action-link {
+    color: var(--accent);
+    font-weight: 500;
+    border-bottom: 1px dashed var(--border-strong);
+}
+.hero-action-link:hover { color: var(--accent-hover); border-bottom-color: var(--accent); }
+
+.home-popular {
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+}
+.home-popular-head { text-align: center; margin-bottom: var(--space-5); }
+.home-popular-head h2 { margin: 0 0 var(--space-2); }
+.home-popular-lede { color: var(--muted); margin: 0; }
+.home-popular-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-3);
+}
+.home-popular-list li { margin: 0; }
+.home-popular-list a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg);
+    text-decoration: none;
+    transition: border-color .12s, transform .12s;
+}
+.home-popular-list a:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+.home-popular-name { flex: 1; font-weight: 500; }
+.home-popular-plies { color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+
+/* =============================================================================
+   /openings — alphabetical index
+   ========================================================================== */
+.openings-index-header { margin-bottom: var(--space-6); }
+.openings-jump {
+    margin-top: var(--space-4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+.openings-jump a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg);
+    font-weight: 600;
+    font-family: var(--font-display);
+}
+.openings-jump a:hover { border-color: var(--accent); color: var(--accent); }
+.openings-jump-count {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+.openings-letter {
+    scroll-margin-top: 80px;
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+    margin-top: var(--space-5);
+}
+.openings-letter h2 {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    font-size: 1.75rem;
+}
+.openings-letter-count {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+.openings-letter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-2);
+}
+.openings-letter-list a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.5rem 0.75rem;
+    color: var(--fg);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+}
+.openings-letter-list a:hover { background: var(--bg-subtle); color: var(--accent); }
+.openings-letter-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.openings-letter-plies { color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+
+/* =============================================================================
+   Opening page — breadcrumbs + subtree
+   ========================================================================== */
+.opening-breadcrumbs {
+    margin-bottom: var(--space-4);
+    font-size: 0.9rem;
+}
+.opening-breadcrumbs ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.6rem;
+    align-items: center;
+}
+.opening-breadcrumbs li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--muted);
+}
+.opening-breadcrumbs li + li::before {
+    content: "\203A";
+    margin-right: 0.3rem;
+    color: var(--border-strong);
+}
+.opening-breadcrumbs a {
+    color: var(--fg-soft);
+    text-decoration: none;
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-sm);
+}
+.opening-breadcrumbs a:hover { background: var(--bg-subtle); color: var(--accent); }
+.opening-breadcrumbs [aria-current="page"] { color: var(--fg); font-weight: 500; }
+
+.opening-subtree {
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border);
+}
+.opening-subtree summary {
+    cursor: pointer;
+    padding: var(--space-2) 0;
+    color: var(--accent);
+    font-weight: 500;
+    list-style: none;
+}
+.opening-subtree summary::-webkit-details-marker { display: none; }
+.opening-subtree-icon {
+    display: inline-block;
+    margin-right: 0.4rem;
+    transition: transform .15s;
+    font-size: 0.7em;
+}
+.opening-subtree details[open] .opening-subtree-icon { transform: rotate(180deg); }
+.opening-subtree-list {
+    list-style: none;
+    padding: var(--space-3) 0 0;
+    margin: 0;
+}
+.opening-subtree-list li {
+    margin-left: calc(var(--depth-indent, 0) * 1.2rem);
+}
+.opening-subtree-list a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.35rem 0.5rem;
+    color: var(--fg-soft);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-size: 0.92rem;
+}
+.opening-subtree-list a:hover { background: var(--bg-subtle); color: var(--accent); }
+.opening-subtree-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opening-subtree-plies { color: var(--muted); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+
+/* =============================================================================
+   Search page — name autocomplete
+   ========================================================================== */
+.search-by-name {
+    position: relative;
+    margin: var(--space-4) auto var(--space-3);
+    max-width: 560px;
+    text-align: left;
+}
+.search-by-name-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+    text-align: center;
+}
+.search-by-name-field { position: relative; }
+.search-by-name-field input {
+    width: 100%;
+    padding: 0.65rem 2.5rem 0.65rem 0.9rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--fg);
+    font: inherit;
+    box-sizing: border-box;
+}
+.search-by-name-field input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.search-by-name-icon {
+    position: absolute;
+    right: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+}
+.search-by-name-results {
+    position: absolute;
+    z-index: 5;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: 0.25rem 0 0;
+    padding: 0.25rem;
+    list-style: none;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    max-height: 24rem;
+    overflow-y: auto;
+}
+.search-by-name-results li { margin: 0; }
+.search-by-name-results a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.45rem 0.6rem;
+    color: var(--fg);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+}
+.search-by-name-results a:hover,
+.search-by-name-results a:focus { background: var(--bg-subtle); color: var(--accent); outline: none; }
+.search-by-name-result-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.search-by-name-result-plies { color: var(--muted); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+.search-by-name-empty {
+    padding: 0.55rem 0.8rem;
+    color: var(--muted);
+    font-style: italic;
+}
+
+/* =============================================================================
+   Opening page — vertical tree-path widget (replaces flat breadcrumb).
+   Indented list with └ connectors and a highlighted "you are here" row.
+   ========================================================================== */
+.opening-tree {
+    margin: 0 0 var(--space-5);
+    padding: var(--space-3) var(--space-4) var(--space-2);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.opening-tree-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-body);
+    font-weight: 600;
+}
+.opening-tree-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.opening-tree-item {
+    position: relative;
+    padding-left: calc(var(--depth, 0) * 1.4rem);
+    line-height: 1.65;
+    font-size: 0.92rem;
+}
+/* └ tree connector before each non-root item. Positioned absolute relative
+   to the li, anchored to the indent column of THIS item. */
+.opening-tree-item + .opening-tree-item::before {
+    content: '\2514';
+    position: absolute;
+    left: calc((var(--depth, 0) - 1) * 1.4rem + 0.35rem);
+    top: 0.05rem;
+    color: var(--border-strong);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    user-select: none;
+}
+.opening-tree-item a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.15rem 0.55rem;
+    color: var(--fg-soft);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    max-width: 100%;
+}
+.opening-tree-item a:hover {
+    background: var(--bg-elevated);
+    color: var(--accent);
+}
+.opening-tree-icon {
+    font-size: 0.95em;
+    line-height: 1;
+    color: var(--muted);
+}
+.opening-tree-eco {
+    margin-left: auto;
+    font-size: 0.7rem;
+    opacity: 0.85;
+}
+
+/* Current row — highlighted "you are here". Stretches full width so the
+   highlight reads as a row, not just a chip. */
+.opening-tree-item.is-current {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-left: calc(var(--depth, 0) * 1.4rem + 0.55rem);
+    padding-right: var(--space-3);
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+    margin-top: 0.15rem;
+    margin-bottom: 0.15rem;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.opening-tree-item.is-current .opening-tree-name {
+    color: var(--fg);
+    font-weight: 600;
+}
+.opening-tree-item.is-current .opening-tree-marker {
+    color: var(--accent);
+    font-size: 0.8em;
+    margin-right: 0.1rem;
+}
+.opening-tree-item.is-current .opening-tree-here {
+    margin-left: auto;
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-variant: small-caps;
+    letter-spacing: 0.04em;
+}
+
+/* Mobile: shrink the indent so 6-level paths still fit. */
+@media (max-width: 480px) {
+    .opening-tree-item { padding-left: calc(var(--depth, 0) * 0.85rem); font-size: 0.88rem; }
+    .opening-tree-item + .opening-tree-item::before {
+        left: calc((var(--depth, 0) - 1) * 0.85rem + 0.2rem);
+    }
+    .opening-tree-item.is-current {
+        padding-left: calc(var(--depth, 0) * 0.85rem + 0.45rem);
+    }
+    .opening-tree-here { display: none; }
+}
+
+/* Keep the old breadcrumb class blank in case any other page still emits it. */
+.opening-breadcrumbs { display: none; }
+
+/* =============================================================================
+   Opening tree — collapsible <details> wrapper around the vertical tree.
+   Closed state shows a compact one-line summary with depth badge + path
+   preview; opens to the full indented tree below.
+   ========================================================================== */
+.opening-tree-details {
+    margin: 0 0 var(--space-5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-subtle);
+    overflow: hidden;
+}
+.opening-tree-summary {
+    list-style: none;
+    cursor: pointer;
+    padding: var(--space-2) var(--space-3);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    user-select: none;
+}
+.opening-tree-summary::-webkit-details-marker { display: none; }
+.opening-tree-summary:hover { background: var(--bg-elevated); }
+
+.opening-tree-summary-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.opening-tree-summary-depth {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.1rem 0.5rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.opening-tree-summary-preview {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--fg-soft);
+    font-size: 0.88rem;
+}
+.opening-tree-summary-chevron {
+    flex-shrink: 0;
+    color: var(--muted);
+    font-size: 0.85em;
+    transition: transform .15s ease;
+}
+.opening-tree-details[open] .opening-tree-summary-chevron {
+    transform: rotate(180deg);
+}
+.opening-tree-details[open] .opening-tree {
+    border-top: 1px solid var(--border);
+}
+
+/* Reset the inner widget so it sits flush inside the details container. */
+.opening-tree-details .opening-tree {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: var(--space-3) var(--space-4) var(--space-3);
+}
+
+/* Mobile: hide the path preview when there's no room (depth badge + label
+   still shown so the user knows what they're toggling). */
+@media (max-width: 540px) {
+    .opening-tree-summary-preview { display: none; }
+}
+
+/* =============================================================================
+   Home page — make the two popular strips visually distinct so the second
+   one (Famous gambits) doesn't feel like a duplicate of the first.
+   ========================================================================== */
+.home-popular + .home-popular {
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+}
+.home-popular-gambits .home-popular-head h2 { color: var(--accent); }
+.home-popular-gambits .home-popular-list a { border-color: var(--accent-soft); }
+.home-popular-gambits .home-popular-list a:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+/* Keyboard-highlighted row in the name autocomplete dropdown. Matches hover
+   styles so users get visual parity between mouse and arrow-key navigation. */
+.search-by-name-results li.is-active a {
+    background: var(--bg-subtle);
+    color: var(--accent);
+    outline: none;
+}
+
+/* Lazy-loaded subtree status row (Loading… / error message) */
+.opening-subtree-status {
+    margin: var(--space-3) 0;
+    padding: var(--space-2) var(--space-3);
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-style: italic;
+}
+.opening-subtree-status[data-state="error"] {
+    color: var(--danger);
+    font-style: normal;
+}
+

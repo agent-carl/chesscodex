@@ -1,0 +1,358 @@
+/* =============================================================================
+   Table of contents for long opening descriptions.
+   Auto-rendered by opening.php when the description has ≥ 3 H2/H3 headings.
+   Sits above the prose, like a Wikipedia article TOC.
+   ========================================================================== */
+.description-toc {
+    margin: 0 0 var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.92rem;
+}
+.description-toc-title {
+    margin: 0 0 var(--space-2);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+}
+.description-toc ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: toc-counter;
+}
+.description-toc li {
+    counter-increment: toc-counter;
+    margin: 0.2rem 0;
+}
+.description-toc li::before {
+    content: counter(toc-counter) '.';
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    margin-right: 0.4rem;
+    font-size: 0.85em;
+}
+.description-toc-h3 {
+    margin-left: var(--space-4);
+    font-size: 0.88em;
+}
+.description-toc-h3::before { content: '·'; color: var(--border-strong); }
+.description-toc a {
+    color: var(--accent);
+    text-decoration: none;
+}
+.description-toc a:hover {
+    text-decoration: underline;
+}
+@media print { .description-toc { display: none; } }
+
+/* Scroll-margin so anchored H2/H3 headings sit BELOW the sticky header
+   when clicked from TOC, not visually hidden behind it. */
+.description-body h2,
+.description-body h3 {
+    scroll-margin-top: 80px;
+}
+
+/* =============================================================================
+   /play page — mobile difficulty grid fix
+   ========================================================================== */
+.play-difficulty {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+}
+@media (max-width: 540px) {
+    .play-difficulty {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.4rem;
+    }
+    .play-difficulty button {
+        padding: 0.45rem 0.5rem;
+        font-size: 0.85rem;
+    }
+    /* Less verbose Stockfish difficulty UI on narrow screens — Elo numbers
+       still useful but the "Often blunders pieces" descriptor takes space. */
+    .play-difficulty-desc { font-size: 0.82rem; }
+}
+
+/* =============================================================================
+   "Game resumed" badge — small hint shown via JS when localStorage restored
+   an in-progress game so the user understands why the board isn't at the
+   opening's starting position.
+   ========================================================================== */
+.play-resume-hint {
+    display: inline-block;
+    margin-top: var(--space-2);
+    padding: 0.25rem 0.6rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* =============================================================================
+   Recently viewed — strip on opening page header (horizontal compact),
+   plus full section on homepage ("Pick up where you left off").
+   Populated entirely by client-side JS from localStorage.
+   ========================================================================== */
+
+/* --- 1. Opening page strip — sits BEFORE .opening — small breadcrumb-ish row */
+.recent-strip {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+    padding: 0.4rem 0;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    /* Hide scrollbar visually but keep functional on touch */
+    scrollbar-width: none;
+}
+.recent-strip::-webkit-scrollbar { display: none; }
+/* display:flex above would otherwise override the [hidden] attribute that
+   app.js clears only when there is history to show. */
+.recent-strip[hidden] { display: none; }
+.recent-strip-label {
+    color: var(--muted);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+}
+.recent-strip-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: nowrap;
+}
+.recent-strip-list a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--fg-soft);
+    text-decoration: none;
+    white-space: nowrap;
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.recent-strip-list a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.recent-strip-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 10rem;
+}
+@media (max-width: 540px) {
+    .recent-strip-label { display: none; }   /* save room — pills are self-explanatory */
+}
+@media print { .recent-strip { display: none; } }
+
+/* --- 2. Homepage "Pick up where you left off" — between hero and groups */
+.home-recent {
+    margin: var(--space-5) 0 var(--space-4);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px dashed var(--border);
+}
+.home-recent-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--space-3);
+}
+.home-recent-head h2 {
+    margin: 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+}
+.home-recent-clear {
+    background: transparent;
+    border: 0;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.78rem;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+}
+.home-recent-clear:hover { color: var(--accent); }
+.home-recent-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-2);
+}
+.home-recent-list a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg);
+    text-decoration: none;
+    transition: border-color .15s, transform .15s var(--ease-out);
+}
+.home-recent-list a:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    color: var(--accent);
+}
+.home-recent-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.92rem;
+}
+@media print { .home-recent { display: none; } }
+
+/* =============================================================================
+   Flip board button on /openings/<slug> — matches the existing #board-reset
+   button family. Already covered by the general button-equalisation rules
+   from earlier polish passes; this just makes sure the new ID is included.
+   ========================================================================== */
+#board-flip {
+    min-height: 2.25rem;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border-radius: var(--radius);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color .15s, background .15s, color .15s;
+}
+#board-flip:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+/* =============================================================================
+   Admin: filter row above the submissions table
+   ========================================================================== */
+.admin-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-3);
+    margin: var(--space-3) 0;
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.admin-filters label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.admin-filters input,
+.admin-filters select {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    font: inherit;
+    font-size: 0.9rem;
+    min-width: 8rem;
+}
+.admin-filters input:focus,
+.admin-filters select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.admin-filters button {
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+}
+.admin-filters button:hover { background: var(--accent-hover); }
+
+/* =============================================================================
+   Site footer — version pill (faint, doesn't dominate the copyright row)
+   ========================================================================== */
+.footer-version {
+    display: inline-block;
+    padding: 0 0.3rem;
+    background: var(--bg-subtle);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+/* ==========================================================================
+   ECO code pages (/eco/B20): the named lines filed under one code.
+   ========================================================================== */
+.eco-back { margin: 0 0 var(--space-3); font-size: 0.9rem; }
+.eco-lines {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--space-4) 0;
+    font-size: 0.95rem;
+}
+.eco-lines th,
+.eco-lines td {
+    text-align: left;
+    vertical-align: top;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border);
+}
+.eco-lines th { color: var(--muted); font-weight: 500; font-size: 0.85rem; }
+.eco-lines code { font-family: var(--font-mono); font-size: 0.85rem; color: var(--fg-soft); }
+.eco-lines td:last-child { color: var(--muted); white-space: nowrap; }
+.eco-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+}
+@media (max-width: 600px) {
+    .eco-lines th:last-child,
+    .eco-lines td:last-child { display: none; }
+}
+a.eco-tag:hover { background: var(--accent); color: var(--bg-elevated); }

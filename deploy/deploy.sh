@@ -18,6 +18,7 @@ SSH=ssh
 
 EXCLUDES=(
     --exclude=.git --exclude=deploy --exclude=docs --exclude=backups --exclude=config.php
+    --exclude=.claude --exclude=.dev --exclude=tools/dev --exclude=CLAUDE.md --exclude=.ignore
     --exclude='db/*.sqlite' --exclude='db/*.sqlite-*' --exclude=db/log --exclude=db/og_cache --exclude=db/backups
     --exclude=_composer_vendor
 )

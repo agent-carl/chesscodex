@@ -1,0 +1,252 @@
+/* =============================================================================
+   Opening overview — auto-generated "Quick facts" panel.
+   Adds 100-200 words of factual content + a definition list so every page
+   has unique content, not just an empty Description.
+   ========================================================================== */
+.opening-overview {
+    margin-top: var(--space-5);
+    padding: var(--space-4);
+    background: var(--bg-subtle);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+.opening-overview h2 {
+    margin: 0 0 var(--space-3);
+    font-size: 1.35rem;
+}
+.opening-overview-body p {
+    margin: 0 0 var(--space-3);
+    line-height: 1.65;
+}
+.opening-overview-body p:last-child { margin-bottom: var(--space-4); }
+.opening-overview-body a { color: var(--accent); }
+.opening-overview-body a:hover { color: var(--accent-hover); text-decoration: underline; }
+.opening-overview-moves {
+    font-family: var(--font-mono);
+    background: var(--bg-elevated);
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.92em;
+    word-break: break-word;
+}
+
+.opening-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-2) var(--space-4);
+    margin: 0;
+    padding: var(--space-3) 0 0;
+    border-top: 1px solid var(--border);
+}
+.opening-facts > div {
+    display: flex;
+    flex-direction: column;
+}
+.opening-facts dt {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 0 0 0.1rem;
+}
+.opening-facts dd {
+    margin: 0;
+    color: var(--fg);
+    font-weight: 500;
+}
+.opening-facts dd a { color: var(--accent); }
+
+/* =============================================================================
+   Related variations (siblings) — internal-link section between Variations
+   and Show-all-subtree. Same chip style as .child-list.
+   ========================================================================== */
+.opening-related {
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border);
+}
+.opening-related h2 {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+.opening-related-meta {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+.opening-related-lede {
+    color: var(--muted);
+    margin: 0 0 var(--space-3);
+    font-size: 0.92rem;
+}
+.opening-related-lede a { color: var(--accent); }
+
+/* "This overview is auto-generated" notice at the bottom of the Overview
+   section. Sits below the Quick Facts grid, with a soft accent rule on the
+   left to distinguish it from the factual content above. */
+.opening-overview-notice {
+    margin: var(--space-4) 0 0;
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-elevated);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    color: var(--fg-soft);
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+.opening-overview-notice-icon {
+    color: var(--accent);
+    font-size: 1.1em;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+.opening-overview-notice strong { color: var(--fg); }
+.opening-overview-notice-cta {
+    color: var(--accent);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+.opening-overview-notice-cta:hover { color: var(--accent-hover); }
+
+/* =============================================================================
+   Admin diff (side-by-side review of current vs submitted markdown)
+   ========================================================================== */
+.admin-diff {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin: var(--space-3) 0;
+}
+.admin-diff-col {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    overflow: hidden;
+}
+.admin-diff-col-new { border-left: 3px solid var(--accent); }
+.admin-diff-heading {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-subtle);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--fg-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+}
+.admin-diff-meta { color: var(--muted); font-weight: 400; font-size: 0.8rem; text-transform: none; letter-spacing: 0; }
+.admin-diff-empty { color: var(--muted); font-weight: 400; font-style: italic; text-transform: none; letter-spacing: 0; }
+.admin-diff-empty-body { color: var(--muted); padding: var(--space-3); }
+.admin-diff-col .admin-rendered { padding: var(--space-3); }
+.admin-raw-details { margin-top: var(--space-3); }
+.admin-raw-details summary { cursor: pointer; color: var(--accent); padding: 0.3rem 0; }
+
+/* Admin edit page: split markdown / preview */
+.admin-edit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+}
+.admin-edit-side { display: flex; flex-direction: column; }
+.admin-edit-side-md textarea { min-height: 30rem; height: 100%; }
+.admin-edit-side-preview {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    min-height: 30rem;
+}
+.admin-edit-preview-heading {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-subtle);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--fg-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+#admin-edit-preview { padding: var(--space-3); overflow-y: auto; max-height: calc(100% - 3rem); }
+.admin-preview-empty { color: var(--muted); }
+
+/* Admin bulk bar */
+.admin-bulk-form { margin-top: var(--space-3); }
+.admin-bulk-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.admin-bulk-checkall { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; color: var(--fg-soft); }
+.admin-bulk-selected { color: var(--muted); font-size: 0.9rem; margin-right: auto; }
+.admin-cell-check { width: 2.5rem; text-align: center; }
+.admin-btn-accept, .admin-btn-reject {
+    padding: 0.4rem 0.9rem;
+    border: 0;
+    border-radius: var(--radius);
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+}
+.admin-btn-accept { background: #2ea759; }
+.admin-btn-accept:hover:not(:disabled) { background: #248a47; }
+.admin-btn-reject { background: var(--danger); }
+.admin-btn-reject:hover:not(:disabled) { background: #8a2424; }
+.admin-btn-accept:disabled, .admin-btn-reject:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* =============================================================================
+   Mobile-first responsiveness pass — touch-up of every grid that was
+   originally two-column on desktop. Each one stacks on phones.
+   ========================================================================== */
+@media (max-width: 768px) {
+    .admin-diff      { grid-template-columns: 1fr; }
+    .admin-edit-grid { grid-template-columns: 1fr; }
+    .admin-edit-side-md textarea { min-height: 18rem; }
+    .admin-edit-side-preview     { min-height: 14rem; }
+    .opening-grid    { grid-template-columns: 1fr; }
+    .site-nav        { gap: var(--space-3); font-size: 0.88rem; }
+}
+
+@media (max-width: 540px) {
+    .admin-bulk-bar { font-size: 0.85rem; }
+    .admin-table th, .admin-table td { padding: 0.4rem 0.5rem; font-size: 0.85rem; }
+    .admin-bulk-selected { width: 100%; order: 99; }
+    .opening-header h1 { font-size: 1.4rem; }
+}
+
+/* =============================================================================
+   Dark-theme chess board polish — chessground's brown squares are designed
+   for light backgrounds. In dark mode we soften their brightness and add a
+   subtle shadow under the pieces so they don't look pasted on.
+   ========================================================================== */
+[data-theme="dark"] .cg-wrap {
+    filter: brightness(0.92) contrast(1.02);
+}
+[data-theme="dark"] .cg-wrap piece {
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
+}
+[data-theme="dark"] .cg-wrap cg-board {
+    box-shadow: 0 0 0 1px var(--border-strong);
+}
+

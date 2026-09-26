@@ -1,0 +1,12 @@
+# Skipped by ripgrep-based search (Claude Code's Grep, `rg`); git still tracks
+# them. Generated, vendored or bulk data files only add noise to searches.
+*.min.js
+*.min.css
+vendor/
+db/*.tsv
+db/sitemap_cache.xml
+db/cache/
+db/og_cache/
+db/log/
+backups/
+.dev/

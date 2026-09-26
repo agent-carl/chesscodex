@@ -1,3 +1,9 @@
 # Shell scripts and server configs run on Linux: always LF.
 *.sh             text eol=lf
 deploy/**        text eol=lf
+
+# Generated files: keep them out of `git diff` / `git show` output (the
+# sources are diffed instead). The data snapshot is large and rarely useful.
+public/*.min.js         -diff
+public/*.min.css        -diff
+db/sitemap_cache.xml    -diff

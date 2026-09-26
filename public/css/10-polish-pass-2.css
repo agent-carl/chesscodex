@@ -1,0 +1,358 @@
+/* =============================================================================
+   POLISH PASS 2 — finer-grained refinement across pages.
+   Goals: subtler hover, consistent radii, softer selection, polished forms,
+   loading affordances, better print pagination, and dark-mode contrast nits.
+   ========================================================================== */
+
+/* --- 1. Easing variables --------------------------------------------------
+   Standard "ease-out" feels more natural for hover/press than the default
+   ease, which is too perky at the start. */
+:root {
+    --ease-out:  cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* --- 2. Selection — softer than full accent ------------------------------- */
+::selection {
+    background: var(--accent-soft);
+    color: var(--accent);
+    text-shadow: none;
+}
+[data-theme="dark"] ::selection {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+/* --- 3. Card hover — unify across every "card" component ------------------ */
+.group-card,
+.home-popular-list a,
+.home-featured-card,
+.child-list a,
+.openings-letter-list a {
+    transition:
+        transform   .18s var(--ease-out),
+        border-color .15s,
+        box-shadow  .15s,
+        background  .15s,
+        color       .15s;
+}
+.group-card:hover,
+.home-popular-list a:hover,
+.home-featured-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+.child-list a:hover,
+.openings-letter-list a:hover {
+    transform: translateY(-1px);
+}
+
+/* --- 4. Disabled state across the site ------------------------------------ */
+button:disabled,
+button[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+/* --- 5. Loading spinner — reusable CSS-only --------------------------------
+   Inject a spinning circle next to "Loading…" status text. The .stats-status,
+   .opening-subtree-status, and similar use data-state="loading" to opt in. */
+@keyframes codex-spin {
+    to { transform: rotate(360deg); }
+}
+.stats-status[data-state="loading"],
+.opening-subtree-status[data-state="loading"],
+.opening-subtree-status[data-state="idle"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+.stats-status[data-state="loading"]::before,
+.opening-subtree-status[data-state="idle"]::before,
+.opening-subtree-status[data-state="loading"]::before {
+    content: '';
+    width: 0.9em;
+    height: 0.9em;
+    border: 2px solid var(--border-strong);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: codex-spin 0.8s linear infinite;
+    flex-shrink: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+    .stats-status[data-state="loading"]::before,
+    .opening-subtree-status[data-state="loading"]::before,
+    .opening-subtree-status[data-state="idle"]::before {
+        animation: none;
+        border-top-color: var(--border-strong);
+    }
+}
+
+/* --- 6. Empty state base style -------------------------------------------- */
+.admin-empty,
+.search-empty {
+    padding: var(--space-5) var(--space-4);
+    background: var(--bg-subtle);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--muted);
+    text-align: center;
+    font-style: italic;
+}
+
+/* --- 7. Admin login — center vertically on the page, card-style box ------- */
+.admin-login {
+    max-width: 380px;
+    margin: var(--space-8) auto;
+    padding: var(--space-5);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+.admin-login h1 {
+    text-align: center;
+    margin-bottom: var(--space-4);
+    font-size: 1.4rem;
+}
+.admin-login label {
+    display: block;
+    margin-bottom: var(--space-3);
+    font-size: 0.88rem;
+    color: var(--fg-soft);
+}
+.admin-login label input {
+    display: block;
+    width: 100%;
+    margin-top: 0.3rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--bg);
+    color: var(--fg);
+    font: inherit;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.admin-login label input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.admin-login button {
+    width: 100%;
+    margin-top: var(--space-2);
+    padding: 0.6rem;
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: var(--radius);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    min-height: 2.5rem;
+}
+.admin-login button:hover { background: var(--accent-hover); }
+.admin-error {
+    margin-bottom: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: rgba(176, 48, 48, 0.08);
+    border-left: 3px solid var(--danger);
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    font-size: 0.9rem;
+}
+
+/* --- 8. Hero — slightly softer h1 size on desktop, tighter on phone ------- */
+.hero h1 { font-size: 2.2rem; letter-spacing: -0.01em; }
+@media (max-width: 768px) {
+    .hero h1 { font-size: 1.85rem; }
+}
+
+/* --- 9. Group cards — left-align numeric meta with the letter -------------
+   .group-letter was big and centered; on cards where the count text is short
+   the layout felt unbalanced. Add a touch of vertical rhythm. */
+.group-card { gap: var(--space-2); }
+.group-letter { margin-bottom: 0.1rem; }
+
+/* --- 10. Code in descriptions — softer background, padding ---------------- */
+.description-body code {
+    background: var(--bg-subtle);
+    padding: 0.05rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.92em;
+    color: var(--fg);
+}
+.description-body pre {
+    background: var(--bg-subtle);
+    padding: var(--space-3);
+    border-radius: var(--radius);
+    overflow-x: auto;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+.description-body pre code {
+    background: transparent;
+    padding: 0;
+}
+.description-body blockquote {
+    margin: var(--space-3) 0;
+    padding: 0.2rem 0 0.2rem var(--space-4);
+    border-left: 3px solid var(--border-strong);
+    color: var(--fg-soft);
+    font-style: italic;
+}
+
+/* --- 11. Lichess stats — softer divider lines and totals ------------------ */
+.stats-totals { color: var(--fg-soft); }
+.stats-moves th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+}
+.stats-moves td {
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+}
+.stats-moves tr:last-child td { border-bottom: 0; }
+
+/* --- 12. Suggest form — tighter spacing, no awkward gap ------------------- */
+.suggest-form summary {
+    cursor: pointer;
+    color: var(--accent);
+    padding: var(--space-2) 0;
+    list-style: none;
+}
+.suggest-form summary::-webkit-details-marker { display: none; }
+.suggest-form summary::before {
+    content: '+ ';
+    color: var(--accent);
+    margin-right: 0.1rem;
+}
+.suggest-form[open] summary::before { content: '− '; }
+
+/* --- 13. Tree-path summary preview — tighten typography ------------------- */
+.opening-tree-summary { gap: var(--space-2); }
+.opening-tree-summary-preview {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+/* --- 14. Print: avoid bad page-breaks ------------------------------------- */
+@media print {
+    .home-featured,
+    .home-popular,
+    .group-grid,
+    .opening-overview,
+    .opening-stats,
+    .opening-description,
+    .opening-related,
+    .group-card,
+    .stats-moves,
+    .opening-tree-list,
+    .home-popular-list li {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    h1, h2, h3 {
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+    .opening-board { max-width: 320px; margin: 0 auto; }
+    .description-body { font-size: 11pt; }
+}
+
+/* --- 16. Children-toggle — match button family aesthetic ------------------ */
+.children-toggle {
+    margin-top: var(--space-3);
+    padding: 0.4rem 0.9rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg-soft);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+    min-height: 2.25rem;
+    transition: border-color .15s, color .15s, background .15s;
+}
+.children-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+/* --- 17. Search-by-name dropdown — softer shadow + open-state animation -- */
+.search-by-name-results {
+    animation: codex-fadein .12s var(--ease-out);
+}
+@keyframes codex-fadein {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .search-by-name-results { animation: none; }
+}
+
+/* --- 19. Dark mode contrast: ECO tag was a little washed out -------------- */
+[data-theme="dark"] .eco-tag {
+    background: rgba(110, 163, 212, 0.18);
+    color: var(--accent);
+}
+
+/* --- 20. Better focus ring inside cards/links — use box-shadow not outline
+   when the card has rounded corners so the ring follows the curve. */
+.group-card:focus-visible,
+.home-popular-list a:focus-visible,
+.home-featured-card:focus-visible,
+.child-list a:focus-visible,
+.openings-letter-list a:focus-visible,
+.opening-share-btn:focus-visible,
+.play-color-btn:focus-visible,
+.children-toggle:focus-visible,
+#board-reset:focus-visible,
+.board-cta:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-soft), 0 0 0 4px var(--accent);
+}
+
+/* --- 21. Stats bar segments — clearer color separation -------------------- */
+.stats-bar {
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+}
+.stats-bar > span:not(:last-child) { box-shadow: 1px 0 0 var(--bg-elevated); }
+
+/* --- 22. Header sticky shadow when scrolled ------------------------------- */
+.site-header {
+    transition: box-shadow .15s, border-color .15s;
+}
+.site-header:has(+ * .container:not(:hover)) {
+    /* No-op selector, kept for future scroll-based class hook */
+}
+/* Light shadow below sticky header so content beneath isn't visually glued */
+.site-header { box-shadow: 0 1px 0 var(--border); border-bottom: 0; }
+
+/* --- 24. Mobile play page — buttons row alignment ------------------------- */
+@media (max-width: 540px) {
+    .board-controls > * { flex: 1; min-width: 5.5rem; }
+    .board-controls .board-hint { flex: 1 0 100%; text-align: center; }
+    .play-color-pick { justify-content: center; }
+    .play-color-btn { flex: 1; justify-content: center; }
+}
+
+/* --- 25. About page — slightly tighter headings + paragraph rhythm -------- */
+.about-section h2 { margin-top: 0; }
+.about-section p:last-child { margin-bottom: 0; }
+.about-section + .about-section {
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+}
+

@@ -1,0 +1,211 @@
+/* =============================================================================
+   Chess Codex — design tokens
+   All colors, spacing, radii, shadows live here. Swap palette by overriding
+   tokens, not by hunting through the rest of the file.
+   ========================================================================== */
+
+:root {
+    /* Typography */
+    --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-display: ui-serif, "Iowan Old Style", "Source Serif Pro", "Apple Garamond", Georgia, "Times New Roman", serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+    /* Light theme palette (paper-cream + sea blue) */
+    --bg:            #faf7f0;
+    --bg-elevated:   #ffffff;
+    --bg-subtle:     #f1ecdf;
+    --fg:            #1a1a1a;
+    --fg-soft:       #3a3a3a;
+    --muted:         #6b6b6b;
+    --border:        #e6e0d4;
+    --border-strong: #c8bfa9;
+    --accent:        #2a5d8f;
+    --accent-soft:   #e8eef6;
+    --accent-hover:  #1d4773;
+    --danger:        #b03030;
+
+    /* Stats bars (light) */
+    --stats-w:       #efe4cd;
+    --stats-w-edge:  #c8bfa9;
+    --stats-d:       #8c8377;
+    --stats-b:       #2f2f2f;
+
+    /* Geometry */
+    --radius-sm: 3px;
+    --radius:    6px;
+    --radius-lg: 10px;
+
+    /* Spacing scale (8-base) */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-8: 3rem;
+
+    /* Elevation */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow:    0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] {
+    --bg:            #16181d;
+    --bg-elevated:   #1f2228;
+    --bg-subtle:     #1a1d22;
+    --fg:            #e8e6e1;
+    --fg-soft:       #c8c5be;
+    --muted:         #9a978e;
+    --border:        #2c3038;
+    --border-strong: #3a3f48;
+    --accent:        #6ea3d4;
+    --accent-soft:   #1e2a38;
+    --accent-hover:  #95bce0;
+    --danger:        #e08585;
+
+    --stats-w:       #c9bfa9;
+    --stats-w-edge:  #9a917e;
+    --stats-d:       #6e6759;
+    --stats-b:       #0c0c0c;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow:    0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+/* =============================================================================
+   Reset & base
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); text-decoration: underline; }
+/* Links inside running text are underlined, so they don't rely on colour
+   alone (Lighthouse "links rely on color"). Styled links opt out via a class. */
+p a:not([class]) {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+/* Keyboard focus — visible outline on tab navigation, hidden on mouse click. */
+:focus { outline: none; }
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--fg);
+    letter-spacing: -0.005em;
+    margin: 0 0 var(--space-3);
+}
+h1 { font-size: 1.75rem; line-height: 1.2; }
+h2 { font-size: 1.2rem; line-height: 1.3; margin-top: var(--space-6); }
+h3 { font-size: 1.05rem; line-height: 1.35; }
+
+button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+/* =============================================================================
+   Layout chrome — header, footer, container
+   ========================================================================== */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: saturate(180%) blur(8px);
+}
+.site-header-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+}
+.brand {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    color: var(--fg);
+    text-decoration: none;
+    font-weight: 600;
+}
+.brand:hover { text-decoration: none; color: var(--fg); }
+.brand-mark {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--accent);
+    transform: translateY(2px);
+}
+.brand-name { font-size: 1.05rem; }
+
+.site-nav {
+    margin-left: auto;
+    margin-right: var(--space-3);
+    display: flex;
+    gap: var(--space-4);
+}
+.site-nav a {
+    color: var(--fg-soft);
+    font-size: 0.95rem;
+}
+.site-nav a:hover { color: var(--accent); text-decoration: none; }
+
+.theme-toggle {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--fg-soft);
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.1s, background 0.1s;
+}
+.theme-toggle:hover { border-color: var(--accent); background: var(--accent-soft); }
+.theme-toggle .theme-icon-dark  { display: none; }
+[data-theme="dark"] .theme-toggle .theme-icon-light { display: none; }
+[data-theme="dark"] .theme-toggle .theme-icon-dark  { display: inline; }
+
+.container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--space-5) var(--space-4) var(--space-8);
+}
+
+.site-footer {
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    text-align: center;
+    padding: var(--space-4);
+    margin-top: var(--space-8);
+    font-size: 0.85rem;
+}
+

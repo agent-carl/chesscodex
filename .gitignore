@@ -6,3 +6,6 @@ config.php
 db/*.sqlite
 db/*.sqlite-*
 backups/
+
+# Local test copy of the site (tools/dev/serve.sh)
+.dev/

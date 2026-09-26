@@ -1,0 +1,284 @@
+/* =============================================================================
+   Play page (Stockfish)
+   ========================================================================== */
+
+.play-header { margin-bottom: var(--space-5); }
+.play-header h1 { font-size: 1.6rem; }
+.play-header .parent-link a { color: var(--muted); }
+
+.play-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+}
+@media (min-width: 900px) {
+    .play-grid {
+        grid-template-columns: minmax(0, 1fr) 320px;
+        align-items: start;
+    }
+}
+
+.play-board-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+.play-board-wrap .board-controls { flex-wrap: wrap; }
+.play-board-wrap button {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    transition: border-color 0.1s, background 0.1s;
+}
+.play-board-wrap button:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+.play-sidebar > section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+.play-sidebar h2 {
+    margin-top: 0;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-weight: 500;
+}
+.play-engine-state {
+    color: var(--muted);
+    margin: 0;
+    font-size: 0.95rem;
+}
+.play-engine-state[data-state="thinking"] {
+    color: var(--accent);
+}
+.play-engine-state[data-state="error"] { color: var(--danger); }
+
+/* Always-visible level indicator. Subtle background pulse on change so the
+   user gets unambiguous feedback that something happened. */
+.play-current-level {
+    margin: var(--space-3) 0 var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-subtle);
+    border-radius: var(--radius);
+    border-left: 3px solid var(--accent);
+    font-size: 0.9rem;
+    color: var(--fg-soft);
+    transition: background 0.3s;
+}
+.play-current-level strong {
+    color: var(--accent);
+    font-weight: 600;
+    margin: 0 0.25em;
+}
+.play-current-level-elo {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    margin-left: 0.5em;
+}
+@keyframes level-flash {
+    0%   { background: var(--bg-subtle); }
+    35%  { background: var(--accent-soft); }
+    100% { background: var(--bg-subtle); }
+}
+.play-current-level.is-changed {
+    animation: level-flash 0.9s ease-in-out;
+}
+
+.play-difficulty {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+}
+.play-difficulty button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: var(--space-2) 4px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--fg-soft);
+    transition: border-color 0.12s, background 0.12s, color 0.12s, transform 0.08s;
+    min-height: 50px;
+}
+.play-difficulty button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+.play-difficulty button:active {
+    transform: scale(0.96);
+}
+.play-difficulty button.is-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-elevated);
+    box-shadow: 0 2px 6px rgba(42, 93, 143, 0.25);
+}
+.play-difficulty button.is-active:hover { color: var(--bg-elevated); background: var(--accent-hover); }
+.play-difficulty .diff-name {
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.1;
+    text-align: center;
+    /* Allow soft hyphens to break "Inter­mediate" on narrow buttons. */
+    hyphens: manual;
+}
+.play-difficulty .diff-elo {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+.play-difficulty-desc {
+    margin: var(--space-2) 0 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-style: italic;
+    min-height: 1.2em; /* prevent layout jump when text changes */
+}
+
+.play-eval {
+    margin: var(--space-2) 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--fg-soft);
+}
+.play-turn {
+    margin: 0;
+    color: var(--fg-soft);
+}
+.play-result {
+    margin: var(--space-2) 0 0;
+    padding: var(--space-2) var(--space-3);
+    background: var(--accent-soft);
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+    font-weight: 500;
+}
+#play-moves {
+    max-height: 14rem;
+    overflow-y: auto;
+    margin-top: var(--space-2);
+}
+
+/* =============================================================================
+   Mobile pass
+   ========================================================================== */
+
+@media (max-width: 480px) {
+    .container { padding: var(--space-4) var(--space-3) var(--space-6); }
+    .hero h1 { font-size: 1.85rem; }
+    .group-letter { font-size: 2rem; }
+    h1 { font-size: 1.5rem; }
+}
+
+/* =============================================================================
+   Admin link + pending badge in main nav (logged-in admin only).
+   ========================================================================== */
+.admin-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--fg-soft);
+    font-size: 0.95rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border-strong);
+}
+.admin-link:hover { color: var(--accent); border-color: var(--accent); }
+.admin-link-badge {
+    display: inline-flex;
+    min-width: 1.4em;
+    height: 1.4em;
+    padding: 0 0.4em;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+/* "Edit description →" link next to the section heading on opening pages. */
+.admin-edit-link {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--accent);
+    margin-left: var(--space-3);
+    vertical-align: middle;
+    font-family: var(--font-body);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+.admin-edit-link:hover { color: var(--accent-hover); }
+
+/* Admin edit-description page */
+.admin-edit-form textarea {
+    width: 100%;
+    min-height: 24rem;
+    padding: var(--space-3);
+    font: 0.95rem/1.55 var(--font-mono);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    resize: vertical;
+    box-sizing: border-box;
+}
+.admin-edit-form textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.admin-edit-hint {
+    display: block;
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.15rem;
+}
+.admin-edit-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+}
+.admin-edit-actions button {
+    padding: 0.55rem 1.2rem;
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+}
+.admin-edit-actions button:hover { background: var(--accent-hover); }
+.admin-edit-cancel { color: var(--muted); }
+
+.admin-flash {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius);
+    margin: var(--space-3) 0;
+}
+.admin-flash-ok { background: #e6f4ea; color: #1e6f3a; border-left: 3px solid #2ea759; }
+.admin-flash-error { background: #fde7e7; color: #8a1f1f; border-left: 3px solid #b03030; }
+
+[data-theme="dark"] .admin-flash-ok    { background: #1c2a22; color: #88dfa6; }
+[data-theme="dark"] .admin-flash-error { background: #2a1818; color: #f0a6a6; }
+

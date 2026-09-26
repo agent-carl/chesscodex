@@ -1,0 +1,341 @@
+/* =============================================================================
+   Lichess stats panel
+   ========================================================================== */
+
+.opening-stats {
+    margin-top: var(--space-6);
+    /* Reserve vertical space so the asynchronously-loaded stats panel
+       doesn't push later sections down on arrival (CLS / Core Web Vitals). */
+    min-height: 180px;
+}
+.stats-status { color: var(--muted); margin: var(--space-1) 0; }
+.stats-status[data-state="error"] { color: var(--danger); }
+
+.stats-bar {
+    display: flex;
+    width: min(480px, 100%);
+    height: 16px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--border);
+    margin: var(--space-2) 0;
+    box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+.stats-bar.inline {
+    width: 140px;
+    height: 10px;
+    margin: 0;
+    box-shadow: none;
+}
+.stats-bar > span { display: block; height: 100%; }
+.stats-bar-w { background: var(--stats-w); box-shadow: inset 0 0 0 1px var(--stats-w-edge); }
+.stats-bar-d { background: var(--stats-d); }
+.stats-bar-b { background: var(--stats-b); }
+
+.stats-totals {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: var(--space-1) 0 var(--space-3);
+    font-family: var(--font-mono);
+}
+
+.stats-moves {
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    margin-top: var(--space-2);
+    width: 100%;
+    max-width: 480px;
+}
+.stats-moves th,
+.stats-moves td {
+    padding: var(--space-1) var(--space-3);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+.stats-moves th { color: var(--muted); font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.stats-moves tbody tr:hover { background: var(--bg-subtle); }
+.stats-moves td:first-child {
+    font-family: var(--font-mono);
+    color: var(--accent);
+}
+.stats-moves td:nth-child(2) {
+    font-family: var(--font-mono);
+    color: var(--muted);
+    text-align: right;
+    width: 1%;
+    white-space: nowrap;
+}
+.stats-attribution { color: var(--muted); margin-top: var(--space-3); font-size: 0.8rem; }
+
+/* =============================================================================
+   Variations list
+   ========================================================================== */
+
+.child-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-2);
+}
+.child-list a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg);
+    text-decoration: none;
+    transition: border-color 0.1s, background 0.1s;
+}
+.child-list a:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    text-decoration: none;
+}
+.child-list-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* The ply suffix disambiguates entries that share the same shortened
+   name (a Lichess data quirk — same variation name appears at multiple
+   depths). Subtle styling so it doesn't dominate the chip. */
+.child-list-plies {
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.children-toggle {
+    margin-top: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--accent);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    transition: border-color 0.1s, background 0.1s;
+}
+.children-toggle:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+/* =============================================================================
+   Search page
+   ========================================================================== */
+
+.search-header { margin-bottom: var(--space-5); text-align: center; }
+.search-header h1 { font-size: 2rem; margin-bottom: var(--space-2); }
+.search-header .lede { color: var(--muted); max-width: 40em; margin: 0 auto; }
+
+/* FEN-search panel — collapsed by default, expands into a card-style form. */
+.search-fen {
+    margin-top: var(--space-4);
+    text-align: left;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-fen[open] {
+    border-color: var(--accent);
+    box-shadow: var(--shadow);
+}
+/* Hide the default disclosure triangle in every browser. */
+.search-fen summary { list-style: none; }
+.search-fen summary::-webkit-details-marker { display: none; }
+
+.search-fen summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    cursor: pointer;
+    color: var(--fg);
+    font-weight: 500;
+    transition: background 0.15s;
+    user-select: none;
+}
+.search-fen summary:hover { background: var(--accent-soft); }
+.search-fen[open] summary { border-bottom: 1px solid var(--border); }
+
+.search-fen-icon {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--accent);
+    line-height: 1;
+}
+.search-fen-label { flex: 1; }
+.search-fen-chevron {
+    color: var(--muted);
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+}
+.search-fen[open] .search-fen-chevron {
+    transform: rotate(90deg);
+    color: var(--accent);
+}
+
+.search-fen-body { padding: var(--space-4); }
+
+.search-fen-hint {
+    color: var(--muted);
+    margin: 0 0 var(--space-3);
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.search-fen form {
+    display: flex;
+    gap: var(--space-2);
+}
+.search-fen input[type="text"],
+.search-fen textarea {
+    flex: 1;
+    min-width: 0; /* allow flex item to shrink below intrinsic min-width */
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--fg);
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    transition: border-color 0.1s, box-shadow 0.1s;
+}
+.search-fen textarea { resize: vertical; min-height: 2.6rem; line-height: 1.4; }
+.search-fen input[type="text"]::placeholder,
+.search-fen textarea::placeholder { color: var(--muted); opacity: 0.7; }
+.search-fen input[type="text"]:focus,
+.search-fen textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    outline: none;
+}
+.search-fen button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: var(--space-2) var(--space-4);
+    background: var(--accent);
+    color: var(--bg-elevated);
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.1s, transform 0.08s;
+    white-space: nowrap;
+}
+.search-fen button:hover { background: var(--accent-hover); }
+.search-fen button:active { transform: scale(0.97); }
+
+@media (max-width: 480px) {
+    .search-fen form { flex-direction: column; }
+    .search-fen button { justify-content: center; }
+}
+.search-paste-status {
+    margin: var(--space-2) 0 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+.search-about { text-align: left; }
+.search-examples code { font-size: 0.85rem; }
+
+.search-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+}
+@media (min-width: 900px) {
+    .search-grid {
+        grid-template-columns: minmax(0, 1fr) 320px;
+        align-items: start;
+    }
+}
+
+.search-board-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.search-sidebar > section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+.search-sidebar h2 {
+    margin-top: 0;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-weight: 500;
+}
+
+.search-empty {
+    color: var(--muted);
+    font-style: italic;
+    margin: 0;
+}
+.search-result[data-state="error"] .search-empty { color: var(--danger); font-style: normal; }
+
+.search-match-link {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--accent-soft);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--fg);
+    margin-bottom: var(--space-2);
+}
+.search-match-link:hover { text-decoration: none; background: var(--bg-subtle); }
+.search-match-name { font-weight: 500; }
+.search-result[data-state="exact"] .search-match-link { box-shadow: inset 0 0 0 2px var(--accent); }
+.search-match-meta { color: var(--muted); font-size: 0.9rem; margin: 0; }
+
+.search-played .move-list {
+    max-height: 12rem;
+    overflow-y: auto;
+}
+.search-played .move-list li::before { content: none; }
+.search-played .move-list li:nth-child(odd)::before {
+    /* The li itself already increments the counter (.move-list rule above);
+       incrementing here too numbered the moves 2, 4, 6… */
+    content: counter(move-counter) ".";
+    color: var(--muted);
+    font-size: 0.85em;
+    margin-right: 0.15em;
+}
+.search-played .move-list { counter-reset: move-counter; }
+.search-played .move-list li > span {
+    padding: 0.05rem 0.3rem;
+    font-family: var(--font-mono);
+    color: var(--accent);
+}
+
+#search-undo, #search-reset {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    transition: border-color 0.1s, background 0.1s;
+}
+#search-undo:hover, #search-reset:hover { border-color: var(--accent); background: var(--accent-soft); }
+

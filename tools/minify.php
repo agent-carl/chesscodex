@@ -7,7 +7,8 @@ declare(strict_types=1);
  *   php tools/minify.php
  *
  * Produces:
- *   public/style.min.css   ← from public/style.css
+ *   public/style.min.css   ← public/css/*.css joined in filename order (the
+ *                            numbered prefixes keep the cascade order)
  *   public/<foo>.min.js    ← from public/<foo>.js (app, search, play, sw, theme, opening, admin, home)
  *
  * Re-run after every edit to a source file. Templates reference the .min
@@ -57,7 +58,7 @@ function minify_js(string $src): string
 
 $pub = __DIR__ . '/../public';
 $tasks = [
-    ['style.css',   'style.min.css',   'css'],
+    ['css/*.css',   'style.min.css',   'css'],
     ['app.js',      'app.min.js',      'js'],
     ['search.js',   'search.min.js',   'js'],
     ['play.js',     'play.min.js',     'js'],
@@ -70,13 +71,13 @@ $tasks = [
 
 $totalSrc = 0; $totalMin = 0;
 foreach ($tasks as [$in, $out, $kind]) {
-    $inPath  = "$pub/$in";
+    $inPaths = glob("$pub/$in") ?: [];   // sorted; a plain file name matches itself
     $outPath = "$pub/$out";
-    if (!is_file($inPath)) {
+    if (!$inPaths) {
         fwrite(STDERR, "  skip  $in (missing)\n");
         continue;
     }
-    $src = (string) file_get_contents($inPath);
+    $src = implode('', array_map('file_get_contents', $inPaths));
     $min = $kind === 'css' ? minify_css($src) : minify_js($src);
     file_put_contents($outPath, $min);
     $sLen = strlen($src); $mLen = strlen($min);
