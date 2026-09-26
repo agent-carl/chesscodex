@@ -86,7 +86,7 @@ $renderStrip = static function (string $h2, string $lede, string $modifier, arra
                     <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $p['slug']), ENT_QUOTES, 'UTF-8') ?>">
                         <span class="eco-tag"><?= htmlspecialchars($p['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                         <span class="home-popular-name"><?= htmlspecialchars($p['name'], ENT_QUOTES, 'UTF-8') ?></span>
-                        <span class="home-popular-plies"><?= (int) $p['move_count'] ?>-ply</span>
+                        <span class="home-popular-plies"><?= Opening::movesLabel((int) $p['move_count']) ?></span>
                     </a>
                 </li>
             <?php endforeach; ?>

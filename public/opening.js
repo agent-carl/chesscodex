@@ -8,6 +8,8 @@
 // the section has a data-lazy="N" attribute (set by the PHP template when
 // the subtree exceeds the inline-render threshold).
 (function () {
+    // A line's length in full moves (move_count counts plies: one side's move).
+    const movesLabel = (plies) => { const n = Math.ceil(plies / 2); return n === 1 ? '1 move' : n + ' moves'; };
     const details = document.querySelector('.opening-subtree details[data-lazy]');
     if (!details) return;
     let loaded = false;
@@ -41,7 +43,7 @@
                 a.appendChild(name);
                 const plies = document.createElement('span');
                 plies.className = 'opening-subtree-plies';
-                plies.textContent = d.move_count + '-ply';
+                plies.textContent = movesLabel(d.move_count);
                 a.appendChild(plies);
                 li.appendChild(a);
                 frag.appendChild(li);

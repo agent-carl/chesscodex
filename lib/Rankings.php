@@ -20,18 +20,27 @@ final class Rankings
         'gambits'                 => 'Chess gambits',
     ];
 
+    /** One line each for the /rankings hub. */
+    public const BLURBS = [
+        'best-openings-for-white' => 'The 50 lines that score best for White, among those played a million times or more.',
+        'best-openings-for-black' => 'The 50 defences and replies that score best for Black, by the same rule.',
+        'popular-openings'        => 'The 100 most-played named lines, from 1.e4 down.',
+        'gambits'                 => 'The 100 most-played gambits and countergambits, with how often each side wins.',
+    ];
+
     /** Games a line needs before it's ranked by score. */
     public const MIN_GAMES = 1000000;
 
     /**
      * Every opening with cached results — id, slug, name, eco, pgn_moves,
-     * move_count, games, white, draws, black — most-played first. Replaying
+     * move_count, games, white, draws, black, updated (Y-m-d of the numbers)
+     * — most-played first. Replaying
      * all 3,690 lines to find their cache keys takes ~0.3 s, so the list is
      * kept for six hours.
      */
     public static function all(): array
     {
-        return Cache::remember('rankings-results', 21600, static function (): array {
+        return Cache::remember('rankings-results-v2', 21600, static function (): array {
             $rows = chess_codex_db()->query(
                 'SELECT id, slug, name, eco, pgn_moves, move_count FROM codex_openings'
             )->fetchAll();
@@ -49,6 +58,7 @@ final class Rankings
                     'eco' => (string) $r['eco'], 'pgn_moves' => (string) $r['pgn_moves'],
                     'move_count' => (int) $r['move_count'], 'games' => $games,
                     'white' => $s['white'], 'draws' => $s['draws'], 'black' => $s['black'],
+                    'updated' => substr((string) ($s['cached_at'] ?? ''), 0, 10),
                 ];
             }
             usort($out, static fn (array $a, array $b): int => $b['games'] <=> $a['games']);

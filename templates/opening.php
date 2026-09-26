@@ -40,19 +40,13 @@ if ($lineTail === '' && mb_strlen($title) <= 42) $title .= ': Moves & Win Rates'
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 
 // ----------------------------------------------------------------------
-// Build a factual "overview" paragraph from data. Only rendered when there
-// is no admin-written description — for pages with curated content we skip
-// the auto-text entirely so the human prose isn't preceded by a robotic
-// summary saying the same things.
-//
-// Even within the auto-generated path, sentence templates are chosen per
-// opening (gambit / root / variation / group) and rotated by id, so 3,690
-// pages don't read like clones of each other.
+// The overview: what the line is, how it scores on Lichess and where it
+// leads — facts from the data only, no filler. Rendered only when there is
+// no written description, so human prose isn't preceded by a summary.
 // ----------------------------------------------------------------------
 $ecoGroup      = substr((string) $o['eco'], 0, 1);
 $ecoGroupLabel = t('group.' . $ecoGroup);
 $plies         = (int) $o['move_count'];
-$plyCountText  = $plies === 1 ? '1 ply' : ($plies . ' plies');
 $movesPretty   = trim((string) $o['pgn_moves']);
 
 $rootAncestor  = !empty($ancestors) ? $ancestors[0] : null;
@@ -61,164 +55,65 @@ $siblingCount  = count($siblings);
 
 $nameEsc       = htmlspecialchars((string) $o['name'], ENT_QUOTES, 'UTF-8');
 $ecoEsc        = htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8');
-$groupEsc      = htmlspecialchars((string) $ecoGroupLabel, ENT_QUOTES, 'UTF-8');
 $movesEsc      = '<code class="opening-overview-moves">' . htmlspecialchars($movesPretty, ENT_QUOTES, 'UTF-8') . '</code>';
-$plyEsc        = htmlspecialchars($plyCountText, ENT_QUOTES, 'UTF-8');
 $isGambit      = Opening::isGambit((string) $o['name']);
 // "Queen's Gambit Declined: …" and the like: named after a gambit that isn't taken.
 $isDeclined    = !$isGambit && stripos((string) $o['name'], 'Gambit') !== false;
 
-// Stable per-opening rotation seed — same opening always gets the same
-// variants; different openings get different variants.
-$rotation      = (int) $o['id'];
-
-// Group-specific second sentences that characterise the family in plain
-// chess vocabulary. Five distinct paragraphs, one per ECO letter.
-$groupBlurbs = [
-    'A' => 'The %s group covers flank openings — systems that delay the central pawn break and instead develop pieces and pawns on the wings.',
-    'B' => 'The %s group covers semi-open games — replies to 1.e4 where Black declines the symmetrical 1…e5 in favour of an asymmetric pawn structure.',
-    'C' => 'The %s group covers open games — classical 1.e4 e5 openings where both sides contest the centre directly with pawns.',
-    'D' => 'The %s group covers closed and semi-closed games — 1.d4 systems characterised by long strategic manoeuvring rather than early tactics.',
-    'E' => 'The %s group covers Indian defences — hypermodern lines where Black challenges the centre with pieces rather than pawns.',
-];
-$groupSentence = sprintf(
-    $groupBlurbs[$ecoGroup] ?? 'The %s group is one of the five top-level ECO families.',
-    '<strong>' . $groupEsc . '</strong>'
-);
-
-// 1. Intro sentence — branches by gambit / root / variation, with rotation.
-if ($isGambit) {
-    $introTemplates = [
-        '<strong>%s</strong> is a gambit, classified under ECO code %s within the %s family. As with all gambits, one side sacrifices material early — usually a pawn — in exchange for development, open lines, or initiative.',
-        '<strong>%s</strong> is a sacrificial opening line filed under ECO %s in the %s group. The defining idea is the early concession of material to seize the initiative and unbalance the position.',
-        '<strong>%s</strong> belongs to the gambit family of chess openings (ECO %s, %s). It trades material for attacking chances — a classic trade-off that has fascinated players from the Romantic era to modern correspondence chess.',
-    ];
-    $intro = sprintf($introTemplates[$rotation % count($introTemplates)], $nameEsc, $ecoEsc, $groupEsc);
-} elseif ($isDeclined) {
-    $introTemplates = [
-        '<strong>%s</strong> is a declined gambit, classified under ECO code %s within the %s family: the material offered is not taken, so the game goes on without the early imbalance a gambit is meant to create.',
-        '<strong>%s</strong> (ECO %s, %s) is a line in which the gambit is declined — the offered material is left alone and the position stays materially level.',
-        '<strong>%s</strong> is filed under ECO %s in the %s group. Here the gambit is declined: instead of taking the offered material, the defending side keeps to its own development.',
-    ];
-    $intro = sprintf($introTemplates[$rotation % count($introTemplates)], $nameEsc, $ecoEsc, $groupEsc);
-} elseif ($rootAncestor === null && $childCount >= 4) {
-    $introTemplates = [
-        '<strong>%s</strong> is one of the foundational chess openings, sitting at the root of an entire branch of theory under ECO code %s in the %s group.',
-        '<strong>%s</strong> is a major root opening in the %s family (ECO %s). It serves as the entry point for a wide subtree of named variations.',
-        '<strong>%s</strong> is a top-level opening within the %s family, catalogued as ECO %s — a starting point from which dozens of named sub-variations branch out.',
-    ];
-    $intro = sprintf($introTemplates[$rotation % count($introTemplates)], $nameEsc, $groupEsc, $ecoEsc);
-} elseif ($rootAncestor === null) {
-    $introTemplates = [
-        '<strong>%s</strong> is a chess opening at the root of the %s family, classified under ECO code %s.',
-        '<strong>%s</strong> sits at the top of the %s tree, indexed as ECO %s.',
-    ];
-    $intro = sprintf($introTemplates[$rotation % count($introTemplates)], $nameEsc, $groupEsc, $ecoEsc);
-} else {
-    $introTemplates = [
-        '<strong>%s</strong> is a variation within the %s family, indexed as ECO %s.',
-        '<strong>%s</strong> is a named branch in the %s group of chess theory, classified under ECO %s.',
-        '<strong>%s</strong> is a specific line in the %s family (ECO %s), arising from a recognised theoretical position.',
-    ];
-    $intro = sprintf($introTemplates[$rotation % count($introTemplates)], $nameEsc, $groupEsc, $ecoEsc);
+// Lichess numbers from the server-side cache, printed into the HTML: they
+// show at once, and search engines see them at all (/api/ is closed to
+// crawlers). app.js fetches only when nothing is cached yet or the
+// numbers are over a week old — same markup as its renderStats().
+require_once __DIR__ . '/../lib/ChessEngine.php';
+require_once __DIR__ . '/../lib/StatsCache.php';
+$stats      = StatsCache::cached(ChessEngine::fromPgn((string) $o['pgn_moves'])->uciHistory());
+$statsTotal = $stats ? $stats['white'] + $stats['black'] + $stats['draws'] : 0;
+$pct        = static fn (int $n, int $of): string => number_format($of > 0 ? $n * 100 / $of : 0, 1, '.', '');
+$barLabel   = static fn (string $w, string $d, string $b): string => "White $w% · Draw $d% · Black $b%";
+[$wPct, $dPct, $bPct] = [$pct($stats['white'] ?? 0, $statsTotal), $pct($stats['draws'] ?? 0, $statsTotal), $pct($stats['black'] ?? 0, $statsTotal)];
+$statsRows  = [];
+foreach ($stats['top_moves'] ?? [] as $m) {
+    $mt = (int) $m['white'] + (int) $m['black'] + (int) $m['draws'];
+    if ($mt > 0) $statsRows[] = [$m['san'], $mt, $pct((int) $m['white'], $mt), $pct((int) $m['draws'], $mt), $pct((int) $m['black'], $mt)];
 }
 
-// 2. Move-sequence sentence — varies phrasing.
-$moveTemplates = [
-    'It is reached after %s of play, with the move sequence %s.',
-    'The line arises from %s — specifically the moves %s.',
-    'Play reaches this position via %s, after %s of opening development.',
-    'It begins with %s and takes %s to reach the canonical position.',
-];
-$mTpl = $moveTemplates[$rotation % count($moveTemplates)];
-$moveSentence = ($rotation % 4 === 2)
-    ? sprintf($mTpl, $movesEsc, $plyEsc)
-    : sprintf($mTpl, $plyEsc, $movesEsc);
-
-// 3. Parent/ancestor sentence — only for non-root openings.
-$parentSentence = '';
-if ($parent) {
-    $parentLink = '<a href="' . htmlspecialchars($baseUrl . I18n::url('/openings/' . $parent['slug']), ENT_QUOTES, 'UTF-8') . '">'
-                . htmlspecialchars((string) $parent['name'], ENT_QUOTES, 'UTF-8') . '</a>';
-    if ($rootAncestor && (int) $rootAncestor['id'] !== (int) $parent['id']) {
-        $rootLink = '<a href="' . htmlspecialchars($baseUrl . I18n::url('/openings/' . $rootAncestor['slug']), ENT_QUOTES, 'UTF-8') . '">'
-                  . htmlspecialchars((string) $rootAncestor['name'], ENT_QUOTES, 'UTF-8') . '</a>';
-        $parentTpls = [
-            'It is a variation of %s, which itself descends from the root opening %s.',
-            'In the opening tree, this line branches off from %s, part of the broader %s system.',
-            'The line refines %s, which traces back to the root opening %s.',
-        ];
-        $parentSentence = sprintf($parentTpls[$rotation % count($parentTpls)], $parentLink, $rootLink);
-    } else {
-        $parentTpls = [
-            'It is a direct variation of %s.',
-            'It branches immediately from %s in the opening tree.',
-            'The line is a first-level refinement of %s.',
-        ];
-        $parentSentence = sprintf($parentTpls[$rotation % count($parentTpls)], $parentLink);
+$h    = static fn ($s): string => htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
+$link = static fn (array $r, ?string $text = null): string =>
+    '<a href="' . $h($baseUrl . I18n::url('/openings/' . $r['slug'])) . '">' . $h($text ?? $r['name']) . '</a>';
+$kind = $isGambit ? 'a gambit' : ($isDeclined ? 'a declined gambit' : null);
+$overview = [$parent
+    ? sprintf('<strong>%s</strong> (ECO %s) is %s %s, reached after %s — %s.', $nameEsc, $ecoEsc,
+        $kind ?? 'a variation', ($kind ? 'in ' : 'of ') . $link($parent), $movesEsc, Opening::movesLabel($plies))
+    : sprintf('<strong>%s</strong> (ECO %s) is %s that starts %s.', $nameEsc, $ecoEsc, $kind ?? 'a chess opening', $movesEsc)];
+if ($statsTotal > 0) {
+    $sentence = sprintf('In %s rated Lichess games between players rated 1600 to 2500, White won %s%%, Black %s%% and %s%% were drawn.',
+        number_format($statsTotal), $wPct, $bPct, $dPct);
+    $top      = $stats['top_moves'][0] ?? null;
+    $topGames = $top ? (int) $top['white'] + (int) $top['black'] + (int) $top['draws'] : 0;
+    if ($topGames > 0) {
+        $whiteNext = $plies % 2 === 0;
+        $sentence .= sprintf(' %s most played move here is <strong>%s</strong>, in %d%% of those games.',
+            $whiteNext ? "White's" : "Black's",
+            $h((intdiv($plies, 2) + 1) . ($whiteNext ? '. ' : '…') . $top['san']),
+            (int) round($topGames * 100 / $statsTotal));
     }
+    $overview[] = $sentence;
 }
-
-// 4. Children/variations sentence — phrasing depends on count.
-$childSentence = '';
 if ($childCount > 0) {
-    $sampleNames = array_slice(array_map(static fn ($c) =>
-        '<a href="' . htmlspecialchars($baseUrl . I18n::url('/openings/' . $c['slug']), ENT_QUOTES, 'UTF-8') . '">'
-        . htmlspecialchars($opening_short_name((string) $c['name'], (string) $o['name']), ENT_QUOTES, 'UTF-8')
-        . '</a>', $children), 0, 3);
-    $sampleStr = implode(', ', $sampleNames);
-    $moreSuffix = $childCount > 3 ? ', and others' : '';
-    if ($childCount === 1) {
-        $childSentence = sprintf('It continues primarily into one named line, %s.', $sampleStr);
-    } elseif ($childCount <= 5) {
-        $childTpls = [
-            'It branches into %d notable variations — %s%s.',
-            '%d named variations grow from this line, including %s%s.',
-            'The line splits into %d documented sub-systems: %s%s.',
-        ];
-        $childSentence = sprintf($childTpls[$rotation % count($childTpls)], $childCount, $sampleStr, $moreSuffix);
-    } else {
-        $childTpls = [
-            'It is the root of %d named variations, with %s%s among the most studied.',
-            '%d distinct sub-variations branch from this opening; prominent examples include %s%s.',
-            'The line has %d documented children — %s%s being widely played.',
-        ];
-        $childSentence = sprintf($childTpls[$rotation % count($childTpls)], $childCount, $sampleStr, $moreSuffix);
-    }
+    // The most played, by full name; deeper lines that keep this very name say nothing new.
+    $byGames = array_filter($children, static fn (array $c): bool => $c['name'] !== $o['name']);
+    usort($byGames, static fn (array $a, array $b): int => (int) $b['popularity'] <=> (int) $a['popularity']);
+    $named = array_map($link, array_slice($byGames, 0, 2));
+    $sentence = match (true) {
+        $childCount === 1 => 'It continues into one named variation' . ($named ? ', ' . $named[0] : '') . '.',
+        $named === []     => sprintf('It branches into %d named variations.', $childCount),
+        default           => sprintf('It branches into %d named variations; the most played %s %s.', $childCount,
+                                 count($named) === 1 ? 'is' : 'are', implode(' and ', $named)),
+    };
+    if ($descendantCount > $childCount) $sentence .= sprintf(' In all, %d named lines continue from it.', $descendantCount);
+    $overview[] = $sentence;
 }
-
-// 5. Total-subtree sentence — only when subtree is meaningfully larger.
-$subtreeSentence = '';
-if ($descendantCount > $childCount) {
-    if ($descendantCount >= 100) {
-        $subtreeTpls = [
-            'This is a deep theory tree with %d total sub-variations across all depths — one of the larger branches in chess theory.',
-            'Across every depth of the tree this branch holds %d documented sub-variations, reflecting decades of analytical work.',
-        ];
-    } elseif ($descendantCount >= 30) {
-        $subtreeTpls = [
-            'Below the direct variations, the full subtree contains %d documented sub-variations.',
-            'Counted recursively, this branch covers %d sub-variations at all depths.',
-        ];
-    } else {
-        $subtreeTpls = [
-            'In total, the branch covers %d sub-variations across all depths.',
-            'Together the deeper variations number %d across the full subtree.',
-        ];
-    }
-    $subtreeSentence = sprintf($subtreeTpls[$rotation % count($subtreeTpls)], (int) $descendantCount);
-}
-
-// 6. Closing CTA — varies phrasing, always present.
-$ctaTpls = [
-    'Step through the moves on the interactive board below, review the live Lichess statistics, or play this position against Stockfish at one of six difficulty levels.',
-    'Use the board to walk through every move, check how the position has scored on Lichess, or take it head-to-head against Stockfish.',
-    'Explore the position on the interactive board, study its real-world results from Lichess, and challenge the engine when you are ready.',
-];
-$cta = $ctaTpls[$rotation % count($ctaTpls)];
-
-$overviewParts = array_filter([$intro, $groupSentence, $moveSentence, $parentSentence, $childSentence, $subtreeSentence, $cta]);
-$overviewHtml  = '<p>' . implode('</p><p>', $overviewParts) . '</p>';
+$overviewHtml = '<p>' . implode('</p><p>', $overview) . '</p>';
 
 $island = [
     'id'          => (int) $o['id'],
@@ -313,13 +208,10 @@ $island = [
             <?php /* Same-name lines: the moves that tell this one apart, as in the title. */ ?>
             <span class="opening-title-tail"><?= htmlspecialchars($lineTail, ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?></h1>
         <?php
-        // Share row — no third-party JS, no tracking. Each button is a plain
-        // intent URL; "Copy link" uses navigator.clipboard via inline JS at
-        // the bottom of the page. Hidden on print and very narrow screens.
+        // Share row — no third-party JS, no tracking: "Copy link", plus the
+        // device's own share sheet where the browser has one (app.js).
         $shareUrl  = $siteUrl . $baseUrl . I18n::url('/openings/' . $o['slug']);
         $shareText = $o['name'] . ' (' . $o['eco'] . ') — Caissa Codex';
-        $shareUrlEnc  = rawurlencode($shareUrl);
-        $shareTextEnc = rawurlencode($shareText);
         ?>
         <div class="opening-tools" data-opening-tools
              data-pgn="<?= htmlspecialchars(trim((string) $o['pgn_moves']), ENT_QUOTES, 'UTF-8') ?>"
@@ -337,21 +229,15 @@ $island = [
                title="Open this position in Lichess analysis (engine + explorer)">
                 <span aria-hidden="true">↗</span> Open in Lichess
             </a>
+            <a class="opening-tool-btn" href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $o['slug']) . '.pgn', ENT_QUOTES, 'UTF-8') ?>"
+               download rel="nofollow"
+               title="This line<?= $descendantCount > 0 ? ' and its ' . (int) $descendantCount . ' named continuations' : '' ?> as one PGN, for a Lichess study or ChessBase">
+                <span aria-hidden="true">⤓</span> Download PGN<?= $descendantCount > 0 ? ' (' . ((int) $descendantCount + 1) . ' lines)' : '' ?>
+            </a>
         </div>
-        <div class="opening-share" data-share-url="<?= htmlspecialchars($shareUrl, ENT_QUOTES, 'UTF-8') ?>">
-            <span class="opening-share-label">Share:</span>
-            <a class="opening-share-btn" target="_blank" rel="noopener nofollow"
-               title="Share on Twitter / X"
-               href="https://twitter.com/intent/tweet?url=<?= $shareUrlEnc ?>&amp;text=<?= $shareTextEnc ?>">X</a>
-            <a class="opening-share-btn" target="_blank" rel="noopener nofollow"
-               title="Share on Reddit"
-               href="https://www.reddit.com/submit?url=<?= $shareUrlEnc ?>&amp;title=<?= $shareTextEnc ?>">Reddit</a>
-            <a class="opening-share-btn" target="_blank" rel="noopener nofollow"
-               title="Share on Telegram"
-               href="https://t.me/share/url?url=<?= $shareUrlEnc ?>&amp;text=<?= $shareTextEnc ?>">Telegram</a>
-            <a class="opening-share-btn" target="_blank" rel="noopener nofollow"
-               title="Share on Facebook"
-               href="https://www.facebook.com/sharer/sharer.php?u=<?= $shareUrlEnc ?>">Facebook</a>
+        <div class="opening-share" data-share-url="<?= htmlspecialchars($shareUrl, ENT_QUOTES, 'UTF-8') ?>"
+             data-share-title="<?= htmlspecialchars($shareText, ENT_QUOTES, 'UTF-8') ?>">
+            <button type="button" class="opening-share-btn" data-share-native hidden>Share…</button>
             <button type="button" class="opening-share-btn opening-share-copy" data-share-copy>Copy link</button>
         </div>
         <?php if ($parent && empty($ancestors)): ?>
@@ -394,7 +280,7 @@ $island = [
         <dl class="opening-facts">
             <div><dt>ECO code</dt><dd><a href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco/' . $o['eco']), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8') ?></a></dd></div>
             <div><dt>Group</dt><dd><?= htmlspecialchars((string) $ecoGroupLabel, ENT_QUOTES, 'UTF-8') ?> (<?= htmlspecialchars($ecoGroup, ENT_QUOTES, 'UTF-8') ?>)</dd></div>
-            <div><dt>Plies</dt><dd><?= $plies ?></dd></div>
+            <div><dt>Length</dt><dd><?= Opening::movesLabel($plies) ?></dd></div>
             <?php if ($parent): ?>
                 <div><dt>Parent</dt><dd>
                     <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $parent['slug']), ENT_QUOTES, 'UTF-8') ?>">
@@ -412,7 +298,7 @@ $island = [
         <p class="opening-overview-notice">
             <span class="opening-overview-notice-icon" aria-hidden="true">&#9998;</span>
             <span>
-                <strong>This overview is generated automatically</strong> from the opening's metadata.
+                <strong>Generated from the data</strong>: the Lichess opening list and opening explorer.
                 Know this line well? <a href="#suggest-form-details" class="opening-overview-notice-cta">Write
                 a description</a> — submissions are reviewed before publishing.
             </span>
@@ -420,24 +306,6 @@ $island = [
     </section>
     <?php endif; ?>
 
-    <?php
-    // Lichess numbers from the server-side cache, printed into the HTML: they
-    // show at once, and search engines see them at all (/api/ is closed to
-    // crawlers). app.js fetches only when nothing is cached yet or the
-    // numbers are over a week old — same markup as its renderStats().
-    require_once __DIR__ . '/../lib/ChessEngine.php';
-    require_once __DIR__ . '/../lib/StatsCache.php';
-    $stats      = StatsCache::cached(ChessEngine::fromPgn((string) $o['pgn_moves'])->uciHistory());
-    $statsTotal = $stats ? $stats['white'] + $stats['black'] + $stats['draws'] : 0;
-    $pct        = static fn (int $n, int $of): string => number_format($of > 0 ? $n * 100 / $of : 0, 1, '.', '');
-    $barLabel   = static fn (string $w, string $d, string $b): string => "White $w% · Draw $d% · Black $b%";
-    [$wPct, $dPct, $bPct] = [$pct($stats['white'] ?? 0, $statsTotal), $pct($stats['draws'] ?? 0, $statsTotal), $pct($stats['black'] ?? 0, $statsTotal)];
-    $statsRows  = [];
-    foreach ($stats['top_moves'] ?? [] as $m) {
-        $mt = (int) $m['white'] + (int) $m['black'] + (int) $m['draws'];
-        if ($mt > 0) $statsRows[] = [$m['san'], $mt, $pct((int) $m['white'], $mt), $pct((int) $m['draws'], $mt), $pct((int) $m['black'], $mt)];
-    }
-    ?>
     <section class="opening-stats" id="opening-stats" aria-busy="<?= $stats ? 'false' : 'true' ?>" aria-live="polite"
              data-stats="<?= $stats ? ($stats['fresh'] ? 'fresh' : 'stale') : 'none' ?>">
         <h2><?= htmlspecialchars(t('opening.stats.title'), ENT_QUOTES, 'UTF-8') ?></h2>
@@ -587,11 +455,11 @@ $island = [
             ?>
                 <li<?= ($needsToggle && $i >= $pageSize) ? ' class="is-overflow" hidden' : '' ?>>
                     <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $c['slug']), ENT_QUOTES, 'UTF-8') ?>"
-                       title="<?= htmlspecialchars($c['name'], ENT_QUOTES, 'UTF-8') ?> (<?= $childPly ?>-ply)">
+                       title="<?= htmlspecialchars($c['name'], ENT_QUOTES, 'UTF-8') ?> (<?= Opening::movesLabel($childPly) ?>)">
                         <span class="eco-tag"><?= htmlspecialchars($c['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                         <span class="child-list-name"><?= htmlspecialchars($childDisplay, ENT_QUOTES, 'UTF-8') ?></span>
                         <?php if ($childPly > 0): ?>
-                            <span class="child-list-plies"><?= $childPly ?>-ply</span>
+                            <span class="child-list-plies"><?= Opening::movesLabel($childPly) ?></span>
                         <?php endif; ?>
                     </a>
                 </li>
@@ -618,16 +486,45 @@ $island = [
             ?>
                 <li>
                     <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $s['slug']), ENT_QUOTES, 'UTF-8') ?>"
-                       title="<?= htmlspecialchars($s['name'], ENT_QUOTES, 'UTF-8') ?> (<?= $sibPly ?>-ply)">
+                       title="<?= htmlspecialchars($s['name'], ENT_QUOTES, 'UTF-8') ?> (<?= Opening::movesLabel($sibPly) ?>)">
                         <span class="eco-tag"><?= htmlspecialchars($s['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                         <span class="child-list-name"><?= htmlspecialchars($sibDisplay, ENT_QUOTES, 'UTF-8') ?></span>
                         <?php if ($sibPly > 0): ?>
-                            <span class="child-list-plies"><?= $sibPly ?>-ply</span>
+                            <span class="child-list-plies"><?= Opening::movesLabel($sibPly) ?></span>
                         <?php endif; ?>
                     </a>
                 </li>
             <?php endforeach; ?>
         </ul>
+    </section>
+    <?php endif; ?>
+
+    <?php
+    // Other move orders into this position, and moves from it into other named lines.
+    $trans   = Opening::transpositions((int) $o['id']);
+    $moveAt  = static fn (int $ply, string $san): string => (intdiv($ply, 2) + 1) . ($ply % 2 === 0 ? '. ' : '…') . $san;
+    ?>
+    <?php if ($trans['from'] || $trans['to']): ?>
+    <section class="opening-transpositions">
+        <h2>Transpositions</h2>
+        <?php foreach (['from' => 'This position is also reached from these lines, by another move order:',
+                        'to'   => 'From here, a move transposes into another named line:'] as $dir => $lede):
+            if (!$trans[$dir]) continue; ?>
+            <p class="opening-related-lede"><?= htmlspecialchars($lede, ENT_QUOTES, 'UTF-8') ?></p>
+            <ul class="child-list">
+                <?php foreach ($trans[$dir] as [$t, $san]):
+                    // The move is played from the "from" line's position.
+                    $move = $moveAt($dir === 'from' ? (int) $t['move_count'] : $plies, (string) $san); ?>
+                    <li>
+                        <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $t['slug']), ENT_QUOTES, 'UTF-8') ?>">
+                            <span class="eco-tag"><?= htmlspecialchars((string) $t['eco'], ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="child-list-name"><?= htmlspecialchars((string) $t['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="child-list-plies"><?= $dir === 'from' ? 'then ' : 'after ' ?><?= htmlspecialchars($move, ENT_QUOTES, 'UTF-8') ?></span>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endforeach; ?>
     </section>
     <?php endif; ?>
 
@@ -666,7 +563,7 @@ $island = [
                                title="<?= htmlspecialchars($d['name'], ENT_QUOTES, 'UTF-8') ?>">
                                 <span class="eco-tag"><?= htmlspecialchars($d['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                                 <span class="opening-subtree-name"><?= htmlspecialchars($display, ENT_QUOTES, 'UTF-8') ?></span>
-                                <span class="opening-subtree-plies"><?= (int) $d['move_count'] ?>-ply</span>
+                                <span class="opening-subtree-plies"><?= Opening::movesLabel((int) $d['move_count']) ?></span>
                             </a>
                         </li>
                     <?php endforeach; ?>
@@ -768,10 +665,12 @@ $jsonLd = [
                 $parent['name'] ?? null,
             ])),
             // Full ISO 8601 with offset — Google flags date-only values.
-            // Edits aren't tracked, so dateModified stays at the publish
-            // date: "today" on every crawl is a fake freshness signal.
+            // dateModified is when the Lichess numbers on the page were last
+            // fetched: a real change, unlike "today" on every crawl.
             'datePublished' => '2026-01-01T00:00:00+01:00',
-            'dateModified'  => '2026-01-01T00:00:00+01:00',
+            'dateModified'  => $statsTotal > 0 && !empty($stats['cached_at'])
+                ? (new DateTimeImmutable((string) $stats['cached_at']))->format(DATE_ATOM)
+                : '2026-01-01T00:00:00+01:00',
             'author'        => $publisherLd,
             'publisher'     => $publisherLd,
             'isPartOf'      => [

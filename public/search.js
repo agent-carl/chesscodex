@@ -1,6 +1,9 @@
 import { Chess } from '../vendor/chess.js';
 import { Chessground } from '../vendor/chessground.min.js';
 
+// A line's length in full moves (plies are one side's move).
+const movesLabel = (plies) => { const n = Math.ceil(plies / 2); return n === 1 ? '1 move' : n + ' moves'; };
+
 const dataNode = document.getElementById('search-data');
 if (dataNode) {
     const { searchApiUrl, openingPathFmt } = JSON.parse(dataNode.textContent);
@@ -70,7 +73,7 @@ if (dataNode) {
                 a.appendChild(name);
                 const plies = document.createElement('span');
                 plies.className = 'search-by-name-result-plies';
-                plies.textContent = m.plies + '-ply';
+                plies.textContent = movesLabel(m.plies);
                 a.appendChild(plies);
                 li.appendChild(a);
                 list.appendChild(li);
@@ -257,8 +260,7 @@ if (dataNode) {
                 meta.textContent = `Exact match — you're playing this opening.`;
             } else {
                 const extra = playedPlies - data.match.plies;
-                // extra counts half-moves, hence "plies" (as on opening pages).
-                meta.textContent = `Closest known opening, ${extra} ${extra === 1 ? 'ply' : 'plies'} past documented theory.`;
+                meta.textContent = `Closest known opening, ${extra} half-move${extra === 1 ? '' : 's'} past documented theory.`;
             }
         } else {
             resultEl.dataset.state = 'unknown';

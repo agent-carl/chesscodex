@@ -50,14 +50,14 @@ ob_start();
     <?php if ($n > 1): ?>
     <table class="eco-lines">
         <thead>
-            <tr><th>Opening</th><th>Moves</th><th>Plies</th></tr>
+            <tr><th>Opening</th><th>Moves</th><th>Length</th></tr>
         </thead>
         <tbody>
             <?php foreach ($lines as $l): ?>
             <tr>
                 <td><a href="<?= $esc($openingUrl($l['slug'])) ?>"><?= $esc($l['name']) ?></a></td>
                 <td><code><?= $esc($l['pgn_moves']) ?></code></td>
-                <td><?= (int) $l['move_count'] ?></td>
+                <td><?= Opening::movesLabel((int) $l['move_count']) ?></td>
             </tr>
             <?php endforeach; ?>
         </tbody>

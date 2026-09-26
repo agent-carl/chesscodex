@@ -26,6 +26,38 @@ class Opening
         return $row ?: null;
     }
 
+    /**
+     * Named lines one move away from this one by a different move order
+     * (db/transpositions.json, from tools/build-transpositions.php):
+     * 'from' — lines whose position plus a move gives this one; 'to' — lines
+     * a move from this position leads into. Each item: [row, SAN], the row
+     * with id, eco, name, slug, move_count.
+     */
+    public static function transpositions(int $id): array
+    {
+        static $map = null;
+        $map ??= json_decode((string) @file_get_contents(__DIR__ . '/../db/transpositions.json'), true) ?: [];
+        $pairs = ['from' => [], 'to' => []];
+        foreach ($map[$id] ?? [] as [$to, $san]) $pairs['to'][] = [(int) $to, $san];
+        foreach ($map as $from => $targets) {
+            foreach ($targets as [$to, $san]) {
+                if ((int) $to === $id) $pairs['from'][] = [(int) $from, $san];
+            }
+        }
+        if ($pairs['from'] === [] && $pairs['to'] === []) return $pairs;
+
+        $ids  = array_unique(array_merge(array_column($pairs['from'], 0), array_column($pairs['to'], 0)));
+        $stmt = chess_codex_db()->prepare('SELECT id, eco, name, slug, move_count FROM codex_openings WHERE id IN ('
+            . implode(',', array_fill(0, count($ids), '?')) . ')');
+        $stmt->execute(array_values($ids));
+        $rows = array_column($stmt->fetchAll(), null, 'id');
+        foreach ($pairs as $dir => $list) {
+            $pairs[$dir] = array_values(array_filter(array_map(
+                static fn (array $p): ?array => isset($rows[$p[0]]) ? [$rows[$p[0]], $p[1]] : null, $list)));
+        }
+        return $pairs;
+    }
+
     /** The opening's move list ("1. e4 c5 2. Nf3"), or null for an unknown id. */
     public static function movesById(int $id): ?string
     {
@@ -154,6 +186,29 @@ class Opening
         return $stmt->fetchAll();
     }
 
+    /**
+     * The line and every named line that continues it (name, eco, pgn_moves,
+     * popularity), shortest first — what a PGN download of the tree holds.
+     */
+    public static function withContinuations(array $opening): array
+    {
+        require_once __DIR__ . '/parser.php';
+        $canon = chess_codex_canonicalize_pgn((string) $opening['pgn_moves']);
+        $stmt = chess_codex_db()->prepare(
+            "SELECT name, eco, pgn_moves, popularity FROM codex_openings
+             WHERE pgn_canon = :c OR pgn_canon LIKE :p ORDER BY move_count, id"
+        );
+        $stmt->execute(['c' => $canon, 'p' => $canon . ' %']);
+        return $stmt->fetchAll();
+    }
+
+    /** "1 move", "3 moves": a line's length in full moves (move_count counts plies). */
+    public static function movesLabel(int $plies): string
+    {
+        $n = intdiv($plies + 1, 2);
+        return $n === 1 ? '1 move' : $n . ' moves';
+    }
+
     /** "Sicilian Defense: Najdorf Variation" → "Sicilian Defense". */
     public static function family(string $name): string
     {
@@ -190,7 +245,7 @@ class Opening
     public static function children(int $parentId): array
     {
         $stmt = chess_codex_db()->prepare(
-            'SELECT id, eco, name, slug FROM codex_openings
+            'SELECT id, eco, name, slug, popularity FROM codex_openings
              WHERE parent_id = :pid ORDER BY name'
         );
         $stmt->execute(['pid' => $parentId]);
@@ -771,6 +826,31 @@ class Opening
             ksort($grouped);
             return $grouped;
         });
+    }
+
+    /**
+     * The openings (the part of a name before ":" or ",") by first letter:
+     * letter => [name => ['name', 'slug', 'eco', 'lines']]. The link goes to
+     * the family's own line — its shortest, when several share the name — or
+     * to its shortest line when none has the bare name.
+     */
+    public static function familiesByLetter(): array
+    {
+        $out = [];
+        foreach (self::allAlphabetical() as $letter => $rows) {
+            foreach ($rows as $r) {
+                $family = self::family((string) $r['name']);
+                $isRoot = $r['name'] === $family;
+                $f      = $out[$letter][$family] ?? ['name' => $family, 'lines' => 0, 'root' => false, 'plies' => PHP_INT_MAX];
+                $f['lines']++;
+                if (($isRoot && (!$f['root'] || $r['move_count'] < $f['plies']))
+                    || (!$isRoot && !$f['root'] && $r['move_count'] < $f['plies'])) {
+                    [$f['slug'], $f['eco'], $f['root'], $f['plies']] = [$r['slug'], $r['eco'], $isRoot, (int) $r['move_count']];
+                }
+                $out[$letter][$family] = $f;
+            }
+        }
+        return $out;
     }
 
     /**
