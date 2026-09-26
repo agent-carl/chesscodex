@@ -234,8 +234,7 @@ CSS;
                     <kbd class="kbd-hint" aria-hidden="true">/</kbd>
                 </a>
                 <a href="<?= $baseEsc . $esc(I18n::url('/random')) ?>" title="Jump to a random opening" rel="nofollow">
-                    <span aria-hidden="true">&#127922;</span>
-                    <span class="site-nav-label">Random</span>
+                    Random
                 </a>
                 <?php if ($adminPending !== null): ?>
                 <a class="admin-link" href="<?= $baseEsc ?>/admin">
