@@ -2,7 +2,8 @@
 declare(strict_types=1);
 
 /**
- * Thin wrapper around https://explorer.lichess.ovh/lichess.
+ * Thin wrapper around the Lichess opening explorer: the Lichess database
+ * (https://explorer.lichess.ovh/lichess) and the masters database (/masters).
  *
  * Lichess rate-limits the explorer, so requests go out one at a time,
  * THROTTLE_MS apart, under a file lock held for the whole request. A
@@ -26,6 +27,7 @@ final class LichessRateLimitedException extends RuntimeException {}
 final class LichessExplorer
 {
     private const ENDPOINT     = 'https://explorer.lichess.ovh/lichess';
+    private const MASTERS      = 'https://explorer.lichess.ovh/masters';
     private const TIMEOUT_S    = 5;
     private const THROTTLE_MS  = 600;
     private const COOLDOWN_S   = 60;    // after a 429
@@ -50,12 +52,7 @@ final class LichessExplorer
      */
     public static function fetch(array $uciMoves, bool $wait = false): array
     {
-        $token = self::token();
-        if ($token === '') {
-            throw new RuntimeException('Lichess API token is not set in config.php (lichess_token).');
-        }
-
-        $params = http_build_query([
+        return self::request(self::ENDPOINT, [
             'play'       => implode(',', $uciMoves),
             'moves'      => self::TOP_MOVES,
             'topGames'   => 0,
@@ -63,8 +60,44 @@ final class LichessExplorer
             'speeds'     => 'blitz,rapid,classical',
             'ratings'    => '1600,1800,2000,2200,2500',
             'variant'    => 'standard',
-        ]);
-        $url = self::ENDPOINT . '?' . $params;
+        ], $wait);
+    }
+
+    /**
+     * Results only (no moves or games) in rated blitz, rapid and classical
+     * games of one Lichess rating band, e.g. '1400,1600' for 1400–1799.
+     */
+    public static function fetchRatings(array $uciMoves, string $ratings, bool $wait = false): array
+    {
+        return self::request(self::ENDPOINT, [
+            'play'        => implode(',', $uciMoves),
+            'moves'       => 0,
+            'topGames'    => 0,
+            'recentGames' => 0,
+            'speeds'      => 'blitz,rapid,classical',
+            'ratings'     => $ratings,
+            'variant'     => 'standard',
+        ], $wait);
+    }
+
+    /** Results and the $topGames best-known games from the masters database (over the board, 2200+). */
+    public static function fetchMasters(array $uciMoves, int $topGames, bool $wait = false): array
+    {
+        return self::request(self::MASTERS, [
+            'play'     => implode(',', $uciMoves),
+            'moves'    => 0,
+            'topGames' => $topGames,
+        ], $wait);
+    }
+
+    /** One explorer request under the lock; the decoded JSON. */
+    private static function request(string $endpoint, array $params, bool $wait): array
+    {
+        $token = self::token();
+        if ($token === '') {
+            throw new RuntimeException('Lichess API token is not set in config.php (lichess_token).');
+        }
+        $url = $endpoint . '?' . http_build_query($params);
 
         $lock = self::lock($wait);
         $pauseUntil = 0.0;

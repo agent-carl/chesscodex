@@ -20,6 +20,14 @@ ob_start();
             </li>
         <?php endforeach; ?>
     </ul>
+    <?php foreach (['white' => 'White', 'black' => 'Black'] as $side => $Side): ?>
+        <p class="ranking-nav">
+            <span>Best for <?= $Side ?>, by level:</span>
+            <?php foreach (LevelStats::LEVELS as $key => $l): ?>
+                <a href="<?= $baseEsc . $esc(I18n::url('/best-openings-for-' . $side . '/' . $key)) ?>"><?= $esc($l['label']) ?></a>
+            <?php endforeach; ?>
+        </p>
+    <?php endforeach; ?>
 </article>
 <?php
 $body        = ob_get_clean();

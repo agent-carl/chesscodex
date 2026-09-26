@@ -71,9 +71,25 @@ final class Rankings
      * Best-for pages rank the lines whose last move is that side's — the
      * positions White (or Black) chooses to play — by that side's score.
      */
-    public static function rows(string $page): array
+    /**
+     * Games a line needs at one level (LevelStats) to be ranked there: the
+     * masters database is a few million games, the Lichess bands billions.
+     */
+    public const MIN_GAMES_AT_LEVEL = ['masters' => 300, 'default' => 50000];
+
+    public static function rows(string $page, ?string $level = null): array
     {
         $all = self::all();
+        if ($level !== null) {
+            // The numbers of that level instead of the 1600–2500 ones, for the
+            // lines tools/fetch-levels.php has fetched.
+            $at  = LevelStats::allAtLevel($level);
+            $min = self::MIN_GAMES_AT_LEVEL[$level] ?? self::MIN_GAMES_AT_LEVEL['default'];
+            $all = array_values(array_filter(array_map(
+                static fn (array $r): ?array => isset($at[$r['id']]) && $at[$r['id']]['games'] >= $min
+                    ? array_merge($r, $at[$r['id']]) : null,
+                $all)));
+        }
         switch ($page) {
             case 'popular-openings':
                 return array_slice(self::onePerName($all), 0, 100);
@@ -84,13 +100,13 @@ final class Rankings
             case 'best-openings-for-black':
                 $side  = $page === 'best-openings-for-white' ? 'white' : 'black';
                 $lines = array_filter($all, static fn (array $r): bool =>
-                    $r['games'] >= self::MIN_GAMES && ($r['move_count'] % 2 === 1) === ($side === 'white'));
+                    ($level !== null || $r['games'] >= self::MIN_GAMES) && ($r['move_count'] % 2 === 1) === ($side === 'white'));
                 $lines = self::onePerName($lines);
                 foreach ($lines as &$r) $r['score'] = self::score($r, $side);
                 unset($r);
                 usort($lines, static fn (array $a, array $b): int =>
                     [$b['score'], $b['games']] <=> [$a['score'], $a['games']]);
-                return array_slice($lines, 0, 50);
+                return array_slice($lines, 0, $level !== null ? 30 : 50);
         }
         return [];
     }

@@ -12,6 +12,7 @@ spl_autoload_register(static function (string $class): void {
         'Cache'            => __DIR__ . '/Cache.php',
         'ChessEngine'      => __DIR__ . '/ChessEngine.php',
         'I18n'             => __DIR__ . '/I18n.php',
+        'LevelStats'       => __DIR__ . '/LevelStats.php',
         'LichessExplorer'  => __DIR__ . '/LichessExplorer.php',
         'Logger'           => __DIR__ . '/Logger.php',
         'Migrations'       => __DIR__ . '/Migrations.php',

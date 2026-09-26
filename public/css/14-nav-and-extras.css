@@ -14,3 +14,9 @@
 .opening-diagram img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); box-shadow: 0 0 0 1px var(--border); }
 .opening-diagram figcaption { margin-top: var(--space-1); color: var(--muted); font-size: .8rem; text-align: center; }
 @media (max-width: 540px) { .opening-diagram { width: 128px; } }
+
+/* By rating: the four Lichess bands and the masters database, and master games. */
+.opening-levels { margin-top: var(--space-6); }
+.level-pcts, .master-games-meta { margin-left: var(--space-2); color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; }
+.master-games { padding-left: 1.2em; }
+.ranking-levels > span:first-child { color: var(--muted); }
