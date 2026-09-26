@@ -3,7 +3,8 @@
 # (run on the Pi as the site owner; no sudo). Opening pages print cached
 # numbers into their HTML, so this is what makes them visible to search
 # engines. Takes about an hour for all 3,690 openings; already-cached ones are
-# skipped, so it's safe to stop (Ctrl+C) and run again.
+# skipped, so it's safe to stop (Ctrl+C) and run again. At the end it sets each
+# opening's popularity from the cached game counts (tools/backfill-popularity.php).
 #
 #   nohup bash ~/deploy/prewarm-all.sh > ~/prewarm.log 2>&1 &
 #   tail -f ~/prewarm.log
@@ -33,7 +34,11 @@ while :; do
         sleep $((retry + 5))
     fi
     if [ -z "$next" ]; then
-        printf '%s\n' "$out" | grep -q 'Reached end of table' && { echo "$(date '+%F %T') done"; exit 0; }
+        printf '%s\n' "$out" | grep -q 'Reached end of table' && {
+            echo "$(date '+%F %T') done"
+            php "$SITE/tools/backfill-popularity.php"
+            exit $?
+        }
         echo "unexpected answer:"; printf '%s\n' "$out" | tr -s ' ' | tail -5; exit 1
     fi
     offset=$next
