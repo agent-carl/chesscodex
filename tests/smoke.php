@@ -32,7 +32,7 @@ if (php_sapi_name() !== 'cli') {
 
 $tests = [
     // [method, path, expected status, contains string]
-    ['GET', '/',                                  200, 'Chess Codex'],
+    ['GET', '/',                                  200, 'Caissa Codex'],
     ['GET', '/about',                             200, 'high school student'],
     ['GET', '/openings',                          200, 'A–Z'],
     ['GET', '/openings/sicilian-defense',         200, 'Sicilian'],

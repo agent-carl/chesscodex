@@ -306,7 +306,7 @@ $island = [
         // intent URL; "Copy link" uses navigator.clipboard via inline JS at
         // the bottom of the page. Hidden on print and very narrow screens.
         $shareUrl  = $siteUrl . $baseUrl . I18n::url('/openings/' . $o['slug']);
-        $shareText = $o['name'] . ' (' . $o['eco'] . ') — Chess Codex';
+        $shareText = $o['name'] . ' (' . $o['eco'] . ') — Caissa Codex';
         $shareUrlEnc  = rawurlencode($shareUrl);
         $shareTextEnc = rawurlencode($shareText);
         ?>
@@ -705,8 +705,10 @@ if ($childCount > 0) {
 }
 $description = implode(' · ', $descParts) . '. Interactive board, Lichess statistics, play vs Stockfish.';
 
-// OG image absolute URL — also reused inside JSON-LD as `image`.
-$ogImageUrl = $siteUrl . $baseUrl . '/og.php?slug=' . urlencode($o['slug']);
+// OG image absolute URL for the JSON-LD `image`: the same URL as og:image in
+// layout.php, including its ?v= (hash of og.php).
+$ogImageUrl = $siteUrl . $baseUrl . '/og.php?slug=' . urlencode($o['slug'])
+            . '&v=' . substr((string) @hash_file('xxh3', __DIR__ . '/../og.php'), 0, 8);
 
 $breadcrumbs = [
     ['name' => t('site.name'), 'url' => $siteUrl . $baseUrl . I18n::url('/')],

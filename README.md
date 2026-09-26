@@ -1,4 +1,4 @@
-# Chess Codex
+# Caissa Codex
 
 A free, ad-free encyclopedia of every named chess opening — 3,690 lines from the
 [Lichess `chess-openings` dataset](https://github.com/lichess-org/chess-openings),

@@ -103,6 +103,6 @@ ob_start();
 </div>
 <?php
 $body = ob_get_clean();
-$title = 'Review submission · Chess Codex';
+$title = 'Review submission · Caissa Codex';
 $noindex = true;
 require __DIR__ . '/layout.php';

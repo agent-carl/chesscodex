@@ -6,18 +6,22 @@ ob_start();
 ?>
 <article class="about-page">
     <header class="about-header">
-        <h1>About Chess Codex</h1>
+        <h1>About Caissa Codex</h1>
         <p class="lede">A free, open encyclopedia of every named chess opening — built as a side project, no ads, no signup.</p>
     </header>
 
     <section class="about-section">
         <h2>Who made this</h2>
         <p>
-            I'm a high school student in Norway. I built Chess Codex in my spare time because
+            I'm a high school student in Norway. I built Caissa Codex in my spare time because
             I wanted a single reference that combined what I liked from Lichess's opening explorer
             (live statistics) and an encyclopedia-style site (one page per named opening with
             interactive board, theory, and analysis) — without ads, paywalls, or accounts in
             the way.
+        </p>
+        <p>
+            The name comes from Caissa, the goddess of chess, and a codex — a handwritten
+            book. The site lives at chesscodex.org.
         </p>
         <p>
             It's a hobby project. I'm still learning. If something feels rough — it probably
@@ -116,15 +120,15 @@ ob_start();
 </article>
 <?php
 $body = ob_get_clean();
-$title = 'About · Chess Codex';
-$description = 'About Chess Codex — a free, ad-free encyclopedia of 3,690 chess openings, built as a hobby project by a high school student in Norway.';
+$title = 'About · Caissa Codex';
+$description = 'About Caissa Codex — a free, ad-free encyclopedia of 3,690 chess openings, built as a hobby project by a high school student in Norway.';
 $canonical = $siteUrl . $baseUrl . I18n::url('/about');
 $jsonLd = [
     '@context' => 'https://schema.org',
     '@graph'   => [
         [
             '@type' => 'AboutPage',
-            'name'  => 'About Chess Codex',
+            'name'  => 'About Caissa Codex',
             'url'   => $canonical,
             'description' => $description,
             'inLanguage'  => I18n::locale(),

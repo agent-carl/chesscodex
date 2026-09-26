@@ -202,6 +202,6 @@ ob_start();
 <script defer src="<?= $baseEsc ?>/public/admin.min.js?v=<?= @filemtime(__DIR__ . '/../public/admin.min.js') ?: 1 ?>"></script>
 <?php
 $body = ob_get_clean();
-$title = 'Admin dashboard · Chess Codex';
+$title = 'Admin dashboard · Caissa Codex';
 $noindex = true;
 require __DIR__ . '/layout.php';

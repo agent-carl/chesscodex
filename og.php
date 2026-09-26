@@ -8,9 +8,10 @@ declare(strict_types=1);
  *   /og.php?slug=<slug> → opening-specific card with ECO + name
  *
  * Cached on disk (db/og_cache/) for 30 days per slug so repeated crawler
- * hits don't burn GD time. Cache is invalidated by ?v=<filemtime> in the
- * og:image URL (set by layout.php), so editing this file or the underlying
- * opening data shows up after the next page load.
+ * hits don't burn GD time. A card older than this file is redrawn, and the
+ * og:image URL carries ?v=<hash of this file> (layout.php, opening.php), so
+ * after an edit Cloudflare and social sites fetch the new card instead of
+ * the one they keep for 30 days.
  *
  * Requires PHP GD with PNG + TTF support. OVH shared hosting ships both.
  */
@@ -48,7 +49,8 @@ $cacheKey  = $validatedSlug !== '' ? $validatedSlug : '__site__';
 $cachePath = $cacheDir . '/' . $cacheKey . '.png';
 // Defensive: only treat the cached file as a hit if it's non-trivially sized.
 // A 0-byte file means a previous write was interrupted — better regenerate.
-if (is_file($cachePath) && filesize($cachePath) > 1024 && (time() - filemtime($cachePath)) < 2592000) {
+if (is_file($cachePath) && filesize($cachePath) > 1024 && (time() - filemtime($cachePath)) < 2592000
+    && filemtime($cachePath) >= filemtime(__FILE__)) {
     header('X-Cache: HIT');
     readfile($cachePath);
     exit;
@@ -100,16 +102,16 @@ if ($slug !== '') {
     if ($row) {
         $eco   = (string) $row['eco'];
         $title = (string) $row['name'];
-        $sub   = 'Chess Codex · interactive openings';
+        $sub   = 'Caissa Codex · chesscodex.org';
     } else {
         $eco   = '';
-        $title = 'Chess Codex';
-        $sub   = 'Interactive chess openings encyclopedia';
+        $title = 'Caissa Codex';
+        $sub   = 'Chess openings encyclopedia · chesscodex.org';
     }
 } else {
     $eco   = '';
-    $title = 'Chess Codex';
-    $sub   = 'Interactive chess openings encyclopedia';
+    $title = 'Caissa Codex';
+    $sub   = 'Chess openings encyclopedia · chesscodex.org';
 }
 
 $padL = 80;

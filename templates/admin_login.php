@@ -24,6 +24,6 @@ ob_start();
 </div>
 <?php
 $body = ob_get_clean();
-$title = 'Admin login · Chess Codex';
+$title = 'Admin login · Caissa Codex';
 $noindex = true;
 require __DIR__ . '/layout.php';
