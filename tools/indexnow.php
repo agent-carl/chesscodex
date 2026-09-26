@@ -95,7 +95,7 @@ $meaning = [
     200 => 'accepted',
     202 => 'received, the key is still being validated',
     400 => 'bad request',
-    403 => 'key not valid — key file missing or different',
+    403 => 'key not valid — key file missing or different (a brand-new key was refused once: send one URL, wait a minute, retry)',
     422 => "URLs don't belong to the host, or the key doesn't match",
     429 => 'too many requests — try again later',
 ];
