@@ -1,5 +1,5 @@
 <?php
-/** @var array  $codes  Opening::ecoCodes(): code => [count, label, slug] */
+/** @var array  $codes  Opening::ecoCodes(): code => [count, label, slug, moves] */
 /** @var string $baseUrl */
 /** @var string $siteUrl */
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
@@ -29,17 +29,20 @@ ob_start();
             <h2><?= $vol ?> · <?= $esc(t('group.' . $vol)) ?>
                 <span class="openings-letter-count"><?= $vol ?>00–<?= $vol ?>99</span>
             </h2>
-            <ul class="openings-letter-list">
+            <ul class="openings-letter-list eco-code-list">
                 <?php for ($i = 0; $i < 100; $i++):
                     $code = sprintf('%s%02d', $vol, $i);
                     $c = $codes[$code] ?? null;
                 ?>
                     <li>
                         <?php if ($c): ?>
+                        <?php /* The moves tell apart the codes that share a name (A13–A39 are all "English Opening"). */ ?>
                         <a href="<?= $baseEsc . $esc(I18n::url('/eco/' . $code)) ?>">
                             <span class="eco-tag"><?= $code ?></span>
-                            <span class="openings-letter-name"><?= $esc($c['label']) ?></span>
-                            <span class="openings-letter-plies"><?= $c['count'] === 1 ? '1 line' : $c['count'] . ' lines' ?></span>
+                            <span class="eco-code-text">
+                                <span class="openings-letter-name"><?= $esc($c['label']) ?></span>
+                                <span class="eco-code-meta"><code><?= $esc($c['moves'] ?? '') ?></code> · <?= $c['count'] === 1 ? '1 line' : $c['count'] . ' lines' ?></span>
+                            </span>
                         </a>
                         <?php else: ?>
                         <span class="eco-tag"><?= $code ?></span>

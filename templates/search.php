@@ -8,62 +8,26 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
     <header class="search-header">
         <h1><?= htmlspecialchars(t('search.h1'), ENT_QUOTES, 'UTF-8') ?></h1>
         <p class="lede"><?= htmlspecialchars(t('search.lede'), ENT_QUOTES, 'UTF-8') ?></p>
-
-        <details class="search-fen search-paste" open>
-            <summary>
-                <span class="search-fen-icon" aria-hidden="true">&#9998;</span>
-                <span class="search-fen-label"><?= htmlspecialchars(t('search.paste.label'), ENT_QUOTES, 'UTF-8') ?></span>
-                <span class="search-fen-chevron" aria-hidden="true">&#8250;</span>
-            </summary>
-            <div class="search-fen-body">
-                <p class="search-fen-hint"><?= htmlspecialchars(t('search.paste.hint'), ENT_QUOTES, 'UTF-8') ?></p>
-                <form id="search-paste-form" autocomplete="off">
-                    <textarea id="search-paste-input" rows="2" spellcheck="false"
-                              aria-label="<?= htmlspecialchars(t('search.paste.label'), ENT_QUOTES, 'UTF-8') ?>"
-                              placeholder="1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6"></textarea>
-                    <button type="submit">
-                        <span aria-hidden="true">&#128269;</span>
-                        <span><?= htmlspecialchars(t('search.paste.find'), ENT_QUOTES, 'UTF-8') ?></span>
-                    </button>
-                </form>
-                <p class="search-paste-status" id="search-paste-status" aria-live="polite" hidden></p>
-            </div>
-        </details>
-
-        <div class="search-by-name">
-            <label for="search-name-input" class="search-by-name-label">Search by name</label>
-            <div class="search-by-name-field">
-                <input type="search" id="search-name-input"
-                       placeholder="Najdorf, Ruy Lopez, Queen's Gambit…"
-                       autocomplete="off" spellcheck="false"
-                       aria-controls="search-name-results"
-                       aria-autocomplete="list">
-                <span class="search-by-name-icon" aria-hidden="true">&#128269;</span>
-            </div>
-            <ul class="search-by-name-results" id="search-name-results" hidden role="listbox"></ul>
-        </div>
-
-        <details class="search-fen">
-            <summary>
-                <span class="search-fen-icon" aria-hidden="true">&#9812;</span>
-                <span class="search-fen-label"><?= htmlspecialchars(t('search.fen.label'), ENT_QUOTES, 'UTF-8') ?></span>
-                <span class="search-fen-chevron" aria-hidden="true">&#8250;</span>
-            </summary>
-            <div class="search-fen-body">
-                <p class="search-fen-hint"><?= htmlspecialchars(t('search.fen.hint'), ENT_QUOTES, 'UTF-8') ?></p>
-                <form id="search-fen-form" autocomplete="off">
-                    <input type="text" id="search-fen-input"
-                        placeholder="rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2"
-                        aria-label="FEN string"
-                        spellcheck="false">
-                    <button type="submit">
-                        <span aria-hidden="true">&#128269;</span>
-                        <span><?= htmlspecialchars(t('search.fen.find'), ENT_QUOTES, 'UTF-8') ?></span>
-                    </button>
-                </form>
-            </div>
-        </details>
+        <?php
+        $nameSearchId = 'search-name';
+        $nameSearchLabel = 'By name or ECO code';
+        require __DIR__ . '/partials/name_search.php';
+        ?>
     </header>
+
+    <section class="search-fen search-paste" aria-labelledby="search-paste-title">
+        <div class="search-fen-body">
+            <h2 class="search-paste-title" id="search-paste-title"><?= htmlspecialchars(t('search.paste.label'), ENT_QUOTES, 'UTF-8') ?></h2>
+            <p class="search-fen-hint"><?= htmlspecialchars(t('search.paste.hint'), ENT_QUOTES, 'UTF-8') ?></p>
+            <form id="search-paste-form" autocomplete="off">
+                <textarea id="search-paste-input" rows="2" spellcheck="false"
+                          aria-labelledby="search-paste-title"
+                          placeholder="1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6"></textarea>
+                <button type="submit"><?= htmlspecialchars(t('search.paste.find'), ENT_QUOTES, 'UTF-8') ?></button>
+            </form>
+            <p class="search-paste-status" id="search-paste-status" aria-live="polite" hidden></p>
+        </div>
+    </section>
 
     <div class="search-grid">
         <div class="search-board-wrap">
@@ -100,6 +64,23 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
         </aside>
     </div>
 
+    <details class="search-fen">
+        <summary>
+            <span class="search-fen-label"><?= htmlspecialchars(t('search.fen.label'), ENT_QUOTES, 'UTF-8') ?></span>
+            <span class="search-fen-chevron" aria-hidden="true">&#8250;</span>
+        </summary>
+        <div class="search-fen-body">
+            <p class="search-fen-hint"><?= htmlspecialchars(t('search.fen.hint'), ENT_QUOTES, 'UTF-8') ?></p>
+            <form id="search-fen-form" autocomplete="off">
+                <input type="text" id="search-fen-input"
+                    placeholder="rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2"
+                    aria-label="FEN string"
+                    spellcheck="false">
+                <button type="submit"><?= htmlspecialchars(t('search.fen.find'), ENT_QUOTES, 'UTF-8') ?></button>
+            </form>
+        </div>
+    </details>
+
     <?php
     // Worked examples: the moves open this page with them filled in, the name
     // goes straight to the opening.
@@ -123,7 +104,9 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
             Different move orders can reach the same position. Search by FEN to list every named
             line that arrives at a position, whatever the order of moves; the move counters and the
             en-passant field are ignored. The name search matches parts of names, with or without
-            accents (<em>najdorf</em>, <em>grunfeld</em>), and ECO codes such as <em>B20</em>.
+            accents and apostrophes (<em>najdorf</em>, <em>grunfeld</em>, <em>kings indian</em>), forgives
+            a typo, knows short names such as <em>QGD</em> and <em>KID</em>, and takes ECO codes such as
+            <em>B20</em>.
         </p>
         <h2>Examples</h2>
         <ul class="search-examples">

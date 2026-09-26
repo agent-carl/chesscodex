@@ -20,7 +20,7 @@ ob_start();
 <article class="train">
     <header class="play-header">
         <span class="eco-tag"><?= $esc($o['eco']) ?></span>
-        <h1>Practise: <?= $esc($o['name']) ?></h1>
+        <h1>Practice: <?= $esc($o['name']) ?></h1>
         <p class="parent-link">
             <a href="<?= $baseEsc . $esc(I18n::url('/openings/' . $o['slug'])) ?>">← Back to the opening</a>
             · <a href="<?= $baseEsc . $esc(I18n::url('/repertoire')) ?>">My repertoire</a>
@@ -62,7 +62,7 @@ ob_start();
 <?php
 $body       = ob_get_clean();
 $needsBoard = true;
-$title      = 'Practise ' . $o['name'] . ' · Caissa Codex';
-$description = 'Practise the ' . $o['name'] . ' move by move, with review on a schedule.';
+$title      = 'Practice ' . $o['name'] . ' · Caissa Codex';
+$description = 'Practice the ' . $o['name'] . ' move by move, with review on a schedule.';
 $noindex    = true;
 require __DIR__ . '/layout.php';

@@ -28,6 +28,9 @@ tar --exclude=.git --exclude=.dev --exclude=.claude --exclude=deploy --exclude=d
     --exclude=db/cache --exclude=db/og_cache --exclude=db/log --exclude=db/sitemap_cache.xml \
     -cf - . | tar -C "$DEV" -xf -
 mkdir -p "$DEV/db/cache" "$DEV/db/og_cache" "$DEV/db/log"
+# og.php redraws a card older than its own ctime, but on Windows that is the
+# creation time, which an overwrite keeps: drop the drawn cards instead.
+rm -f "$DEV"/db/og_cache/*.png
 
 if [ ! -f "$DEV/db/chesscodex.sqlite" ]; then
     gzip -dc "$(ls -1t backups/chesscodex-*.sqlite.gz | head -n1)" > "$DEV/db/chesscodex.sqlite"

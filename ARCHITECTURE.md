@@ -52,16 +52,31 @@ The opening page is the most complex template. Order of operations:
    - `Views::track('opening', $id)` — fire-and-forget visit counter
 
 2. **templates/opening.php** assembles the article HTML:
-   - Tree path collapsible (uses `$ancestors`)
-   - Share / Tools row (Copy PGN, Copy FEN, Open in Lichess)
-   - Board + move-list aside (mounted by `public/app.js`)
-   - Overview section (auto-generated if `$o['description']` is empty)
-   - Stats panel (`<p data-state="loading">` → JS fills from `/api/stats`)
-   - Description (Parsedown, safe mode, with auto-TOC for ≥ 3 headings)
-   - Children list, Related (siblings), Subtree (`<details>`)
+   - Breadcrumb from `$ancestors` (each name once, shortened by the one before)
+   - Board with Start / ‹ / › / Flip; beside it the moves and the actions:
+     Play vs Stockfish, Practice, "My repertoire: + White / + Black", and the
+     "Copy & export" menu (Copy PGN / FEN / link, Share, PGN download, Lichess)
+   - Overview section (auto-generated if `$o['description']` is empty), with
+     the one suggest form: a description, or a problem report (stored with
+     `Submissions::REPORT_MARK`, never published)
+   - Stats panel: printed from the cache; each next move is a button that
+     shows it on the board and links the named line it reaches
+   - By rating / master games (`LevelStats`), Description (Parsedown, safe
+     mode, auto-TOC for ≥ 3 headings)
+   - Variations and "Other lines from the same position" (siblings), named
+     by what they add to the name above and the moves that lead there;
+     Transpositions; Subtree (`<details>`); Recently viewed at the end
 
 3. **public/app.js** mounts chessground on the board, replays the PGN move-by-move
-   to populate the move-list buttons, and fires the stats fetch.
+   to populate the move list (one `<li>` per full move), and fires the stats
+   fetch when the printed numbers are missing or old.
+
+Every page also loads **public/site.js** (deferred): the name search with
+suggestions (`templates/partials/name_search.php`, on the home page, /search
+and the 404 page) and the "/" and Ctrl/Cmd+K shortcuts. The ranking behind
+the suggestions is `Opening::rankByName()` — apostrophes and accents ignored,
+one typo forgiven, short names like QGD and KID known — over all names,
+cached on disk.
 
 ## Database schema
 

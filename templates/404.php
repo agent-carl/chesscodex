@@ -8,7 +8,7 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 ob_start();
 ?>
 <article class="error-page">
-    <div class="error-page-icon" aria-hidden="true">&#9818;</div>
+    <div class="error-page-icon" aria-hidden="true">&#9818;&#xFE0E;</div>
     <h1>Page not found</h1>
 
     <?php if ($failedSlug !== ''): ?>
@@ -38,13 +38,20 @@ ob_start();
         </section>
     <?php endif; ?>
 
+    <form class="error-search" action="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>" method="get" role="search">
+        <?php
+        $nameSearchId = 'error-search';
+        $nameSearchLabel = 'Search for an opening';
+        require __DIR__ . '/partials/name_search.php';
+        ?>
+    </form>
+
     <section class="error-actions">
-        <h2>Where to next</h2>
+        <h2>Or go to</h2>
         <p>
-            <a class="board-cta" href="<?= $baseEsc . htmlspecialchars(I18n::url('/'), ENT_QUOTES, 'UTF-8') ?>">← Back to home</a>
-            <a class="board-cta error-action-secondary" href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings'), ENT_QUOTES, 'UTF-8') ?>">Browse all openings A–Z</a>
-            <a class="board-cta error-action-secondary" href="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>">Search by moves or name</a>
-            <a class="board-cta error-action-secondary" href="<?= $baseEsc . htmlspecialchars(I18n::url('/random'), ENT_QUOTES, 'UTF-8') ?>" rel="nofollow">Try a random opening</a>
+            <a class="board-cta" href="<?= $baseEsc . htmlspecialchars(I18n::url('/'), ENT_QUOTES, 'UTF-8') ?>">Home page</a>
+            <a class="board-cta error-action-secondary" href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings'), ENT_QUOTES, 'UTF-8') ?>">All openings A–Z</a>
+            <a class="board-cta error-action-secondary" href="<?= $baseEsc . htmlspecialchars(I18n::url('/random'), ENT_QUOTES, 'UTF-8') ?>" rel="nofollow">A random opening</a>
         </p>
     </section>
 </article>

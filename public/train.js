@@ -87,7 +87,9 @@ if (node) {
             lastMove: last ? [last.from, last.to] : undefined,
             movable: { color: mine ? color : undefined, dests: mine ? dests() : new Map() },
         });
-        $('train-progress').textContent = sans.length ? `Move ${Math.min(ply, sans.length)} of ${sans.length}` : '';
+        // Full moves, like "3 moves" on the opening page (sans counts plies).
+        $('train-progress').textContent = sans.length
+            ? `Move ${Math.ceil(Math.min(ply, sans.length) / 2)} of ${Math.ceil(sans.length / 2)}` : '';
     }
 
     function start(previous) {

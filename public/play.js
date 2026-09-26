@@ -11,9 +11,12 @@ if (dataNode) {
     const startFen = opening.fen();
     const startSide = startFen.split(' ')[1] === 'w' ? 'white' : 'black';
 
-    // The user plays whichever side is to move in the opening's final
-    // position (by default — they can flip with the button).
-    let userColor = startSide;
+    // By default the user plays the side whose opening it is — the one that
+    // made its last move (White in the Italian, Black in the Najdorf), the
+    // same side "+ Repertoire" suggests; Stockfish replies first. "Play as"
+    // and Flip switch sides.
+    const ownSide = opening.history().length === 0 || startSide === 'black' ? 'white' : 'black';
+    let userColor = ownSide;
 
     const chess = new Chess();
     chess.load(startFen);
@@ -270,7 +273,7 @@ if (dataNode) {
     // ---------------- UI rendering -------------------------------------------
     const statusEl = document.getElementById('play-status');
     const stateEl = statusEl.querySelector('.play-engine-state');
-    const evalEl = statusEl.querySelector('.play-eval');
+    const evalEl = document.querySelector('#play-game .play-eval');
     const turnEl = document.querySelector('.play-turn');
     const resultEl = document.querySelector('.play-result');
     const movesEl = document.getElementById('play-moves');
@@ -296,9 +299,10 @@ if (dataNode) {
     }
 
     function renderTurn(side) {
+        const name = side === 'white' ? 'White' : 'Black';
         turnEl.textContent = side === userColor
-            ? 'Your move (' + side + ').'
-            : 'Stockfish to move (' + side + ').';
+            ? 'Your move (' + name + ').'
+            : 'Stockfish to move (' + name + ').';
     }
 
     function renderMoveList() {

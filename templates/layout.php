@@ -171,6 +171,8 @@ CSS;
     <?php /* Blocking on purpose: applies the saved theme before the first paint.
              An external file, not inline, so the CSP can forbid inline scripts. */ ?>
     <script src="<?= $asset('/public/theme.min.js') ?>" data-base="<?= $baseEsc ?>"></script>
+    <?php /* Name search suggestions and the "/" shortcut, on every page. */ ?>
+    <script defer src="<?= $asset('/public/site.min.js') ?>" data-base="<?= $baseEsc ?>"></script>
     <?php /* Render-blocking on purpose: loading it async let the page paint with
              only the critical CSS and then reflow (PageSpeed CLS 0.72 on mobile).
              It's ~12 KB brotli from Cloudflare's cache. */ ?>
@@ -229,13 +231,14 @@ CSS;
                 <a href="<?= $baseEsc . $esc(I18n::url('/openings')) ?>"<?= $navAria('/openings') ?>>Openings</a>
                 <a href="<?= $baseEsc . $esc(I18n::url('/eco')) ?>" title="Openings by ECO code"<?= $navAria('/eco') ?>>ECO</a>
                 <a href="<?= $baseEsc . $esc(I18n::url('/rankings')) ?>"<?= $navAria('/rankings') ?>>Rankings</a>
-                <a href="<?= $baseEsc . $esc(I18n::url('/search')) ?>" title="Press / from anywhere to focus search"<?= $navAria('/search') ?>>
+                <a href="<?= $baseEsc . $esc(I18n::url('/search')) ?>" title="Press / on any page to search"<?= $navAria('/search') ?>>
                     <?= $esc(t('nav.search')) ?>
                     <kbd class="kbd-hint" aria-hidden="true">/</kbd>
                 </a>
-                <a href="<?= $baseEsc . $esc(I18n::url('/random')) ?>" title="Jump to a random opening" rel="nofollow">
+                <a class="nav-random" href="<?= $baseEsc . $esc(I18n::url('/random')) ?>" title="Jump to a random opening" rel="nofollow">
                     Random
                 </a>
+                <a href="<?= $baseEsc . $esc(I18n::url('/repertoire')) ?>" title="The lines you saved, to drill and download" rel="nofollow"<?= $navAria('/repertoire') ?>>Repertoire</a>
                 <?php if ($adminPending !== null): ?>
                 <a class="admin-link" href="<?= $baseEsc ?>/admin">
                     Admin

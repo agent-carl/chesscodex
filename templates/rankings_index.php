@@ -10,24 +10,22 @@ ob_start();
         <h1>Chess opening rankings</h1>
         <p class="lede">Rankings built from rated Lichess games between players rated 1600 to 2500: which lines score best for each side, which are played most, and the most-played gambits.</p>
     </header>
-    <ul class="home-popular-list">
-        <?php foreach (Rankings::LABELS as $path => $label): ?>
-            <li>
-                <a href="<?= $baseEsc . $esc(I18n::url('/' . $path)) ?>">
-                    <span class="home-popular-name"><strong><?= $esc($label) ?></strong><br>
-                        <small><?= $esc(Rankings::BLURBS[$path]) ?></small></span>
-                </a>
+    <ul class="rankings-cards">
+        <?php foreach (Rankings::LABELS as $path => $label):
+            $side = preg_match('/^best-openings-for-(white|black)$/', $path, $m) ? $m[1] : null; ?>
+            <li class="rankings-card">
+                <a class="rankings-card-title" href="<?= $baseEsc . $esc(I18n::url('/' . $path)) ?>"><?= $esc($label) ?> →</a>
+                <p><?= $esc(Rankings::BLURBS[$path]) ?></p>
+                <?php if ($side): ?>
+                    <p class="rankings-card-levels"><span>By level:</span>
+                        <?php foreach (LevelStats::LEVELS as $key => $l): ?>
+                            <a href="<?= $baseEsc . $esc(I18n::url('/best-openings-for-' . $side . '/' . $key)) ?>"><?= $esc($l['label']) ?></a>
+                        <?php endforeach; ?>
+                    </p>
+                <?php endif; ?>
             </li>
         <?php endforeach; ?>
     </ul>
-    <?php foreach (['white' => 'White', 'black' => 'Black'] as $side => $Side): ?>
-        <p class="ranking-nav">
-            <span>Best for <?= $Side ?>, by level:</span>
-            <?php foreach (LevelStats::LEVELS as $key => $l): ?>
-                <a href="<?= $baseEsc . $esc(I18n::url('/best-openings-for-' . $side . '/' . $key)) ?>"><?= $esc($l['label']) ?></a>
-            <?php endforeach; ?>
-        </p>
-    <?php endforeach; ?>
 </article>
 <?php
 $body        = ob_get_clean();
