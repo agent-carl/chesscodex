@@ -120,7 +120,7 @@ ob_start();
 </article>
 <?php
 $body = ob_get_clean();
-$title = 'About · Caissa Codex';
+$title = 'About Caissa Codex — a Free Chess Openings Encyclopedia';
 $description = 'About Caissa Codex — a free, ad-free encyclopedia of 3,690 chess openings, built as a hobby project by a high school student in Norway.';
 $canonical = $siteUrl . $baseUrl . I18n::url('/about');
 $jsonLd = [

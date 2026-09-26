@@ -280,6 +280,24 @@ CSS;
             $codexVersion = is_file($vfile) ? trim((string) @file_get_contents($vfile)) : '';
         }
         ?>
+        <?php
+        // The most searched openings and the rankings, linked from every page:
+        // crawlers of a new site otherwise reach them only through the home page.
+        try { $footerOpenings = Opening::topPopular(12); } catch (Throwable $e) { $footerOpenings = []; }
+        ?>
+        <?php if ($footerOpenings): ?>
+        <nav class="footer-links" aria-label="Popular openings and rankings">
+            <p><span class="footer-links-label">Popular openings:</span>
+                <?php foreach ($footerOpenings as $i => $fo): ?><?= $i > 0 ? ' · ' : '' ?><a href="<?= $baseEsc . $esc(I18n::url('/openings/' . $fo['slug'])) ?>"><?= $esc($fo['name']) ?></a><?php endforeach; ?>
+            </p>
+            <p><span class="footer-links-label">Browse:</span>
+                <a href="<?= $baseEsc . $esc(I18n::url('/openings')) ?>">All openings A–Z</a> ·
+                <a href="<?= $baseEsc . $esc(I18n::url('/eco')) ?>">ECO codes</a> ·
+                <?php foreach (Rankings::LABELS as $fPath => $fLabel): ?><a href="<?= $baseEsc . $esc(I18n::url('/' . $fPath)) ?>"><?= $esc($fLabel) ?></a> · <?php endforeach; ?>
+                <a href="<?= $baseEsc . $esc(I18n::url('/search')) ?>">Opening identifier</a>
+            </p>
+        </nav>
+        <?php endif; ?>
         <small><?= t('footer.data') ?></small><br>
         <small style="color:var(--muted)">
             <a href="<?= $baseEsc ?>/about">About</a> ·

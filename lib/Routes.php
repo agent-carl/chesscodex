@@ -62,8 +62,9 @@ final class Routes
         }
 
         require_once __DIR__ . '/db.php';
+        // Not the thin lines (noindex on their pages, see Opening::isThin).
         $stmt = chess_codex_db()->query(
-            "SELECT slug FROM codex_openings ORDER BY move_count ASC, id"
+            "SELECT slug, name, popularity FROM codex_openings ORDER BY move_count ASC, id"
         );
         $base   = $siteUrl . $baseUrl;
         $escUrl = static fn (string $u): string => htmlspecialchars($u, ENT_QUOTES | ENT_XML1, 'UTF-8');
@@ -71,14 +72,17 @@ final class Routes
         // No <changefreq> or <priority>: Google ignores them. <lastmod> only
         // where it's accurate — stamping today's date on every URL every day
         // taught search engines to ignore it. (English-only — no hreflang.)
-        $row = static fn (string $loc, ?string $lastmod = null): string => '  <url><loc>' . $escUrl($loc) . '</loc>'
-            . ($lastmod ? '<lastmod>' . $lastmod . '</lastmod>' : '') . "</url>\n";
+        // $image: the page's position diagram, for Google Images.
+        $row = static fn (string $loc, ?string $lastmod = null, ?string $image = null): string => '  <url><loc>' . $escUrl($loc) . '</loc>'
+            . ($lastmod ? '<lastmod>' . $lastmod . '</lastmod>' : '')
+            . ($image ? '<image:image><image:loc>' . $escUrl($image) . '</image:loc></image:image>' : '') . "</url>\n";
         // Opening pages change when their Lichess numbers are refreshed, so
         // that date is their <lastmod>; the other pages carry none.
         $updated = array_column(Rankings::all(), 'updated', 'slug');
 
         $xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+              . ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">' . "\n";
         $xml .= $row($base . '/');
         $xml .= $row($base . '/openings');
         $xml .= $row($base . '/search');   // the opening identifier
@@ -96,7 +100,8 @@ final class Routes
             if ($c['count'] > 1) $xml .= $row($base . '/eco/' . $code);   // single-line codes are noindex
         }
         foreach ($stmt as $r) {
-            $xml .= $row($base . '/openings/' . $r['slug'], $updated[$r['slug']] ?? null);
+            if (Opening::isThin($r)) continue;
+            $xml .= $row($base . '/openings/' . $r['slug'], $updated[$r['slug']] ?? null, $base . Opening::diagramPath((string) $r['slug']));
         }
         $xml .= '</urlset>' . "\n";
 
