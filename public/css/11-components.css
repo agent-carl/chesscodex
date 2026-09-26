@@ -1,0 +1,473 @@
+/* =============================================================================
+   404 / error page
+   ========================================================================== */
+.error-page {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: var(--space-5);
+}
+.error-page-icon {
+    font-size: 4.5rem;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.6;
+    margin-bottom: var(--space-3);
+}
+.error-page h1 {
+    font-size: 1.85rem;
+    margin-bottom: var(--space-3);
+}
+.error-page .lede {
+    color: var(--muted);
+    margin: 0 auto var(--space-5);
+    font-size: 1rem;
+}
+.error-page code {
+    background: var(--bg-subtle);
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.92em;
+    color: var(--fg);
+}
+.error-suggestions {
+    margin: var(--space-6) 0;
+    text-align: left;
+}
+.error-suggestions h2 {
+    font-size: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+.error-actions {
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+}
+.error-actions h2 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+.error-actions p {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0;
+}
+.error-action-secondary {
+    background: var(--bg-elevated) !important;
+    color: var(--fg) !important;
+    border: 1px solid var(--border) !important;
+}
+.error-action-secondary:hover {
+    border-color: var(--accent) !important;
+    background: var(--accent-soft) !important;
+    color: var(--accent) !important;
+}
+
+/* =============================================================================
+   Keyboard shortcut hint — small kbd-style chip next to the search nav link
+   ========================================================================== */
+.kbd-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.05rem 0.35rem;
+    margin-left: 0.3rem;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+@media (max-width: 768px) {
+    .kbd-hint { display: none; }   /* Mobile has no physical keyboard */
+}
+
+/* =============================================================================
+   Final cleanup: drop selectors that referenced removed Bookmarks classes.
+   Browsers ignore unknown selectors fine, but they bloat the CSS and confuse
+   future devtools-driven debugging. (CSS doesn't have "remove" syntax —
+   these are just here as documentation of the cleanup decision.)
+   ========================================================================== */
+
+/* =============================================================================
+   Polished hover on home featured card — subtler scale instead of pop-out
+   ========================================================================== */
+.home-featured-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(42, 93, 143, 0.15);
+}
+
+/* =============================================================================
+   Subtler scroll behavior — smooth scroll for in-page anchor navigation
+   (Tree path links, suggestion form anchor, etc). Respects reduce-motion.
+   ========================================================================== */
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+}
+
+/* =============================================================================
+   Better visual rhythm for opening-related (siblings) — denser grid on wide
+   screens because there can be many siblings, but breathe on mobile.
+   ========================================================================== */
+@media (min-width: 1024px) {
+    .opening-related-list { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+}
+
+/* =============================================================================
+   Stats panel "no games found" — friendlier empty state
+   ========================================================================== */
+.stats-status[data-state="empty"] {
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-subtle);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--muted);
+    font-style: italic;
+    text-align: center;
+}
+
+/* =============================================================================
+   Opening tools row — Copy FEN, Copy PGN, Open in Lichess, Embed snippet.
+   Sits above the share row on the opening page header.
+   ========================================================================== */
+.opening-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: var(--space-3);
+    font-size: 0.85rem;
+}
+.opening-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--fg-soft);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color .15s, color .15s, background .15s;
+}
+.opening-tool-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    text-decoration: none;
+}
+.opening-tool-btn:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+.opening-tool-btn.is-copied {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.opening-tool-btn-summary {
+    list-style: none;
+}
+.opening-tool-btn-summary::-webkit-details-marker { display: none; }
+
+/* =============================================================================
+   Back-to-top floating button — bottom-right, slides in on scroll
+   ========================================================================== */
+.back-to-top {
+    position: fixed;
+    right: var(--space-4);
+    bottom: var(--space-4);
+    z-index: 20;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18), 0 2px 4px rgba(42, 93, 143, 0.25);
+    cursor: pointer;
+    font-size: 1.4rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9;
+    transition: opacity .15s, transform .15s var(--ease-out), background .15s;
+}
+.back-to-top:hover {
+    background: var(--accent-hover);
+    opacity: 1;
+    transform: translateY(-2px);
+}
+.back-to-top[hidden] {
+    display: none;          /* `hidden` attr might be overridden by flex */
+}
+
+@media (max-width: 540px) {
+    .back-to-top {
+        right: var(--space-3);
+        bottom: var(--space-3);
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1.2rem;
+    }
+}
+
+/* Suppress when print — never need a floating UI button on paper. */
+@media print {
+    .back-to-top { display: none !important; }
+    .opening-tools { display: none !important; }
+}
+
+/* =============================================================================
+   Toast notification region — bottom-center floating bar. Used by Toast.show()
+   in app.js for clipboard success / error feedback. Stacks if multiple at once.
+   ========================================================================== */
+.toast-region {
+    position: fixed;
+    left: 50%;
+    bottom: var(--space-5);
+    transform: translateX(-50%);
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    pointer-events: none;
+}
+.toast {
+    pointer-events: auto;
+    padding: 0.55rem 1.1rem;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: var(--radius);
+    font-size: 0.92rem;
+    font-weight: 500;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .18s var(--ease-out), transform .18s var(--ease-out);
+    max-width: 90vw;
+}
+.toast.is-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+.toast-error {
+    background: var(--danger);
+    color: #fff;
+}
+[data-theme="dark"] .toast {
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border: 1px solid var(--border-strong);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+@media (prefers-reduced-motion: reduce) {
+    .toast { transition: opacity .12s; transform: none; }
+    .toast.is-in { transform: none; }
+}
+@media print { .toast-region { display: none !important; } }
+
+/* =============================================================================
+   Visited opening links — subtle indicator so users track what they've read
+   ========================================================================== */
+.child-list a:visited .child-list-name,
+.openings-letter-list a:visited .openings-letter-name,
+.home-popular-list a:visited .home-popular-name,
+.opening-related-list a:visited .child-list-name {
+    color: var(--muted);
+}
+.child-list a:visited::after,
+.openings-letter-list a:visited::after,
+.home-popular-list a:visited::after {
+    content: ' ✓';
+    color: var(--accent);
+    opacity: 0.6;
+    font-size: 0.8em;
+    margin-left: auto;
+    padding-left: 0.3rem;
+    flex-shrink: 0;
+}
+
+/* =============================================================================
+   Print-only canonical URL banner. Shows the URL where the page lives,
+   so a printed PDF or paper reference points back to the source.
+   ========================================================================== */
+.print-only { display: none; }
+@media print {
+    .print-only { display: block; }
+    .print-canonical {
+        position: fixed;
+        top: 0.4cm;
+        right: 0.4cm;
+        font-size: 9pt;
+        color: #666;
+        font-family: ui-monospace, monospace;
+        margin: 0;
+    }
+}
+
+/* =============================================================================
+   Better focus-visible on details summary + smoother open animation feel
+   (browser controls the actual open, but we can ease in the contents).
+   ========================================================================== */
+details > summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+details[open] > :not(summary) {
+    animation: codex-detail-in .18s var(--ease-out);
+}
+@keyframes codex-detail-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    details[open] > :not(summary) { animation: none; }
+}
+
+/* =============================================================================
+   Custom tooltip — CSS-only, attaches to any element with [data-tip="..."].
+   Replaces native browser title= UX which is laggy and ugly in dark mode.
+   To use:  <button data-tip="Copy the FEN">…</button>
+   The native title= attribute should be REMOVED on the same element to
+   avoid double tooltips; existing code keeps title= as a fallback for
+   screen readers and assistive tech, but visually the CSS one shows.
+   ========================================================================== */
+[data-tip] { position: relative; }
+[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    padding: 0.3rem 0.55rem;
+    background: var(--fg);
+    color: var(--bg);
+    font-size: 0.78rem;
+    line-height: 1.3;
+    font-weight: 400;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    max-width: 240px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .12s var(--ease-out), transform .12s var(--ease-out);
+    z-index: 30;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+[data-tip]:hover::after,
+[data-tip]:focus-visible::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+[data-theme="dark"] [data-tip]::after {
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border: 1px solid var(--border-strong);
+}
+/* Tooltips that need a wider target — multi-line text — use data-tip-wide. */
+[data-tip-wide]::after {
+    white-space: normal;
+    width: 220px;
+}
+@media (max-width: 540px) {
+    /* Tap-to-show tooltips on mobile would block clicks. Hide them. */
+    [data-tip]::after { display: none; }
+}
+@media print {
+    [data-tip]::after { display: none; }
+}
+
+/* =============================================================================
+   Better cursor affordance on details summary (currently it's just default
+   pointer; sometimes browsers show text-cursor depending on contents).
+   ========================================================================== */
+details > summary { cursor: pointer; }
+details > summary > * { pointer-events: none; }  /* clicks pass to summary */
+details > summary input,
+details > summary textarea,
+details > summary button { pointer-events: auto; }
+
+/* =============================================================================
+   Move-list keyboard hint — small line under the move buttons on opening
+   page. Just a hint, not interactive itself. Uses the existing .kbd-hint
+   chip style for the arrow keys.
+   ========================================================================== */
+.move-list-hint {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin: var(--space-3) 0 0;
+    line-height: 1.5;
+}
+.move-list-hint .kbd-hint {
+    display: inline-flex;
+    margin: 0 0.1rem;
+}
+/* Don't show the arrow-key hint on mobile — there are no physical arrow keys. */
+@media (max-width: 768px) {
+    .move-list-hint { display: none; }
+}
+
+/* =============================================================================
+   Visited link styling — refine: on chips inside .child-list and
+   .opening-related-list, the ✓ checkmark sometimes drops to a new line
+   because the chip is flex with wrap. Lock it to the end of the row.
+   ========================================================================== */
+.child-list a,
+.opening-related-list a {
+    flex-wrap: nowrap;
+}
+.child-list a:visited::after,
+.opening-related-list a:visited::after {
+    margin-left: 0.3rem;
+}
+
+/* =============================================================================
+   Hide chessground-related .opening-board placeholder on pages without
+   $needsBoard. Defence-in-depth: should never render anyway since those
+   pages don't include the markup, but if a stray <div class="opening-board">
+   sneaks in via description Markdown, don't show a weird empty square.
+   ========================================================================== */
+body:not(.has-board) .opening-board:empty { display: none; }
+
+/* =============================================================================
+   Subtle improvement: move-list buttons get a thin outline on the
+   currently-active position instead of solid fill. Active = where the
+   board's currently displayed. Less visually heavy than the previous
+   "filled accent" which dominated the move list.
+   ========================================================================== */
+.move-list button.is-active {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* =============================================================================
+   FOUC mitigation — set the initial background on <html> from the theme
+   data attribute set by the inline script in <head>. Without this, on
+   slow networks the page flashes WHITE before the dark stylesheet loads.
+   ========================================================================== */
+html[data-theme="dark"]  { background: #16181d; }
+html[data-theme="light"] { background: #faf7f0; }
+

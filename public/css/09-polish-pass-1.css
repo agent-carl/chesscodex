@@ -1,0 +1,278 @@
+/* =============================================================================
+   Polish pass — small consistency fixes across the site. Intentionally
+   doesn't redesign anything; it touches up alignment, transitions, focus
+   states, and a few mobile breakpoints that were uneven.
+   ========================================================================== */
+
+/* --- 1. Visible keyboard-focus rings ---------------------------------------
+   The site relied on browser defaults, which Chromium-based browsers hide
+   when keyboard nav is in mixed mouse/keyboard use. Force an accent-coloured
+   ring on every interactive element when focused via keyboard. */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+/* Inputs draw their own ring via box-shadow — disable the global outline so
+   we don't get a double indicator. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible { outline-color: transparent; }
+
+/* --- 2. Honour prefers-reduced-motion --------------------------------------
+   Disable card hover translates + smooth scroll for users who request it. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .home-popular-list a:hover,
+    .home-featured-card:hover { transform: none; }
+}
+
+/* --- 3. Consistent transitions ---------------------------------------------
+   Bump every 100 ms transition up to 150 ms so hover state changes feel
+   intentional rather than blink-fast. Tactile sweet spot per design lit. */
+.group-card,
+.child-list a,
+.home-popular-list a,
+.home-featured-card,
+.openings-letter-list a,
+.openings-jump a,
+#board-reset,
+.board-cta,
+.opening-share-btn,
+.play-color-btn { transition: border-color .15s, background .15s, color .15s, transform .15s; }
+
+/* --- 4. Board controls — align Reset + Play CTA + Hint on one row ---------
+   #board-reset was 38 px tall, .board-cta was 36 px (different padding +
+   border setup). Reading two near-equal-but-not-quite buttons side-by-side
+   looks crooked. Same min-height makes them snap to a single baseline. */
+.board-controls {
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+}
+#board-reset,
+.board-cta,
+#play-new,
+#play-undo,
+#play-flip,
+#play-resign,
+#search-undo,
+#search-reset {
+    min-height: 2.25rem;       /* 36 px */
+    padding: 0.4rem 0.9rem;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+#board-reset,
+#play-new,
+#play-undo,
+#play-flip,
+#play-resign,
+#search-undo,
+#search-reset {
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border-color: var(--border);
+}
+#board-reset:hover,
+#play-new:hover,
+#play-undo:hover,
+#play-flip:hover,
+#play-resign:hover,
+#search-undo:hover,
+#search-reset:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+.board-cta {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+.board-cta:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: #fff;
+}
+
+/* --- 5. ECO tag — drop the margin-right that fights flex gaps -------------
+   .eco-tag had margin-right: var(--space-2). Inside lists with `display:
+   flex; gap` the gap + margin double up, making the tag look detached. We
+   now rely on parent gap; the few inline contexts that need spacing still
+   work because the tag is inline-block and word-spacing kicks in. */
+.eco-tag {
+    margin-right: 0;
+    line-height: 1.5;
+    vertical-align: baseline;
+}
+/* Restore old behaviour only in contexts that need explicit spacing and
+   that AREN'T flex layouts (the breadcrumb-style header text). */
+.opening-header .eco-tag,
+.play-header .eco-tag,
+.about-page .eco-tag { margin-right: var(--space-2); }
+
+/* --- 6. Long move sequences (Overview) wrap on mobile --------------------
+   1.d4 d5 2.c4 dxc4 3.e3 e5 4.Bxc4 ... easily exceeds 360 px. */
+.opening-overview-moves {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+/* --- 7. Header nav: collapse smoothly on narrow screens -------------------
+   The header is `flex: justify-content: space-between` with Brand on the
+   left, nav + theme on the right. On 360 px screens the row
+   overflows. Wrap onto a second line gracefully. */
+.site-header-inner {
+    flex-wrap: wrap;
+    row-gap: var(--space-2);
+}
+.site-nav {
+    flex-wrap: wrap;
+    row-gap: var(--space-1);
+}
+@media (max-width: 540px) {
+    .site-header-inner {
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-3);
+    }
+    .site-nav { font-size: 0.85rem; gap: var(--space-2); }
+    .brand-name { font-size: 0.95rem; }
+    .brand-mark { font-size: 1.4rem; }
+    .theme-toggle { width: 32px; height: 32px; }
+}
+
+/* --- 8. Container — shrink padding on phones so content uses full width --- */
+@media (max-width: 540px) {
+    .container { padding: var(--space-4) var(--space-3) var(--space-5); }
+    .hero { padding: var(--space-4) 0 var(--space-3); }
+    .hero h1 { font-size: 1.65rem; line-height: 1.18; }
+    .hero .lede { font-size: 0.95rem; }
+}
+
+/* --- 9. Buttons in suggest / admin — same min-height ---------------------
+   Different form buttons across the site used different paddings — now they
+   all read as the same "primary action" component. */
+#suggest-form button,
+.admin-edit-actions button,
+.admin-login button,
+.admin-actions button,
+.admin-logout button,
+.admin-btn-accept,
+.admin-btn-reject {
+    min-height: 2.25rem;
+    line-height: 1.2;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* --- 10. Eco-tag chip in lists — fix vertical alignment with flex parents -
+   Inside .opening-related-list, .child-list, etc the tag was 0.5 px off
+   baseline because of monospace metrics. Adding a tiny line-height alignment
+   makes the chip + text optically centred. */
+.child-list a .eco-tag,
+.openings-letter-list a .eco-tag,
+.opening-related-list a .eco-tag,
+.opening-subtree-list a .eco-tag,
+.search-by-name-results a .eco-tag,
+.home-popular-list a .eco-tag {
+    flex-shrink: 0;
+}
+
+/* --- 11. Suggest-form inputs — match border-radius and padding to buttons - */
+#suggest-form input[type="text"],
+#suggest-form input[type="email"],
+#suggest-form textarea,
+.admin-login input,
+.admin-actions input[type="text"] {
+    padding: 0.5rem 0.7rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    font: inherit;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+}
+#suggest-form input[type="text"]:focus,
+#suggest-form input[type="email"]:focus,
+#suggest-form textarea:focus,
+.admin-login input:focus,
+.admin-actions input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* --- 12. Headings — slightly tighter on tags/related sections ------------- */
+.opening-related h2,
+.opening-subtree h2,
+.openings-letter h2 { margin-top: var(--space-4); }
+
+/* --- 13. Selection highlight matches the accent system -------------------- */
+::selection {
+    background: var(--accent);
+    color: #fff;
+}
+[data-theme="dark"] ::selection {
+    background: var(--accent);
+    color: var(--bg);
+}
+
+/* --- 14. Skip link for keyboard / screen reader users --------------------- */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius);
+    z-index: 1000;
+    font-weight: 600;
+}
+.skip-link:focus { left: var(--space-3); top: var(--space-3); }
+
+/* --- 15. Header backdrop-filter — fallback for browsers that don't support
+   it (Firefox without the flag, older WebViews). Use a slightly opaque
+   solid background so text remains legible. */
+@supports not (backdrop-filter: blur(1px)) {
+    .site-header { background: var(--bg-elevated); }
+}
+
+/* --- 16. Image rendering — avoid blurry SVG on retina --------------------- */
+.brand-mark { image-rendering: -webkit-optimize-contrast; }
+
+/* --- 17. Loading status messages — softer color and consistent style ------ */
+.stats-status,
+.search-empty,
+.admin-empty,
+.opening-subtree-status,
+.suggest-status {
+    font-size: 0.92rem;
+}
+
+/* --- 18. Print styles — strip nav, board controls, share buttons --------- */
+@media print {
+    .site-header, .site-footer, .opening-share, .board-controls,
+    .suggest-form, .opening-tree-details,
+    .admin-link { display: none !important; }
+    .container { padding: 0; max-width: none; }
+    a { color: #000; text-decoration: underline; }
+    .opening-board { max-width: 360px; }
+    body { background: #fff; color: #000; }
+}
+

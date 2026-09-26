@@ -202,7 +202,7 @@ CSS;
     <?php endif; ?>
 </head>
 <?php /* has-board keeps the empty #board placeholder at its full square size
-         until Chessground mounts (see ".opening-board:empty" in style.css);
+         until Chessground mounts (see ".opening-board:empty" in public/css/);
          without it the board popped in late and shifted the page. */ ?>
 <body<?= !empty($needsBoard) ? ' class="has-board"' : '' ?>>
     <a class="skip-link" href="#main-content">Skip to main content</a>

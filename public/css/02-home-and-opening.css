@@ -1,0 +1,200 @@
+/* =============================================================================
+   Homepage
+   ========================================================================== */
+
+.hero {
+    text-align: center;
+    padding: var(--space-6) 0 var(--space-5);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--space-6);
+}
+.hero h1 {
+    font-size: 2.4rem;
+    margin-bottom: var(--space-2);
+}
+.hero .lede {
+    color: var(--muted);
+    max-width: 36em;
+    margin: 0 auto var(--space-3);
+    font-size: 1.05rem;
+}
+.hero-meta {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-family: var(--font-mono);
+}
+
+.group-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: var(--space-3);
+}
+.group-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg);
+    text-decoration: none;
+    transition: transform 0.12s ease, border-color 0.12s, box-shadow 0.12s;
+}
+.group-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    color: var(--fg);
+}
+.group-card.is-empty { opacity: 0.5; pointer-events: none; }
+.group-letter {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--accent);
+}
+.group-label { font-weight: 500; font-size: 0.95rem; }
+.group-count {
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-family: var(--font-mono);
+}
+
+/* =============================================================================
+   Opening page
+   ========================================================================== */
+
+.opening-header {
+    margin-bottom: var(--space-5);
+}
+.opening-header h1 { margin-bottom: var(--space-1); }
+.parent-link { color: var(--muted); margin: var(--space-1) 0 0; font-size: 0.95rem; }
+
+/* Two-column on desktop: board on the left, narrow meta column on the right.
+   Stacks below 900px. */
+.opening-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+}
+@media (min-width: 900px) {
+    .opening-grid {
+        grid-template-columns: minmax(0, 1fr) 280px;
+        align-items: start;
+    }
+}
+
+.opening-board-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+.opening-board {
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 1 / 1;
+    /* Touch-action: none lets chessground handle drag gestures itself.
+       Without it mobile browsers intercept the gesture as a scroll/zoom
+       and pieces won't move. Applied to the wrapper AND the inner
+       chessground elements (the actual draggable surface). */
+    touch-action: none;
+}
+.opening-board .cg-wrap,
+.opening-board cg-board,
+.opening-board piece { touch-action: none; }
+.board-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    max-width: 480px;
+}
+#board-reset {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    transition: border-color 0.1s, background 0.1s;
+}
+#board-reset:hover { border-color: var(--accent); background: var(--accent-soft); }
+.board-cta {
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius);
+    background: var(--accent);
+    color: var(--bg-elevated);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background 0.1s;
+}
+.board-cta:hover { background: var(--accent-hover); color: var(--bg-elevated); text-decoration: none; }
+.board-hint { color: var(--muted); font-size: 0.85rem; }
+
+.eco-tag {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    margin-right: var(--space-2);
+}
+
+.opening-moves h2 { margin-top: 0; }
+.move-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+}
+/* Chess move numbering: increment on odd children (white plies) only,
+   so the list reads "1. Nh3 d5  2. g3 e5  ..." — proper SAN notation. */
+.move-list { counter-reset: move-counter; }
+.move-list li:nth-child(odd) { counter-increment: move-counter; }
+.move-list li:nth-child(odd)::before {
+    content: counter(move-counter) ".";
+    color: var(--muted);
+    font-size: 0.85em;
+    margin-right: 0.15em;
+}
+.move-list button {
+    background: none;
+    border: none;
+    /* Mobile-friendly touch target. The previous 0.1rem padding made the
+       hit box ~5 px tall — under the 24-px minimum that mobile browsers
+       reliably register taps on. Padding + min-height bring each move
+       button to at least 32 px high without making the desktop list
+       look bloated. */
+    padding: 0.35rem 0.55rem;
+    min-height: 2rem;
+    color: var(--accent);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font: inherit;
+    font-family: var(--font-mono);
+    /* Kill the 300 ms tap-delay on iOS Safari + Android Chrome and
+       suppress the grey flash on tap. */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+.move-list button:hover,
+.move-list button:focus-visible { background: var(--accent-soft); outline: none; }
+.move-list button:active { background: var(--accent); color: var(--bg-elevated); }
+.move-list button.is-active { background: var(--accent); color: var(--bg-elevated); }
+
+.opening-description .placeholder {
+    color: var(--muted);
+    border-left: 3px solid var(--border-strong);
+    padding-left: var(--space-3);
+    font-style: italic;
+}
+

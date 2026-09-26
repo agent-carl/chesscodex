@@ -1,0 +1,338 @@
+/* =============================================================================
+   Admin Visit Stats panel
+   ========================================================================== */
+.admin-stats {
+    margin: var(--space-5) 0;
+    padding: var(--space-4);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.admin-stats-head h2 { margin: 0 0 var(--space-1); }
+.admin-stats-note { color: var(--muted); font-size: 0.85rem; margin: 0 0 var(--space-4); }
+.admin-stats-sub {
+    margin: var(--space-5) 0 var(--space-2);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--fg-soft);
+    font-weight: 600;
+}
+
+/* KPI cards row */
+.admin-stats-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-3);
+}
+.admin-stats-kpi {
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-align: center;
+}
+.admin-stats-kpi-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+}
+.admin-stats-kpi-value {
+    font-family: var(--font-display);
+    font-size: 1.85rem;
+    font-weight: 600;
+    color: var(--fg);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Daily chart — pure CSS bars. Each <li> contains a full-height `track`
+   and the actual `bar` inside it. The track is what gives the bar a
+   100%-height parent so its inline `height: X%` actually scales relative
+   to the chart height. The previous version used flex:1 on the bar, which
+   overrode the inline height and made every bar fill the column — that's
+   why "0 views" looked identical to "3 views". */
+.admin-stats-chart {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(30, 1fr);
+    gap: 2px;
+    align-items: stretch;
+    height: 9rem;
+    padding-top: 1.2rem; /* room for the value labels */
+    position: relative;
+}
+.admin-stats-chart li {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    min-width: 0;
+}
+.admin-stats-chart-track {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    /* Faint 1-px baseline so 0-view days still read as "0" not "missing". */
+    background: linear-gradient(to top, var(--border) 0, var(--border) 1px, transparent 1px);
+}
+.admin-stats-chart-bar {
+    width: 100%;
+    background: var(--accent);
+    border-radius: 2px 2px 0 0;
+    position: relative;
+}
+.admin-stats-chart-bar.is-empty {
+    background: transparent;
+    height: 0 !important;
+}
+.admin-stats-chart-bar:hover { background: var(--accent-hover); }
+.admin-stats-chart-value {
+    position: absolute;
+    top: -1.05rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity .12s;
+}
+.admin-stats-chart li:hover .admin-stats-chart-value { opacity: 1; }
+.admin-stats-chart-label {
+    font-size: 0.6rem;
+    text-align: center;
+    color: var(--muted);
+    margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+    /* Show only every ~5th day's label to avoid overlap */
+    visibility: hidden;
+}
+.admin-stats-chart li:nth-child(5n+1) .admin-stats-chart-label { visibility: visible; }
+
+/* Page-type breakdown */
+.admin-stats-types {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+.admin-stats-types li {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+}
+.admin-stats-type-name {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+.admin-stats-type-value { font-weight: 600; color: var(--fg); }
+
+/* Top viewed openings list */
+.admin-stats-top {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: top-rank;
+}
+.admin-stats-top li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    counter-increment: top-rank;
+}
+.admin-stats-top li:last-child { border-bottom: 0; }
+.admin-stats-top li::before {
+    content: counter(top-rank);
+    min-width: 1.4em;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
+    text-align: right;
+}
+.admin-stats-top a {
+    flex: 1;
+    color: var(--fg);
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.admin-stats-top a:hover { color: var(--accent); }
+.admin-stats-top-count {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+@media (max-width: 540px) {
+    .admin-stats-chart { grid-template-columns: repeat(30, 1fr); height: 7rem; }
+    .admin-stats-chart-label { display: none; }
+}
+
+/* =============================================================================
+   About page
+   ========================================================================== */
+.about-page { max-width: 720px; }
+.about-page h1 { margin-bottom: var(--space-2); }
+.about-header .lede { color: var(--muted); margin: 0 0 var(--space-5); font-size: 1.05rem; }
+.about-section { margin: var(--space-6) 0; }
+.about-section h2 { margin-bottom: var(--space-3); font-size: 1.25rem; }
+.about-section p { line-height: 1.65; margin: 0 0 var(--space-3); }
+.about-section ul { padding-left: 1.3rem; line-height: 1.6; }
+.about-section li { margin-bottom: var(--space-2); }
+.about-section a { color: var(--accent); }
+.about-section a:hover { color: var(--accent-hover); text-decoration: underline; }
+.about-section code {
+    background: var(--bg-subtle);
+    padding: 0.05rem 0.35rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.92em;
+}
+
+/* =============================================================================
+   Opening of the day card (homepage hero strip)
+   ========================================================================== */
+.home-featured {
+    margin: var(--space-5) 0;
+    padding: 0;
+}
+.home-featured-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+}
+.home-featured-tag {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    font-weight: 600;
+}
+.home-featured-date { color: var(--muted); font-size: 0.85rem; }
+.home-featured-card {
+    display: block;
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    color: var(--fg);
+    text-decoration: none;
+    transition: border-color .12s, transform .12s;
+}
+.home-featured-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+.home-featured-name {
+    display: inline-block;
+    margin-left: var(--space-2);
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--fg);
+}
+.home-featured-snippet {
+    display: block;
+    margin: var(--space-3) 0 var(--space-2);
+    color: var(--fg-soft);
+    line-height: 1.55;
+}
+.home-featured-cta { color: var(--accent); font-weight: 500; font-size: 0.92rem; }
+
+/* =============================================================================
+   Share buttons on opening page
+   ========================================================================== */
+.opening-share {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: var(--space-3);
+    font-size: 0.85rem;
+}
+.opening-share-label { color: var(--muted); margin-right: 0.2rem; }
+.opening-share-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.7rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--fg-soft);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color .12s, color .12s;
+}
+.opening-share-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    text-decoration: none;
+}
+.opening-share-btn.is-copied {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+/* =============================================================================
+   Play page: explicit colour picker (separate from the Flip button)
+   ========================================================================== */
+.play-color-pick {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: var(--space-3);
+}
+.play-color-pick-label {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-right: 0.2rem;
+}
+.play-color-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg-soft);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+    transition: border-color .12s, color .12s, background .12s;
+}
+.play-color-btn:hover { border-color: var(--accent); color: var(--accent); }
+.play-color-btn.is-active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+.play-color-piece { font-size: 1.1em; line-height: 1; }
+
