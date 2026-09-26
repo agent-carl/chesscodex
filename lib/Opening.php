@@ -266,61 +266,34 @@ class Opening
     }
 
     /**
-     * Top-N openings by popularity. Cached on disk for 6h.
-     *
-     * If the popularity column isn't populated (default state — we'd need a
-     * separate import pass to fill it), we fall back to a curated list of
-     * well-known opening names. That way the homepage strip is never empty,
-     * and once you backfill popularity from Lichess stats it auto-switches.
+     * The homepage's popular-openings strip: a curated list, cached on disk
+     * for 6h. Deliberately not ranked by the popularity column — by Lichess
+     * game counts the top is generic first-move umbrellas ("King's Pawn Game",
+     * "Queen's Pawn Game", "Indian Defense"), several of them twice under the
+     * same name.
      */
     public static function topPopular(int $limit = 12): array
     {
-        $cached = Cache::remember('popular', 21600, static function (): array {
-            $stmt = chess_codex_db()->prepare(
-                "SELECT id, eco, name, slug, depth, move_count, popularity
-                 FROM codex_openings
-                 WHERE popularity > 0
-                 ORDER BY popularity DESC, move_count ASC, id ASC
-                 LIMIT 100"
-            );
-            $stmt->execute();
-            $rows = $stmt->fetchAll();
-            if (empty($rows)) {
-                $rows = self::resolveCuratedNames(self::FAMOUS_OPENINGS, 50);
-            }
-            return $rows;
-        });
+        $cached = Cache::remember('popular', 21600,
+            static fn (): array => self::resolveCuratedNames(self::FAMOUS_OPENINGS, 50));
         return array_slice($cached, 0, $limit);
     }
 
     /**
-     * Top popular gambits. Same caching pattern as topPopular() — falls back
-     * to a curated list of well-known gambit names if popularity is empty.
+     * The homepage's gambit strip, curated for the same reason: by game count
+     * seven of the top twelve "Gambit" names are Queen's Gambit lines, five
+     * of them Declined variations.
      */
     public static function topGambits(int $limit = 12): array
     {
-        $cached = Cache::remember('gambits', 21600, static function (): array {
-            $stmt = chess_codex_db()->prepare(
-                "SELECT id, eco, name, slug, depth, move_count, popularity
-                 FROM codex_openings
-                 WHERE (name LIKE '%Gambit%' OR name LIKE '%Countergambit%')
-                   AND popularity > 0
-                 ORDER BY popularity DESC, move_count ASC, name ASC
-                 LIMIT 100"
-            );
-            $stmt->execute();
-            $rows = $stmt->fetchAll();
-            if (empty($rows)) {
-                $rows = self::resolveCuratedNames(self::FAMOUS_GAMBITS, 50);
-            }
-            return $rows;
-        });
+        $cached = Cache::remember('gambits', 21600,
+            static fn (): array => self::resolveCuratedNames(self::FAMOUS_GAMBITS, 50));
         return array_slice($cached, 0, $limit);
     }
 
     /**
-     * Curated fallback: top "famous" openings everyone has heard of. Used when
-     * the `popularity` column isn't filled. Order here = display order.
+     * Famous openings everyone has heard of, for the homepage strip.
+     * Order here = display order.
      */
     private const FAMOUS_OPENINGS = [
         'Sicilian Defense',
@@ -398,8 +371,9 @@ class Opening
     /**
      * Name autocomplete. Splits the query into tokens and requires each token
      * to be a substring of the name (LIKE %tok%). Sorted by exact-prefix-first,
-     * then popularity. ALSO matches the ECO code when the query looks like one
-     * (3 alphanumeric chars like "B20" or "C45") — handy chess-savvy shortcut.
+     * then popularity; each name appears once. ALSO matches the ECO code when
+     * the query looks like one (3 alphanumeric chars like "B20" or "C45") —
+     * handy chess-savvy shortcut.
      */
     public static function searchByName(string $q, int $limit = 10): array
     {
@@ -442,11 +416,21 @@ class Opening
                 WHERE " . implode(' AND ', $where) . "
                 ORDER BY rank_prefix ASC, popularity DESC, move_count ASC, name ASC
                 LIMIT :lim";
+        $limit = max(1, min(50, $limit));
         $stmt = $pdo->prepare($sql);
         foreach ($params as $k => $v) $stmt->bindValue(':' . $k, $v, PDO::PARAM_STR);
-        $stmt->bindValue(':lim', max(1, min(50, $limit)), PDO::PARAM_INT);
+        $stmt->bindValue(':lim', $limit * 4, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll();
+
+        // Several rows can share a name (one opening reached by different move
+        // orders: four rows are "Sicilian Defense" — B20, B27 and B50 twice).
+        // Suggest each name once, as its most-played row.
+        $byName = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $byName[$row['name']] ??= $row;
+            if (count($byName) === $limit) break;
+        }
+        return array_values($byName);
     }
 
     /**
