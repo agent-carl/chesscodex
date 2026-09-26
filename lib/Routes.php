@@ -89,6 +89,9 @@ final class Routes
         }
         $xml .= $row($base . '/rankings');
         foreach (array_keys(Rankings::LABELS) as $path) $xml .= $row($base . '/' . $path);
+        foreach (['best-openings-for-white', 'best-openings-for-black'] as $path) {
+            foreach (array_keys(LevelStats::LEVELS) as $level) $xml .= $row($base . '/' . $path . '/' . $level);
+        }
         foreach (Opening::ecoCodes() as $code => $c) {
             if ($c['count'] > 1) $xml .= $row($base . '/eco/' . $code);   // single-line codes are noindex
         }
@@ -326,11 +329,11 @@ final class Routes
     }
 
     /** Rankings from the cached Lichess numbers: best for White / Black, most popular, gambits. */
-    public static function ranking(string $page): void
+    public static function ranking(string $page, ?string $level = null): void
     {
         global $baseUrl, $siteUrl;
         Views::track('ranking');
-        $rows = Rankings::rows($page);
+        $rows = Rankings::rows($page, $level);
         require __DIR__ . '/../templates/ranking.php';
     }
 

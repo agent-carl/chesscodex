@@ -346,6 +346,47 @@ $island = [
     </section>
 
     <?php
+    // By level: four Lichess rating bands and the masters database, fetched
+    // for the most-played lines by tools/fetch-levels.php.
+    $levels = LevelStats::forOpening((int) $o['id']);
+    $masterGames = $levels['masters']['games_list'] ?? [];
+    if ($levels): ?>
+    <section class="opening-levels">
+        <h2>By rating</h2>
+        <table class="stats-moves">
+            <thead><tr><th>Level</th><th>Games</th><th>White / Draw / Black</th></tr></thead>
+            <tbody>
+            <?php foreach ($levels as $key => $l):
+                [$lw, $ld, $lb] = [$pct($l['white'], $l['games']), $pct($l['draws'], $l['games']), $pct($l['black'], $l['games'])]; ?>
+                <tr>
+                    <td><?= htmlspecialchars(LevelStats::LEVELS[$key]['label'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td><?= $l['games'] > 0 ? htmlspecialchars(Rankings::compact($l['games']), ENT_QUOTES, 'UTF-8') : '—' ?></td>
+                    <td><?php if ($l['games'] > 0): ?>
+                        <div class="stats-bar inline" role="img" aria-label="<?= htmlspecialchars($barLabel($lw, $ld, $lb), ENT_QUOTES, 'UTF-8') ?>"><span class="stats-bar-w" style="width:<?= $lw ?>%"></span><span class="stats-bar-d" style="width:<?= $ld ?>%"></span><span class="stats-bar-b" style="width:<?= $lb ?>%"></span></div>
+                        <span class="level-pcts"><?= round((float) $lw) ?> / <?= round((float) $ld) ?> / <?= round((float) $lb) ?></span>
+                    <?php else: ?>no games<?php endif; ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php if ($masterGames): ?>
+            <h3>Master games</h3>
+            <ul class="master-games">
+                <?php foreach ($masterGames as $g):
+                    $result = match ($g['winner']) { 'white' => '1–0', 'black' => '0–1', default => '½–½' }; ?>
+                    <li><a href="https://lichess.org/<?= rawurlencode((string) $g['id']) ?>" target="_blank" rel="noopener nofollow">
+                        <?= htmlspecialchars($g['white'], ENT_QUOTES, 'UTF-8') ?> – <?= htmlspecialchars($g['black'], ENT_QUOTES, 'UTF-8') ?></a>
+                        <span class="master-games-meta"><?= $g['year'] > 0 ? (int) $g['year'] . ' · ' : '' ?><?= $result ?></span></li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+        <p class="stats-attribution"><small>Rated blitz, rapid and classical Lichess games by rating band, and
+            over-the-board games of players rated 2200+ from the Lichess masters database.
+            Fetched <?= htmlspecialchars(substr((string) max(array_column($levels, 'fetched_at')), 0, 10), ENT_QUOTES, 'UTF-8') ?>.</small></p>
+    </section>
+    <?php endif; ?>
+
+    <?php
     // Admin-only inline edit link. Same trick as in layout.php — only touch
     // the session if the admin cookie is present, otherwise we turn every
     // public opening page into a Set-Cookie + uncacheable.
