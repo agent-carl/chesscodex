@@ -8,13 +8,17 @@ ob_start();
 ?>
 <article class="openings-index">
     <header class="openings-index-header">
-        <h1>All openings · A–Z</h1>
+        <h1>List of chess openings A–Z</h1>
         <p class="lede">
-            <?= number_format($total) ?> openings indexed.
+            All <?= number_format($total) ?> named openings and variations.
             Jump to any letter, or use
             <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>">search</a>
             if you know the moves, or browse by
             <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco'), ENT_QUOTES, 'UTF-8') ?>">ECO code</a>.
+            Rankings from Lichess games:
+            <?php foreach (Rankings::LABELS as $path => $label): ?>
+                <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/' . $path), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars(mb_strtolower($label), ENT_QUOTES, 'UTF-8') ?></a><?= $path === array_key_last(Rankings::LABELS) ? '.' : ',' ?>
+            <?php endforeach; ?>
         </p>
         <nav class="openings-jump" aria-label="Jump to letter">
             <?php foreach ($grouped as $letter => $rows): ?>
@@ -36,7 +40,8 @@ ob_start();
                     <li>
                         <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $row['slug']), ENT_QUOTES, 'UTF-8') ?>">
                             <span class="eco-tag"><?= htmlspecialchars($row['eco'], ENT_QUOTES, 'UTF-8') ?></span>
-                            <span class="openings-letter-name"><?= htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="openings-letter-name"><?= htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8') ?><?php if (($row['tail'] ?? '') !== ''): ?>
+                                <span class="openings-letter-tail"><?= htmlspecialchars($row['tail'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?></span>
                             <span class="openings-letter-plies"><?= (int) $row['move_count'] ?>-ply</span>
                         </a>
                     </li>
@@ -47,13 +52,13 @@ ob_start();
 </article>
 <?php
 $body = ob_get_clean();
-$title = 'All openings A–Z · Caissa Codex';
-$description = 'Alphabetical index of all ' . number_format($total) . ' chess openings indexed in Caissa Codex.';
+$title = 'List of Chess Openings A–Z: All ' . number_format($total) . ' Named Lines | Caissa Codex';
+$description = 'Alphabetical list of all ' . number_format($total) . ' named chess openings and variations, each with its moves, ECO code and Lichess win rates.';
 $canonical = $siteUrl . $baseUrl . I18n::url('/openings');
 $jsonLd = [
     '@context' => 'https://schema.org',
     '@type'    => 'CollectionPage',
-    'name'     => 'All chess openings A–Z',
+    'name'     => 'List of chess openings A–Z',
     'url'      => $canonical,
     'description' => $description,
     'inLanguage'  => I18n::locale(),

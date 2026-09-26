@@ -80,6 +80,7 @@ final class Routes
         $xml .= $row($base . '/search');   // the opening identifier
         $xml .= $row($base . '/about');
         $xml .= $row($base . '/eco');
+        foreach (array_keys(Rankings::LABELS) as $path) $xml .= $row($base . '/' . $path);
         foreach (Opening::ecoCodes() as $code => $c) {
             if ($c['count'] > 1) $xml .= $row($base . '/eco/' . $code);   // single-line codes are noindex
         }
@@ -273,6 +274,15 @@ final class Routes
         $grouped = Opening::allAlphabetical();
         $total = 0; foreach ($grouped as $rows) $total += count($rows);
         require __DIR__ . '/../templates/openings_index.php';
+    }
+
+    /** Rankings from the cached Lichess numbers: best for White / Black, most popular, gambits. */
+    public static function ranking(string $page): void
+    {
+        global $baseUrl, $siteUrl;
+        Views::track('ranking');
+        $rows = Rankings::rows($page);
+        require __DIR__ . '/../templates/ranking.php';
     }
 
     /** All ECO codes, A00–E99, grouped by volume. */
