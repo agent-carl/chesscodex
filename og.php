@@ -108,83 +108,86 @@ if ($slug !== '') {
     } else {
         $eco   = '';
         $title = 'Caissa Codex';
-        $sub   = 'Chess openings encyclopedia · chesscodex.org';
+        $sub   = 'Chess openings · chesscodex.org';
     }
 } else {
     $eco   = '';
     $title = 'Caissa Codex';
-    $sub   = 'Chess openings encyclopedia · chesscodex.org';
+    $sub   = 'Chess openings · chesscodex.org';
 }
 
 $padL = 80;
-
-// ECO tag (if any).
-if ($eco !== '') {
-    $tagW = 130; $tagH = 50;
-    imagefilledrectangle($im, $padL, 80, $padL + $tagW, 80 + $tagH, $accent);
-    // Center the ECO code in the tag using the built-in font.
-    $ecoFontW = imagefontwidth(5) * strlen($eco);
-    $ecoFontH = imagefontheight(5);
-    imagestring(
-        $im, 5,
-        (int) ($padL + ($tagW - $ecoFontW) / 2),
-        (int) (80 + ($tagH - $ecoFontH) / 2),
-        $eco, $bg
-    );
-}
-
-// Title — large, manually wrapped to fit width. We use the built-in pixel
-// font (no TTF dependency) which keeps this script bulletproof on shared
-// hosting where dejavu paths vary.
-//
-// Word-wrap at ~26 chars per line, max 3 lines.
-$lines = [];
-$words = preg_split('/\s+/', trim($title)) ?: [];
-$cur = '';
-foreach ($words as $w) {
-    $candidate = $cur === '' ? $w : $cur . ' ' . $w;
-    if (mb_strlen($candidate) > 26 && $cur !== '') {
-        $lines[] = $cur;
-        $cur = $w;
-        if (count($lines) >= 2) break;
-    } else {
-        $cur = $candidate;
-    }
-}
-if ($cur !== '' && count($lines) < 3) $lines[] = $cur;
-
-// Built-in font 5 is 9×15 px. Scale 6× by drawing each character as a filled
-// rectangle of its bits. Easier route: just draw font 5 multiple times offset.
-// Simpler: imagettftext if a font is available; else use imagestring scaled.
+// Text stays left of the board, 40 px clear of it.
+$maxW = (int) $boardLeft - 40 - $padL;
+// TrueType when the host has a font (DejaVu on the Pi, Arial on Windows),
+// else GD's built-in bitmap fonts, scaled up pixel by pixel.
 $ttf = self_first_existing_font();
 
-$y = 200;
-foreach ($lines as $line) {
+// ECO tag (if any): the code centred in an accent box.
+$tagTop = 80; $tagH = 56;
+if ($eco !== '') {
     if ($ttf !== null) {
-        // 60px size for title
-        $bbox = imagettfbbox(54, 0, $ttf, $line);
-        imagettftext($im, 54, 0, $padL, $y + 50, $fg, $ttf, $line);
-        $y += 80;
+        $b     = imagettfbbox(26, 0, $ttf, $eco) ?: array_fill(0, 8, 0);
+        $codeW = $b[2] - $b[0];
+        $tagW  = max(120, $codeW + 44);
+        imagefilledrectangle($im, $padL, $tagTop, $padL + $tagW, $tagTop + $tagH, $accent);
+        imagettftext($im, 26, 0,
+            (int) ($padL + ($tagW - $codeW) / 2 - $b[0]),
+            (int) ($tagTop + ($tagH - ($b[1] - $b[5])) / 2 - $b[5]),
+            $bg, $ttf, $eco);
     } else {
-        // Fallback: built-in font scaled by pixel duplication via a temp image.
-        $tmp = imagecreatetruecolor(800, 30);
-        imagefilledrectangle($tmp, 0, 0, 800, 30, $bg);
-        imagestring($tmp, 5, 0, 5, $line, $fg);
-        imagecopyresampled($im, $tmp, $padL, $y, 0, 0, 800, 90, 800, 30);
-        imagedestroy($tmp);
-        $y += 90;
+        $codeW = imagefontwidth(5) * strlen($eco) * 2;
+        $tagW  = max(120, $codeW + 44);
+        imagefilledrectangle($im, $padL, $tagTop, $padL + $tagW, $tagTop + $tagH, $accent);
+        og_pixel_text($im, $eco, 5, 2, (int) ($padL + ($tagW - $codeW) / 2),
+            (int) ($tagTop + ($tagH - imagefontheight(5) * 2) / 2), $bg, $accent);
     }
 }
 
-// Subtitle line.
+// Title: wrapped by measured width at the largest size whose lines fit
+// between the tag and the subtitle. Lines may also break after a hyphen
+// ("Bobotsov-Korchnoi-Petrosian" is too wide for one line); if nothing fits,
+// the last line ends with an ellipsis.
+$titleTop = 176; $titleH = 320;
+$pieces   = og_pieces($title);
 if ($ttf !== null) {
-    imagettftext($im, 22, 0, $padL, $H - 80, $muted, $ttf, $sub);
+    foreach ([54, 50, 46, 42, 38, 34, 30] as $size) {
+        $measure  = static fn (string $s): int => og_ttf_width($ttf, $size, $s);
+        $lines    = og_wrap($pieces, $maxW, $measure);
+        $b        = imagettfbbox($size, 0, $ttf, 'Hgjy') ?: array_fill(0, 8, 0);
+        $ascent   = -$b[5];
+        $step     = (int) round($size * 4 / 3 * 1.15);   // GD draws at 96 dpi: 1 pt = 4/3 px
+        $maxLines = intdiv($titleH - $ascent - $b[1], $step) + 1;
+        if (count($lines) <= $maxLines && max([0, ...array_map($measure, $lines)]) <= $maxW) break;
+    }
+    foreach (og_fit_lines($lines, $maxLines, $maxW, $measure, '…') as $i => $line) {
+        imagettftext($im, $size, 0, $padL, $titleTop + $ascent + $i * $step, $fg, $ttf, $line);
+    }
 } else {
-    $tmp = imagecreatetruecolor(700, 20);
-    imagefilledrectangle($tmp, 0, 0, 700, 20, $bg);
-    imagestring($tmp, 4, 0, 0, $sub, $muted);
-    imagecopyresampled($im, $tmp, $padL, $H - 90, 0, 0, 700, 40, 700, 20);
-    imagedestroy($tmp);
+    // Built-in font 5 (9×15 px) at 3×, or 2× for long titles.
+    foreach ([3, 2] as $scale) {
+        $measure  = static fn (string $s): int => imagefontwidth(5) * strlen($s) * $scale;
+        $lines    = og_wrap($pieces, $maxW, $measure);
+        $step     = 20 * $scale;
+        $maxLines = intdiv($titleH - 15 * $scale, $step) + 1;
+        if (count($lines) <= $maxLines && max([0, ...array_map($measure, $lines)]) <= $maxW) break;
+    }
+    foreach (og_fit_lines($lines, $maxLines, $maxW, $measure, '...') as $i => $line) {
+        og_pixel_text($im, $line, 5, $scale, $padL, $titleTop + $i * $step, $fg, $bg);
+    }
+}
+
+// Subtitle, shrunk (22 → 16 pt) until it fits left of the board.
+if ($ttf !== null) {
+    foreach ([22, 20, 18, 16] as $subSize) {
+        if (og_ttf_width($ttf, $subSize, $sub) <= $maxW) break;
+    }
+    [$subLine] = og_fit_lines([$sub], 1, $maxW,
+        static fn (string $s): int => og_ttf_width($ttf, $subSize, $s), '…');
+    imagettftext($im, $subSize, 0, $padL, $H - 80, $muted, $ttf, $subLine);
+} else {
+    $subScale = imagefontwidth(4) * strlen($sub) * 2 <= $maxW ? 2 : 1;
+    og_pixel_text($im, $sub, 4, $subScale, $padL, $H - 80 - imagefontheight(4) * $subScale, $muted, $bg);
 }
 
 // Save to cache then stream.
@@ -220,4 +223,77 @@ function self_first_existing_font(): ?string
         if (@is_file($c)) { $path = $c; return $path; }
     }
     return null;
+}
+
+/** Width in px of $s drawn with imagettftext() from x = 0 (bearing included). */
+function og_ttf_width(string $ttf, float $size, string $s): int
+{
+    $b = imagettfbbox($size, 0, $ttf, $s);
+    return $b ? max($b[2], $b[4]) : 0;
+}
+
+/**
+ * Splits a title into the pieces a line may break between: words, and the
+ * parts of hyphenated words (after each "-"). Returns [[text, spaceBefore], …].
+ */
+function og_pieces(string $text): array
+{
+    $pieces = [];
+    foreach (preg_split('/\s+/u', trim($text), -1, PREG_SPLIT_NO_EMPTY) ?: [] as $w => $word) {
+        foreach (preg_split('/(?<=-)(?=.)/u', $word) ?: [$word] as $p => $part) {
+            $pieces[] = [$part, $w > 0 && $p === 0];
+        }
+    }
+    return $pieces;
+}
+
+/** Greedy wrap of og_pieces() into lines no wider than $maxW where possible. */
+function og_wrap(array $pieces, int $maxW, callable $measure): array
+{
+    $lines = [];
+    $cur   = '';
+    foreach ($pieces as [$text, $space]) {
+        $candidate = $cur === '' ? $text : $cur . ($space ? ' ' : '') . $text;
+        if ($cur !== '' && $measure($candidate) > $maxW) {
+            $lines[] = $cur;
+            $cur     = $text;
+        } else {
+            $cur = $candidate;
+        }
+    }
+    if ($cur !== '') $lines[] = $cur;
+    return $lines;
+}
+
+/**
+ * Keeps at most $maxLines lines. The last kept line of a longer title, and
+ * any line still wider than $maxW, lose words (or letters, for one long
+ * word) until they fit with $ellipsis appended.
+ */
+function og_fit_lines(array $lines, int $maxLines, int $maxW, callable $measure, string $ellipsis): array
+{
+    $cut   = count($lines) > $maxLines;
+    $lines = array_slice($lines, 0, max(1, $maxLines));
+    $last  = count($lines) - 1;
+    foreach ($lines as $i => $line) {
+        if ($measure($line) <= $maxW && !($cut && $i === $last)) continue;
+        $s = $line;
+        while ($s !== '' && $measure(rtrim($s, ' ,:;-') . $ellipsis) > $maxW) {
+            $space = mb_strrpos($s, ' ');
+            $s = $space !== false ? mb_substr($s, 0, $space) : mb_substr($s, 0, -1);
+        }
+        $lines[$i] = rtrim($s, ' ,:;-') . $ellipsis;
+    }
+    return $lines;
+}
+
+/** Draws $s in built-in font $font, scaled $scale× pixel by pixel, top-left at ($x, $y). */
+function og_pixel_text(GdImage $im, string $s, int $font, int $scale, int $x, int $y, int $fg, int $bg): void
+{
+    $w   = max(1, imagefontwidth($font) * strlen($s));
+    $h   = imagefontheight($font);
+    $tmp = imagecreatetruecolor($w, $h);
+    imagefilledrectangle($tmp, 0, 0, $w, $h, $bg);
+    imagestring($tmp, $font, 0, 0, $s, $fg);
+    imagecopyresized($im, $tmp, $x, $y, 0, 0, $w * $scale, $h * $scale, $w, $h);
 }
