@@ -57,8 +57,11 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
         </span>
         <code class="home-featured-moves"><?= htmlspecialchars(trim((string) ($featured['pgn_moves'] ?? '')), ENT_QUOTES, 'UTF-8') ?></code>
         <?php if (!empty($featured['description'])):
-            // Snippet: first ~200 chars of description, plain-text only.
-            $snippet = strip_tags((string) $featured['description']);
+            // Snippet: first ~200 chars of the description's first paragraph,
+            // as plain text — the description is Markdown, so drop link
+            // targets ("[x](/y)" → "x"), emphasis, code ticks and headings.
+            $snippet = preg_split('/\n\s*\n/', trim(strip_tags((string) $featured['description'])))[0];
+            $snippet = preg_replace(['/!?\[([^\]]*)\]\([^)]*\)/', '/(\*\*|__|\*|`)/', '/^#+\s*/m'], ['$1', '', ''], $snippet);
             $snippet = preg_replace('/\s+/', ' ', $snippet);
             if (mb_strlen($snippet) > 200) $snippet = rtrim(mb_substr($snippet, 0, 200), ' .,;:-') . '…';
         ?>
