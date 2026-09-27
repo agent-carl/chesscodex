@@ -116,6 +116,12 @@ ob_start();
             For anything else, write to
             <a href="mailto:info@chesscodex.org">info@chesscodex.org</a>.
         </p>
+        <?php
+        // The build identifier from the VERSION file, for bug reports.
+        $codexVersion = is_file(__DIR__ . '/../VERSION') ? trim((string) @file_get_contents(__DIR__ . '/../VERSION')) : '';
+        if ($codexVersion !== ''): ?>
+            <p class="about-version">Site version <?= htmlspecialchars($codexVersion, ENT_QUOTES, 'UTF-8') ?>.</p>
+        <?php endif; ?>
     </section>
 </article>
 <?php

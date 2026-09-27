@@ -54,19 +54,15 @@ if (dataNode) {
     }
     const savedGame = loadGame();
     if (savedGame) {
+        // The game is saved from the opening's final position, so its PGN
+        // carries that position as a FEN header and only the moves played
+        // after it. A save from another position (an older deploy, a changed
+        // line) is ignored.
         const restored = new Chess();
-        if (restored.load_pgn(savedGame.pgn, { sloppy: true })) {
-            // Only restore if the saved game's first moves match this opening's
-            // PGN — otherwise it's a stale entry from a different deploy.
-            const openingHistory = new Chess();
-            openingHistory.load_pgn(cfg.pgn, { sloppy: true });
-            const openingPly = openingHistory.history().length;
-            const restoredHistory = restored.history();
-            if (restoredHistory.length >= openingPly) {
-                chess.reset();
-                restoredHistory.forEach((san) => chess.move(san, { sloppy: true }));
-                userColor = savedGame.color || userColor;
-            }
+        if (restored.load_pgn(savedGame.pgn, { sloppy: true })
+            && restored.header().FEN === startFen) {
+            restored.history().forEach((san) => chess.move(san, { sloppy: true }));
+            userColor = savedGame.color || userColor;
         }
     }
 
@@ -132,6 +128,7 @@ if (dataNode) {
         }
         if (line.startsWith('bestmove ')) {
             engineThinking = false;
+            setEngineState('ready', 'Stockfish ready.');
             // Discard if the position changed (user clicked New game/Undo/etc.
             // while the engine was thinking).
             if (chess.fen() !== pendingFen) return;
@@ -157,6 +154,7 @@ if (dataNode) {
 
     function stopEngine() {
         if (engine && engineThinking) engine.postMessage('stop');
+        if (engineReady) setEngineState('ready', 'Stockfish ready.');
         pendingFen = null;
     }
 
@@ -278,6 +276,16 @@ if (dataNode) {
     const resultEl = document.querySelector('.play-result');
     const movesEl = document.getElementById('play-moves');
 
+    const evalToggle = document.getElementById('play-show-eval');
+    let showEval = false;
+    try { showEval = localStorage.getItem('codex-show-eval') === '1'; } catch (e) {}
+    evalToggle.checked = showEval;
+    evalToggle.addEventListener('change', () => {
+        showEval = evalToggle.checked;
+        try { localStorage.setItem('codex-show-eval', showEval ? '1' : '0'); } catch (e) {}
+        evalEl.hidden = !showEval || evalEl.textContent === '';
+    });
+
     function setEngineState(state, text) {
         stateEl.dataset.state = state;
         stateEl.textContent = text;
@@ -295,7 +303,7 @@ if (dataNode) {
             const sign = fromWhite > 0 ? '+' : '';
             evalEl.textContent = `Eval: ${sign}${pawns} ${fromWhite >= 0 ? '(White)' : '(Black)'}`;
         }
-        evalEl.hidden = false;
+        evalEl.hidden = !showEval;
     }
 
     function renderTurn(side) {
@@ -305,16 +313,28 @@ if (dataNode) {
             : 'Stockfish to move (' + name + ').';
     }
 
+    // The whole game in move pairs with real move numbers: the opening's
+    // moves (muted), then the ones played here, so the first reply after
+    // the Najdorf reads "6. Bg5", not "1. Bg5".
+    const openingSans = opening.history();
     function renderMoveList() {
-        const sans = chess.history();
+        const sans = openingSans.concat(chess.history());
         movesEl.innerHTML = '';
-        sans.forEach((san) => {
+        for (let i = 0; i < sans.length; i += 2) {
             const li = document.createElement('li');
-            const span = document.createElement('span');
-            span.textContent = san;
-            li.appendChild(span);
+            const no = document.createElement('span');
+            no.className = 'move-no';
+            no.textContent = (i / 2 + 1) + '.';
+            li.appendChild(no);
+            [i, i + 1].forEach((j) => {
+                if (j >= sans.length) return;
+                const span = document.createElement('span');
+                span.textContent = sans[j];
+                if (j < openingSans.length) span.className = 'move-book';
+                li.appendChild(span);
+            });
             movesEl.appendChild(li);
-        });
+        }
         movesEl.scrollTop = movesEl.scrollHeight;
     }
 
@@ -349,6 +369,7 @@ if (dataNode) {
         clearGame();
         resultEl.hidden = true;
         evalEl.hidden = true;
+        evalEl.textContent = '';
         renderMoveList();
         syncBoard();
         tickGame();

@@ -24,13 +24,19 @@ ob_start();
         <section class="error-suggestions">
             <h2>Did you mean…</h2>
             <ul class="child-list">
-                <?php foreach ($suggestions as $s): ?>
+                <?php
+                // Lines with the same name show the move that ends them instead.
+                $nameCounts = array_count_values(array_map(static fn (array $r): string => (string) $r['name'], $suggestions));
+                foreach ($suggestions as $s):
+                    $meta = ($nameCounts[(string) $s['name']] ?? 0) > 1 && !empty($s['pgn_moves'])
+                        ? htmlspecialchars(Opening::movesFrom((string) $s['pgn_moves'], max(0, (int) $s['move_count'] - 1)), ENT_QUOTES, 'UTF-8')
+                        : Opening::movesLabel((int) $s['move_count']); ?>
                     <li>
                         <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $s['slug']), ENT_QUOTES, 'UTF-8') ?>"
                            title="<?= htmlspecialchars($s['name'], ENT_QUOTES, 'UTF-8') ?>">
                             <span class="eco-tag"><?= htmlspecialchars($s['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                             <span class="child-list-name"><?= htmlspecialchars($s['name'], ENT_QUOTES, 'UTF-8') ?></span>
-                            <span class="child-list-plies"><?= Opening::movesLabel((int) $s['move_count']) ?></span>
+                            <span class="child-list-plies"><?= $meta ?></span>
                         </a>
                     </li>
                 <?php endforeach; ?>
@@ -42,6 +48,9 @@ ob_start();
         <?php
         $nameSearchId = 'error-search';
         $nameSearchLabel = 'Search for an opening';
+        // "/openings/sicilan-najdorf" starts the search with "sicilan najdorf".
+        // Only when there is no "Did you mean" list, which already answers it.
+        $nameSearchValue = empty($suggestions) ? trim(str_replace('-', ' ', $failedSlug)) : '';
         require __DIR__ . '/partials/name_search.php';
         ?>
     </form>

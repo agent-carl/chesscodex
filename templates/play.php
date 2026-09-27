@@ -68,6 +68,7 @@ $island = [
                 <p class="play-turn" aria-live="polite"></p>
                 <p class="play-result" hidden role="status" aria-live="assertive"></p>
                 <p class="play-eval" hidden></p>
+                <label class="play-eval-toggle"><input type="checkbox" id="play-show-eval"> Show the engine's evaluation</label>
                 <ol id="play-moves" class="move-list" aria-label="<?= htmlspecialchars(t('play.game'), ENT_QUOTES, 'UTF-8') ?>"></ol>
             </section>
 

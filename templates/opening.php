@@ -243,7 +243,8 @@ $island = [
     ?>
     <div class="opening-grid">
         <div class="opening-board-wrap">
-            <div id="board" class="opening-board"></div>
+            <div id="board" class="opening-board"><img class="board-still" src="<?= htmlspecialchars($diagramUrl, ENT_QUOTES, 'UTF-8') ?>" width="720" height="720"
+                 fetchpriority="high" alt="Chess diagram: <?= $nameEsc ?><?= $lastMoveText !== '' ? ' after ' . htmlspecialchars($lastMoveText, ENT_QUOTES, 'UTF-8') : '' ?>"></div>
             <div class="board-controls" role="group" aria-label="Board">
                 <button id="board-reset" type="button" title="Back to the starting position"><?= htmlspecialchars(t('opening.board.reset'), ENT_QUOTES, 'UTF-8') ?></button>
                 <button id="board-prev" type="button" class="board-step" aria-label="Previous move" title="Previous move (←)">‹</button>
@@ -305,6 +306,51 @@ $island = [
                 </details>
             </div>
         </aside>
+
+        <?php
+        // "3…" or "4. ": the number in front of the next move from this position.
+        $nextMoveNo = (intdiv($plies, 2) + 1) . ($plies % 2 === 0 ? '. ' : '…');
+        $pctsText   = static fn (string $w, string $d, string $b): string =>
+            round((float) $w) . ' / ' . round((float) $d) . ' / ' . round((float) $b);
+        $updated    = static fn (string $at): string => $at !== '' && ($ts = strtotime($at)) ? date('M j, Y', $ts) : '';
+        ?>
+        <section class="opening-stats" id="opening-stats" aria-busy="<?= $stats ? 'false' : 'true' ?>" aria-live="polite"
+                 data-stats="<?= $stats ? ($stats['fresh'] ? 'fresh' : 'stale') : 'none' ?>">
+            <h2><?= htmlspecialchars(t('opening.stats.title'), ENT_QUOTES, 'UTF-8') ?></h2>
+            <?php if ($stats && $statsTotal === 0): ?>
+                <p class="stats-status" data-state="empty"><?= htmlspecialchars(t('opening.stats.no_games'), ENT_QUOTES, 'UTF-8') ?></p>
+            <?php elseif ($stats): ?>
+                <p class="stats-status" data-state="done" hidden></p>
+            <?php else: ?>
+                <p class="stats-status" data-state="loading"><?= htmlspecialchars(t('opening.stats.loading'), ENT_QUOTES, 'UTF-8') ?></p>
+            <?php endif; ?>
+            <div class="stats-bar" role="img"<?= $statsTotal > 0 ? ' aria-label="' . htmlspecialchars($barLabel($wPct, $dPct, $bPct), ENT_QUOTES, 'UTF-8') . '" title="' . htmlspecialchars($barLabel($wPct, $dPct, $bPct), ENT_QUOTES, 'UTF-8') . '"' : ' hidden' ?>>
+                <span class="stats-bar-w" style="width:<?= $wPct ?>%"></span>
+                <span class="stats-bar-d" style="width:<?= $dPct ?>%"></span>
+                <span class="stats-bar-b" style="width:<?= $bPct ?>%"></span>
+            </div>
+            <p class="stats-totals"<?= $statsTotal > 0 ? '' : ' hidden' ?>><?php if ($statsTotal > 0): ?><?= number_format($statsTotal) ?> games · White <?= $wPct ?>% / Draw <?= $dPct ?>% / Black <?= $bPct ?>%<?php endif; ?></p>
+            <table class="stats-moves"<?= $statsTotal > 0 && $statsRows ? '' : ' hidden' ?>>
+                <caption class="stats-moves-caption">The moves played next — click one to see it on the board.</caption>
+                <thead>
+                    <tr><th>Next move</th><th>Games</th><th><span class="th-long">White / Draw / Black</span><span class="th-short">W / D / B</span></th></tr>
+                </thead>
+                <tbody><?php foreach ($statsTotal > 0 ? $statsRows : [] as [$san, $mt, $mw, $md, $mb]):
+                    $next = $nextLines[$san] ?? null; ?>
+                    <tr>
+                        <td class="stats-move">
+                            <button type="button" class="stats-move-btn" data-san="<?= htmlspecialchars((string) $san, ENT_QUOTES, 'UTF-8') ?>"
+                                    title="Show <?= htmlspecialchars($nextMoveNo . $san, ENT_QUOTES, 'UTF-8') ?> on the board"><?= htmlspecialchars($nextMoveNo . $san, ENT_QUOTES, 'UTF-8') ?></button>
+                            <?php if ($next): ?><a class="stats-move-line" href="<?= htmlspecialchars($next['url'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($next['name'], ENT_QUOTES, 'UTF-8') ?></a><?php endif; ?>
+                        </td>
+                        <td><?= number_format($mt) ?></td>
+                        <td><div class="stats-bar inline" role="img" aria-label="<?= htmlspecialchars($barLabel($mw, $md, $mb), ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($barLabel($mw, $md, $mb), ENT_QUOTES, 'UTF-8') ?>"><span class="stats-bar-w" style="width:<?= $mw ?>%"></span><span class="stats-bar-d" style="width:<?= $md ?>%"></span><span class="stats-bar-b" style="width:<?= $mb ?>%"></span></div>
+                            <span class="stats-pcts" aria-hidden="true"><?= $pctsText($mw, $md, $mb) ?></span></td>
+                    </tr>
+                <?php endforeach; ?></tbody>
+            </table>
+            <p class="stats-attribution"<?= $statsTotal > 0 ? '' : ' hidden' ?>><small><?= htmlspecialchars(t('opening.stats.attribution'), ENT_QUOTES, 'UTF-8') ?> <span class="stats-cached-at"><?= $statsTotal > 0 ? htmlspecialchars($updated((string) $stats['cached_at']), ENT_QUOTES, 'UTF-8') : '' ?></span></small></p>
+        </section>
     </div>
 
     <?php
@@ -360,65 +406,14 @@ $island = [
     <?php if (empty($o['description'])): ?>
     <section class="opening-overview">
         <h2>Overview</h2>
-        <figure class="opening-diagram">
-            <img src="<?= htmlspecialchars($diagramUrl, ENT_QUOTES, 'UTF-8') ?>" width="720" height="720"
-                 loading="lazy" decoding="async"
-                 alt="Chess diagram: <?= $nameEsc ?><?= $lastMoveText !== '' ? ' after ' . htmlspecialchars($lastMoveText, ENT_QUOTES, 'UTF-8') : '' ?>">
-            <?php if ($lastMoveText !== ''): ?><figcaption>After <?= htmlspecialchars($lastMoveText, ENT_QUOTES, 'UTF-8') ?></figcaption><?php endif; ?>
-        </figure>
         <div class="opening-overview-body"><?= $overviewHtml ?></div>
         <div class="opening-overview-notice">
-            <p><strong>Generated from the data</strong> — the Lichess opening list and opening explorer.
-                Know this line well? Write about it; submissions are reviewed before publishing.</p>
+            <p>Written from the Lichess opening list and explorer. Know this line well? Write about it.</p>
             <?php $renderSuggest(); ?>
         </div>
     </section>
     <?php endif; ?>
 
-    <?php
-    // "3…" or "4. ": the number in front of the next move from this position.
-    $nextMoveNo = (intdiv($plies, 2) + 1) . ($plies % 2 === 0 ? '. ' : '…');
-    $pctsText   = static fn (string $w, string $d, string $b): string =>
-        round((float) $w) . ' / ' . round((float) $d) . ' / ' . round((float) $b);
-    $updated    = static fn (string $at): string => $at !== '' && ($ts = strtotime($at)) ? date('M j, Y', $ts) : '';
-    ?>
-    <section class="opening-stats" id="opening-stats" aria-busy="<?= $stats ? 'false' : 'true' ?>" aria-live="polite"
-             data-stats="<?= $stats ? ($stats['fresh'] ? 'fresh' : 'stale') : 'none' ?>">
-        <h2><?= htmlspecialchars(t('opening.stats.title'), ENT_QUOTES, 'UTF-8') ?></h2>
-        <?php if ($stats && $statsTotal === 0): ?>
-            <p class="stats-status" data-state="empty"><?= htmlspecialchars(t('opening.stats.no_games'), ENT_QUOTES, 'UTF-8') ?></p>
-        <?php elseif ($stats): ?>
-            <p class="stats-status" data-state="done" hidden></p>
-        <?php else: ?>
-            <p class="stats-status" data-state="loading"><?= htmlspecialchars(t('opening.stats.loading'), ENT_QUOTES, 'UTF-8') ?></p>
-        <?php endif; ?>
-        <div class="stats-bar" role="img"<?= $statsTotal > 0 ? ' aria-label="' . htmlspecialchars($barLabel($wPct, $dPct, $bPct), ENT_QUOTES, 'UTF-8') . '" title="' . htmlspecialchars($barLabel($wPct, $dPct, $bPct), ENT_QUOTES, 'UTF-8') . '"' : ' hidden' ?>>
-            <span class="stats-bar-w" style="width:<?= $wPct ?>%"></span>
-            <span class="stats-bar-d" style="width:<?= $dPct ?>%"></span>
-            <span class="stats-bar-b" style="width:<?= $bPct ?>%"></span>
-        </div>
-        <p class="stats-totals"<?= $statsTotal > 0 ? '' : ' hidden' ?>><?php if ($statsTotal > 0): ?><?= number_format($statsTotal) ?> games · White <?= $wPct ?>% / Draw <?= $dPct ?>% / Black <?= $bPct ?>%<?php endif; ?></p>
-        <table class="stats-moves"<?= $statsTotal > 0 && $statsRows ? '' : ' hidden' ?>>
-            <caption class="stats-moves-caption">The moves played next — click one to see it on the board.</caption>
-            <thead>
-                <tr><th>Next move</th><th>Games</th><th>White / Draw / Black</th></tr>
-            </thead>
-            <tbody><?php foreach ($statsTotal > 0 ? $statsRows : [] as [$san, $mt, $mw, $md, $mb]):
-                $next = $nextLines[$san] ?? null; ?>
-                <tr>
-                    <td class="stats-move">
-                        <button type="button" class="stats-move-btn" data-san="<?= htmlspecialchars((string) $san, ENT_QUOTES, 'UTF-8') ?>"
-                                title="Show <?= htmlspecialchars($nextMoveNo . $san, ENT_QUOTES, 'UTF-8') ?> on the board"><?= htmlspecialchars($nextMoveNo . $san, ENT_QUOTES, 'UTF-8') ?></button>
-                        <?php if ($next): ?><a class="stats-move-line" href="<?= htmlspecialchars($next['url'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($next['name'], ENT_QUOTES, 'UTF-8') ?></a><?php endif; ?>
-                    </td>
-                    <td><?= number_format($mt) ?></td>
-                    <td><div class="stats-bar inline" role="img" aria-label="<?= htmlspecialchars($barLabel($mw, $md, $mb), ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($barLabel($mw, $md, $mb), ENT_QUOTES, 'UTF-8') ?>"><span class="stats-bar-w" style="width:<?= $mw ?>%"></span><span class="stats-bar-d" style="width:<?= $md ?>%"></span><span class="stats-bar-b" style="width:<?= $mb ?>%"></span></div>
-                        <span class="stats-pcts" aria-hidden="true"><?= $pctsText($mw, $md, $mb) ?></span></td>
-                </tr>
-            <?php endforeach; ?></tbody>
-        </table>
-        <p class="stats-attribution"<?= $statsTotal > 0 ? '' : ' hidden' ?>><small><?= htmlspecialchars(t('opening.stats.attribution'), ENT_QUOTES, 'UTF-8') ?> <span class="stats-cached-at"><?= $statsTotal > 0 ? htmlspecialchars($updated((string) $stats['cached_at']), ENT_QUOTES, 'UTF-8') : '' ?></span></small></p>
-    </section>
 
     <?php
     // By level: four Lichess rating bands and the masters database, fetched
@@ -435,7 +430,7 @@ $island = [
     <section class="opening-levels">
         <h2>By rating</h2>
         <table class="stats-moves stats-levels">
-            <thead><tr><th>Players</th><th>Games</th><th>White / Draw / Black</th></tr></thead>
+            <thead><tr><th>Players</th><th>Games</th><th><span class="th-long">White / Draw / Black</span><span class="th-short">W / D / B</span></th></tr></thead>
             <tbody>
             <?php foreach ($levels as $key => $l):
                 [$lw, $ld, $lb] = [$pct($l['white'], $l['games']), $pct($l['draws'], $l['games']), $pct($l['black'], $l['games'])]; ?>
@@ -552,7 +547,10 @@ $island = [
     $variationLabel = static function (array $c, string $underName, int $fromPly) use ($opening_crumb): array {
         $moves = Opening::movesFrom((string) $c['pgn_moves'], $fromPly);
         $label = $opening_crumb((string) $c['name'], $underName);
-        if ((string) $c['name'] === $underName) $label = 'Same name, after ' . $moves;
+        if ((string) $c['name'] === $underName) {
+            $parts = preg_split('/: |, /', (string) $c['name']) ?: [(string) $c['name']];
+            $label = (string) end($parts);
+        }
         return [$label, $moves];
     };
     ?>
@@ -569,7 +567,7 @@ $island = [
                        title="<?= htmlspecialchars($c['name'] . ' (' . $c['eco'] . ')', ENT_QUOTES, 'UTF-8') ?>">
                         <span class="eco-tag"><?= htmlspecialchars($c['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                         <span class="child-list-name"><?= htmlspecialchars($childLabel, ENT_QUOTES, 'UTF-8') ?></span>
-                        <?php if ($childMoves !== '' && !str_starts_with($childLabel, 'Same name')): ?>
+                        <?php if ($childMoves !== ''): ?>
                             <span class="child-list-plies"><?= htmlspecialchars($childMoves, ENT_QUOTES, 'UTF-8') ?></span>
                         <?php endif; ?>
                     </a>
@@ -604,7 +602,7 @@ $island = [
                        title="<?= htmlspecialchars($sib['name'] . ' (' . $sib['eco'] . ')', ENT_QUOTES, 'UTF-8') ?>">
                         <span class="eco-tag"><?= htmlspecialchars($sib['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                         <span class="child-list-name"><?= htmlspecialchars($sibLabel, ENT_QUOTES, 'UTF-8') ?></span>
-                        <?php if ($sibMoves !== '' && !str_starts_with($sibLabel, 'Same name')): ?>
+                        <?php if ($sibMoves !== ''): ?>
                             <span class="child-list-plies"><?= htmlspecialchars($sibMoves, ENT_QUOTES, 'UTF-8') ?></span>
                         <?php endif; ?>
                     </a>

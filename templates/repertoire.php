@@ -20,7 +20,12 @@ ob_start();
                 <a class="opening-tool-btn" data-repertoire-pgn href="#" rel="nofollow" download>Download PGN</a>
             </p>
             <ul class="child-list repertoire-list"></ul>
-            <p class="repertoire-empty">No <?= $Side ?> lines yet. Open any opening and press <strong>+ <?= $Side ?></strong> next to “My repertoire”.</p>
+            <div class="repertoire-empty">
+                <p>No <?= $Side ?> lines yet. Open any opening and press <strong>+ <?= $Side ?></strong> next to “My repertoire”.</p>
+                <p class="repertoire-start">Not sure where to start? See the
+                    <a href="<?= $baseEsc . $esc(I18n::url('/best-openings-for-' . $side)) ?>">best openings for <?= $Side ?></a>
+                    or the <a href="<?= $baseEsc . $esc(I18n::url('/popular-openings')) ?>">most popular openings</a>.</p>
+            </div>
         </section>
     <?php endforeach; ?>
 </article>

@@ -455,7 +455,7 @@ class Opening
         "King's Indian Defense",
         'Nimzo-Indian Defense',
         'English Opening',
-        'London System',
+        "Queen's Pawn Game: London System",
         'Scandinavian Defense',
         'Slav Defense',
         'Pirc Defense',
@@ -802,7 +802,7 @@ class Opening
             $where[] = "slug LIKE :t$i";
             $params["t$i"] = '%' . substr($t, 0, 4) . '%';
         }
-        $sql = "SELECT id, eco, name, slug, move_count
+        $sql = "SELECT id, eco, name, slug, move_count, pgn_moves
                 FROM codex_openings
                 WHERE " . implode(' OR ', $where) . "
                 ORDER BY move_count ASC, popularity DESC

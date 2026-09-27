@@ -152,6 +152,8 @@
         if (preset && !input.form) {
             input.value = preset;
             lookup(preset.trim());
+        } else if (input.hasAttribute('data-name-search-prefilled') && input.value.trim().length >= 2) {
+            lookup(input.value.trim());
         }
     }
 

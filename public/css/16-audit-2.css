@@ -1,0 +1,188 @@
+/* =============================================================================
+   Second audit pass (September 27): board and panel side by side, the
+   statistics beside the board, one tool on the search page, even home cards.
+   ========================================================================== */
+
+/* --- Page shell: the footer sits at the bottom on short pages --------- */
+body { min-height: 100vh; display: flex; flex-direction: column; }
+body > .container { flex: 1 0 auto; width: 100%; }
+
+/* --- Board coordinates: readable on both square colors ---------------- */
+html .cg-wrap coords { font-size: 11px; opacity: 1; }
+
+/* --- Board and its panel: next to each other, not at opposite edges --- */
+.identify-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
+@media (min-width: 900px) {
+    .play-grid,
+    .identify-grid {
+        grid-template-columns: minmax(0, 520px) minmax(300px, 1fr);
+        gap: var(--space-6);
+        align-items: start;
+    }
+}
+.play-grid .opening-board { max-width: 520px; }
+
+/* --- Play: the game in move pairs, the opening's moves muted ----------- */
+#play-moves { gap: 0.2rem 0.8rem; }
+#play-moves li::before,
+#play-moves li:nth-child(odd)::before { content: none; }
+#play-moves li { display: inline-flex; gap: 0.35rem; align-items: baseline; }
+#play-moves .move-book { color: var(--muted); }
+.play-eval-toggle { display: flex; align-items: center; gap: 0.45rem; margin: var(--space-2) 0 0; color: var(--muted); font-size: 0.85rem; cursor: pointer; }
+
+/* --- Opening page: the still diagram until the board mounts ------------ */
+.opening-board > .board-still { display: block; width: 100%; height: auto; }
+
+/* --- Opening page: statistics in the second column on a wide screen --- */
+@media (min-width: 900px) {
+    .opening-grid { grid-template-rows: auto 1fr; }
+    .opening-grid > .opening-board-wrap { grid-row: 1 / span 2; }
+    .opening-grid > .opening-stats { grid-column: 2; margin-top: 0; min-height: 0; }
+    .opening-grid .stats-moves { max-width: none; width: 100%; }
+    .opening-grid .stats-moves .stats-bar.inline { width: 84px; }
+    .opening-grid .stats-moves td { padding-top: 0.45rem; padding-bottom: 0.45rem; }
+    .opening-grid .stats-moves td:nth-child(2) { font-size: 0.85rem; }
+}
+.opening-grid > .opening-stats { margin-top: 0; }
+.opening-grid > .opening-stats h2 { margin-top: 0; }
+
+/* The "written from the data" note: one quiet line, the form under it. */
+.opening-overview-notice {
+    margin-top: var(--space-4);
+    padding: var(--space-3) 0 0;
+    background: none;
+    border: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    font-size: 0.88rem;
+    color: var(--muted);
+}
+.opening-overview-notice p { margin: 0 0 var(--space-1); }
+
+/* "White / Draw / Black" fits a phone's column as "W / D / B". */
+.th-short { display: none; }
+@media (max-width: 600px) {
+    .th-long { display: none; }
+    .th-short { display: inline; }
+}
+
+/* --- Name suggestions: whole names, wrapped, never cut off ------------- */
+.search-by-name-result-name { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.3; }
+
+/* --- Search page: the name search, then one tool for moves ------------- */
+.identify { margin-top: var(--space-8); padding-top: var(--space-6); border-top: 1px solid var(--border); }
+.identify-title { text-align: center; font-size: 1.35rem; margin: 0 0 var(--space-5); }
+.identify-side { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+.identify-side h3 {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.search-result {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+}
+.search-result .search-empty { font-style: normal; }
+.search-played {
+    margin: var(--space-2) 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--fg-soft);
+    line-height: 1.5;
+}
+.search-continuations { margin-top: var(--space-4); padding-top: var(--space-3); border-top: 1px solid var(--border); }
+.search-continuations .child-list { grid-template-columns: 1fr; }
+
+.identify-paste { display: flex; flex-direction: column; gap: var(--space-2); }
+.identify-paste label { font-weight: 600; font-size: 0.95rem; }
+.identify-paste textarea,
+.identify-fen input[type="text"] {
+    width: 100%;
+    min-width: 0;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+.identify-paste textarea { resize: vertical; min-height: 4.2rem; }
+.identify-paste textarea:focus,
+.identify-fen input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); outline: none; }
+.identify-paste textarea::placeholder,
+.identify-fen input::placeholder { color: var(--muted); opacity: 0.7; }
+.identify-paste-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.identify-paste-row small { color: var(--muted); font-size: 0.82rem; }
+.identify-paste button,
+.identify-fen button {
+    flex-shrink: 0;
+    padding: var(--space-2) var(--space-4);
+    background: var(--accent);
+    color: var(--bg-elevated);
+    border: 0;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+.identify-paste button:hover,
+.identify-fen button:hover { background: var(--accent-hover); }
+.identify-paste .search-paste-status { margin: 0; }
+
+.identify-fen summary { cursor: pointer; color: var(--accent); font-size: 0.9rem; }
+.identify-fen summary:hover { color: var(--accent-hover); }
+.identify-fen[open] summary { margin-bottom: var(--space-2); }
+.identify-fen .search-fen-hint { margin: 0 0 var(--space-2); }
+.identify-fen form { display: flex; gap: var(--space-2); }
+@media (max-width: 480px) {
+    .identify-fen form { flex-direction: column; }
+}
+.search-about { margin-top: var(--space-8); }
+
+/* --- Home: opening of the day with its position ------------------------ */
+.home-featured-card { flex-direction: row; align-items: center; gap: var(--space-5); }
+.home-featured-diagram {
+    flex-shrink: 0;
+    width: 132px;
+    height: auto;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 0 0 1px var(--border-strong);
+}
+.home-featured-body { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); min-width: 0; }
+@media (max-width: 480px) {
+    .home-featured-card { gap: var(--space-3); }
+    .home-featured-diagram { width: 96px; }
+}
+
+/* --- Home: opening and gambit cards, even in every row ------------------ */
+.home-popular-list { align-items: stretch; grid-auto-rows: 1fr; }
+.home-popular-list li { display: flex; }
+.home-popular-list a { flex: 1; align-items: flex-start; }
+.home-popular-list a .eco-tag { margin-top: 0.15rem; }
+.home-popular-kicker { color: var(--muted); font-size: 0.78rem; line-height: 1.2; }
+.home-popular-more { margin: var(--space-3) 0 0; text-align: center; font-size: 0.92rem; }
+/* On a phone: the first six of each, the rest one tap away. */
+@media (max-width: 600px) {
+    .home-popular-classic .home-popular-list li:nth-child(n+7),
+    .home-popular-gambits .home-popular-list li:nth-child(n+7) { display: none; }
+}
+
+/* The "How the openings are organized" text: a centered column, not a
+   block hanging off the left edge. */
+.home-intro { max-width: 72ch; margin-left: auto; margin-right: auto; }
+
+/* --- Letter pages: a same-name line's moves on their own line ----------- */
+.openings-letter-tail { display: block; white-space: nowrap; font-size: 0.8rem; color: var(--muted); }
+
+/* --- Repertoire: a place to start ---------------------------------------- */
+.repertoire-empty p { margin: 0 0 var(--space-2); }
+.repertoire-start { color: var(--muted); font-size: 0.92rem; }
+.about-version { color: var(--muted); font-size: 0.85rem; }

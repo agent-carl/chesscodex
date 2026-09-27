@@ -118,7 +118,7 @@ ob_start();
                     <th>Opening</th>
                     <th class="ranking-moves">Moves</th>
                     <th class="ranking-num">Games</th>
-                    <th>White / Draw / Black</th>
+                    <th><span class="th-long">White / Draw / Black</span><span class="th-short">W / D / B</span></th>
                     <?php if ($side): ?><th class="ranking-num"><?= $side === 'white' ? 'White' : 'Black' ?> score</th><?php endif; ?>
                 </tr>
             </thead>
