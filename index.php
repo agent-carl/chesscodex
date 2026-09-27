@@ -67,6 +67,7 @@ if ($rawPath === '' || $rawPath === false) $rawPath = '/';
 $router = new Router();
 $router->add('/robots.txt',          [Routes::class, 'robots']);
 $router->add('/sitemap.xml',         [Routes::class, 'sitemap']);
+$router->add('#^/sitemaps/([a-z-]+)\.xml$#', [Routes::class, 'sitemapPart']);
 $router->add('/random',              [Routes::class, 'random']);
 $router->add('/api/search',          [Routes::class, 'apiSearch']);
 $router->add('/api/stats',           [Routes::class, 'apiStats']);

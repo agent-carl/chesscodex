@@ -75,7 +75,11 @@ def main():
     base = args.base.rstrip("/")
 
     status, body, _ = fetch(base + "/sitemap.xml")
-    urls = [html.unescape(u) for u in re.findall(r"<loc>(.*?)</loc>", body.decode())]
+    text = body.decode()
+    if "<sitemapindex" in text:   # an index of sitemap parts: read each part
+        parts = [html.unescape(u) for u in re.findall(r"<loc>(.*?)</loc>", text)]
+        text = "".join(fetch(p)[1].decode() for p in parts)
+    urls = [html.unescape(u) for u in re.findall(r"<url><loc>(.*?)</loc>", text)]
     if args.limit: urls = urls[: args.limit]
     with ThreadPoolExecutor(args.workers) as ex:
         pages = list(ex.map(audit, urls))
