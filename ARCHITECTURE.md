@@ -53,14 +53,16 @@ The opening page is the most complex template. Order of operations:
 
 2. **templates/opening.php** assembles the article HTML:
    - Breadcrumb from `$ancestors` (each name once, shortened by the one before)
-   - Board with Start / ‹ / › / Flip; beside it the moves and the actions:
-     Play vs Stockfish, Practice, "My repertoire: + White / + Black", and the
-     "Copy & export" menu (Copy PGN / FEN / link, Share, PGN download, Lichess)
+   - Board with Start / ‹ / › / Flip (the `og.php` diagram sits in `#board`
+     as its still picture until chessground mounts); beside it the moves and
+     the actions: Play vs Stockfish, Practice, "My repertoire: + White /
+     + Black", the "Copy & export" menu (Copy PGN / FEN / link, Share, PGN
+     download, Lichess), and under them the stats panel — printed from the
+     cache; each next move is a button that shows it on the board and links
+     the named line it reaches (second grid column on a wide screen)
    - Overview section (auto-generated if `$o['description']` is empty), with
      the one suggest form: a description, or a problem report (stored with
      `Submissions::REPORT_MARK`, never published)
-   - Stats panel: printed from the cache; each next move is a button that
-     shows it on the board and links the named line it reaches
    - By rating / master games (`LevelStats`), Description (Parsedown, safe
      mode, auto-TOC for ≥ 3 headings)
    - Variations and "Other lines from the same position" (siblings), named

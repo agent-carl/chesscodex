@@ -271,16 +271,6 @@ CSS;
     <?php endif; ?>
     <footer class="site-footer">
         <?php
-        // Site version — read once per request from the VERSION file. Just a
-        // build identifier (e.g. for bug reports). No git commit hash since
-        // we don't ship a .git directory to the server.
-        static $codexVersion = null;
-        if ($codexVersion === null) {
-            $vfile = __DIR__ . '/../VERSION';
-            $codexVersion = is_file($vfile) ? trim((string) @file_get_contents($vfile)) : '';
-        }
-        ?>
-        <?php
         // The most searched openings and the rankings, linked from every page:
         // crawlers of a new site otherwise reach them only through the home page.
         try { $footerOpenings = Opening::topPopular(12); } catch (Throwable $e) { $footerOpenings = []; }
@@ -305,9 +295,6 @@ CSS;
             Powered by <a href="https://stockfishchess.org/" rel="noopener">Stockfish</a> (GPL-3.0) ·
             <a href="https://github.com/lichess-org/chessground" rel="noopener">chessground</a> (GPL-3.0) ·
             <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD-2)
-            <?php if ($codexVersion !== ''): ?>
-                · <span class="footer-version">v<?= $esc($codexVersion) ?></span>
-            <?php endif; ?>
         </small>
     </footer>
 </body>

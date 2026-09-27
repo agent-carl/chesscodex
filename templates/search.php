@@ -15,71 +15,64 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
         ?>
     </header>
 
-    <section class="search-fen search-paste" aria-labelledby="search-paste-title">
-        <div class="search-fen-body">
-            <h2 class="search-paste-title" id="search-paste-title"><?= htmlspecialchars(t('search.paste.label'), ENT_QUOTES, 'UTF-8') ?></h2>
-            <p class="search-fen-hint"><?= htmlspecialchars(t('search.paste.hint'), ENT_QUOTES, 'UTF-8') ?></p>
-            <form id="search-paste-form" autocomplete="off">
-                <textarea id="search-paste-input" rows="2" spellcheck="false"
-                          aria-labelledby="search-paste-title"
-                          placeholder="1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6"></textarea>
-                <button type="submit"><?= htmlspecialchars(t('search.paste.find'), ENT_QUOTES, 'UTF-8') ?></button>
-            </form>
-            <p class="search-paste-status" id="search-paste-status" aria-live="polite" hidden></p>
-        </div>
-    </section>
+    <?php /* One tool for moves: the board and the paste box feed the same lookup,
+             and its answer sits between them. FEN search folds away under it. */ ?>
+    <section class="identify" aria-labelledby="identify-title">
+        <h2 class="identify-title" id="identify-title">Or identify it from the moves</h2>
+        <div class="identify-grid">
+            <div class="search-board-wrap">
+                <div id="search-board" class="opening-board"></div>
+                <div class="board-controls">
+                    <button id="search-undo" type="button"><?= htmlspecialchars(t('search.board.undo'), ENT_QUOTES, 'UTF-8') ?></button>
+                    <button id="search-reset" type="button"><?= htmlspecialchars(t('search.board.reset'), ENT_QUOTES, 'UTF-8') ?></button>
+                    <span class="board-hint"><?= htmlspecialchars(t('search.board.hint'), ENT_QUOTES, 'UTF-8') ?></span>
+                </div>
+            </div>
 
-    <div class="search-grid">
-        <div class="search-board-wrap">
-            <div id="search-board" class="opening-board"></div>
-            <div class="board-controls">
-                <button id="search-undo" type="button"><?= htmlspecialchars(t('search.board.undo'), ENT_QUOTES, 'UTF-8') ?></button>
-                <button id="search-reset" type="button"><?= htmlspecialchars(t('search.board.reset'), ENT_QUOTES, 'UTF-8') ?></button>
-                <span class="board-hint"><?= htmlspecialchars(t('search.board.hint'), ENT_QUOTES, 'UTF-8') ?></span>
+            <div class="identify-side">
+                <section class="search-result" id="search-result" data-state="empty" aria-live="polite">
+                    <h3><?= htmlspecialchars(t('search.match'), ENT_QUOTES, 'UTF-8') ?></h3>
+                    <p class="search-empty"><?= htmlspecialchars(t('search.empty'), ENT_QUOTES, 'UTF-8') ?></p>
+                    <div class="search-match" hidden>
+                        <a class="search-match-link" href="#">
+                            <span class="eco-tag"></span>
+                            <span class="search-match-name"></span>
+                        </a>
+                        <p class="search-match-meta"></p>
+                    </div>
+                    <p class="search-played" id="search-played-list" hidden></p>
+                    <div class="search-continuations" id="search-continuations" hidden>
+                        <h3><?= htmlspecialchars(t('search.continuations'), ENT_QUOTES, 'UTF-8') ?></h3>
+                        <ul class="child-list"></ul>
+                    </div>
+                </section>
+
+                <form id="search-paste-form" class="identify-paste" autocomplete="off">
+                    <label for="search-paste-input"><?= htmlspecialchars(t('search.paste.label'), ENT_QUOTES, 'UTF-8') ?></label>
+                    <textarea id="search-paste-input" rows="3" spellcheck="false"
+                              aria-describedby="search-paste-hint"
+                              placeholder="1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6"></textarea>
+                    <div class="identify-paste-row">
+                        <small id="search-paste-hint"><?= htmlspecialchars(t('search.paste.hint'), ENT_QUOTES, 'UTF-8') ?></small>
+                        <button type="submit"><?= htmlspecialchars(t('search.paste.find'), ENT_QUOTES, 'UTF-8') ?></button>
+                    </div>
+                    <p class="search-paste-status" id="search-paste-status" aria-live="polite" hidden></p>
+                </form>
+
+                <details class="identify-fen">
+                    <summary><?= htmlspecialchars(t('search.fen.label'), ENT_QUOTES, 'UTF-8') ?></summary>
+                    <p class="search-fen-hint"><?= htmlspecialchars(t('search.fen.hint'), ENT_QUOTES, 'UTF-8') ?></p>
+                    <form id="search-fen-form" autocomplete="off">
+                        <input type="text" id="search-fen-input"
+                            placeholder="rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2"
+                            aria-label="FEN string"
+                            spellcheck="false">
+                        <button type="submit"><?= htmlspecialchars(t('search.fen.find'), ENT_QUOTES, 'UTF-8') ?></button>
+                    </form>
+                </details>
             </div>
         </div>
-
-        <aside class="search-sidebar">
-            <section class="search-result" id="search-result" data-state="empty" aria-live="polite">
-                <h2><?= htmlspecialchars(t('search.match'), ENT_QUOTES, 'UTF-8') ?></h2>
-                <p class="search-empty"><?= htmlspecialchars(t('search.empty'), ENT_QUOTES, 'UTF-8') ?></p>
-                <div class="search-match" hidden>
-                    <a class="search-match-link" href="#">
-                        <span class="eco-tag"></span>
-                        <span class="search-match-name"></span>
-                    </a>
-                    <p class="search-match-meta"></p>
-                </div>
-            </section>
-
-            <section class="search-continuations" id="search-continuations" hidden>
-                <h2><?= htmlspecialchars(t('search.continuations'), ENT_QUOTES, 'UTF-8') ?></h2>
-                <ul class="child-list"></ul>
-            </section>
-
-            <section class="search-played">
-                <h2><?= htmlspecialchars(t('search.played'), ENT_QUOTES, 'UTF-8') ?></h2>
-                <ol id="search-played-list" class="move-list" aria-label="<?= htmlspecialchars(t('search.played'), ENT_QUOTES, 'UTF-8') ?>"></ol>
-            </section>
-        </aside>
-    </div>
-
-    <details class="search-fen">
-        <summary>
-            <span class="search-fen-label"><?= htmlspecialchars(t('search.fen.label'), ENT_QUOTES, 'UTF-8') ?></span>
-            <span class="search-fen-chevron" aria-hidden="true">&#8250;</span>
-        </summary>
-        <div class="search-fen-body">
-            <p class="search-fen-hint"><?= htmlspecialchars(t('search.fen.hint'), ENT_QUOTES, 'UTF-8') ?></p>
-            <form id="search-fen-form" autocomplete="off">
-                <input type="text" id="search-fen-input"
-                    placeholder="rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2"
-                    aria-label="FEN string"
-                    spellcheck="false">
-                <button type="submit"><?= htmlspecialchars(t('search.fen.find'), ENT_QUOTES, 'UTF-8') ?></button>
-            </form>
-        </div>
-    </details>
+    </section>
 
     <?php
     // Worked examples: the moves open this page with them filled in, the name

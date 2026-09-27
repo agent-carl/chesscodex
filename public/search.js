@@ -14,7 +14,7 @@ if (dataNode) {
     const continuationsEl = document.getElementById('search-continuations');
     // The FEN search relabels this list "Other transpositions"; move lookups
     // put the original heading back.
-    const continuationsTitle = continuationsEl.querySelector('h2').textContent;
+    const continuationsTitle = continuationsEl.querySelector('h3').textContent;
 
     const turnColor = (c) => (c.turn() === 'w' ? 'white' : 'black');
 
@@ -75,16 +75,13 @@ if (dataNode) {
         fetchMatch();
     }
 
+    // The moves so far on one line, numbered: "1. e4 c5 2. Nf3".
     function renderPlayed() {
         const sans = chess.history();
-        playedListEl.innerHTML = '';
-        sans.forEach((san) => {
-            const li = document.createElement('li');
-            const span = document.createElement('span');
-            span.textContent = san;
-            li.appendChild(span);
-            playedListEl.appendChild(li);
-        });
+        playedListEl.hidden = sans.length === 0;
+        playedListEl.textContent = sans
+            .map((san, i) => (i % 2 === 0 ? (i / 2 + 1) + '. ' : '') + san)
+            .join(' ');
     }
 
     function canonOf(sans) {
@@ -154,7 +151,7 @@ if (dataNode) {
             matchEl.hidden = true;
         }
 
-        continuationsEl.querySelector('h2').textContent = continuationsTitle;
+        continuationsEl.querySelector('h3').textContent = continuationsTitle;
         const ulEl = continuationsEl.querySelector('ul');
         ulEl.innerHTML = '';
         if (data.continuations && data.continuations.length > 0) {
@@ -280,6 +277,7 @@ if (dataNode) {
         const matchEl = resultEl.querySelector('.search-match');
         empty.hidden = true;
         matchEl.hidden = true;
+        playedListEl.hidden = true;   // the answer is for the FEN, not the board
 
         const ulEl = continuationsEl.querySelector('ul');
         ulEl.innerHTML = '';
@@ -317,7 +315,7 @@ if (dataNode) {
             li.appendChild(a);
             ulEl.appendChild(li);
         });
-        continuationsEl.querySelector('h2').textContent = 'Other transpositions';
+        continuationsEl.querySelector('h3').textContent = 'Other transpositions';
         continuationsEl.hidden = list.length <= 1;
     }
 }

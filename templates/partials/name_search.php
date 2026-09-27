@@ -6,10 +6,12 @@
  * @var string      $nameSearchId           id prefix, unique on the page
  * @var string|null $nameSearchLabel        visible label; null = screen readers only
  * @var string|null $nameSearchPlaceholder
+ * @var string|null $nameSearchValue        text to start with; suggestions show at once
  */
 $nsId          = htmlspecialchars($nameSearchId, ENT_QUOTES, 'UTF-8');
 $nsLabel       = $nameSearchLabel ?? null;
 $nsPlaceholder = $nameSearchPlaceholder ?? "Najdorf, Queen's Gambit, B20…";
+$nsValue       = (string) ($nameSearchValue ?? '');
 ?>
 <div class="name-search">
     <label for="<?= $nsId ?>-input" class="<?= $nsLabel === null ? 'visually-hidden' : 'name-search-label' ?>">
@@ -19,6 +21,7 @@ $nsPlaceholder = $nameSearchPlaceholder ?? "Najdorf, Queen's Gambit, B20…";
         <input type="search" id="<?= $nsId ?>-input" name="q"
                data-name-search="<?= $nsId ?>-results"
                placeholder="<?= htmlspecialchars($nsPlaceholder, ENT_QUOTES, 'UTF-8') ?>"
+               <?php if ($nsValue !== ''): ?>value="<?= htmlspecialchars($nsValue, ENT_QUOTES, 'UTF-8') ?>" data-name-search-prefilled<?php endif; ?>
                autocomplete="off" spellcheck="false" enterkeyhint="search"
                role="combobox" aria-expanded="false" aria-autocomplete="list"
                aria-controls="<?= $nsId ?>-results">

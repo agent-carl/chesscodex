@@ -48,6 +48,9 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
         <span class="home-featured-date"><?= date('F j, Y') ?></span>
     </header>
     <a class="home-featured-card" href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $featured['slug']), ENT_QUOTES, 'UTF-8') ?>">
+        <img class="home-featured-diagram" src="<?= $baseEsc . htmlspecialchars(Opening::diagramPath((string) $featured['slug']), ENT_QUOTES, 'UTF-8') ?>"
+             width="720" height="720" alt="" decoding="async">
+        <span class="home-featured-body">
         <span class="home-featured-title">
             <span class="eco-tag"><?= htmlspecialchars($featured['eco'], ENT_QUOTES, 'UTF-8') ?></span>
             <span class="home-featured-name"><?= htmlspecialchars($featured['name'], ENT_QUOTES, 'UTF-8') ?></span>
@@ -62,6 +65,7 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
             <span class="home-featured-snippet"><?= htmlspecialchars($snippet, ENT_QUOTES, 'UTF-8') ?></span>
         <?php endif; ?>
         <span class="home-featured-cta">Study this opening →</span>
+        </span>
     </a>
 </section>
 <?php endif; ?>
@@ -82,7 +86,7 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 
 <?php
 // Helper — same DOM/CSS for "famous openings" and "famous gambits" strips.
-$renderStrip = static function (string $h2, string $lede, string $modifier, array $rows) use ($baseEsc) {
+$renderStrip = static function (string $h2, string $lede, string $modifier, array $rows, string $moreUrl, string $moreText) use ($baseEsc) {
     if (empty($rows)) return; ?>
     <section class="home-popular <?= $modifier ?>">
         <header class="home-popular-head">
@@ -90,18 +94,23 @@ $renderStrip = static function (string $h2, string $lede, string $modifier, arra
             <p class="home-popular-lede"><?= htmlspecialchars($lede, ENT_QUOTES, 'UTF-8') ?></p>
         </header>
         <ul class="home-popular-list">
-            <?php foreach ($rows as $p): ?>
+            <?php foreach ($rows as $p):
+                $pos = strpos((string) $p['name'], ': ');
+                [$kicker, $cardName] = $pos === false ? ['', (string) $p['name']]
+                    : [substr((string) $p['name'], 0, $pos), substr((string) $p['name'], $pos + 2)]; ?>
                 <li>
                     <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $p['slug']), ENT_QUOTES, 'UTF-8') ?>">
                         <span class="eco-tag"><?= htmlspecialchars($p['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                         <span class="home-popular-text">
-                            <span class="home-popular-name"><?= htmlspecialchars($p['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="home-popular-name"><?= htmlspecialchars($cardName, ENT_QUOTES, 'UTF-8') ?></span>
+                            <?php if ($kicker !== ''): ?><span class="home-popular-kicker"><?= htmlspecialchars($kicker, ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                             <span class="home-popular-moves"><?= htmlspecialchars(Opening::movesFrom((string) $p['pgn_moves'], 0), ENT_QUOTES, 'UTF-8') ?></span>
                         </span>
                     </a>
                 </li>
             <?php endforeach; ?>
         </ul>
+        <p class="home-popular-more"><a href="<?= $baseEsc . htmlspecialchars(I18n::url($moreUrl), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($moreText, ENT_QUOTES, 'UTF-8') ?> →</a></p>
     </section>
 <?php };
 
@@ -109,13 +118,17 @@ $renderStrip(
     'Famous openings',
     'The lines you have probably heard of — start here if you do not know where to look.',
     'home-popular-classic',
-    $popular
+    $popular,
+    '/popular-openings',
+    'The 100 most-played openings'
 );
 $renderStrip(
     'Famous gambits',
     'Sharp, sacrificial openings where one side gives up material for initiative.',
     'home-popular-gambits',
-    $gambits
+    $gambits,
+    '/gambits',
+    'The 100 most-played gambits'
 );
 ?>
 
