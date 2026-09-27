@@ -53,11 +53,14 @@ ob_start();
                 locally.
             </li>
             <li>
-                <strong>Editorial descriptions</strong> — when an opening has a prose
-                description, it was either written by me directly or accepted from a
-                community submission via the suggest form. Pages without a curated
-                description fall back to a generated "Overview" built from the underlying
-                metadata.
+                <strong>Editorial descriptions</strong> — the descriptions of the most
+                popular openings were written with the help of an AI assistant, based on
+                standard opening theory and the Lichess numbers shown on each page; if you
+                spot a mistake, the "Suggest an improvement or report a mistake" form under
+                the description reaches me. Other
+                descriptions are written by me or accepted from a community submission via
+                the suggest form. Pages without a description fall back to a generated
+                "Overview" built from the underlying data.
             </li>
         </ul>
     </section>
