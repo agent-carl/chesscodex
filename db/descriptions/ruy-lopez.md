@@ -2,7 +2,7 @@ The Ruy Lopez, or Spanish Opening (1.e4 e5 2.Nf3 Nc6 3.Bb5), is one of the most 
 
 ### Origins
 
-The opening is named after Ruy López de Segura, a Spanish priest who analysed it in his 1561 book on chess. It appears even earlier, in the Göttingen manuscript from around 1500. The main line with 3...a6 is called the [Morphy Defense](/openings/ruy-lopez-morphy-defense) after the American genius Paul Morphy. Players have called it "Spanish torture" because White's pressure can last deep into the middlegame.
+The opening is named after Ruy López de Segura, a 16th-century Spanish priest who studied it in his chess book of 1561. It appears even earlier, in the Göttingen manuscript from around 1490. The main line with 3...a6 is called the [Morphy Defense](/openings/ruy-lopez-morphy-defense) after the American genius Paul Morphy, whose games made the move popular. A common nickname for the opening is "the Spanish Torture", because White's pressure can last deep into the middlegame.
 
 ### The idea
 
@@ -11,9 +11,9 @@ The opening is named after Ruy López de Segura, a Spanish priest who analysed i
 ### Main lines
 
 - [Morphy Defense](/openings/ruy-lopez-morphy-defense) 3...a6: the main road, leading to the [Closed Ruy Lopez](/openings/ruy-lopez-closed) with systems like the [Chigorin](/openings/ruy-lopez-closed-chigorin-defense) and the [Breyer](/openings/ruy-lopez-closed-breyer-defense).
-- [Marshall Attack](/openings/ruy-lopez-marshall-attack) 8...d5: a pawn sacrifice for a direct kingside attack, first played by Frank Marshall against Capablanca in 1918.
-- [Berlin Defense](/openings/ruy-lopez-berlin-defense) 3...Nf6: Vladimir Kramnik used it to neutralise Kasparov in their 2000 world championship match, and it became known as the "Berlin Wall".
-- [Exchange Variation](/openings/ruy-lopez-exchange-variation) 4.Bxc6: White gives up the bishop pair for a better pawn structure, a favourite of Emanuel Lasker and Bobby Fischer.
+- [Marshall Attack](/openings/ruy-lopez-marshall-attack) 8...d5: a pawn sacrifice for a direct kingside attack. It became famous through Frank Marshall's game against Capablanca in New York in 1918.
+- [Berlin Defense](/openings/ruy-lopez-berlin-defense) 3...Nf6: Vladimir Kramnik used it in four games as Black against Kasparov in their 2000 world championship match, and all four were drawn. Its queenless endgame is also called the "Berlin Wall".
+- [Exchange Variation](/openings/ruy-lopez-exchange-variation) 4.Bxc6: White gives up the bishop pair for a better pawn structure. Emanuel Lasker brought it into grandmaster play, famously beating Capablanca with it at St. Petersburg 1914, and Bobby Fischer later revived it with new ideas.
 - Sidelines: the [Schliemann](/openings/ruy-lopez-schliemann-defense) 3...f5 (a sharp counterattack), the [Steinitz](/openings/ruy-lopez-steinitz-defense) 3...d6 and the [Classical](/openings/ruy-lopez-classical-variation) 3...Bc5.
 
 ### Strengths and weaknesses
@@ -36,4 +36,4 @@ The Ruy Lopez suits patient, positional players who want to play for a win witho
 
 ### The numbers
 
-On Lichess White scores 51–52% below 2200 and Black about 44%. In master games over the board the Ruy Lopez is one of the most drawish openings on this site: 53% of games are drawn, White wins 29% and Black only 18%. This shows the opening's reputation well. White rarely loses, but a well-prepared Black player can often hold.
+On Lichess White scores 51–52% below 2200 and Black about 44%. In master games over the board the Ruy Lopez is one of the most drawish openings on this site: 53% of games are drawn, White wins 29% and Black only 18.5%. This shows the opening's reputation well. White rarely loses, but a well-prepared Black player can often hold.

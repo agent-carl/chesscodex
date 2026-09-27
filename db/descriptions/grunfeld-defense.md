@@ -2,7 +2,7 @@ The Grünfeld Defense (1.d4 Nf6 2.c4 g6 3.Nc3 d5) is a dynamic, hypermodern answ
 
 ### Origins
 
-The opening is named after the Austrian grandmaster Ernst Grünfeld, who introduced it in 1922. It became famous through Bobby Fischer's "Game of the Century" against Donald Byrne in 1956, which reached a Grünfeld position. Garry Kasparov relied on it in his world championship matches against Anatoly Karpov. In the 21st century it has been a favourite of elite players such as Peter Svidler and Maxime Vachier-Lagrave.
+The first recorded game with the Grünfeld set-up was played in 1855 by Moheschunder Bannerjee against John Cochrane. The opening is named after the Austrian grandmaster Ernst Grünfeld, who introduced it into international play at the Bad Pistyan tournament in April 1922. The "Game of the Century" between Donald Byrne and 13-year-old Bobby Fischer in 1956 featured it. Garry Kasparov often used it, including in his world championship matches against Anatoly Karpov in 1986, 1987 and 1990. In the 21st century it has been played by elite players such as Peter Svidler and Maxime Vachier-Lagrave.
 
 ### The idea
 

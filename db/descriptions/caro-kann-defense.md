@@ -2,7 +2,7 @@ The Caro-Kann Defense (1.e4 c6) is one of the most solid replies to 1.e4. Black 
 
 ### Origins
 
-The opening is named after two 19th-century players, Horatio Caro, an Englishman living in Berlin, and Marcus Kann of Vienna, who analysed it in 1886. Its reputation grew in the 20th century when world champions José Raúl Capablanca, Mikhail Botvinnik, Tigran Petrosian and Anatoly Karpov played it. Today it is also very popular online, thanks to its reputation as a safe choice that still offers counterplay.
+The opening is named after two 19th-century players, Horatio Caro, an Englishman who spent most of his chess career in Berlin, and the Austrian Marcus Kann, both of whom analysed it in 1886. A year earlier, Kann had beaten Jacques Mieses with it at the German Chess Congress in Hamburg. In the 20th century world champions such as José Raúl Capablanca, Mikhail Botvinnik and Anatoly Karpov played it. In the 21st century the Advance Variation became White's most popular answer, and players such as Ding Liren and Alireza Firouzja have used the Caro-Kann at the top level.
 
 ### The idea
 

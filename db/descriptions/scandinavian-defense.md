@@ -2,7 +2,7 @@ The Scandinavian Defense (1.e4 d5), also called the Centre Counter, is the most 
 
 ### Origins
 
-The Scandinavian is one of the oldest recorded openings. The earliest known game of modern chess, played in Valencia in 1475, began with 1.e4 d5, which is why the line with ...Qd8 is still called the [Valencian Variation](/openings/scandinavian-defense-valencian-variation). The opening gets its name from 19th-century Scandinavian players who analysed it. It was long considered a sideline. Then Viswanathan Anand used it in his 1995 world championship match against Kasparov, and grandmasters like Sergei Tiviakov made it a lifelong weapon. Magnus Carlsen also plays it occasionally.
+The Scandinavian is one of the oldest recorded openings. It appears in a fictional game between Francesc de Castellví and Narcís Vinyoles in the Catalan poem *Scachs d'amor*, written around 1475. That game features the retreat 3...Qd8, and in 2023 two Spanish authors proposed naming that line the [Valencian Variation](/openings/scandinavian-defense-valencian-variation) in its honour. The opening also appears in Lucena's chess book of 1497. Long known as the Centre Counter, it was shown to be playable by Scandinavian masters in the late 19th century. The name "Scandinavian" acknowledges the Swedish player Ludvig Collijn, who played it with success. Its modern popularity grew after Bent Larsen beat Anatoly Karpov with it in 1979. Viswanathan Anand obtained an excellent position with it against Garry Kasparov in their 1995 world championship match, and Magnus Carlsen has chosen it against Fabiano Caruana.
 
 ### The idea
 
@@ -10,8 +10,8 @@ After 2.exd5 Qxd5 3.Nc3, Black's queen is chased and White gains a tempo. That i
 
 ### Main lines
 
-- [Main Line](/openings/scandinavian-defense-main-line) 3...Qa5: the classical retreat, pinning the c3-knight and eyeing e1. The [4.d4 Nf6 line](/openings/scandinavian-defense-main-line-mieses-variation) is the heart of the opening.
-- [Gubinsky-Melts Defense](/openings/scandinavian-defense-gubinsky-melts-defense) 3...Qd6: the modern choice, keeping the queen safe from Bd2 tricks and supporting ...Nf6, ...a6 and ...c6.
+- [Main Line](/openings/scandinavian-defense-main-line) 3...Qa5: the classical retreat, keeping the queen active on the a5–e1 diagonal. The [4.d4 Nf6 line](/openings/scandinavian-defense-main-line-mieses-variation) is the heart of the opening.
+- [Gubinsky-Melts Defense](/openings/scandinavian-defense-gubinsky-melts-defense) 3...Qd6: a modern retreat, usually followed by ...Nf6, ...a6 and ...c6.
 - [Valencian Variation](/openings/scandinavian-defense-valencian-variation) 3...Qd8: the most solid and passive retreat.
 - [Modern Variation](/openings/scandinavian-defense-modern-variation) 2...Nf6: Black delays the recapture, and the [Portuguese Gambit](/openings/scandinavian-defense-portuguese-gambit) 3.d4 Bg4 or the [Icelandic-Palme Gambit](/openings/scandinavian-defense-icelandic-palme-gambit) 3.c4 e6 give sharp play.
 
@@ -35,4 +35,4 @@ The Scandinavian suits practical players who want a reliable, low-theory defence
 
 ### The numbers
 
-On Lichess the Scandinavian holds up well at club level: White scores 48–50% and Black 46–47% at every band below 2200. Among masters the picture changes. Over the board, White wins 39%, Black only 24%, and 37% are drawn, the best master score for White against any of the main answers to 1.e4 on this site.
+On Lichess the Scandinavian holds up well at club level: White scores 48–50% and Black 46–47% at every band below 2200. Among masters the picture changes. Over the board, White wins 38.5%, Black only 24.5%, and 37% are drawn, the best master score for White against any of the main answers to 1.e4 on this site.

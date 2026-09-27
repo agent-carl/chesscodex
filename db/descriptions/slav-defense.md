@@ -2,7 +2,7 @@ The Slav Defense (1.d4 d5 2.c4 c6) is one of Black's most solid and respected an
 
 ### Origins
 
-The Slav gets its name from the many Slavic players who developed it, beginning with Semyon Alapin in the late 19th century and continuing with Alexander Alekhine, Efim Bogoljubov and Milan Vidmar. It reached the top in the 1930s, when Max Euwe and Alekhine played it repeatedly in their world championship matches. Since then it has been a main defence to 1.d4, used by world champions such as Viswanathan Anand and by many of today's elite.
+The move 2...c6 was analysed as early as 1590, and Wilhelm Steinitz played it in a world championship match in 1886. The name comes from the many masters of Slavic descent who developed its theory, including Semyon Alapin, Alexander Alekhine, Efim Bogoljubov and Milan Vidmar. It received an exhaustive test in the two Alekhine–Euwe world championship matches of 1935 and 1937. In 2006 Vladimir Kramnik used it in six of his eight games as Black in his world championship match, and it has also been a weapon of Viswanathan Anand, Vassily Ivanchuk and Nigel Short.
 
 ### The idea
 

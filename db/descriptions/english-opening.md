@@ -2,7 +2,7 @@ The English Opening (1.c4) is a flexible first move in which White controls d5 f
 
 ### Origins
 
-It is called the English Opening because the English master Howard Staunton played it in his 1843 match against Pierre Saint-Amant and in the 1851 London tournament. It was then rarely seen until the 20th century, when hypermodern ideas made flank openings respectable. Mikhail Botvinnik made it a serious weapon, and later world champions Garry Kasparov, Vladimir Kramnik and Magnus Carlsen played it regularly. Bobby Fischer, a lifelong 1.e4 player, surprised Boris Spassky with 1.c4 in their 1972 match.
+It is called the English Opening because the English master Howard Staunton played it in his 1843 match against Pierre Saint-Amant and in the 1851 London tournament. It did not catch on with Staunton's contemporaries and became popular only in the 20th century, when hypermodern ideas made flank openings respectable. World champions Mikhail Botvinnik, Garry Kasparov and Magnus Carlsen have used it in their world championship matches, and Ding Liren played it in his title matches of 2023 and 2024. Bobby Fischer, a lifelong 1.e4 player, surprised Boris Spassky with 1.c4 in their 1972 match.
 
 ### The idea
 
@@ -36,4 +36,4 @@ The English suits positional players who like to manoeuvre and to steer the game
 
 ### The numbers
 
-On Lichess the English scores 50–51% for White and 44–45% for Black below 2200. Above 2200, White still leads 49% to 43%. In master games over the board, White wins 34%, Black 22% and 44% are drawn, a result very similar to 1.d4.
+On Lichess the English scores 50–51% for White and 44–45% for Black below 2200. Above 2200, White still leads 49% to 43%. In master games over the board, White wins 34%, Black 22.5% and 44% are drawn, a result very similar to 1.d4.

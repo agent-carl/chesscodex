@@ -2,7 +2,7 @@ The Nimzo-Indian Defense (1.d4 Nf6 2.c4 e6 3.Nc3 Bb4) is considered one of the b
 
 ### Origins
 
-The opening is named after Aron Nimzowitsch, one of the founders of the hypermodern school, who developed it in the 1910s and 1920s. Hypermodern players believed the centre could be controlled by pieces from a distance instead of occupied by pawns, and the Nimzo-Indian is the most successful product of that idea. It has been played by nearly every world champion since Capablanca, including Botvinnik, Spassky, Karpov, Kasparov and Carlsen.
+The first known game with the opening is Englisch–Blackburne, London 1883, but it is named after Aron Nimzowitsch, a leader of the hypermodern school, who introduced it to master chess in the early 20th century. Hypermodern players believed the centre could be controlled by pieces from a distance instead of occupied by pawns, and the Nimzo-Indian is one of the most successful products of that idea. It has been played by every world champion since Capablanca, and Svetozar Gligorić and Lajos Portisch were among its great experts.
 
 ### The idea
 
