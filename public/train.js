@@ -1,4 +1,4 @@
-import { Chess } from '../vendor/chess.js';
+import { Chess } from '../vendor/chess.min.js';
 import { Chessground } from '../vendor/chessground.min.js';
 
 // Opening trainer (/train/<slug>): the user plays one side of a line, the
@@ -27,6 +27,12 @@ if (node) {
     }
     let drillAll = fromRepertoire;
     const allBox = $('train-all');
+    // From the repertoire the lines are the saved ones, not this opening's.
+    if (fromRepertoire && allBox) {
+        if (lines.length < 2) allBox.closest('label').hidden = true;
+        else $('train-all-label').textContent = 'Drill all ' + lines.length + ' lines of your '
+            + (color === 'white' ? 'White' : 'Black') + ' repertoire, lines due for review first';
+    }
     if (allBox) {
         allBox.checked = drillAll;
         allBox.addEventListener('change', () => { drillAll = allBox.checked; start(); });

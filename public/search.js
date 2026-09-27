@@ -1,4 +1,4 @@
-import { Chess } from '../vendor/chess.js';
+import { Chess } from '../vendor/chess.min.js';
 import { Chessground } from '../vendor/chessground.min.js';
 
 const dataNode = document.getElementById('search-data');
@@ -64,6 +64,10 @@ if (dataNode) {
         draggable: { showGhost: true },
     });
 
+    // After a FEN search the board starts from that position: moves played
+    // from there are looked up by position, not by the moves from the start.
+    let fenMode = false;
+
     function syncBoardAndQuery() {
         board.set({
             fen: chess.fen(),
@@ -71,7 +75,14 @@ if (dataNode) {
             movable: { color: turnColor(chess), dests: legalDests(chess) },
             lastMove: chess.history({ verbose: true }).slice(-1).map((m) => [m.from, m.to])[0],
         });
+        if (fenMode) {
+            playedListEl.hidden = true;
+            lookupFen(chess.fen());
+            return;
+        }
         renderPlayed();
+        // The paste box shows the moves on the board, so the two never disagree.
+        if (pasteInput) pasteInput.value = playedListEl.textContent;
         fetchMatch();
     }
 
@@ -110,8 +121,10 @@ if (dataNode) {
         }
     }
 
+    const emptyText = resultEl.querySelector('.search-empty').textContent;
     function renderEmpty() {
         resultEl.dataset.state = 'empty';
+        resultEl.querySelector('.search-empty').textContent = emptyText;
         resultEl.querySelector('.search-empty').hidden = false;
         resultEl.querySelector('.search-match').hidden = true;
         continuationsEl.hidden = true;
@@ -136,7 +149,7 @@ if (dataNode) {
             const link = matchEl.querySelector('.search-match-link');
             link.href = openingPathFmt.replace('{slug}', encodeURIComponent(data.match.slug));
             link.querySelector('.eco-tag').textContent = data.match.eco;
-            link.querySelector('.search-match-name').textContent = data.match.name;
+            link.querySelector('.search-match-name').textContent = data.match.name + (data.match.tail ? ' – ' + data.match.tail : '');
             const meta = matchEl.querySelector('.search-match-meta');
             if (data.match.exact) {
                 meta.textContent = `Exact match — you're playing this opening.`;
@@ -181,6 +194,8 @@ if (dataNode) {
 
     resetBtn.addEventListener('click', () => {
         chess.reset();
+        fenMode = false;
+        showPasteStatus('');
         syncBoardAndQuery();
     });
 
@@ -211,22 +226,64 @@ if (dataNode) {
         pasteStatus.hidden = text === '';
     }
 
+    // Russian move text: Cyrillic letters that look like Latin files and
+    // signs ("е4", "с5", "exd5" with "х", "О-О"), and the Russian piece
+    // letters at the start of a move — Кр king, К knight, Ф queen, Л rook,
+    // С bishop ("Кf3" is Nf3).
+    const LOOKALIKES = { 'а': 'a', 'е': 'e', 'с': 'c', 'х': 'x', 'О': 'O' };
+    const RU_PIECES = [[/^Кр/, 'K'], [/^К/, 'N'], [/^Ф/, 'Q'], [/^Л/, 'R'], [/^С/, 'B']];
+
+    // Move text or a PGN → its moves: headers, comments, variations, move
+    // numbers, NAGs, annotations and the result go.
+    function sanTokens(text) {
+        let t = text
+            .replace(/\[[^\]]*\]/g, ' ')
+            .replace(/\{[^}]*\}/g, ' ')
+            .replace(/;[^\n]*/g, ' ')
+            .replace(/\$\d+/g, ' ');
+        let prev;
+        do { prev = t; t = t.replace(/\([^()]*\)/g, ' '); } while (t !== prev);
+        return t.split(/\s+/)
+            .map((tok) => tok.replace(/^\d+\.+/, ''))
+            .map((tok) => RU_PIECES.reduce((m, [re, to]) => m.replace(re, to), tok).replace(/[аесхО]/g, (ch) => LOOKALIKES[ch]))
+            .map((tok) => tok.replace(/[!?]+$/, '').replace(/^0-0(-0)?/, (m) => m.replace(/0/g, 'O')))
+            .filter((tok) => tok !== '' && !/^(1-0|0-1|1\/2-1\/2|½-½|\*)$/.test(tok));
+    }
+
+    // One move, also in lower case ("nf3", "qxd4"). "b…" is tried as a pawn
+    // move first, then as a bishop move.
+    function tryMove(c, tok) {
+        const m = c.move(tok, { sloppy: true });
+        if (m || !/^[nbrqk]/.test(tok)) return m;
+        return c.move(tok[0].toUpperCase() + tok.slice(1), { sloppy: true });
+    }
+
     function loadMoves(text) {
-        const parsed = new Chess();
-        if (!parsed.load_pgn(text, { sloppy: true }) || parsed.history().length === 0) {
-            showPasteStatus('Couldn’t read those moves. Use standard notation, e.g. 1. e4 c5 2. Nf3.');
-            return;
-        }
-        if (parsed.header().FEN) {
+        if (/\[\s*(FEN|SetUp)\s/i.test(text)) {
             showPasteStatus('Only games from the standard starting position can be identified.');
             return;
         }
-        const moves = parsed.history({ verbose: true });
+        const tokens = sanTokens(text);
+        const parsed = new Chess();
+        let bad = null;
+        for (const tok of tokens) {
+            if (parsed.history().length >= MAX_PLIES) break;
+            if (!tryMove(parsed, tok)) { bad = tok; break; }
+        }
+        const n = parsed.history().length;
+        if (n === 0) {
+            showPasteStatus(bad
+                ? `Couldn’t read “${bad}” as a move. Use standard notation, e.g. 1. e4 c5 2. Nf3.`
+                : 'Couldn’t read those moves. Use standard notation, e.g. 1. e4 c5 2. Nf3.');
+            return;
+        }
         chess.reset();
-        moves.slice(0, MAX_PLIES).forEach((m) => chess.move({ from: m.from, to: m.to, promotion: m.promotion }));
-        showPasteStatus(moves.length > MAX_PLIES
-            ? `Showing the first ${MAX_PLIES / 2} moves — no named opening goes deeper.`
-            : '');
+        parsed.history({ verbose: true }).forEach((m) => chess.move({ from: m.from, to: m.to, promotion: m.promotion }));
+        fenMode = false;
+        const no = Math.floor(n / 2) + 1;
+        showPasteStatus(bad
+            ? `${no}${n % 2 === 0 ? '.' : '…'} ${bad} isn’t a legal move there — showing the moves before it.`
+            : tokens.length > MAX_PLIES ? `Showing the first ${MAX_PLIES / 2} moves — no named opening goes deeper.` : '');
         syncBoardAndQuery();
     }
 
@@ -252,22 +309,81 @@ if (dataNode) {
     }
 
     // ---- FEN search form (transposition lookup) -----------------------------
+    let fenInflight = 0;
+    async function lookupFen(fen) {
+        const myTurn = ++fenInflight;
+        try {
+            const res = await fetch(searchApiUrl + '?fen=' + encodeURIComponent(fen), { headers: { Accept: 'application/json' } });
+            if (myTurn !== fenInflight) return null;
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            renderFenResults(data);
+            return data;
+        } catch (err) {
+            console.error('fen search failed', err);
+            renderError();
+            return null;
+        }
+    }
+
+    function showFenError(text) {
+        resultEl.dataset.state = 'error';
+        const empty = resultEl.querySelector('.search-empty');
+        empty.textContent = text;
+        empty.hidden = false;
+        resultEl.querySelector('.search-match').hidden = true;
+        continuationsEl.hidden = true;
+        playedListEl.hidden = true;
+    }
+
+    function showFenOnBoard(fen) {
+        chess.load(fen);
+        fenMode = true;
+        if (pasteInput) pasteInput.value = '';
+        showPasteStatus('');
+        board.set({
+            fen: chess.fen(),
+            turnColor: turnColor(chess),
+            movable: { color: turnColor(chess), dests: legalDests(chess) },
+            lastMove: undefined,
+        });
+    }
+
+    // Castling rights for a bare piece placement: a side keeps them while its
+    // king and that rook stand on their first squares — true in almost every
+    // opening position, where the named lines are stored with them.
+    function guessCastling(placement) {
+        const rows = placement.split('/').map((r) => r.replace(/\d/g, (n) => '.'.repeat(Number(n))));
+        const [top, bottom] = [rows[0], rows[7]];
+        let c = '';
+        if (bottom[4] === 'K' && bottom[7] === 'R') c += 'K';
+        if (bottom[4] === 'K' && bottom[0] === 'R') c += 'Q';
+        if (top[4] === 'k' && top[7] === 'r') c += 'k';
+        if (top[4] === 'k' && top[0] === 'r') c += 'q';
+        return c || '-';
+    }
+
     const fenForm = document.getElementById('search-fen-form');
     if (fenForm) {
         fenForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const input = document.getElementById('search-fen-input');
-            const fen = input.value.trim();
-            if (!fen) return;
-            const url = searchApiUrl + '?fen=' + encodeURIComponent(fen);
-            try {
-                const res = await fetch(url, { headers: { Accept: 'application/json' } });
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                const data = await res.json();
-                renderFenResults(data);
-            } catch (err) {
-                console.error('fen search failed', err);
-                renderError();
+            const text = input.value.trim().replace(/\s+/g, ' ');
+            if (!text) return;
+            // Only the piece placement (the part a diagram tool copies): try
+            // it with White to move, then with Black.
+            const placementOnly = /^[pnbrqkPNBRQK1-8]+(\/[pnbrqkPNBRQK1-8]+){7}$/.test(text);
+            const castling = placementOnly ? guessCastling(text) : '';
+            const candidates = placementOnly ? [text + ' w ' + castling + ' - 0 1', text + ' b ' + castling + ' - 0 1'] : [text];
+            const valid = candidates.filter((f) => new Chess().validate_fen(f).valid);
+            if (valid.length === 0) {
+                showFenError('That isn’t a valid FEN. It looks like rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1.');
+                return;
+            }
+            for (const fen of valid) {
+                showFenOnBoard(fen);
+                const data = await lookupFen(fen);
+                if (!data || (data.matches || []).length > 0) return;
             }
         });
     }
@@ -284,7 +400,7 @@ if (dataNode) {
         const list = data.matches || [];
         if (list.length === 0) {
             resultEl.dataset.state = 'unknown';
-            empty.textContent = 'No opening matches that exact FEN.';
+            empty.textContent = 'No named opening reaches this position.';
             empty.hidden = false;
             continuationsEl.hidden = true;
             return;

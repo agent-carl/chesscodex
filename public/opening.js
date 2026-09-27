@@ -61,12 +61,34 @@
     // Same delta-name logic as the PHP $opening_short_name helper.
     function shortName(name, parentName) {
         if (!parentName) return name;
+        if (name === parentName) return name.split(/: |, /).pop();
         for (const sep of [': ', ', ']) {
             const prefix = parentName + sep;
             if (name.indexOf(prefix) === 0) return name.slice(prefix.length);
         }
         return name;
     }
+})();
+
+// Filter the sub-variation list by name or ECO code (the title holds the
+// whole name, the tag the code), for trees of hundreds of lines.
+(function () {
+    const input = document.querySelector('.opening-subtree-filter');
+    if (!input) return;
+    const none = document.querySelector('.opening-subtree-none');
+    const fold = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/['’]/g, '').toLowerCase();
+    input.addEventListener('input', () => {
+        const words = fold(input.value).split(/\s+/).filter(Boolean);
+        let shown = 0;
+        document.querySelectorAll('.opening-subtree-list li').forEach((li) => {
+            const a = li.querySelector('a');
+            const text = fold((a.title || '') + ' ' + (li.querySelector('.eco-tag') || {}).textContent);
+            const hit = words.every((w) => text.includes(w));
+            li.hidden = !hit;
+            if (hit) shown++;
+        });
+        none.hidden = shown > 0;
+    });
 })();
 
 // Lazy-prefetch Stockfish only if the user signals intent to play (hovers or

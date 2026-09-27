@@ -1,0 +1,16 @@
+# The same checks as before a commit (tools/check.sh: PHP lint, unit tests,
+# minified files, JS syntax), on every push. Uses the PHP and Node that come
+# with the runner image, no third-party actions.
+name: check
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: php -v | head -1 && node -v
+      - run: bash tools/check.sh
+      - name: The minified files in the commit match their sources
+        run: git diff --exit-code --stat -- public vendor

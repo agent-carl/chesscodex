@@ -12,7 +12,8 @@ $island = [
     'name'            => $o['name'],
     'eco'             => $o['eco'],
     'slug'            => $o['slug'],
-    'stockfishJsUrl'  => $baseUrl . '/vendor/stockfish.js',
+    // Versioned like every other asset: the file is served "immutable".
+    'stockfishJsUrl'  => $baseUrl . '/vendor/stockfish.js?v=' . substr((string) @hash_file('xxh3', __DIR__ . '/../vendor/stockfish.js'), 0, 8),
     'stockfishWasmUrl' => $baseUrl . '/vendor/stockfish.wasm',
     'openingUrl'      => $baseUrl . I18n::url('/openings/' . $o['slug']),
     'i18n'            => [
@@ -70,6 +71,10 @@ $island = [
                 <p class="play-eval" hidden></p>
                 <label class="play-eval-toggle"><input type="checkbox" id="play-show-eval"> Show the engine's evaluation</label>
                 <ol id="play-moves" class="move-list" aria-label="<?= htmlspecialchars(t('play.game'), ENT_QUOTES, 'UTF-8') ?>"></ol>
+                <p class="play-export">
+                    <button type="button" id="play-copy-pgn">Copy PGN</button>
+                    <a id="play-lichess" href="https://lichess.org/analysis" target="_blank" rel="noopener">Analyse on Lichess ↗</a>
+                </p>
             </section>
 
             <section class="play-status" id="play-status">

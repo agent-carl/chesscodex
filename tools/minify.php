@@ -10,6 +10,12 @@ declare(strict_types=1);
  *   public/style.min.css   ← public/css/*.css joined in filename order (the
  *                            numbered prefixes keep the cascade order)
  *   public/<foo>.min.js    ← from public/<foo>.js (app, search, play, sw, theme, opening, admin, home, site, …)
+ *   vendor/chess.min.js    ← vendor/chess.js without comments and indentation
+ *                            (its licence header kept)
+ *
+ * Imports of vendor modules in the .min.js files get the same ?v=<hash> the
+ * layout's modulepreload uses ($asset in templates/layout.php), so a board
+ * page fetches each module once, and a changed vendor file gets a new URL.
  *
  * Re-run after every edit to a source file. Templates reference the .min
  * variants (with ?v=mtime cache-bust), so updates ship correctly.
@@ -56,7 +62,38 @@ function minify_js(string $src): string
     return trim((string) $s);
 }
 
+/** First 8 hex of the xxh3 hash, as $asset() in templates/layout.php. */
+function asset_version(string $abs): string
+{
+    $hash = @hash_file('xxh3', $abs);
+    return $hash !== false ? substr($hash, 0, 8) : '1';
+}
+
+/** "import … from '../vendor/x.js'" → "…/vendor/x.js?v=<hash>". */
+function version_vendor_imports(string $js, string $vendorDir): string
+{
+    return (string) preg_replace_callback(
+        "#(from\s+'\.\./vendor/)([\w.-]+\.js)(')#",
+        static function (array $m) use ($vendorDir): string {
+            $abs = "$vendorDir/{$m[2]}";
+            return is_file($abs) ? $m[1] . $m[2] . '?v=' . asset_version($abs) . $m[3] : $m[0];
+        },
+        $js
+    );
+}
+
 $pub = __DIR__ . '/../public';
+$vendor = __DIR__ . '/../vendor';
+
+// chess.js: comments (after the licence header) and leading indentation out.
+// The file has no semicolons, so lines stay as they are; its template
+// literals are all on one line, so no string loses spaces.
+$chessSrc = (string) file_get_contents("$vendor/chess.js");
+$headerEnd = strpos($chessSrc, '*/') + 2;
+$chessMin = substr($chessSrc, 0, $headerEnd) . "\n"
+    . preg_replace('/^[ \t]+/m', '', minify_js(substr($chessSrc, $headerEnd)));
+file_put_contents("$vendor/chess.min.js", $chessMin);
+printf("  ok    %-12s -> %-16s  %5d -> %5d\n", 'chess.js', 'chess.min.js', strlen($chessSrc), strlen($chessMin));
 $tasks = [
     ['css/*.css',   'style.min.css',   'css'],
     ['app.js',      'app.min.js',      'js'],
@@ -81,7 +118,7 @@ foreach ($tasks as [$in, $out, $kind]) {
         continue;
     }
     $src = implode('', array_map('file_get_contents', $inPaths));
-    $min = $kind === 'css' ? minify_css($src) : minify_js($src);
+    $min = $kind === 'css' ? minify_css($src) : version_vendor_imports(minify_js($src), $vendor);
     file_put_contents($outPath, $min);
     $sLen = strlen($src); $mLen = strlen($min);
     $totalSrc += $sLen; $totalMin += $mLen;

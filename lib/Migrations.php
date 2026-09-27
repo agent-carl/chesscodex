@@ -65,26 +65,22 @@ final class Migrations
 
     private static function ensureTrackingTable(PDO $pdo): void
     {
-        $tableOptions = chess_codex_db_driver() === 'sqlite'
-            ? ''
-            : 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci';
         $pdo->exec(
             "CREATE TABLE IF NOT EXISTS codex_migrations (
                 version    VARCHAR(20)  NOT NULL,
                 applied_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (version)
-            ) $tableOptions"
+            )"
         );
     }
 
     /**
      * @return array<string, string> version => filepath, sorted ascending.
-     * MySQL migrations live in db/migrations/, SQLite ones in db/migrations/sqlite/
-     * — DDL syntax differs too much between the two to share files.
+     * SQLite migrations live in db/migrations/sqlite/.
      */
     private static function availableFiles(): array
     {
-        $dir = __DIR__ . '/../db/migrations' . (chess_codex_db_driver() === 'sqlite' ? '/sqlite' : '');
+        $dir = __DIR__ . '/../db/migrations/sqlite';
         if (!is_dir($dir)) return [];
         $out = [];
         foreach (scandir($dir) ?: [] as $name) {

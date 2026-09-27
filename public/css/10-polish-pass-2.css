@@ -265,7 +265,7 @@ button[aria-disabled="true"] {
         break-after: avoid;
         page-break-after: avoid;
     }
-    .opening-board { max-width: 320px; margin: 0 auto; }
+    .opening-board { margin: 0 auto; }
     .description-body { font-size: 11pt; }
 }
 

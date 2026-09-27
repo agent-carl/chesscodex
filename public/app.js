@@ -1,4 +1,4 @@
-import { Chess } from '../vendor/chess.js';
+import { Chess } from '../vendor/chess.min.js';
 import { Chessground } from '../vendor/chessground.min.js';
 
 // ----------------------------------------------------------------------
@@ -314,7 +314,7 @@ const dataNode = document.getElementById('opening-data');
 if (!dataNode) {
     // Not on an opening page — nothing to do.
 } else {
-    const { id, pgn, statsApiUrl, plies, nextLines } = JSON.parse(dataNode.textContent);
+    const { id, pgn, statsApiUrl, searchApiUrl, openingPathFmt, plies, nextLines } = JSON.parse(dataNode.textContent);
     statsContext.moveNo = (Math.floor(plies / 2) + 1) + (plies % 2 === 0 ? '. ' : '…');
     statsContext.nextLines = nextLines || {};
 
@@ -348,13 +348,82 @@ if (!dataNode) {
 
     const turnColor = (fen) => (fen.split(' ')[1] === 'w' ? 'white' : 'black');
 
+    // Every legal move can be played: the line's next move steps along the
+    // line, any other starts exploring from that position (see explore below).
+    const SQUARES = [];
+    for (let r = 8; r >= 1; r--) for (const f of 'abcdefgh') SQUARES.push(f + r);
+    function legalDests(fen) {
+        const c = new Chess(fen);
+        const dests = new Map();
+        SQUARES.forEach((sq) => {
+            const ms = c.moves({ square: sq, verbose: true });
+            if (ms.length) dests.set(sq, ms.map((m) => m.to));
+        });
+        return dests;
+    }
     function movableForPosition(i) {
-        if (i >= positions.length - 1) {
-            return { color: undefined, dests: new Map() };
+        return { color: turnColor(positions[i].fen), dests: legalDests(positions[i].fen) };
+    }
+
+    // Exploring: moves played off the line, from the line's position `base`.
+    // ‹ / ← take them back one by one, then return to the line.
+    let explore = null;   // { base, chess }
+    const exploreEl = document.getElementById('board-explore');
+    let exploreLookup = 0;
+    const moveNoOf = (ply) => Math.floor(ply / 2) + 1 + (ply % 2 === 0 ? '. ' : '… ');
+
+    function renderExplore() {
+        const c = explore.chess;
+        const moves = c.history({ verbose: true });
+        const last = moves[moves.length - 1];
+        const fen = c.fen();
+        board.set({
+            fen,
+            turnColor: turnColor(fen),
+            lastMove: last ? [last.from, last.to] : undefined,
+            movable: { color: turnColor(fen), dests: legalDests(fen) },
+        });
+        moveListEl.querySelectorAll('button').forEach((b) => b.classList.remove('is-active'));
+        if (prevBtn) prevBtn.disabled = false;
+        if (nextBtn) nextBtn.disabled = true;
+        const ply = explore.base;
+        const played = moves.map((m, k) => ((ply + k) % 2 === 0 || k === 0 ? moveNoOf(ply + k) : '') + m.san).join(' ');
+        exploreEl.hidden = false;
+        exploreEl.textContent = 'Off the line: ' + played;
+        // Which named line these moves reach (one request, the newest wins).
+        const all = positions.slice(1, ply + 1).map((p) => p.san).concat(moves.map((m) => m.san));
+        const turn = ++exploreLookup;
+        fetch(searchApiUrl + '?moves=' + encodeURIComponent(all.map((s) => s.replace(/[+#!?]/g, '')).join(' ')), { headers: { Accept: 'application/json' } })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => {
+                if (turn !== exploreLookup || !explore || !data || !data.match) return;
+                const a = document.createElement('a');
+                a.href = openingPathFmt.replace('{slug}', encodeURIComponent(data.match.slug));
+                a.textContent = data.match.name + (data.match.tail ? ' – ' + data.match.tail : '');
+                // A named line exactly here, or the last one these moves passed.
+                exploreEl.append(data.match.exact ? ' — ' : ' — beyond the named lines; the last one was ', a);
+            })
+            .catch(() => {});
+    }
+
+    function startExplore(base, move) {
+        const c = new Chess(positions[base].fen);
+        if (!c.move(move, { sloppy: true })) return false;
+        setPosition(base);
+        explore = { base, chess: c };
+        currentIdx = base;
+        renderExplore();
+        return true;
+    }
+
+    function stepBack() {
+        if (explore) {
+            explore.chess.undo();
+            if (explore.chess.history().length === 0) setPosition(explore.base);
+            else renderExplore();
+        } else if (currentIdx > 0) {
+            setPosition(currentIdx - 1);
         }
-        const next = positions[i + 1];
-        const dests = new Map([[next.from, [next.to]]]);
-        return { color: turnColor(positions[i].fen), dests };
     }
 
     const board = Chessground(boardEl, {
@@ -366,10 +435,20 @@ if (!dataNode) {
             color: undefined,
             dests: new Map(),
             events: {
-                // Chessground already animated the canonical move; sync our
-                // state to the next position. The fen we set will match what
-                // chessground rendered, so no flicker.
-                after: () => setPosition(currentIdx + 1),
+                after: (orig, dest) => {
+                    const promotion = 'q';
+                    if (explore) {
+                        explore.chess.move({ from: orig, to: dest, promotion });
+                        renderExplore();
+                        return;
+                    }
+                    const next = positions[currentIdx + 1];
+                    if (next && next.from === orig && next.to === dest) {
+                        setPosition(currentIdx + 1);
+                    } else {
+                        startExplore(currentIdx, { from: orig, to: dest, promotion });
+                    }
+                },
             },
         },
         draggable: { showGhost: true },
@@ -400,6 +479,9 @@ if (!dataNode) {
 
     function setPosition(i) {
         currentIdx = i;
+        explore = null;
+        exploreLookup++;
+        if (exploreEl) exploreEl.hidden = true;
         const m = movableForPosition(i);
         board.set({
             fen: positions[i].fen,
@@ -422,20 +504,7 @@ if (!dataNode) {
         statsSection.addEventListener('click', (e) => {
             const btn = e.target.closest('.stats-move-btn');
             if (!btn) return;
-            const last = positions.length - 1;
-            const c = new Chess(positions[last].fen);
-            const mv = c.move(btn.dataset.san, { sloppy: true });
-            if (!mv) return;
-            setPosition(last);
-            currentIdx = last + 1;   // one past the line: ← comes back to its end
-            board.set({
-                fen: c.fen(),
-                turnColor: turnColor(c.fen()),
-                lastMove: [mv.from, mv.to],
-                movable: { color: undefined, dests: new Map() },
-            });
-            if (prevBtn) prevBtn.disabled = false;
-            if (nextBtn) nextBtn.disabled = true;
+            if (!startExplore(positions.length - 1, btn.dataset.san)) return;
             btn.classList.add('is-active');
             const r = boardEl.getBoundingClientRect();
             if (r.bottom < 0 || r.top > window.innerHeight) boardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -443,8 +512,8 @@ if (!dataNode) {
     }
 
     resetBtn.addEventListener('click', () => setPosition(0));
-    if (prevBtn) prevBtn.addEventListener('click', () => { if (currentIdx > 0) setPosition(Math.min(currentIdx - 1, positions.length - 1)); });
-    if (nextBtn) nextBtn.addEventListener('click', () => { if (currentIdx < positions.length - 1) setPosition(currentIdx + 1); });
+    if (prevBtn) prevBtn.addEventListener('click', stepBack);
+    if (nextBtn) nextBtn.addEventListener('click', () => { if (!explore && currentIdx < positions.length - 1) setPosition(currentIdx + 1); });
 
     // Flip-board button — toggles between white-bottom and black-bottom view.
     // Persisted per-browser in localStorage so the preference sticks across
@@ -483,7 +552,9 @@ if (!dataNode) {
         // "Open in Lichess analysis" — direct deep link with FEN preloaded.
         const lichessLink = tools.querySelector('[data-tool-lichess]');
         if (lichessLink) {
-            lichessLink.href = 'https://lichess.org/analysis/standard/' + encodeURIComponent(finalFen);
+            // The moves, not only the final position, so Lichess shows the line.
+            lichessLink.href = 'https://lichess.org/analysis/pgn/'
+                + positions.slice(1).map((p) => encodeURIComponent(p.san)).join('_');
         }
 
         // Enable Copy FEN now that we have it computed.
@@ -509,10 +580,10 @@ if (!dataNode) {
 
     document.addEventListener('keydown', (e) => {
         if (e.target.matches('input, textarea, [contenteditable]')) return;
-        if (e.key === 'ArrowLeft' && currentIdx > 0) {
+        if (e.key === 'ArrowLeft' && (explore || currentIdx > 0)) {
             e.preventDefault();
-            setPosition(Math.min(currentIdx - 1, positions.length - 1));
-        } else if (e.key === 'ArrowRight' && currentIdx < positions.length - 1) {
+            stepBack();
+        } else if (e.key === 'ArrowRight' && !explore && currentIdx < positions.length - 1) {
             e.preventDefault();
             setPosition(currentIdx + 1);
         }

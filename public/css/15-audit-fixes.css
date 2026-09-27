@@ -50,7 +50,7 @@
     background-size: 25% 25%;
 }
 /* "html" outweighs vendor/chessground.base.css, which loads after this file. */
-html .cg-wrap coords { font-size: 10px; font-weight: 600; }
+html .cg-wrap coords { font-weight: 600; }
 html .cg-wrap coords.files { left: 0; text-transform: none; text-align: right; }
 html .cg-wrap coords.files coord { padding-right: 3px; }
 html .cg-wrap coords.squares { text-transform: none; }
@@ -89,7 +89,7 @@ html .cg-wrap coords.squares { text-transform: none; }
 .hero-actions { gap: var(--space-2) var(--space-5); font-size: 0.92rem; }
 .home-intro p { max-width: 72ch; }
 
-.home-featured-card { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+.home-featured-card { display: flex; }
 .home-featured-title { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-2); }
 .home-featured-name { margin-left: 0; }
 .home-featured-moves { font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); background: none; padding: 0; }
@@ -303,7 +303,6 @@ html .cg-wrap coords.squares { text-transform: none; }
 .opening-diagram img { box-shadow: 0 0 0 1px var(--border-strong); }
 [data-theme="dark"] .opening-diagram img { filter: brightness(0.9); }
 .opening-overview-notice { display: block; }
-.opening-overview-notice p { margin: 0 0 var(--space-2); }
 .opening-overview-notice .suggest-form { margin: 0; padding: 0; border: 0; }
 #suggest-form .suggest-kind { border: 0; margin: 0 0 var(--space-3); padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
 #suggest-form .suggest-kind legend { padding: 0; margin-bottom: 0.35rem; color: var(--fg); font-weight: 600; font-size: 0.9rem; }

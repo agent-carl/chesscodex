@@ -8,7 +8,15 @@
     var root = document.documentElement;
     var saved = null;
     try { saved = localStorage.getItem('codex-theme'); } catch (e) {}
-    root.dataset.theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var systemDark = matchMedia('(prefers-color-scheme: dark)');
+    var system = function () { return systemDark.matches ? 'dark' : 'light'; };
+    root.dataset.theme = saved || system();
+    // Following the system (nothing saved): switch along with it.
+    systemDark.addEventListener('change', function () {
+        var now = null;
+        try { now = localStorage.getItem('codex-theme'); } catch (e) {}
+        if (!now) root.dataset.theme = system();
+    });
 
     var base = (document.currentScript && document.currentScript.dataset.base) || '';
 
@@ -24,7 +32,12 @@
         btn.addEventListener('click', function () {
             var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
             root.dataset.theme = next;
-            try { localStorage.setItem('codex-theme', next); } catch (e) {}
+            // Picking the system's own theme means "follow the system" again,
+            // so a later change of the system setting is followed.
+            try {
+                if (next === system()) localStorage.removeItem('codex-theme');
+                else localStorage.setItem('codex-theme', next);
+            } catch (e) {}
             syncPressed();
         });
     });

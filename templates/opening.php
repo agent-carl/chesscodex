@@ -83,7 +83,7 @@ $ecoEsc        = htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8');
 $movesEsc      = '<code class="opening-overview-moves">' . htmlspecialchars($movesPretty, ENT_QUOTES, 'UTF-8') . '</code>';
 // og.php draws the share card and the diagram; ?v= changes when it does.
 $ogVer         = substr((string) @hash_file('xxh3', __DIR__ . '/../og.php'), 0, 8);
-$diagramUrl    = $baseUrl . Opening::diagramPath((string) $o['slug']);
+$diagramUrl    = $baseUrl . Opening::diagramPath((string) $o['slug'], true);   // WebP, as shown on the page
 // "5…a6": the move that reaches the position.
 $sans          = preg_split('/\s+/', trim((string) preg_replace('/\d+\.+\s*/', ' ', $movesPretty))) ?: [];
 $lastMoveText  = $plies > 0 && $sans ? (intdiv($plies - 1, 2) + 1) . (($plies - 1) % 2 === 0 ? '. ' : '…') . end($sans) : '';
@@ -174,6 +174,8 @@ $island = [
     'pgn'         => $o['pgn_moves'],
     'name'        => $o['name'],
     'statsApiUrl' => $baseUrl . '/api/stats',
+    'searchApiUrl' => $baseUrl . '/api/search',
+    'openingPathFmt' => $baseUrl . I18n::url('/openings/{slug}'),
     'plies'       => $plies,
     'nextLines'   => (object) $nextLines,
     'i18n'        => [
@@ -253,6 +255,7 @@ $island = [
                     <span aria-hidden="true">⇅</span> Flip
                 </button>
             </div>
+            <p class="board-explore" id="board-explore" aria-live="polite" hidden></p>
             <p class="board-hint"><?= htmlspecialchars(t('opening.board.hint'), ENT_QUOTES, 'UTF-8') ?></p>
         </div>
 
@@ -263,7 +266,7 @@ $island = [
             <div class="opening-actions">
                 <?php /* nofollow: the 3,690 play pages are noindex, no crawl needed. */ ?>
                 <a class="board-cta" rel="nofollow" href="<?= htmlspecialchars($baseUrl . I18n::url('/play/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"
-                   data-prefetch="<?= $baseEsc ?>/vendor/stockfish.js <?= $baseEsc ?>/vendor/stockfish.wasm"><?= htmlspecialchars(t('opening.board.cta'), ENT_QUOTES, 'UTF-8') ?></a>
+                   data-prefetch="<?= $baseEsc ?>/vendor/stockfish.js?v=<?= substr((string) @hash_file('xxh3', __DIR__ . '/../vendor/stockfish.js'), 0, 8) ?> <?= $baseEsc ?>/vendor/stockfish.wasm"><?= htmlspecialchars(t('opening.board.cta'), ENT_QUOTES, 'UTF-8') ?></a>
                 <a class="board-cta board-cta-secondary" rel="nofollow"
                    href="<?= htmlspecialchars($baseUrl . I18n::url('/train/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"
                    title="Play this line's moves from memory, with review on a schedule">Practice the line</a>
@@ -307,50 +310,7 @@ $island = [
             </div>
         </aside>
 
-        <?php
-        // "3…" or "4. ": the number in front of the next move from this position.
-        $nextMoveNo = (intdiv($plies, 2) + 1) . ($plies % 2 === 0 ? '. ' : '…');
-        $pctsText   = static fn (string $w, string $d, string $b): string =>
-            round((float) $w) . ' / ' . round((float) $d) . ' / ' . round((float) $b);
-        $updated    = static fn (string $at): string => $at !== '' && ($ts = strtotime($at)) ? date('M j, Y', $ts) : '';
-        ?>
-        <section class="opening-stats" id="opening-stats" aria-busy="<?= $stats ? 'false' : 'true' ?>" aria-live="polite"
-                 data-stats="<?= $stats ? ($stats['fresh'] ? 'fresh' : 'stale') : 'none' ?>">
-            <h2><?= htmlspecialchars(t('opening.stats.title'), ENT_QUOTES, 'UTF-8') ?></h2>
-            <?php if ($stats && $statsTotal === 0): ?>
-                <p class="stats-status" data-state="empty"><?= htmlspecialchars(t('opening.stats.no_games'), ENT_QUOTES, 'UTF-8') ?></p>
-            <?php elseif ($stats): ?>
-                <p class="stats-status" data-state="done" hidden></p>
-            <?php else: ?>
-                <p class="stats-status" data-state="loading"><?= htmlspecialchars(t('opening.stats.loading'), ENT_QUOTES, 'UTF-8') ?></p>
-            <?php endif; ?>
-            <div class="stats-bar" role="img"<?= $statsTotal > 0 ? ' aria-label="' . htmlspecialchars($barLabel($wPct, $dPct, $bPct), ENT_QUOTES, 'UTF-8') . '" title="' . htmlspecialchars($barLabel($wPct, $dPct, $bPct), ENT_QUOTES, 'UTF-8') . '"' : ' hidden' ?>>
-                <span class="stats-bar-w" style="width:<?= $wPct ?>%"></span>
-                <span class="stats-bar-d" style="width:<?= $dPct ?>%"></span>
-                <span class="stats-bar-b" style="width:<?= $bPct ?>%"></span>
-            </div>
-            <p class="stats-totals"<?= $statsTotal > 0 ? '' : ' hidden' ?>><?php if ($statsTotal > 0): ?><?= number_format($statsTotal) ?> games · White <?= $wPct ?>% / Draw <?= $dPct ?>% / Black <?= $bPct ?>%<?php endif; ?></p>
-            <table class="stats-moves"<?= $statsTotal > 0 && $statsRows ? '' : ' hidden' ?>>
-                <caption class="stats-moves-caption">The moves played next — click one to see it on the board.</caption>
-                <thead>
-                    <tr><th>Next move</th><th>Games</th><th><span class="th-long">White / Draw / Black</span><span class="th-short">W / D / B</span></th></tr>
-                </thead>
-                <tbody><?php foreach ($statsTotal > 0 ? $statsRows : [] as [$san, $mt, $mw, $md, $mb]):
-                    $next = $nextLines[$san] ?? null; ?>
-                    <tr>
-                        <td class="stats-move">
-                            <button type="button" class="stats-move-btn" data-san="<?= htmlspecialchars((string) $san, ENT_QUOTES, 'UTF-8') ?>"
-                                    title="Show <?= htmlspecialchars($nextMoveNo . $san, ENT_QUOTES, 'UTF-8') ?> on the board"><?= htmlspecialchars($nextMoveNo . $san, ENT_QUOTES, 'UTF-8') ?></button>
-                            <?php if ($next): ?><a class="stats-move-line" href="<?= htmlspecialchars($next['url'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($next['name'], ENT_QUOTES, 'UTF-8') ?></a><?php endif; ?>
-                        </td>
-                        <td><?= number_format($mt) ?></td>
-                        <td><div class="stats-bar inline" role="img" aria-label="<?= htmlspecialchars($barLabel($mw, $md, $mb), ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($barLabel($mw, $md, $mb), ENT_QUOTES, 'UTF-8') ?>"><span class="stats-bar-w" style="width:<?= $mw ?>%"></span><span class="stats-bar-d" style="width:<?= $md ?>%"></span><span class="stats-bar-b" style="width:<?= $mb ?>%"></span></div>
-                            <span class="stats-pcts" aria-hidden="true"><?= $pctsText($mw, $md, $mb) ?></span></td>
-                    </tr>
-                <?php endforeach; ?></tbody>
-            </table>
-            <p class="stats-attribution"<?= $statsTotal > 0 ? '' : ' hidden' ?>><small><?= htmlspecialchars(t('opening.stats.attribution'), ENT_QUOTES, 'UTF-8') ?> <span class="stats-cached-at"><?= $statsTotal > 0 ? htmlspecialchars($updated((string) $stats['cached_at']), ENT_QUOTES, 'UTF-8') : '' ?></span></small></p>
-        </section>
+        <?php require __DIR__ . '/partials/opening_stats.php'; ?>
     </div>
 
     <?php
@@ -378,7 +338,7 @@ $island = [
                     </p>
                     <input type="hidden" name="opening_id" value="<?= (int) $o['id'] ?>">
                     <!-- honeypot: real users leave this empty -->
-                    <input type="text" name="website" tabindex="-1" autocomplete="off"
+                    <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true"
                            style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
                     <div class="suggest-row">
                         <label>Your name (optional)
@@ -415,52 +375,7 @@ $island = [
     <?php endif; ?>
 
 
-    <?php
-    // By level: four Lichess rating bands and the masters database, fetched
-    // for the most-played lines by tools/fetch-levels.php.
-    $levels = LevelStats::forOpening((int) $o['id']);
-    $masterGames = $levels['masters']['games_list'] ?? [];
-    // One style for players: "Carlsen, Magnus" and "Carlsen, M." both → "Carlsen, M.".
-    $player = static function (string $n): string {
-        if (!preg_match('/^([^,]+),\s*(.+)$/u', trim($n), $m)) return trim($n);
-        $initials = array_map(static fn (string $w): string => mb_substr($w, 0, 1) . '.', preg_split('/[\s.]+/u', trim($m[2]), -1, PREG_SPLIT_NO_EMPTY) ?: []);
-        return trim($m[1]) . ', ' . implode(' ', $initials);
-    };
-    if ($levels): ?>
-    <section class="opening-levels">
-        <h2>By rating</h2>
-        <table class="stats-moves stats-levels">
-            <thead><tr><th>Players</th><th>Games</th><th><span class="th-long">White / Draw / Black</span><span class="th-short">W / D / B</span></th></tr></thead>
-            <tbody>
-            <?php foreach ($levels as $key => $l):
-                [$lw, $ld, $lb] = [$pct($l['white'], $l['games']), $pct($l['draws'], $l['games']), $pct($l['black'], $l['games'])]; ?>
-                <tr>
-                    <td><?= htmlspecialchars(LevelStats::LEVELS[$key]['label'], ENT_QUOTES, 'UTF-8') ?></td>
-                    <td><?= $l['games'] > 0 ? htmlspecialchars(Rankings::compact($l['games']), ENT_QUOTES, 'UTF-8') : '—' ?></td>
-                    <td><?php if ($l['games'] > 0): ?>
-                        <div class="stats-bar inline" role="img" aria-label="<?= htmlspecialchars($barLabel($lw, $ld, $lb), ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($barLabel($lw, $ld, $lb), ENT_QUOTES, 'UTF-8') ?>"><span class="stats-bar-w" style="width:<?= $lw ?>%"></span><span class="stats-bar-d" style="width:<?= $ld ?>%"></span><span class="stats-bar-b" style="width:<?= $lb ?>%"></span></div>
-                        <span class="stats-pcts" aria-hidden="true"><?= $pctsText($lw, $ld, $lb) ?></span>
-                    <?php else: ?>no games<?php endif; ?></td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-        <?php if ($masterGames): ?>
-            <h3>Master games</h3>
-            <ul class="master-games">
-                <?php foreach ($masterGames as $g):
-                    $result = match ($g['winner']) { 'white' => '1–0', 'black' => '0–1', default => '½–½' }; ?>
-                    <li><a href="https://lichess.org/<?= rawurlencode((string) $g['id']) ?>" target="_blank" rel="noopener nofollow">
-                        <?= htmlspecialchars($player((string) $g['white']), ENT_QUOTES, 'UTF-8') ?> – <?= htmlspecialchars($player((string) $g['black']), ENT_QUOTES, 'UTF-8') ?></a>
-                        <span class="master-games-meta"><?= $g['year'] > 0 ? (int) $g['year'] . ' · ' : '' ?><?= $result ?></span></li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
-        <p class="stats-attribution"><small>Rated blitz, rapid and classical Lichess games by rating band, and
-            over-the-board games of players rated 2200+ from the Lichess masters database ·
-            updated <?= htmlspecialchars($updated((string) max(array_column($levels, 'fetched_at'))), ENT_QUOTES, 'UTF-8') ?></small></p>
-    </section>
-    <?php endif; ?>
+    <?php require __DIR__ . '/partials/opening_levels.php'; ?>
 
     <?php
     // Admin-only inline edit link. Same trick as in layout.php — only touch
@@ -539,151 +454,7 @@ $island = [
         <?php if (!empty($o['description'])) $renderSuggest(); ?>
     </section>
 
-    <?php
-    // A variation's label under this line: its name without the part this
-    // page's name already says — or, when Lichess gives it this very name, the
-    // moves that make it different ("6. Bg5"). The meta is the move(s) from
-    // this position that reach it.
-    $variationLabel = static function (array $c, string $underName, int $fromPly) use ($opening_crumb): array {
-        $moves = Opening::movesFrom((string) $c['pgn_moves'], $fromPly);
-        $label = $opening_crumb((string) $c['name'], $underName);
-        if ((string) $c['name'] === $underName) {
-            $parts = preg_split('/: |, /', (string) $c['name']) ?: [(string) $c['name']];
-            $label = (string) end($parts);
-        }
-        return [$label, $moves];
-    };
-    ?>
-    <?php if ($children): ?>
-    <?php $pageSize = 20; $needsToggle = count($children) > $pageSize; ?>
-    <section class="opening-children" data-children-collapsed="<?= $needsToggle ? '1' : '0' ?>">
-        <h2><?= htmlspecialchars(t('opening.variations', ['count' => count($children)]), ENT_QUOTES, 'UTF-8') ?></h2>
-        <ul class="child-list">
-            <?php foreach ($children as $i => $c):
-                [$childLabel, $childMoves] = $variationLabel($c, (string) $o['name'], $plies);
-            ?>
-                <li<?= ($needsToggle && $i >= $pageSize) ? ' class="is-overflow" hidden' : '' ?>>
-                    <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $c['slug']), ENT_QUOTES, 'UTF-8') ?>"
-                       title="<?= htmlspecialchars($c['name'] . ' (' . $c['eco'] . ')', ENT_QUOTES, 'UTF-8') ?>">
-                        <span class="eco-tag"><?= htmlspecialchars($c['eco'], ENT_QUOTES, 'UTF-8') ?></span>
-                        <span class="child-list-name"><?= htmlspecialchars($childLabel, ENT_QUOTES, 'UTF-8') ?></span>
-                        <?php if ($childMoves !== ''): ?>
-                            <span class="child-list-plies"><?= htmlspecialchars($childMoves, ENT_QUOTES, 'UTF-8') ?></span>
-                        <?php endif; ?>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-        <?php if ($needsToggle): ?>
-            <button type="button" class="children-toggle"
-                data-show-text="<?= htmlspecialchars(t('opening.variations.show', ['count' => count($children)]), ENT_QUOTES, 'UTF-8') ?>"
-                data-hide-text="<?= htmlspecialchars(t('opening.variations.hide'), ENT_QUOTES, 'UTF-8') ?>">
-                <?= htmlspecialchars(t('opening.variations.show', ['count' => count($children)]), ENT_QUOTES, 'UTF-8') ?>
-            </button>
-        <?php endif; ?>
-    </section>
-    <?php endif; ?>
-
-    <?php if (!empty($siblings) && $parent): ?>
-    <section class="opening-related">
-        <h2>Other lines from the same position</h2>
-        <p class="opening-related-lede">Instead of <?= htmlspecialchars($movesFromParent = Opening::movesFrom((string) $o['pgn_moves'], (int) $parent['move_count']), ENT_QUOTES, 'UTF-8') ?>,
-            the position after
-            <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $parent['slug']), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) $parent['name'], ENT_QUOTES, 'UTF-8') ?></a>
-            also goes on to:</p>
-        <ul class="child-list opening-related-list">
-            <?php foreach ($siblings as $sib):
-                [$sibLabel, $sibMoves] = $variationLabel($sib, (string) $parent['name'], (int) $parent['move_count']);
-                // A sister line of another opening keeps its whole name.
-                if (Opening::family((string) $sib['name']) !== Opening::family((string) $parent['name'])) $sibLabel = (string) $sib['name'];
-            ?>
-                <li>
-                    <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $sib['slug']), ENT_QUOTES, 'UTF-8') ?>"
-                       title="<?= htmlspecialchars($sib['name'] . ' (' . $sib['eco'] . ')', ENT_QUOTES, 'UTF-8') ?>">
-                        <span class="eco-tag"><?= htmlspecialchars($sib['eco'], ENT_QUOTES, 'UTF-8') ?></span>
-                        <span class="child-list-name"><?= htmlspecialchars($sibLabel, ENT_QUOTES, 'UTF-8') ?></span>
-                        <?php if ($sibMoves !== ''): ?>
-                            <span class="child-list-plies"><?= htmlspecialchars($sibMoves, ENT_QUOTES, 'UTF-8') ?></span>
-                        <?php endif; ?>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </section>
-    <?php endif; ?>
-
-    <?php
-    // Other move orders into this position, and moves from it into other named lines.
-    $moveAt  = static fn (int $ply, string $san): string => (intdiv($ply, 2) + 1) . ($ply % 2 === 0 ? '. ' : '…') . $san;
-    ?>
-    <?php if ($trans['from'] || $trans['to']): ?>
-    <section class="opening-transpositions">
-        <h2>Transpositions</h2>
-        <?php foreach (['from' => 'This position is also reached from these lines, by another move order:',
-                        'to'   => 'From here, a move transposes into another named line:'] as $dir => $lede):
-            if (!$trans[$dir]) continue; ?>
-            <p class="opening-related-lede"><?= htmlspecialchars($lede, ENT_QUOTES, 'UTF-8') ?></p>
-            <ul class="child-list">
-                <?php foreach ($trans[$dir] as [$t, $san]):
-                    // The move is played from the "from" line's position.
-                    $move = $moveAt($dir === 'from' ? (int) $t['move_count'] : $plies, (string) $san); ?>
-                    <li>
-                        <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $t['slug']), ENT_QUOTES, 'UTF-8') ?>">
-                            <span class="eco-tag"><?= htmlspecialchars((string) $t['eco'], ENT_QUOTES, 'UTF-8') ?></span>
-                            <span class="child-list-name"><?= htmlspecialchars((string) $t['name'], ENT_QUOTES, 'UTF-8') ?></span>
-                            <span class="child-list-plies"><?= $dir === 'from' ? 'then ' : 'after ' ?><?= htmlspecialchars($move, ENT_QUOTES, 'UTF-8') ?></span>
-                        </a>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endforeach; ?>
-    </section>
-    <?php endif; ?>
-
-    <?php if ($descendantCount > count($children)): ?>
-    <?php $subtreeLazy = empty($descendants); ?>
-    <section class="opening-subtree">
-        <details<?= $subtreeLazy ? ' data-lazy="' . (int) $o['id'] . '"'
-                     . ' data-api="' . $baseEsc . '/api/subtree/"'
-                     . ' data-href="' . $baseEsc . htmlspecialchars(I18n::url('/openings/'), ENT_QUOTES, 'UTF-8') . '"' : '' ?>
-                 data-parent-depth="<?= (int) $o['depth'] ?>">
-            <summary>
-                <span class="opening-subtree-icon" aria-hidden="true">&#9660;</span>
-                All <?= (int) $descendantCount ?> named lines that continue from here
-            </summary>
-            <?php if ($subtreeLazy): ?>
-                <p class="opening-subtree-status" data-state="idle" aria-live="polite">
-                    <span class="opening-subtree-status-text">Loading sub-variations…</span>
-                </p>
-                <ul class="opening-subtree-list" hidden aria-busy="true"></ul>
-            <?php else: ?>
-                <?php
-                // Build a quick lookup so each row can ask "what's my parent's
-                // name?" and strip the redundant prefix.
-                $nameById = [(int) $o['id'] => (string) $o['name']];
-                foreach ($descendants as $d) {
-                    $nameById[(int) $d['id']] = (string) $d['name'];
-                }
-                ?>
-                <ul class="opening-subtree-list">
-                    <?php foreach ($descendants as $d):
-                        $parentName = $nameById[(int) $d['parent_id']] ?? null;
-                        $display    = $opening_short_name((string) $d['name'], $parentName);
-                    ?>
-                        <li style="--depth-indent: <?= max(0, (int) $d['depth'] - (int) $o['depth'] - 1) ?>;">
-                            <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $d['slug']), ENT_QUOTES, 'UTF-8') ?>"
-                               title="<?= htmlspecialchars($d['name'], ENT_QUOTES, 'UTF-8') ?>">
-                                <span class="eco-tag"><?= htmlspecialchars($d['eco'], ENT_QUOTES, 'UTF-8') ?></span>
-                                <span class="opening-subtree-name"><?= htmlspecialchars($display, ENT_QUOTES, 'UTF-8') ?></span>
-                                <span class="opening-subtree-plies"><?= Opening::movesLabel((int) $d['move_count']) ?></span>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            <?php endif; ?>
-        </details>
-    </section>
-    <?php endif; ?>
+    <?php require __DIR__ . '/partials/opening_lines.php'; ?>
 </article>
 
 <aside class="recent-strip" id="recent-strip" hidden aria-label="Recently viewed openings">

@@ -45,7 +45,7 @@ ob_start();
                 <?php if (count($lines) > 1): ?>
                     <label class="train-scope">
                         <input type="checkbox" id="train-all">
-                        Drill all <?= count($lines) ?> lines of this opening, lines due for review first
+                        <span id="train-all-label">Drill all <?= count($lines) ?> lines of this opening, lines due for review first</span>
                     </label>
                 <?php endif; ?>
                 <p class="train-due" id="train-due"></p>

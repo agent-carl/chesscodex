@@ -47,7 +47,7 @@ if (isset($_COOKIE['codex_admin'])) {
 // served from its cache for up to a day if the Pi can't answer. Browsers
 // still check back every time (max-age=0). Admins, the admin area, errors
 // and anything but GET/HEAD send no such header, so they're never cached.
-// (Pages served from the cache don't reach Views::track().)
+// (Views are counted by the browser — see Views::mark() — so cached pages count.)
 $pagePath = (string) (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/');
 if (!headers_sent() && $adminPending === null
     && in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)
@@ -77,36 +77,6 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
     return $cache[$path] = $baseEsc . htmlspecialchars($path, ENT_QUOTES, 'UTF-8') . '?v=' . $ver;
 };
 
-// Preload hint with the exact versioned URL the <link> below uses, so the
-// browser (and Cloudflare Early Hints) fetch the stylesheet once, early.
-if (!headers_sent()) {
-    header('Link: <' . $asset('/public/style.min.css') . '>; rel=preload; as=style', false);
-    header('Link: <' . $asset('/public/theme.min.js') . '>; rel=preload; as=script', false);
-}
-
-// Critical CSS inlined for first paint — covers header, brand, base typography,
-// hero. The full stylesheet is linked right after it (render-blocking).
-$criticalCss = <<<'CSS'
-:root{--font-body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--font-display:ui-serif,"Iowan Old Style","Source Serif Pro","Apple Garamond",Georgia,"Times New Roman",serif;--font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;--bg:#faf7f0;--bg-elevated:#fff;--bg-subtle:#f1ecdf;--fg:#1a1a1a;--fg-soft:#3a3a3a;--muted:#6b6b6b;--border:#e6e0d4;--border-strong:#c8bfa9;--accent:#2a5d8f;--accent-soft:#e8eef6;--accent-hover:#1d4773;--radius-sm:3px;--radius:6px;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.5rem;--space-6:2rem}
-[data-theme="dark"]{--bg:#16181d;--bg-elevated:#1f2228;--bg-subtle:#1a1d22;--fg:#e8e6e1;--fg-soft:#c8c5be;--muted:#9a978e;--border:#2c3038;--border-strong:#3a3f48;--accent:#6ea3d4;--accent-soft:#1e2a38;--accent-hover:#95bce0}
-*,*::before,*::after{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
-a{color:var(--accent);text-decoration:none}
-h1,h2,h3{font-family:var(--font-display);font-weight:600;color:var(--fg);margin:0 0 var(--space-3)}
-h1{font-size:1.75rem;line-height:1.2}
-button{font:inherit;color:inherit;cursor:pointer}
-.site-header{position:sticky;top:0;z-index:10;background:var(--bg-elevated);border-bottom:1px solid var(--border)}
-.site-header-inner{max-width:1080px;margin:0 auto;padding:var(--space-3) var(--space-4);display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)}
-.brand{display:inline-flex;align-items:baseline;gap:var(--space-2);color:var(--fg);text-decoration:none;font-weight:600}
-.brand-mark{font-family:var(--font-display);font-size:1.6rem;line-height:1;color:var(--accent);transform:translateY(2px)}
-.brand-name{font-size:1.05rem}
-.site-nav{margin-left:auto;margin-right:var(--space-3);display:flex;gap:var(--space-4)}
-.site-nav a{color:var(--fg-soft);font-size:.95rem}
-.theme-toggle{appearance:none;background:transparent;border:1px solid var(--border);color:var(--fg-soft);width:36px;height:36px;border-radius:var(--radius);display:inline-flex;align-items:center;justify-content:center}
-.container{max-width:1080px;margin:0 auto;padding:var(--space-5) var(--space-4) var(--space-6)}
-.hero{text-align:center;padding:var(--space-6) 0 var(--space-5);border-bottom:1px solid var(--border);margin-bottom:var(--space-6)}
-.hero h1{font-size:2.4rem;margin-bottom:var(--space-2)}
-CSS;
 ?><!DOCTYPE html>
 <html lang="<?= $esc($locale) ?>">
 <head>
@@ -163,19 +133,19 @@ CSS;
          repeat visits. Page-specific entry (app.min.js / play.min.js / …)
          loads as usual via its <script type="module"> tag at the bottom. -->
     <?php if (!empty($needsBoard)): ?>
-    <link rel="modulepreload" href="<?= $asset('/vendor/chess.js') ?>">
+    <link rel="modulepreload" href="<?= $asset('/vendor/chess.min.js') ?>">
     <link rel="modulepreload" href="<?= $asset('/vendor/chessground.min.js') ?>">
     <?php endif; ?>
 
-    <style id="critical-css"><?= $criticalCss ?></style>
     <?php /* Blocking on purpose: applies the saved theme before the first paint.
              An external file, not inline, so the CSP can forbid inline scripts. */ ?>
     <script src="<?= $asset('/public/theme.min.js') ?>" data-base="<?= $baseEsc ?>"></script>
     <?php /* Name search suggestions and the "/" shortcut, on every page. */ ?>
     <script defer src="<?= $asset('/public/site.min.js') ?>" data-base="<?= $baseEsc ?>"></script>
-    <?php /* Render-blocking on purpose: loading it async let the page paint with
-             only the critical CSS and then reflow (PageSpeed CLS 0.72 on mobile).
-             It's ~12 KB brotli from Cloudflare's cache. */ ?>
+    <?php /* Render-blocking on purpose: loading it async let the page paint
+             half-styled and then reflow (PageSpeed CLS 0.72 on mobile). Being
+             blocking, it made an inlined "critical CSS" block pointless: every
+             rule of that block was set again here. ~14 KB brotli, cached. */ ?>
     <link rel="stylesheet" href="<?= $asset('/public/style.min.css') ?>">
     <?php
     // Chessground board CSS — only loaded on pages that actually render a
@@ -209,7 +179,7 @@ CSS;
 <?php /* has-board keeps the empty #board placeholder at its full square size
          until Chessground mounts (see ".opening-board:empty" in public/css/);
          without it the board popped in late and shifted the page. */ ?>
-<body<?= !empty($needsBoard) ? ' class="has-board"' : '' ?>>
+<body<?= !empty($needsBoard) ? ' class="has-board"' : '' ?><?= Views::bodyAttributes() ?>>
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <header class="site-header">
         <div class="site-header-inner">
@@ -291,7 +261,7 @@ CSS;
         <small><?= t('footer.data') ?></small><br>
         <small style="color:var(--muted)">
             <a href="<?= $baseEsc ?>/about">About</a> ·
-            <a href="mailto:info@chesscodex.org">Contact</a> ·
+            <!--email_off--><a href="mailto:info@chesscodex.org">Contact</a><!--/email_off--> ·
             Powered by <a href="https://stockfishchess.org/" rel="noopener">Stockfish</a> (GPL-3.0) ·
             <a href="https://github.com/lichess-org/chessground" rel="noopener">chessground</a> (GPL-3.0) ·
             <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD-2)

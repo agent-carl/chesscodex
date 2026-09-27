@@ -27,7 +27,7 @@ return [
     'opening.moves'            => 'Moves',
     'opening.board.reset'      => 'Start',
     'opening.board.cta'        => 'Play it vs Stockfish',
-    'opening.board.hint'       => 'Play the next move of the line on the board, or step through it with ‹ › and the arrow keys.',
+    'opening.board.hint'       => 'Play any move on the board to explore from there, or step through the line with ‹ › and the arrow keys.',
     'opening.stats.title'      => 'Statistics from Lichess',
     'opening.stats.loading'    => 'Loading…',
     'opening.stats.no_games'   => 'No games found in Lichess for this exact position.',

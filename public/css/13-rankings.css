@@ -45,4 +45,4 @@
     font-weight: 400;
     color: var(--muted);
 }
-.openings-letter-tail { margin-left: .4em; font-family: var(--font-mono); font-size: .85em; color: var(--muted); }
+.openings-letter-tail { margin-left: .4em; font-family: var(--font-mono); }

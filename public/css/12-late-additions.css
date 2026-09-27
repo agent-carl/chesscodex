@@ -107,9 +107,7 @@
     align-items: center;
     gap: var(--space-3);
     margin-bottom: var(--space-3);
-    padding: 0.4rem 0;
     font-size: 0.85rem;
-    border-bottom: 1px solid var(--border);
     overflow-x: auto;
     /* Hide scrollbar visually but keep functional on touch */
     scrollbar-width: none;
@@ -132,7 +130,6 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    flex-wrap: nowrap;
 }
 .recent-strip-list a {
     display: inline-flex;
@@ -162,7 +159,6 @@
 @media (max-width: 540px) {
     .recent-strip-label { display: none; }   /* save room — pills are self-explanatory */
 }
-@media print { .recent-strip { display: none; } }
 
 /* --- 2. Homepage "Pick up where you left off" — between hero and groups */
 .home-recent {

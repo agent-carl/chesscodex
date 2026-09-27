@@ -1,4 +1,4 @@
-import { Chess } from '../vendor/chess.js';
+import { Chess } from '../vendor/chess.min.js';
 import { Chessground } from '../vendor/chessground.min.js';
 
 const dataNode = document.getElementById('play-data');
@@ -317,8 +317,21 @@ if (dataNode) {
     // moves (muted), then the ones played here, so the first reply after
     // the Najdorf reads "6. Bg5", not "1. Bg5".
     const openingSans = opening.history();
+    const lichessLink = document.getElementById('play-lichess');
+    const gamePgn = (sans) => sans.map((san, i) => (i % 2 === 0 ? (i / 2 + 1) + '. ' : '') + san).join(' ');
+    document.getElementById('play-copy-pgn').addEventListener('click', async (e) => {
+        const btn = e.currentTarget;
+        try {
+            await navigator.clipboard.writeText(gamePgn(openingSans.concat(chess.history())));
+            btn.textContent = 'Copied';
+        } catch (err) {
+            btn.textContent = 'Copy failed';
+        }
+        setTimeout(() => { btn.textContent = 'Copy PGN'; }, 1500);
+    });
     function renderMoveList() {
         const sans = openingSans.concat(chess.history());
+        lichessLink.href = 'https://lichess.org/analysis/pgn/' + sans.map((s) => encodeURIComponent(s)).join('_');
         movesEl.innerHTML = '';
         for (let i = 0; i < sans.length; i += 2) {
             const li = document.createElement('li');

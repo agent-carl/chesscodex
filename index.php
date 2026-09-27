@@ -71,6 +71,7 @@ $router->add('/random',              [Routes::class, 'random']);
 $router->add('/api/search',          [Routes::class, 'apiSearch']);
 $router->add('/api/stats',           [Routes::class, 'apiStats']);
 $router->add('/api/suggest',         [Routes::class, 'apiSuggest']);
+$router->add('/api/view',            [Routes::class, 'apiView']);
 $router->add('#^/api/subtree/(\d+)$#', [Routes::class, 'apiSubtree']);
 $router->add('/admin',               [Routes::class, 'adminDashboard']);
 $router->add('/admin/login',         [Routes::class, 'adminLogin']);

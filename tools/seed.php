@@ -35,10 +35,9 @@ $force  = in_array('--force', $argv, true);
 $verify = in_array('--verify', $argv, true);
 
 $pdo    = chess_codex_db();
-$driver = chess_codex_db_driver();
 $root   = dirname(__DIR__);
 
-$existing = seed_openings_count($pdo, $driver);
+$existing = seed_openings_count($pdo);
 
 if ($verify) {
     exit(seed_verify($pdo, $root) ? 0 : 1);
@@ -51,8 +50,7 @@ if ($existing > 0 && !$force) {
 }
 
 // ---------------------------------------------------------------- schema
-echo "Creating schema ($driver)…\n";
-if ($driver === 'sqlite') {
+echo "Creating schema…\n";
     foreach (['codex_view_log', 'codex_submissions', 'codex_stats_cache', 'codex_opening_lines',
               'codex_openings', 'codex_migrations'] as $table) {
         $pdo->exec("DROP TABLE IF EXISTS $table");
@@ -64,13 +62,6 @@ if ($driver === 'sqlite') {
     // write — and the -wal/-shm files inherit the database file's mode.
     $file = (string) $pdo->query('PRAGMA database_list')->fetch()['file'];
     if ($file !== '') @chmod($file, 0664);
-} else {
-    $sql = (string) file_get_contents($root . '/db/schema.sql');
-    $sql = preg_replace('/^\s*--.*$/m', '', $sql) ?? $sql;
-    foreach (preg_split('/;\s*\n/', $sql) ?: [] as $stmt) {
-        if (trim($stmt) !== '') $pdo->exec($stmt);
-    }
-}
 
 // ---------------------------------------------------------------- parse TSVs
 echo "Reading db/*.tsv…\n";
@@ -163,7 +154,7 @@ foreach ($parents as $rowId => $parentId) {
     if ($parentId !== null) $setParent->execute(['p' => $parentId, 'id' => $rowId]);
 }
 $pdo->commit();
-if ($driver === 'sqlite') $pdo->exec('ANALYZE');
+$pdo->exec('ANALYZE');
 
 echo "Done: " . count($rows) . " openings, " . count(array_filter($parents, fn ($p) => $p !== null))
     . " with a parent, FEN computed for " . (count($rows) - count($fenFailed)) . ".\n";
@@ -173,11 +164,9 @@ exit(seed_verify($pdo, $root) ? 0 : 1);
 
 // ================================================================ helpers
 
-function seed_openings_count(PDO $pdo, string $driver): int
+function seed_openings_count(PDO $pdo): int
 {
-    $exists = $driver === 'sqlite'
-        ? $pdo->query("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'codex_openings'")->fetchColumn()
-        : $pdo->query("SHOW TABLES LIKE 'codex_openings'")->fetchColumn();
+    $exists = $pdo->query("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'codex_openings'")->fetchColumn();
     if (!$exists) return 0;
     return (int) $pdo->query('SELECT COUNT(*) FROM codex_openings')->fetchColumn();
 }

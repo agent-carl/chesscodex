@@ -14,15 +14,39 @@ require_once __DIR__ . '/db.php';
  */
 final class Views
 {
+    /** Page types a view can be counted for (what /api/view accepts). */
+    public const PAGE_TYPES = ['home', 'index', 'train', 'repertoire', 'ranking', 'eco', 'search', 'opening', 'play'];
+
+    /** @var array{0:string,1:int}|null the page being rendered, set by mark() */
+    private static ?array $marked = null;
+
+    /**
+     * Names the page being rendered. The layout puts it on <body>, and
+     * public/site.js reports the view to /api/view once the page is shown —
+     * so pages Cloudflare serves from its cache are counted too, and bots
+     * that don't run JavaScript aren't.
+     */
+    public static function mark(string $pageType, ?int $openingId = null): void
+    {
+        self::$marked = [$pageType, $openingId ?? 0];
+    }
+
+    /** ' data-view="…" data-view-id="…"' for <body>, or '' when nothing was marked. */
+    public static function bodyAttributes(): string
+    {
+        if (self::$marked === null) return '';
+        [$type, $id] = self::$marked;
+        return ' data-view="' . htmlspecialchars($type, ENT_QUOTES, 'UTF-8') . '"'
+            . ($id > 0 ? ' data-view-id="' . $id . '"' : '');
+    }
+
     /** Track a single page view. Cheap: one UPSERT per request. */
     public static function track(string $pageType, ?int $openingId = null): void
     {
         if (self::shouldSkip()) return;
 
         try {
-            $upsert = chess_codex_db_driver() === 'sqlite'
-                ? 'ON CONFLICT (log_date, page_type, opening_id) DO UPDATE SET views = views + 1'
-                : 'ON DUPLICATE KEY UPDATE views = views + 1';
+            $upsert = 'ON CONFLICT (log_date, page_type, opening_id) DO UPDATE SET views = views + 1';
             $stmt = chess_codex_db()->prepare(
                 "INSERT INTO codex_view_log (log_date, page_type, opening_id, views)
                  VALUES (:d, :pt, :oid, 1)

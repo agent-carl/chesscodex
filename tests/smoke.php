@@ -15,7 +15,8 @@ declare(strict_types=1);
  * responding sanely". A failure here means deploy was broken.
  */
 
-$rootUrl = 'https://test.av-webdevs.com';
+// php tests/smoke.php [BASE] — the live site by default.
+$rootUrl = rtrim((string) ($argv[1] ?? 'https://chesscodex.org'), '/');
 
 // Token gate for HTTP usage. CLI bypasses.
 if (php_sapi_name() !== 'cli') {
@@ -44,10 +45,11 @@ $tests = [
     ['GET', '/robots.txt',                        200, 'Sitemap:'],
     ['GET', '/sitemap.xml',                       200, '<urlset'],
     ['GET', '/api/search?name=naj',               200, 'Najdorf'],
-    ['GET', '/api/stats?play=e2e4,c7c5',          200, '{'],
+    ['GET', '/api/stats?id=1',                    200, '{'],
     ['GET', '/api/suggest',                       405, 'POST only'],
     ['GET', '/admin',                             302, ''],
-    ['GET', '/admin/login',                       200, 'Admin login'],
+    // Live, Cloudflare Access answers first (302 to its login page).
+    ['GET', '/admin/login',                       302, ''],
     ['GET', '/openings/this-does-not-exist',      404, 'Did you mean'],
     ['GET', '/nonsense-page',                     404, 'Page not found'],
     ['GET', '/og.php?slug=sicilian-defense',      200, ''],   // PNG, just check 200

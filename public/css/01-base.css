@@ -102,11 +102,6 @@ p a:not([class]) {
 
 /* Keyboard focus — visible outline on tab navigation, hidden on mouse click. */
 :focus { outline: none; }
-:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-    border-radius: var(--radius-sm);
-}
 
 h1, h2, h3 {
     font-family: var(--font-display);
@@ -134,7 +129,6 @@ button {
     top: 0;
     z-index: 10;
     background: var(--bg-elevated);
-    border-bottom: 1px solid var(--border);
     backdrop-filter: saturate(180%) blur(8px);
 }
 .site-header-inner {
