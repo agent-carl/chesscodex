@@ -220,3 +220,16 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
     font-size: 0.85rem;
 }
 .play-export button:hover { border-color: var(--accent); color: var(--accent); }
+
+/* --- Opening page: long line names wrap beside the move, not under it;
+       the "By rating" table ends where the board does ----------------------- */
+@media (min-width: 601px) {
+    .stats-moves .stats-move-btn { float: left; }
+    .stats-moves .stats-move-line { display: block; overflow: hidden; padding: calc(0.15rem + 1px) 0 0 0.3rem; margin: 0; }
+}
+@media (min-width: 900px) {
+    .opening-levels .stats-levels { max-width: 520px; }
+}
+@media (max-width: 600px) {
+    .stats-levels td:first-child { white-space: normal; }
+}
