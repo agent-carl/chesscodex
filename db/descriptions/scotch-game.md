@@ -2,7 +2,7 @@ The Scotch Game (1.e4 e5 2.Nf3 Nc6 3.d4) opens the centre immediately. Instead o
 
 ### Origins
 
-The name comes from a correspondence match between Edinburgh and London that began in 1824, in which the Edinburgh players used 3.d4. It was popular in the 19th century and then mostly forgotten, until Garry Kasparov revived it, most famously in his 1990 world championship match against Anatoly Karpov. Since then it has been a respected alternative to the Ruy Lopez at every level.
+The opening was first mentioned by Ercole del Rio in his treatise of 1750. It takes its name from a correspondence match between Edinburgh and London in 1824. It was common in the 19th century, but by 1900 it had declined, because it was thought to release the central tension too early. In the late 20th century Garry Kasparov led its revival, arguing that it caused Black lasting strategic problems while avoiding the heavily analysed Ruy Lopez. Jan Timman and Sergei Rublevsky have also been among its supporters.
 
 ### The idea
 

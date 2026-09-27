@@ -2,7 +2,7 @@ The Vienna Game (1.e4 e5 2.Nc3) is a flexible open game. Instead of the usual 2.
 
 ### Origins
 
-The opening is named after the Vienna chess players of the mid-19th century, among them Carl Hamppe, who played and analysed 2.Nc3 extensively. It was popular in the romantic era, faded in the 20th century, and has had a strong revival in online chess in recent years. It is a surprise weapon that avoids the heavily analysed lines after 2.Nf3.
+The opening is named after the city of Vienna. It was a fashionable novelty in the 19th century: in 1888 a New York Times reviewer wrote that since Morphy only one new opening had been introduced, the Vienna. Wilhelm Steinitz favoured his Steinitz Gambit (2...Nc6 3.f4 exf4 4.d4), in which White's king walks into the open, in line with his belief that "the King is a fighting piece". Later Vasily Smyslov scored well with the quiet Mieses Variation (2...Nf6 3.g3). Today it is especially popular at club level. On Lichess it appears in about as many games under 1400 as between 1400 and 1800, far more than among experts.
 
 ### The idea
 
@@ -17,7 +17,7 @@ Black's main answers are 2...Nf6, counterattacking e4, and 2...Nc6, keeping a so
 
 - [Falkbeer Variation](/openings/vienna-game-falkbeer-variation) 2...Nf6, followed by:
   - the [Vienna Gambit](/openings/vienna-game-vienna-gambit) 3.f4, where the [main line 3...d5](/openings/vienna-game-vienna-gambit-main-line) is Black's best answer;
-  - the [Stanley Variation](/openings/vienna-game-stanley-variation) 3.Bc4, which after 3...Nxe4 4.Qh5 can lead to the wild [Frankenstein-Dracula Variation](/openings/vienna-game-frankenstein-dracula-variation).
+  - the [Stanley Variation](/openings/vienna-game-stanley-variation) 3.Bc4, which after 3...Nxe4 4.Qh5 can lead to the wild [Frankenstein-Dracula Variation](/openings/vienna-game-frankenstein-dracula-variation), a name coined by the Irish correspondence player Tim Harding.
 - [Max Lange Defense](/openings/vienna-game-max-lange-defense) 2...Nc6: a solid reply. White can continue with Bc4, g3 or f4.
 - [Anderssen Defense](/openings/vienna-game-anderssen-defense) 2...Bc5: an active development of the bishop.
 

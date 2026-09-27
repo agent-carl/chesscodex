@@ -2,7 +2,7 @@ The London System (1.d4 d5 2.Nf3 Nf6 3.Bf4, or 2.Bf4 straight away) is a solid "
 
 ### Origins
 
-The system is named after the London tournament of 1922, where several strong players used it against Black's Indian setups. For decades it was seen as a safe but harmless way to avoid theory. That changed in the 2000s and 2010s, when grandmasters such as Gata Kamsky and later Magnus Carlsen showed it has real venom. Online chess and streamers then made it a favourite of club players everywhere.
+The first master to play it regularly was James Mason in the 1880s. The name comes from the very strong London tournament of 1922, where it appeared seven times, including in games by Capablanca, Alekhine and Rubinstein. It then remained rare in grandmaster play for decades. In the 21st century players such as Gata Kamsky, Levon Aronian and Magnus Carlsen began to use it more often, and it became hugely popular with club players thanks to its solid nature and clear plans.
 
 ### The idea
 
@@ -36,4 +36,4 @@ The London is ideal for players with little time for theory who want a reliable,
 
 ### The numbers
 
-On this exact line Lichess shows White at 51–52% and Black at 43–44% below 1800. At higher levels it is 48–49% against 44%. In master games over the board, the London is very balanced: White wins 27%, Black 24% and 49% are drawn. That supports its reputation as a safe weapon rather than a way to win the opening.
+On this exact line Lichess shows White at 51–52.5% and Black at 43.5–44.5% below 1800. At higher levels it is 47.5–49.5% for White against 44% for Black. In master games over the board, the London is very balanced: White wins 27%, Black 24% and 49% are drawn. That supports its reputation as a safe weapon rather than a way to win the opening.

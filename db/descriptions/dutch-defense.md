@@ -2,7 +2,7 @@ The Dutch Defense (1.d4 f5) is Black's most aggressive answer to 1.d4. By playin
 
 ### Origins
 
-The opening is named after Elias Stein, a Dutch player (born in France, active in The Hague), who recommended 1...f5 in his 1789 book on chess. It was long considered risky. It became respectable in the 20th century, above all through world champion Mikhail Botvinnik, who used it in world championship matches. The [Leningrad Variation](/openings/dutch-defense-leningrad-variation) was developed by players from Leningrad in the 1950s. In recent years grandmasters such as Hikaru Nakamura and Magnus Carlsen have also played it.
+The opening is named after Elias Stein (1748–1812), an Alsatian who settled in The Hague, and who recommended 1...f5 as the best reply to 1.d4 in his 1789 book. Its most notable use came in the 1951 world championship match, in which both Mikhail Botvinnik and his challenger David Bronstein played it. Other famous practitioners include Alexander Alekhine, Miguel Najdorf and Bent Larsen. In recent years Hikaru Nakamura has played it, and Magnus Carlsen has used the Stonewall to beat Viswanathan Anand and Fabiano Caruana.
 
 ### The idea
 

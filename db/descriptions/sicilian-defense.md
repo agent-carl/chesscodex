@@ -2,7 +2,7 @@ The Sicilian Defense (1.e4 c5) is Black's most popular and most ambitious answer
 
 ### Origins
 
-The move 1...c5 was analysed by the Italian Giulio Polerio as early as 1594, and the English name took hold in the early 19th century from Italian sources. For a long time it was considered dubious. It became a main-line defence only in the 20th century, and today it is the backbone of the repertoires of Bobby Fischer, Garry Kasparov and most modern elite players.
+The move 1...c5 was analysed by the Italian Giulio Polerio in his 1594 manuscript, and in 1813 the English master Jacob Henry Sarratt fixed the English name "Sicilian Defence". It fell out of favour in the late 19th century and was avoided by most leading players in the early 20th century. It returned in the 1940s and 1950s, and world champions Bobby Fischer and Garry Kasparov made it known as the defence that gives Black the most winning chances. The [Dragon](/openings/sicilian-defense-dragon-variation) got its name in 1901 from Fyodor Dus-Chotimirsky, who saw the constellation Draco in Black's pawn structure.
 
 ### The idea
 
@@ -23,7 +23,7 @@ White can also avoid the main theory with an "Anti-Sicilian": the [Alapin](/open
 **Strengths**
 
 - Black plays for a win from the first move, and the positions are rarely symmetrical or dry.
-- It is objectively sound at every level: the Najdorf has been tested in world championship matches for more than 50 years.
+- It is objectively sound at every level, and it has been tested in world championship matches for decades.
 - There are several families of lines to choose from, from sharp (Dragon, Najdorf) to positional (Taimanov, Kan).
 
 **Weaknesses**

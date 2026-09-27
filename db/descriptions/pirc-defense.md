@@ -2,7 +2,7 @@ The Pirc Defense (1.e4 d6 2.d4 Nf6 3.Nc3 g6) is a hypermodern reply to 1.e4. Bla
 
 ### Origins
 
-The opening is named after the Slovenian grandmaster Vasja Pirc, who studied it in the 1930s and 1940s. In the Soviet Union it was also known as the Ufimtsev Defense, after Anatoly Ufimtsev. For a long time it was seen as too passive. It gained respect from the 1960s onwards, when strong grandmasters began using it as a fighting weapon, and it is a close relative of the [Modern Defense](/openings/modern-defense) (1...g6), where Black delays ...Nf6.
+The Pirc was occasionally played in the 19th century but was considered an irregular opening. It began to gain popularity only after the Second World War. It is named after the Slovenian grandmaster Vasja Pirc, who played it often from the late 1940s onwards. In Russia and the other former Soviet countries it is often called the Ufimtsev Defence, after the Soviet master Anatoly Ufimtsev. By the 1960s it was regarded as playable, largely thanks to the Canadian grandmaster Duncan Suttles. Later players who used it include Jan Timman, Zurab Azmaiparashvili and Nick de Firmian. It is a close relative of the [Modern Defense](/openings/modern-defense) (1...g6), where Black delays ...Nf6.
 
 ### The idea
 
@@ -12,7 +12,7 @@ Black builds a compact kingside with ...d6, ...Nf6, ...g6, ...Bg7 and ...O-O. Wh
 
 - [Austrian Attack](/openings/pirc-defense-austrian-attack) 4.f4: the most aggressive answer, grabbing even more space and preparing e5. Black must react quickly with ...c5 or ...O-O and ...c5.
 - [Classical Variation](/openings/pirc-defense-classical-variation) 4.Nf3: calm development with Be2 and O-O, leading to the [Quiet System](/openings/pirc-defense-classical-variation-quiet-system).
-- [150 Attack](/openings/pirc-defense-150-attack) with Be3, Qd2 and often Bh6 and h4: a simple, direct plan to trade Black's key bishop and mate on the h-file.
+- [150 Attack](/openings/pirc-defense-150-attack) with Be3, Qd2 and often Bh6 and h4: a simple, direct plan to trade Black's key bishop and attack on the h-file. The name refers to an English (ECF) rating of 150, about 1825 Elo, suggesting that players of that strength can play it easily and get strong play.
 - [Byrne Variation](/openings/pirc-defense-byrne-variation) 4.Bg5 and the [Kholmov System](/openings/pirc-defense-kholmov-system) 4.Bc4: less common tries.
 
 ### Strengths and weaknesses

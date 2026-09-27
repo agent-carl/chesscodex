@@ -2,7 +2,7 @@ The Queen's Gambit Declined (1.d4 d5 2.c4 e6) is Black's classical, rock-solid a
 
 ### Origins
 
-The QGD was the main battleground of classical chess from the late 19th century onwards. It was the centre of the 1927 world championship match between José Raúl Capablanca and Alexander Alekhine, in which almost every game began this way. Among its many named lines, the [Tarrasch Defense](/openings/queens-gambit-declined-tarrasch-defense) comes from Siegbert Tarrasch and the [Ragozin Defense](/openings/queens-gambit-declined-ragozin-defense) from the Soviet master Viacheslav Ragozin. Modern champions from Karpov to Carlsen have relied on it.
+The QGD was the main battleground of classical chess from the late 19th century onwards. In the 1927 world championship match between Alexander Alekhine and José Raúl Capablanca, 32 of the 34 games began with the Queen's Gambit Declined. Among its many named lines, the [Tarrasch Defense](/openings/queens-gambit-declined-tarrasch-defense) is named after Siegbert Tarrasch and the [Ragozin Defense](/openings/queens-gambit-declined-ragozin-defense) after the Soviet master Viacheslav Ragozin. The Cambridge Springs line takes its name from the 1904 tournament in Pennsylvania. The QGD remains a standard defence at world championship level.
 
 ### The idea
 
@@ -37,4 +37,4 @@ The QGD suits positional players who want a reliable defence against 1.d4 and ar
 
 ### The numbers
 
-On Lichess White scores 51–52% below 2200 and Black 44%. Above 2200 it is 49% against 42%. In master games over the board, draws dominate at 47%, White wins 33% and Black 19%. The line is hard to beat but gives Black few wins.
+On Lichess White scores 51–52% below 2200 and Black 44%. Above 2200 it is 49.5% against 42%. In master games over the board, draws dominate at 47%, White wins 33.5% and Black 19%. The line is hard to beat but gives Black few wins.

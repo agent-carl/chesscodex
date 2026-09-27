@@ -2,7 +2,7 @@ The King's Gambit (1.e4 e5 2.f4) is the most famous gambit in chess. White sacri
 
 ### Origins
 
-The King's Gambit was analysed as early as the 16th century by Ruy López de Segura and Giulio Polerio, and it was the most popular opening of the 19th century. The "Immortal Game", Adolf Anderssen's win against Lionel Kieseritzky in London in 1851, began with it. As defensive technique improved, it faded. In 1960 Boris Spassky beat a young Bobby Fischer with it in Mar del Plata. Fischer answered with an article titled "A Bust to the King's Gambit", recommending 3...d6, now called the [Fischer Defense](/openings/kings-gambit-accepted-fischer-defense). Today it is rare at the top but still played for surprise, and it remains very popular online.
+The King's Gambit appears in Lucena's book of 1497. Ruy López de Segura was the first to publish analysis of it, and Giulio Cesare Polerio also examined it. It was one of the most popular openings of the Romantic era: the famous "Immortal Game" of 1851, Adolf Anderssen's win against Lionel Kieseritzky in London, began with it. It declined from the late 19th century as defensive technique improved, and Wilhelm Steinitz argued that it was logically flawed. In 1960 Boris Spassky beat Bobby Fischer with it in a famous game at Mar del Plata. Fischer then wrote an article titled "A Bust to the King's Gambit", recommending 3...d6, now called the [Fischer Defense](/openings/kings-gambit-accepted-fischer-defense). Today it is rare at elite level, although Magnus Carlsen and Hikaru Nakamura have played it, and it remains popular at club level.
 
 ### The idea
 

@@ -2,7 +2,7 @@ The King's Indian Defense (1.d4 Nf6 2.c4 g6 3.Nc3 Bg7) is the most combative rep
 
 ### Origins
 
-The "Indian" defences are usually said to take their name from the 19th-century Bengali player Moheschunder Bannerjee, whose games featured early fianchettoes. The King's Indian was long considered dubious. It became a main line after the Second World War, when Soviet players such as David Bronstein, Isaac Boleslavsky and Efim Geller showed how dynamic it could be. Later it was the favourite weapon of Bobby Fischer and Garry Kasparov, and today of players like Teimour Radjabov and Hikaru Nakamura.
+The "Indian" defences take their name from the moves of the Indian player Moheschunder Bannerjee, who introduced fianchetto setups to European players in his games against John Cochrane in the 1850s. Savielly Tartakower popularised the term in the 1920s. Until the mid-1930s the King's Indian was regarded as highly suspect. Three Soviet players, Alexander Konstantinopolsky, Isaac Boleslavsky and David Bronstein, made it respected and popular. It was a favourite of world champions Bobby Fischer and Garry Kasparov, and today Hikaru Nakamura and Teimour Radjabov play it. Its popularity dipped in the early 2000s, when Vladimir Kramnik's play against it led Kasparov to give it up.
 
 ### The idea
 
@@ -10,7 +10,7 @@ Black deliberately gives up the centre to attack it later: ...d6, ...O-O and the
 
 ### Main lines
 
-- [Classical (Orthodox) Variation](/openings/kings-indian-defense-orthodox-variation) with Nf3, Be2 and O-O: the main line, including the [Aronin-Taimanov](/openings/kings-indian-defense-orthodox-variation-aronin-taimanov-defense) 7...Nc6 8.d5 Ne7 and the [Bayonet Attack](/openings/kings-indian-defense-orthodox-variation-bayonet-attack) 9.b4, which Kramnik used against Kasparov.
+- [Classical (Orthodox) Variation](/openings/kings-indian-defense-orthodox-variation) with Nf3, Be2 and O-O: the main line, including the [Aronin-Taimanov](/openings/kings-indian-defense-orthodox-variation-aronin-taimanov-defense) 7...Nc6 8.d5 Ne7 and the [Bayonet Attack](/openings/kings-indian-defense-orthodox-variation-bayonet-attack) 9.b4, introduced by Viktor Korchnoi in the 1970s.
 - [Petrosian Variation](/openings/kings-indian-defense-petrosian-variation) 7.d5: an early closing of the centre.
 - [Sämisch Variation](/openings/kings-indian-defense-samisch-variation) 5.f3: White secures e4 and often attacks with g4 and h4.
 - [Four Pawns Attack](/openings/kings-indian-defense-four-pawns-attack) 5.f4: the most ambitious attempt to crush Black in the centre.
@@ -38,4 +38,4 @@ The KID is for fighters: players who want to attack, accept risk and like tactic
 
 ### The numbers
 
-On Lichess the KID is balanced below 2200, with White at 48–49% and Black at 47–48%. Above 2200, White wins 48% and Black 44%. In master games over the board, White wins 35%, Black 22% and 43% are drawn. That is a fighting profile with fewer draws than the [Queen's Gambit Declined](/openings/queens-gambit-declined), but a lower score for Black.
+On Lichess the KID is balanced below 2200, with White at 48–49% and Black at 47–48%. Above 2200, White wins 48% and Black 44%. In master games over the board, White wins 35%, Black 22.5% and 43% are drawn. That is a fighting profile with fewer draws than the [Queen's Gambit Declined](/openings/queens-gambit-declined), but a lower score for Black.
