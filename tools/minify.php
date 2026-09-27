@@ -42,8 +42,15 @@ function minify_css(string $src): string
 {
     $s = preg_replace('!/\*.*?\*/!s', '', $src);
     $s = preg_replace('/\s+/', ' ', $s);
-    $s = preg_replace('/\s*([{}:;,>+~])\s*/', '$1', $s);
-    $s = preg_replace('/;}/', '}', $s);
+    // calc() and friends need the spaces around + and -: set their insides aside.
+    $math = [];
+    $s = preg_replace_callback('/\b(?:calc|min|max|clamp)(\((?:[^()]++|(?1))*\))/', static function (array $m) use (&$math): string {
+        $math[] = $m[0];
+        return "\x00" . (count($math) - 1) . "\x00";
+    }, (string) $s);
+    $s = preg_replace('/\s*([{}:;,>+~])\s*/', '$1', (string) $s);
+    $s = preg_replace('/;}/', '}', (string) $s);
+    $s = preg_replace_callback('/\x00(\d+)\x00/', static fn (array $m): string => $math[(int) $m[1]], (string) $s);
     return trim((string) $s);
 }
 
