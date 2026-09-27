@@ -8,20 +8,10 @@
     padding-top: var(--space-4);
 }
 .suggest-form summary {
-    cursor: pointer;
-    color: var(--accent);
     font-size: 0.95rem;
-    list-style: none;
     user-select: none;
 }
-.suggest-form summary::-webkit-details-marker { display: none; }
 .suggest-form summary:hover { text-decoration: underline; }
-.suggest-form summary::before {
-    content: '+ ';
-    color: var(--muted);
-    margin-right: 0.25em;
-}
-.suggest-form[open] summary::before { content: '– '; }
 
 .suggest-form-body {
     margin-top: var(--space-3);
@@ -53,12 +43,6 @@
     display: block;
     width: 100%;
     margin-top: 0.25rem;
-    padding: var(--space-2) var(--space-3);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--fg);
-    border-radius: var(--radius);
-    font: inherit;
 }
 #suggest-form textarea {
     font-family: var(--font-mono);
@@ -96,7 +80,7 @@
 }
 #suggest-form button:hover { background: var(--accent-hover); }
 #suggest-form button:disabled { opacity: 0.6; cursor: progress; }
-.suggest-status { font-size: 0.9rem; color: var(--muted); }
+.suggest-status { color: var(--muted); }
 .suggest-status[data-state="ok"] { color: var(--accent); }
 .suggest-status[data-state="error"] { color: var(--danger); }
 
@@ -104,54 +88,10 @@
    Admin panel
    ========================================================================== */
 
-.admin-login {
-    max-width: 360px;
-    margin: var(--space-8) auto;
-    padding: var(--space-5);
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-}
-.admin-login h1 {
-    font-size: 1.3rem;
-    margin-bottom: var(--space-4);
-}
-.admin-login label {
-    display: block;
-    margin-bottom: var(--space-3);
-    color: var(--fg-soft);
-    font-size: 0.9rem;
-}
 .admin-login input {
     display: block;
     width: 100%;
     margin-top: 0.25rem;
-    padding: var(--space-2) var(--space-3);
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--fg);
-    border-radius: var(--radius);
-    font: inherit;
-}
-.admin-login button {
-    width: 100%;
-    padding: var(--space-3);
-    background: var(--accent);
-    color: var(--bg-elevated);
-    border: none;
-    border-radius: var(--radius);
-    font-weight: 500;
-    cursor: pointer;
-    margin-top: var(--space-2);
-}
-.admin-login button:hover { background: var(--accent-hover); }
-.admin-error {
-    background: rgba(176, 48, 48, 0.1);
-    color: var(--danger);
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-sm);
-    font-size: 0.9rem;
-    margin-bottom: var(--space-3);
 }
 
 .admin-header {
@@ -184,15 +124,6 @@
 }
 .admin-logout button:hover { border-color: var(--accent); color: var(--accent); }
 
-.admin-empty {
-    color: var(--muted);
-    font-style: italic;
-    padding: var(--space-5);
-    text-align: center;
-    background: var(--bg-elevated);
-    border: 1px dashed var(--border);
-    border-radius: var(--radius);
-}
 
 .admin-table {
     width: 100%;
@@ -284,12 +215,6 @@
     display: block;
     width: 100%;
     margin-top: 0.25rem;
-    padding: var(--space-2) var(--space-3);
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--fg);
-    border-radius: var(--radius);
-    font: inherit;
 }
 .admin-actions button {
     width: 100%;
@@ -300,9 +225,7 @@
     font-weight: 500;
     cursor: pointer;
 }
-.admin-btn-accept { background: #2f8a4a; }
 .admin-btn-accept:hover { background: #266d3b; }
-.admin-btn-reject { background: var(--danger); }
 .admin-btn-reject:hover { filter: brightness(0.9); }
 
 .admin-resolved {

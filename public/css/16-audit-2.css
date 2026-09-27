@@ -37,7 +37,7 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
 @media (min-width: 900px) {
     .opening-grid { grid-template-rows: auto 1fr; }
     .opening-grid > .opening-board-wrap { grid-row: 1 / span 2; }
-    .opening-grid > .opening-stats { grid-column: 2; margin-top: 0; min-height: 0; }
+    .opening-grid > .opening-stats { grid-column: 2; min-height: 0; }
     .opening-grid .stats-moves { max-width: none; width: 100%; }
     .opening-grid .stats-moves .stats-bar.inline { width: 84px; }
     .opening-grid .stats-moves td { padding-top: 0.45rem; padding-bottom: 0.45rem; }
@@ -186,3 +186,37 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
 .repertoire-empty p { margin: 0 0 var(--space-2); }
 .repertoire-start { color: var(--muted); font-size: 0.92rem; }
 .about-version { color: var(--muted); font-size: 0.85rem; }
+
+/* --- Opening page: moves played off the line ------------------------------ */
+.board-explore { margin: 0; max-width: 520px; font-size: 0.9rem; color: var(--fg-soft); }
+.board-explore a { font-weight: 500; }
+
+/* --- Opening page: filter over a long list of continuations ----------------- */
+.opening-subtree-filter {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    margin: var(--space-3) 0;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    font: inherit;
+    font-size: 0.9rem;
+}
+.opening-subtree-filter:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); outline: none; }
+.opening-subtree-none { color: var(--muted); font-size: 0.9rem; }
+.opening-subtree-list li[hidden] { display: none; }
+
+/* --- Play: the game as PGN, or on to Lichess --------------------------------- */
+.play-export { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin: var(--space-3) 0 0; font-size: 0.88rem; }
+.play-export button {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    font-size: 0.85rem;
+}
+.play-export button:hover { border-color: var(--accent); color: var(--accent); }

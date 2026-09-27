@@ -11,12 +11,6 @@
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-5);
 }
-@media (min-width: 900px) {
-    .play-grid {
-        grid-template-columns: minmax(0, 1fr) 320px;
-        align-items: start;
-    }
-}
 
 .play-board-wrap {
     display: flex;
@@ -94,9 +88,6 @@
 }
 
 .play-difficulty {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-1);
     margin-top: var(--space-2);
 }
 .play-difficulty button {
@@ -180,7 +171,6 @@
 
 @media (max-width: 480px) {
     .container { padding: var(--space-4) var(--space-3) var(--space-6); }
-    .hero h1 { font-size: 1.85rem; }
     .group-letter { font-size: 2rem; }
     h1 { font-size: 1.5rem; }
 }

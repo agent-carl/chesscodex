@@ -48,6 +48,10 @@ if ($slug !== '') {
 }
 
 $diagram = ($_GET['kind'] ?? '') === 'diagram';
+// The diagram shown on the site's own pages comes as WebP (a third of the
+// PNG's size); the PNG stays for share cards, image search and old browsers.
+$webp = $diagram && ($_GET['format'] ?? '') === 'webp' && function_exists('imagewebp');
+if ($webp) header('Content-Type: image/webp');
 if ($diagram && $validatedSlug === '') {   // nothing to draw
     http_response_code(404);
     exit;
@@ -56,7 +60,7 @@ if ($diagram && $validatedSlug === '') {   // nothing to draw
 $cacheDir = __DIR__ . '/db/og_cache';
 if (!is_dir($cacheDir)) @mkdir($cacheDir, 0755, true);
 $cacheKey  = ($diagram ? 'diagram-' : '') . ($validatedSlug !== '' ? $validatedSlug : '__site__');
-$cachePath = $cacheDir . '/' . $cacheKey . '.png';
+$cachePath = $cacheDir . '/' . $cacheKey . ($webp ? '.webp' : '.png');
 // Defensive: only treat the cached file as a hit if it's non-trivially sized.
 // A 0-byte file means a previous write was interrupted — better regenerate.
 if (is_file($cachePath) && filesize($cachePath) > 1024 && (time() - filemtime($cachePath)) < 2592000
@@ -103,9 +107,14 @@ if ($diagram) {
             imagestring($im, 4, 32 + $i * 84 + 38, 696, chr(97 + $i), $label);
         }
     }
-    @imagepng($im, $cachePath, 6);
     header('X-Cache: MISS');
-    imagepng($im, null, 6);
+    if ($webp) {
+        @imagewebp($im, $cachePath, 80);
+        imagewebp($im, null, 80);
+    } else {
+        @imagepng($im, $cachePath, 6);
+        imagepng($im, null, 6);
+    }
     exit;
 }
 

@@ -125,11 +125,8 @@ final class LevelStats
             'g'  => $games ? json_encode($games, JSON_UNESCAPED_UNICODE) : null,
             't'  => date('Y-m-d H:i:s'),
         ];
-        $upsert = chess_codex_db_driver() === 'sqlite'
-            ? 'ON CONFLICT (opening_id, level) DO UPDATE SET white_wins = excluded.white_wins, draws = excluded.draws,
-               black_wins = excluded.black_wins, top_games_json = excluded.top_games_json, fetched_at = excluded.fetched_at'
-            : 'ON DUPLICATE KEY UPDATE white_wins = VALUES(white_wins), draws = VALUES(draws),
-               black_wins = VALUES(black_wins), top_games_json = VALUES(top_games_json), fetched_at = VALUES(fetched_at)';
+        $upsert = 'ON CONFLICT (opening_id, level) DO UPDATE SET white_wins = excluded.white_wins, draws = excluded.draws,
+               black_wins = excluded.black_wins, top_games_json = excluded.top_games_json, fetched_at = excluded.fetched_at';
         chess_codex_db()->prepare(
             "INSERT INTO codex_level_stats (opening_id, level, white_wins, draws, black_wins, top_games_json, fetched_at)
              VALUES (:id, :l, :w, :d, :b, :g, :t) $upsert"

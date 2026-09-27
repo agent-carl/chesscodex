@@ -27,11 +27,11 @@ class Opening
      * The position diagram og.php draws (720×720 PNG), path from the site
      * root; ?v= is og.php's hash, so a changed drawing gets a new URL.
      */
-    public static function diagramPath(string $slug): string
+    public static function diagramPath(string $slug, bool $webp = false): string
     {
         static $ver = null;
         $ver ??= substr((string) @hash_file('xxh3', __DIR__ . '/../og.php'), 0, 8);
-        return '/og.php?slug=' . urlencode($slug) . '&kind=diagram&v=' . $ver;
+        return '/og.php?slug=' . urlencode($slug) . '&kind=diagram' . ($webp ? '&format=webp' : '') . '&v=' . $ver;
     }
 
     public static function findBySlug(string $slug): ?array
@@ -229,9 +229,11 @@ class Opening
         $canon = chess_codex_canonicalize_pgn((string) $opening['pgn_moves']);
         $stmt = chess_codex_db()->prepare(
             "SELECT slug, name, eco, pgn_moves, popularity FROM codex_openings
-             WHERE pgn_canon = :c OR pgn_canon LIKE :p ORDER BY move_count, id"
+             WHERE pgn_canon = :c OR (pgn_canon >= :lo AND pgn_canon < :hi) ORDER BY move_count, id"
         );
-        $stmt->execute(['c' => $canon, 'p' => $canon . ' %']);
+        // "Starts with the line and a space" as a range (' ' < '!'): the
+        // index on pgn_canon answers it, no LIKE over every row.
+        $stmt->execute(['c' => $canon, 'lo' => $canon . ' ', 'hi' => $canon . '!']);
         return $stmt->fetchAll();
     }
 
@@ -358,7 +360,7 @@ class Opening
         $queryPlies = substr_count($canonQuery, ' ') + 1;
 
         $stmt = chess_codex_db()->prepare(
-            "SELECT id, eco, name, slug, depth, pgn_canon, move_count
+            "SELECT id, eco, name, slug, depth, pgn_canon, pgn_moves, move_count
              FROM codex_openings
              WHERE move_count <= :p
              ORDER BY move_count DESC"
@@ -398,14 +400,16 @@ class Opening
         $stmt = chess_codex_db()->prepare(
             "SELECT id, eco, name, slug, depth, move_count, fen
              FROM codex_openings
-             WHERE fen LIKE :pat
+             WHERE fen >= :lo AND fen < :hi
              ORDER BY move_count ASC, id ASC
              LIMIT 50"
         );
-        $stmt->bindValue(':pat', $core . '%', PDO::PARAM_STR);
+        // $core ends with a space, so "starts with $core" is the range up to
+        // the same text ending in "!" — answered by the index on fen.
+        $stmt->bindValue(':lo', $core, PDO::PARAM_STR);
+        $stmt->bindValue(':hi', substr($core, 0, -1) . '!', PDO::PARAM_STR);
         $stmt->execute();
-        // LIKE is case-insensitive (by collation on MySQL, by our function on
-        // SQLite), but FEN case means colour — re-check with exact comparison.
+        // The range compares bytes, so this is exact already; kept as a guard.
         return array_values(array_filter(
             $stmt->fetchAll(),
             static fn ($r) => strncmp((string) $r['fen'], $core, strlen($core)) === 0
@@ -594,6 +598,17 @@ class Opening
     }
 
     /**
+     * Queries whose best answer is not the line that bears the name. The
+     * dataset's bare "London System" is the King's Indian setup (A48); the
+     * London most players mean, and play most, is 1.d4 d5 2.Nf3 Nf6 3.Bf4.
+     * Query key → nameKey of the name to put first.
+     */
+    private const NAME_PREFERRED = [
+        'london'        => 'queens pawn game london system',
+        'london system' => 'queens pawn game london system',
+    ];
+
+    /**
      * Adds what rankByName() matches on: 'key' (nameKey of the name) and
      * 'starts', the first word of each part of the name ("Sicilian Defense",
      * "Dragon Variation", "Yugoslav Attack"), which gets a bonus.
@@ -647,6 +662,7 @@ class Opening
             if ($row['key'] === $query) $score += 1000;
             elseif (str_starts_with($row['key'], $query)) $score += 500;
             if (str_starts_with($nameWords[0], $words[0])) $score += 200;
+            if ((self::NAME_PREFERRED[$query] ?? null) === $row['key']) $score += 1500;
             if ($fuzzy) $score -= 600;
             $scored[] = [$score, (int) ($row['popularity'] ?? 0), count($row['starts']), (int) $row['move_count'], $row];
         }
@@ -669,15 +685,36 @@ class Opening
     /**
      * One typo (two in words of 8+ letters) between a query word and a name
      * word, or the same against the start of the name word while the query
-     * is still being typed. Short words (under 4 letters) never count.
+     * is still being typed. Two swapped neighbouring letters ("indain") are
+     * one typo. Short words (under 4 letters) never count.
      */
     private static function isTypo(string $qw, string $nw): bool
     {
         $len = strlen($qw);
         if ($len < 4) return false;
         $max = $len >= 8 ? 2 : 1;
-        if (abs(strlen($nw) - $len) <= $max && levenshtein($qw, $nw) <= $max) return true;
-        return $len >= 5 && strlen($nw) > $len && levenshtein($qw, substr($nw, 0, $len)) <= $max;
+        if (abs(strlen($nw) - $len) <= $max && self::typoDistance($qw, $nw) <= $max) return true;
+        return $len >= 5 && strlen($nw) > $len && self::typoDistance($qw, substr($nw, 0, $len)) <= $max;
+    }
+
+    /** Levenshtein distance, with one swap of neighbouring letters counted as one edit. */
+    private static function typoDistance(string $a, string $b): int
+    {
+        $d = levenshtein($a, $b);
+        if ($d < 2 || strlen($a) !== strlen($b)) return $d;
+        $diff = [];
+        for ($i = 0, $n = strlen($a); $i < $n; $i++) {
+            if ($a[$i] !== $b[$i]) $diff[] = $i;
+        }
+        // Exactly one swap: "ai" ↔ "ia" at neighbouring positions.
+        if (count($diff) === 2 && $diff[1] === $diff[0] + 1
+            && $a[$diff[0]] === $b[$diff[1]] && $a[$diff[1]] === $b[$diff[0]]) return 1;
+        // One swap plus one other typo, for long words.
+        foreach ($diff as $k => $i) {
+            if (!isset($diff[$k + 1]) || $diff[$k + 1] !== $i + 1) continue;
+            if ($a[$i] === $b[$i + 1] && $a[$i + 1] === $b[$i]) return min($d, count($diff) - 1);
+        }
+        return $d;
     }
 
     /**
@@ -750,9 +787,8 @@ class Opening
         $pdo  = chess_codex_db();
 
         // Preferred set: openings that have a substantial curated description.
-        // Characters, not bytes: CHAR_LENGTH on MySQL; SQLite has no CHAR_LENGTH
-        // but its LENGTH already counts characters for text.
-        $charLength = chess_codex_db_driver() === 'sqlite' ? 'LENGTH' : 'CHAR_LENGTH';
+        // Characters, not bytes: SQLite's LENGTH counts characters for text.
+        $charLength = 'LENGTH';
         $candidates = $pdo->query(
             "SELECT id, eco, name, slug, move_count, description, pgn_moves
              FROM codex_openings
@@ -853,7 +889,7 @@ class Opening
      */
     public static function randomSlug(): ?string
     {
-        $random = chess_codex_db_driver() === 'sqlite' ? 'RANDOM()' : 'RAND()';
+        $random = 'RANDOM()';
         $stmt = chess_codex_db()->query(
             "SELECT slug FROM codex_openings
              WHERE move_count >= 2
@@ -1026,7 +1062,7 @@ class Opening
                    LIMIT :lim"
                 : "SELECT id, eco, name, slug, depth, pgn_canon, move_count
                    FROM codex_openings
-                   WHERE pgn_canon LIKE :pat
+                   WHERE pgn_canon >= :lo AND pgn_canon < :hi
                      AND move_count > :myplies
                    ORDER BY move_count ASC, popularity DESC
                    LIMIT :lim"
@@ -1035,7 +1071,8 @@ class Opening
         if ($canonQuery === '') {
             $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
         } else {
-            $stmt->bindValue(':pat', $canonQuery . ' %', PDO::PARAM_STR);
+            $stmt->bindValue(':lo', $canonQuery . ' ', PDO::PARAM_STR);   // a range, as in withContinuations()
+            $stmt->bindValue(':hi', $canonQuery . '!', PDO::PARAM_STR);
             $stmt->bindValue(':myplies', substr_count($canonQuery, ' ') + 1, PDO::PARAM_INT);
             $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
         }

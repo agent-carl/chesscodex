@@ -28,8 +28,6 @@ select:focus-visible { outline-color: transparent; }
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
-    .home-popular-list a:hover,
-    .home-featured-card:hover { transform: none; }
 }
 
 /* --- 3. Consistent transitions ---------------------------------------------
@@ -158,7 +156,7 @@ select:focus-visible { outline-color: transparent; }
 @media (max-width: 540px) {
     .container { padding: var(--space-4) var(--space-3) var(--space-5); }
     .hero { padding: var(--space-4) 0 var(--space-3); }
-    .hero h1 { font-size: 1.65rem; line-height: 1.18; }
+    .hero h1 { line-height: 1.18; }
     .hero .lede { font-size: 0.95rem; }
 }
 
@@ -223,14 +221,6 @@ select:focus-visible { outline-color: transparent; }
 .openings-letter h2 { margin-top: var(--space-4); }
 
 /* --- 13. Selection highlight matches the accent system -------------------- */
-::selection {
-    background: var(--accent);
-    color: #fff;
-}
-[data-theme="dark"] ::selection {
-    background: var(--accent);
-    color: var(--bg);
-}
 
 /* --- 14. Skip link for keyboard / screen reader users --------------------- */
 .skip-link {
@@ -272,7 +262,6 @@ select:focus-visible { outline-color: transparent; }
     .admin-link { display: none !important; }
     .container { padding: 0; max-width: none; }
     a { color: #000; text-decoration: underline; }
-    .opening-board { max-width: 360px; }
     body { background: #fff; color: #000; }
 }
 

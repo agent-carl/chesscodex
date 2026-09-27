@@ -24,6 +24,7 @@ CREATE TABLE codex_openings (
 CREATE INDEX idx_codex_openings_eco    ON codex_openings (eco);
 CREATE INDEX idx_codex_openings_parent ON codex_openings (parent_id);
 CREATE INDEX idx_codex_openings_canon  ON codex_openings (pgn_canon);
+CREATE INDEX idx_codex_openings_fen    ON codex_openings (fen);
 
 CREATE TABLE codex_opening_lines (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,

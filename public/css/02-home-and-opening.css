@@ -9,7 +9,6 @@
     margin-bottom: var(--space-6);
 }
 .hero h1 {
-    font-size: 2.4rem;
     margin-bottom: var(--space-2);
 }
 .hero .lede {
@@ -32,19 +31,15 @@
 .group-card {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
     padding: var(--space-4);
     background: var(--bg-elevated);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     color: var(--fg);
     text-decoration: none;
-    transition: transform 0.12s ease, border-color 0.12s, box-shadow 0.12s;
 }
 .group-card:hover {
     border-color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
     text-decoration: none;
     color: var(--fg);
 }
@@ -67,9 +62,6 @@
    Opening page
    ========================================================================== */
 
-.opening-header {
-    margin-bottom: var(--space-5);
-}
 .opening-header h1 { margin-bottom: var(--space-1); }
 .parent-link { color: var(--muted); margin: var(--space-1) 0 0; font-size: 0.95rem; }
 
@@ -82,7 +74,6 @@
 }
 @media (min-width: 900px) {
     .opening-grid {
-        grid-template-columns: minmax(0, 1fr) 280px;
         align-items: start;
     }
 }
@@ -94,7 +85,6 @@
 }
 .opening-board {
     width: 100%;
-    max-width: 480px;
     aspect-ratio: 1 / 1;
     /* Touch-action: none lets chessground handle drag gestures itself.
        Without it mobile browsers intercept the gesture as a scroll/zoom
@@ -107,31 +97,12 @@
 .opening-board piece { touch-action: none; }
 .board-controls {
     display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    flex-wrap: wrap;
     max-width: 480px;
 }
-#board-reset {
-    padding: var(--space-2) var(--space-3);
-    border: 1px solid var(--border);
-    background: var(--bg-elevated);
-    color: var(--fg);
-    border-radius: var(--radius);
-    font-size: 0.9rem;
-    transition: border-color 0.1s, background 0.1s;
-}
-#board-reset:hover { border-color: var(--accent); background: var(--accent-soft); }
 .board-cta {
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius);
-    background: var(--accent);
-    color: var(--bg-elevated);
-    font-size: 0.9rem;
     text-decoration: none;
-    transition: background 0.1s;
 }
-.board-cta:hover { background: var(--accent-hover); color: var(--bg-elevated); text-decoration: none; }
+.board-cta:hover { text-decoration: none; }
 .board-hint { color: var(--muted); font-size: 0.85rem; }
 
 .eco-tag {
@@ -142,7 +113,6 @@
     border-radius: var(--radius-sm);
     font-family: var(--font-mono);
     font-size: 0.85rem;
-    margin-right: var(--space-2);
 }
 
 .opening-moves h2 { margin-top: 0; }
@@ -189,7 +159,6 @@
 .move-list button:hover,
 .move-list button:focus-visible { background: var(--accent-soft); outline: none; }
 .move-list button:active { background: var(--accent); color: var(--bg-elevated); }
-.move-list button.is-active { background: var(--accent); color: var(--bg-elevated); }
 
 .opening-description .placeholder {
     color: var(--muted);

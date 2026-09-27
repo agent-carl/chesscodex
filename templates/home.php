@@ -48,7 +48,7 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
         <span class="home-featured-date"><?= date('F j, Y') ?></span>
     </header>
     <a class="home-featured-card" href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $featured['slug']), ENT_QUOTES, 'UTF-8') ?>">
-        <img class="home-featured-diagram" src="<?= $baseEsc . htmlspecialchars(Opening::diagramPath((string) $featured['slug']), ENT_QUOTES, 'UTF-8') ?>"
+        <img class="home-featured-diagram" src="<?= $baseEsc . htmlspecialchars(Opening::diagramPath((string) $featured['slug'], true), ENT_QUOTES, 'UTF-8') ?>"
              width="720" height="720" alt="" decoding="async">
         <span class="home-featured-body">
         <span class="home-featured-title">

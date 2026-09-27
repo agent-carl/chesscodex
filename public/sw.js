@@ -14,7 +14,8 @@
  */
 
 // v4: purges v3 caches, which could hold /admin pages.
-const CACHE_VERSION  = 'codex-v4';
+// v5: versioned assets cache-first; unversioned vendor/chess.js no longer used.
+const CACHE_VERSION  = 'codex-v5';
 const STATIC_PATTERN = /\/(?:vendor|public)\/.+\.(?:js|css|wasm|svg|woff2|woff|png|jpg|jpeg|gif)(?:\?.*)?$/;
 
 // Per-cache entry caps. When exceeded, oldest entries are pruned. Prevents
@@ -49,6 +50,20 @@ async function trim(cache, max) {
     for (let i = 0; i < drop; i++) await cache.delete(keys[i]);
 }
 
+// Shown for a page that was never opened while online.
+function offlinePage() {
+    const html = '<!doctype html><html lang="en"><head><meta charset="utf-8">'
+        + '<meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline · Caissa Codex</title>'
+        + '<style>body{margin:0;font:16px/1.55 system-ui,sans-serif;background:#faf7f0;color:#1a1a1a;display:flex;'
+        + 'min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:1rem}'
+        + 'h1{font-family:Georgia,serif}a{color:#2a5d8f}'
+        + '@media(prefers-color-scheme:dark){body{background:#16181d;color:#e8e6e1}a{color:#6ea3d4}}</style></head>'
+        + '<body><main><h1>You are offline</h1><p>This page hasn’t been saved on this device yet.<br>'
+        + 'The openings you have opened before still work without a connection.</p>'
+        + '<p><a href="/">Try the home page</a></p></main></body></html>';
+    return new Response(html, { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+}
+
 self.addEventListener('fetch', (event) => {
     const req = event.request;
     if (req.method !== 'GET') return;
@@ -64,11 +79,15 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Static assets — stale-while-revalidate with size cap.
-    if (STATIC_PATTERN.test(url.pathname)) {
+    // Static assets. A versioned URL (?v=<hash>) never changes, so a cached
+    // copy is served without asking the network; the rest are
+    // stale-while-revalidate. Both capped in size.
+    // og.php diagrams carry ?v= too (the hash of og.php), so they are static.
+    if (STATIC_PATTERN.test(url.pathname) || url.pathname === '/og.php') {
         event.respondWith((async () => {
             const cache  = await caches.open(CACHE_VERSION + '-static');
             const cached = await cache.match(req);
+            if (cached && url.searchParams.has('v')) return cached;
             const networkPromise = fetch(req).then(async (res) => {
                 if (res && res.status === 200) {
                     await cache.put(req, res.clone());
@@ -94,7 +113,7 @@ self.addEventListener('fetch', (event) => {
             return fresh;
         } catch (e) {
             const cached = await caches.match(req);
-            return cached || new Response('Offline and not in cache.', { status: 504 });
+            return cached || offlinePage();
         }
     })());
 });

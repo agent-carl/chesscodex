@@ -4,7 +4,6 @@
 .hero-actions {
     display: flex;
     justify-content: center;
-    gap: var(--space-5);
     margin-top: var(--space-3);
     flex-wrap: wrap;
 }
@@ -34,7 +33,6 @@
 .home-popular-list li { margin: 0; }
 .home-popular-list a {
     display: flex;
-    align-items: center;
     gap: var(--space-3);
     padding: var(--space-3) var(--space-4);
     background: var(--bg-elevated);
@@ -42,11 +40,9 @@
     border-radius: var(--radius);
     color: var(--fg);
     text-decoration: none;
-    transition: border-color .12s, transform .12s;
 }
 .home-popular-list a:hover {
     border-color: var(--accent);
-    transform: translateY(-1px);
 }
 .home-popular-name { flex: 1; font-weight: 500; }
 .home-popular-plies { color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
@@ -116,7 +112,7 @@
     text-decoration: none;
 }
 .openings-letter-list a:hover { background: var(--bg-subtle); color: var(--accent); }
-.openings-letter-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.openings-letter-name { flex: 1; min-width: 0; }
 .openings-letter-plies { color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
 
 /* =============================================================================
@@ -265,12 +261,11 @@
 }
 .search-by-name-results a:hover,
 .search-by-name-results a:focus { background: var(--bg-subtle); color: var(--accent); outline: none; }
-.search-by-name-result-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.search-by-name-result-name { flex: 1; min-width: 0; }
 .search-by-name-result-plies { color: var(--muted); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
 .search-by-name-empty {
     padding: 0.55rem 0.8rem;
     color: var(--muted);
-    font-style: italic;
 }
 
 /* =============================================================================
@@ -407,7 +402,6 @@
     padding: var(--space-2) var(--space-3);
     display: flex;
     align-items: center;
-    gap: var(--space-3);
     user-select: none;
 }
 .opening-tree-summary::-webkit-details-marker { display: none; }
@@ -440,7 +434,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--fg-soft);
-    font-size: 0.88rem;
 }
 .opening-tree-summary-chevron {
     flex-shrink: 0;
@@ -478,8 +471,6 @@
     margin-top: var(--space-6);
     padding-top: var(--space-5);
 }
-.home-popular-gambits .home-popular-head h2 { color: var(--accent); }
-.home-popular-gambits .home-popular-list a { border-color: var(--accent-soft); }
 .home-popular-gambits .home-popular-list a:hover {
     border-color: var(--accent);
     background: var(--accent-soft);
@@ -488,8 +479,6 @@
 /* Keyboard-highlighted row in the name autocomplete dropdown. Matches hover
    styles so users get visual parity between mouse and arrow-key navigation. */
 .search-by-name-results li.is-active a {
-    background: var(--bg-subtle);
-    color: var(--accent);
     outline: none;
 }
 
@@ -498,7 +487,6 @@
     margin: var(--space-3) 0;
     padding: var(--space-2) var(--space-3);
     color: var(--muted);
-    font-size: 0.88rem;
     font-style: italic;
 }
 .opening-subtree-status[data-state="error"] {

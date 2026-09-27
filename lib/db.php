@@ -2,14 +2,10 @@
 declare(strict_types=1);
 
 /**
- * PDO connection factory. Two backends, picked by config.php → db.driver:
- *
- *   'mysql'  (default) — MySQL 8 / MariaDB, as on the original OVH hosting.
- *   'sqlite'           — a single database file; used on the Raspberry Pi,
- *                        where it saves running a whole DB server in 1 GB RAM.
- *
- * Queries elsewhere are written to run on both. The few spots where the SQL
- * dialects differ (upserts, RAND) branch on chess_codex_db_driver().
+ * PDO connection to the SQLite database: one file (config.php → db.path,
+ * db/chesscodex.sqlite by default). The site ran on MySQL on its first host;
+ * since the move to the Raspberry Pi it is SQLite only, which saves running a
+ * database server in 1 GB of RAM.
  */
 function chess_codex_db(): PDO
 {
@@ -19,31 +15,8 @@ function chess_codex_db(): PDO
     }
 
     $config = require __DIR__ . '/../config.php';
-    $db = $config['db'];
-
-    if (($db['driver'] ?? 'mysql') === 'sqlite') {
-        $pdo = chess_codex_sqlite_connect((string) $db['path']);
-        return $pdo;
-    }
-
-    $dsn = sprintf(
-        'mysql:host=%s;port=%d;dbname=%s;charset=%s',
-        $db['host'], $db['port'], $db['name'], $db['charset']
-    );
-
-    $pdo = new PDO($dsn, $db['user'], $db['password'], [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
-    ]);
-
+    $pdo = chess_codex_sqlite_connect((string) ($config['db']['path'] ?? __DIR__ . '/../db/chesscodex.sqlite'));
     return $pdo;
-}
-
-/** 'mysql' or 'sqlite' — for the handful of queries whose syntax differs. */
-function chess_codex_db_driver(): string
-{
-    return (string) chess_codex_db()->getAttribute(PDO::ATTR_DRIVER_NAME);
 }
 
 function chess_codex_sqlite_connect(string $path): PDO

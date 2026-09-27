@@ -114,7 +114,7 @@ ob_start();
         </p>
         <p>
             For anything else, write to
-            <a href="mailto:info@chesscodex.org">info@chesscodex.org</a>.
+            <!--email_off--><a href="mailto:info@chesscodex.org">info@chesscodex.org</a><!--/email_off-->.
         </p>
         <?php
         // The build identifier from the VERSION file, for bug reports.

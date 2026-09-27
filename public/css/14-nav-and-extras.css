@@ -10,7 +10,7 @@
    image Google Images and result thumbnails can use. */
 .opening-overview { display: flow-root; }
 .opening-diagram { float: right; width: 180px; margin: 0 0 var(--space-3) var(--space-4); }
-.opening-diagram img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); box-shadow: 0 0 0 1px var(--border); }
+.opening-diagram img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
 .opening-diagram figcaption { margin-top: var(--space-1); color: var(--muted); font-size: .8rem; text-align: center; }
 @media (max-width: 540px) { .opening-diagram { width: 128px; } }
 

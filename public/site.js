@@ -15,7 +15,7 @@
     var searchPath = base + '/search';
 
     // SAN moves, optionally numbered: the whole query has to be made of them.
-    var MOVE = '(?:\\d+\\.+\\s*)?(?:O-O(?:-O)?|[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](?:=[QRBN])?)[+#]?';
+    var MOVE = '(?:\\d+\\.+\\s*)?(?:O-O(?:-O)?|0-0(?:-0)?|[KQRBNkqrn]?[a-h]?[1-8]?x?[a-h][1-8](?:=[QRBNqrbn])?)[+#]?';
     var MOVES_RE = new RegExp('^\\s*' + MOVE + '(?:\\s+' + MOVE + ')*\\s*$');
     var looksLikeMoves = function (q) { return /\d|^[a-h][1-8]\b/.test(q) && MOVES_RE.test(q); };
 
@@ -183,4 +183,17 @@
         }
     });
     if (location.hash === '#search' && inputs[0]) inputs[0].focus();
+
+    // One view of this page for the visit counter (Views::mark() on the
+    // server names the page on <body>). Sent when the page is actually shown,
+    // not while a browser prerenders it.
+    var view = document.body.dataset.view;
+    if (view && navigator.sendBeacon) {
+        var send = function () {
+            var data = new URLSearchParams({ t: view, id: document.body.dataset.viewId || '0' });
+            navigator.sendBeacon(base + '/api/view', data);
+        };
+        if (document.prerendering) document.addEventListener('prerenderingchange', send, { once: true });
+        else send();
+    }
 })();
