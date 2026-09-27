@@ -74,6 +74,20 @@ if ($urls === []) {
     [$status, $xml] = indexnow_http(SITE . '/sitemap.xml');
     preg_match_all('#<loc>([^<]+)</loc>#', $xml, $m);
     $urls = array_map(static fn (string $u): string => htmlspecialchars_decode($u, ENT_XML1), $m[1]);
+    // /sitemap.xml is an index: collect the URLs of every part.
+    if (str_contains($xml, '<sitemapindex')) {
+        $parts = $urls;
+        $urls  = [];
+        foreach ($parts as $part) {
+            [$partStatus, $partXml] = indexnow_http($part);
+            preg_match_all('#<url><loc>([^<]+)</loc>#', $partXml, $m);
+            if ($partStatus !== 200 || $m[1] === []) {
+                fwrite(STDERR, "Couldn't read $part (HTTP $partStatus).\n");
+                exit(1);
+            }
+            foreach ($m[1] as $u) $urls[] = htmlspecialchars_decode($u, ENT_XML1);
+        }
+    }
     if ($status !== 200 || $urls === []) {
         fwrite(STDERR, "Couldn't read " . SITE . "/sitemap.xml (HTTP $status).\n");
         exit(1);

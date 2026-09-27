@@ -53,25 +53,59 @@ final class Routes
         echo "Sitemap: {$siteUrl}{$baseUrl}/sitemap.xml\n";
     }
 
+    /**
+     * The sitemap is split into parts, so Search Console reports how many
+     * URLs of each kind are indexed: the plain pages, the ECO pages, the
+     * openings with a written description, and the other openings by
+     * popularity (the top 500, the next 1,000, the rest).
+     */
+    public const SITEMAP_PARTS = ['pages', 'eco', 'openings-described', 'openings-top', 'openings-mid', 'openings-rest'];
+
+    /** /sitemap.xml — the index of the parts. */
     public static function sitemap(): void
     {
-        global $siteUrl, $baseUrl;
-        header('Content-Type: application/xml; charset=utf-8');
+        self::serveSitemap('index');
+    }
 
-        $cachePath = __DIR__ . '/../db/sitemap_cache.xml';
-        // Require a non-trivial size: a 0-byte placeholder must not be served
-        // as a real sitemap. Real sitemap is always > 10 KB.
-        if (is_file($cachePath) && filesize($cachePath) > 1024 && (time() - filemtime($cachePath)) < 86400) {
+    /** /sitemaps/<part>.xml */
+    public static function sitemapPart(string $part): void
+    {
+        global $render404;
+        if (!in_array($part, self::SITEMAP_PARTS, true)) $render404();
+        self::serveSitemap($part);
+    }
+
+    /**
+     * Serves one sitemap file from db/cache/sitemap/, rebuilding all of them
+     * once a day (delete that folder to rebuild sooner, e.g. after adding URLs).
+     */
+    private static function serveSitemap(string $name): void
+    {
+        header('Content-Type: application/xml; charset=utf-8');
+        $dir  = __DIR__ . '/../db/cache/sitemap';
+        $path = "$dir/$name.xml";
+        // A file under 100 bytes is a broken write, never a real sitemap.
+        if (is_file($path) && filesize($path) > 100 && is_file("$dir/index.xml")
+            && (time() - filemtime("$dir/index.xml")) < 86400) {
             header('X-Cache: HIT');
-            readfile($cachePath);
+            readfile($path);
             return;
         }
+        $files = self::buildSitemaps();
+        if (!is_dir($dir)) @mkdir($dir, 0775, true);
+        foreach ($files as $file => $xml) {
+            @file_put_contents("$dir/$file.xml.tmp", $xml);
+            @rename("$dir/$file.xml.tmp", "$dir/$file.xml");
+        }
+        header('X-Cache: MISS');
+        echo $files[$name];
+    }
 
+    /** @return array<string, string> file name (without .xml) => XML, the index under 'index' */
+    private static function buildSitemaps(): array
+    {
+        global $siteUrl, $baseUrl;
         require_once __DIR__ . '/db.php';
-        // Not the thin lines (noindex on their pages, see Opening::isThin).
-        $stmt = chess_codex_db()->query(
-            "SELECT slug, name, popularity FROM codex_openings ORDER BY move_count ASC, id"
-        );
         $base   = $siteUrl . $baseUrl;
         $escUrl = static fn (string $u): string => htmlspecialchars($u, ENT_QUOTES | ENT_XML1, 'UTF-8');
 
@@ -82,39 +116,62 @@ final class Routes
         $row = static fn (string $loc, ?string $lastmod = null, ?string $image = null): string => '  <url><loc>' . $escUrl($loc) . '</loc>'
             . ($lastmod ? '<lastmod>' . $lastmod . '</lastmod>' : '')
             . ($image ? '<image:image><image:loc>' . $escUrl($image) . '</image:loc></image:image>' : '') . "</url>\n";
-        // Opening pages change when their Lichess numbers are refreshed, so
-        // that date is their <lastmod>; the other pages carry none.
-        $updated = array_column(Rankings::all(), 'updated', 'slug');
+        $rows    = array_fill_keys(self::SITEMAP_PARTS, '');
+        $lastmod = array_fill_keys(self::SITEMAP_PARTS, null);
 
-        $xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
-              . ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">' . "\n";
-        $xml .= $row($base . '/');
-        $xml .= $row($base . '/openings');
-        $xml .= $row($base . '/search');   // the opening identifier
-        $xml .= $row($base . '/about');
-        $xml .= $row($base . '/eco');
+        $rows['pages'] .= $row($base . '/');
+        $rows['pages'] .= $row($base . '/openings');
+        $rows['pages'] .= $row($base . '/search');   // the opening identifier
+        $rows['pages'] .= $row($base . '/about');
         foreach (array_keys(Opening::allAlphabetical()) as $letter) {
-            if (preg_match('/^[A-Z]$/', (string) $letter)) $xml .= $row($base . '/openings/letter/' . strtolower((string) $letter));
+            if (preg_match('/^[A-Z]$/', (string) $letter)) $rows['pages'] .= $row($base . '/openings/letter/' . strtolower((string) $letter));
         }
-        $xml .= $row($base . '/rankings');
-        foreach (array_keys(Rankings::LABELS) as $path) $xml .= $row($base . '/' . $path);
+        $rows['pages'] .= $row($base . '/rankings');
+        foreach (array_keys(Rankings::LABELS) as $path) $rows['pages'] .= $row($base . '/' . $path);
         foreach (['best-openings-for-white', 'best-openings-for-black'] as $path) {
-            foreach (array_keys(LevelStats::LEVELS) as $level) $xml .= $row($base . '/' . $path . '/' . $level);
+            foreach (array_keys(LevelStats::LEVELS) as $level) $rows['pages'] .= $row($base . '/' . $path . '/' . $level);
         }
+
+        $rows['eco'] .= $row($base . '/eco');
         foreach (Opening::ecoCodes() as $code => $c) {
-            if ($c['count'] > 1) $xml .= $row($base . '/eco/' . $code);   // single-line codes are noindex
+            if ($c['count'] > 1) $rows['eco'] .= $row($base . '/eco/' . $code);   // single-line codes are noindex
         }
+
+        // Opening pages change when their Lichess numbers are refreshed, so
+        // that date is their <lastmod>. Not the thin lines (noindex on their
+        // pages, see Opening::isThin).
+        $updated = array_column(Rankings::all(), 'updated', 'slug');
+        $stmt = chess_codex_db()->query(
+            "SELECT slug, name, popularity, (description IS NOT NULL AND description <> '') AS described
+             FROM codex_openings ORDER BY popularity DESC, move_count ASC, id"
+        );
+        $rank = 0;
         foreach ($stmt as $r) {
             if (Opening::isThin($r)) continue;
-            $xml .= $row($base . '/openings/' . $r['slug'], $updated[$r['slug']] ?? null, $base . Opening::diagramPath((string) $r['slug'], true));
+            if ($r['described']) {
+                $part = 'openings-described';
+            } else {
+                $rank++;
+                $part = $rank <= 500 ? 'openings-top' : ($rank <= 1500 ? 'openings-mid' : 'openings-rest');
+            }
+            $date = $updated[$r['slug']] ?? null;
+            $rows[$part] .= $row($base . '/openings/' . $r['slug'], $date, $base . Opening::diagramPath((string) $r['slug'], true));
+            if ($date !== null && ($lastmod[$part] === null || $date > $lastmod[$part])) $lastmod[$part] = $date;
         }
-        $xml .= '</urlset>' . "\n";
 
-        @file_put_contents($cachePath . '.tmp', $xml);
-        @rename($cachePath . '.tmp', $cachePath);
-        header('X-Cache: MISS');
-        echo $xml;
+        $files = [];
+        $index = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
+               . '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        foreach (self::SITEMAP_PARTS as $part) {
+            $files[$part] = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
+                . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+                . ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">' . "\n"
+                . $rows[$part] . '</urlset>' . "\n";
+            $index .= '  <sitemap><loc>' . $escUrl("$base/sitemaps/$part.xml") . '</loc>'
+                . ($lastmod[$part] ? '<lastmod>' . $lastmod[$part] . '</lastmod>' : '') . "</sitemap>\n";
+        }
+        $files['index'] = $index . '</sitemapindex>' . "\n";
+        return $files;
     }
 
     public static function home(): void
