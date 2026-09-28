@@ -148,7 +148,18 @@ https://your-site/migrate.php?token=<seed_token>
 
 ## License
 
-Site code: source-available, no formal license declared yet (Reach out via the
-"Suggest an improvement" form if you want a copy).
+Copyright (C) 2026 Ivan Petrov
 
-Third-party libraries keep their own licenses — see `vendor/` and the footer link list.
+Caissa Codex is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version. It is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; see [LICENSE](LICENSE) for details.
+
+If you run a modified copy as a website, the AGPL asks you to offer its users
+the source code of your version.
+
+Third-party code in `vendor/` keeps its own license: chessground and Stockfish
+(GPL-3.0), chess.js (BSD-2-Clause), Parsedown (MIT). The opening names and moves
+come from the [Lichess chess-openings](https://github.com/lichess-org/chess-openings)
+dataset (CC0).
