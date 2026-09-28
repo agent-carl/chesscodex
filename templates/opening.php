@@ -311,6 +311,9 @@ $island = [
         </aside>
 
         <?php require __DIR__ . '/partials/opening_stats.php'; ?>
+
+        <?php /* In the grid: on a wide screen it fills the board's column under the board. */ ?>
+        <?php require __DIR__ . '/partials/opening_levels.php'; ?>
     </div>
 
     <?php
@@ -374,8 +377,6 @@ $island = [
     </section>
     <?php endif; ?>
 
-
-    <?php require __DIR__ . '/partials/opening_levels.php'; ?>
 
     <?php
     // Admin-only inline edit link. Same trick as in layout.php — only touch
