@@ -126,7 +126,7 @@ final class LichessExplorer
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT        => self::TIMEOUT_S,
             CURLOPT_CONNECTTIMEOUT => self::TIMEOUT_S,
-            CURLOPT_USERAGENT      => 'chess-codex/1.0 (https://chesscodex.org)',
+            CURLOPT_USERAGENT      => 'caissa-codex/1.0 (https://chesscodex.org)',
             CURLOPT_HTTPHEADER     => [
                 'Accept: application/json',
                 'Authorization: Bearer ' . self::token(),
@@ -162,7 +162,7 @@ final class LichessExplorer
             'http' => [
                 'method'  => 'GET',
                 'timeout' => self::TIMEOUT_S,
-                'header'  => "User-Agent: chess-codex/1.0 (https://chesscodex.org)\r\n"
+                'header'  => "User-Agent: caissa-codex/1.0 (https://chesscodex.org)\r\n"
                            . "Accept: application/json\r\n"
                            . 'Authorization: Bearer ' . self::token() . "\r\n",
             ],

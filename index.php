@@ -18,7 +18,7 @@ if ($siteUrl === '') {
 }
 
 set_exception_handler(function (Throwable $e) use ($baseUrl, $siteUrl) {
-    error_log('[chess-codex] uncaught: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+    error_log('[chesscodex] uncaught: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
     if (!headers_sent()) {
         http_response_code(500);
         header('Content-Type: text/html; charset=utf-8');

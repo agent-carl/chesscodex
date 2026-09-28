@@ -2,9 +2,9 @@
 # /openings/<slug> → index.php?path=/openings/<slug>
 RewriteEngine On
 
-# If the project is mounted in a subfolder (e.g. /chess-codex/), uncomment the
+# If the project is mounted in a subfolder (e.g. /chesscodex/), uncomment the
 # next line and set it to that subfolder, so RewriteRule's "^" anchor works.
-# RewriteBase /chess-codex/
+# RewriteBase /chesscodex/
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

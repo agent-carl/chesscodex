@@ -66,7 +66,7 @@ foreach ($tests as [$method, $path, $expectedStatus, $contains]) {
         CURLOPT_FOLLOWLOCATION => false,    // we want to see the 302 directly
         CURLOPT_TIMEOUT        => 10,
         CURLOPT_CUSTOMREQUEST  => $method,
-        CURLOPT_USERAGENT      => 'chess-codex-smoke/1.0',
+        CURLOPT_USERAGENT      => 'caissa-codex-smoke/1.0',
     ]);
     $body = (string) curl_exec($ch);
     $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);

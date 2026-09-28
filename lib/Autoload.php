@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Tiny class-map autoloader. All Chess Codex classes are global (no
+ * Tiny class-map autoloader. All Caissa Codex classes are global (no
  * namespaces) and live in lib/<Class>.php. spl_autoload_register fires
  * when a class is first referenced and looks it up in the map below.
  */

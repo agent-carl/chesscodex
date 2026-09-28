@@ -11,7 +11,7 @@ return [
     ],
 
     // Public-facing prefix where the app is mounted. Empty string = web root.
-    // If you upload to https://example.com/chess-codex/, set this to '/chess-codex'.
+    // If you upload to https://example.com/chesscodex/, set this to '/chesscodex'.
     'base_url' => '',
 
     // Full origin (scheme + host) used in canonical URLs, sitemap, OG tags.
