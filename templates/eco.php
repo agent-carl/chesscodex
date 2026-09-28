@@ -36,7 +36,7 @@ ob_start();
             under it<?= $families > 1 ? ', from ' . $families . ' different openings' : '' ?>.
             <?= $n === 1 ? 'It is' : 'The shortest is' ?>
             <a href="<?= $esc($openingUrl($root['slug'])) ?>"><?= $esc($root['name']) ?></a>:
-            <code><?= $esc($root['pgn_moves']) ?></code>.
+            <code><?= $esc(Opening::keepNumbers((string) $root['pgn_moves'])) ?></code>.
         </p>
         <?php if ($rootGames > 0): ?>
         <p>
@@ -56,7 +56,7 @@ ob_start();
             <?php foreach ($lines as $l): ?>
             <tr>
                 <td><a href="<?= $esc($openingUrl($l['slug'])) ?>"><?= $esc($l['name']) ?></a></td>
-                <td><code><?= $esc($l['pgn_moves']) ?></code></td>
+                <td><code><?= $esc(Opening::keepNumbers((string) $l['pgn_moves'])) ?></code></td>
                 <td><?= Opening::movesLabel((int) $l['move_count']) ?></td>
             </tr>
             <?php endforeach; ?>

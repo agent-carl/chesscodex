@@ -41,7 +41,7 @@ ob_start();
                             <span class="eco-tag"><?= $code ?></span>
                             <span class="eco-code-text">
                                 <span class="openings-letter-name"><?= $esc($c['label']) ?></span>
-                                <span class="eco-code-meta"><code><?= $esc($c['moves'] ?? '') ?></code> · <?= $c['count'] === 1 ? '1 line' : $c['count'] . ' lines' ?></span>
+                                <span class="eco-code-meta"><code><?= $esc(Opening::keepNumbers((string) ($c['moves'] ?? ''))) ?></code> · <?= $c['count'] === 1 ? '1 line' : $c['count'] . ' lines' ?></span>
                             </span>
                         </a>
                         <?php else: ?>

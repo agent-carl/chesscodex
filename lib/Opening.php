@@ -267,6 +267,12 @@ class Opening
         return self::formatPlies(array_slice(self::sanTokens($pgn), max(0, $fromPly)), max(0, $fromPly));
     }
 
+    /** "1. e4 e5 2. Nf3" with a no-break space after each move number, so a wrapped line never ends in "2." */
+    public static function keepNumbers(string $moves): string
+    {
+        return (string) preg_replace('/(\d+\.) /', "\$1\u{00A0}", $moves);
+    }
+
     /** "Sicilian Defense: Najdorf Variation" → "Sicilian Defense". */
     public static function family(string $name): string
     {

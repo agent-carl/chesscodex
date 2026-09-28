@@ -55,7 +55,7 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
             <span class="eco-tag"><?= htmlspecialchars($featured['eco'], ENT_QUOTES, 'UTF-8') ?></span>
             <span class="home-featured-name"><?= htmlspecialchars($featured['name'], ENT_QUOTES, 'UTF-8') ?></span>
         </span>
-        <code class="home-featured-moves"><?= htmlspecialchars(trim((string) ($featured['pgn_moves'] ?? '')), ENT_QUOTES, 'UTF-8') ?></code>
+        <code class="home-featured-moves"><?= htmlspecialchars(Opening::keepNumbers(trim((string) ($featured['pgn_moves'] ?? ''))), ENT_QUOTES, 'UTF-8') ?></code>
         <?php if (!empty($featured['description'])):
             // Snippet: first ~200 chars of the description's first paragraph,
             // as plain text — the description is Markdown, so drop link
@@ -107,7 +107,7 @@ $renderStrip = static function (string $h2, string $lede, string $modifier, arra
                         <span class="home-popular-text">
                             <span class="home-popular-name"><?= htmlspecialchars($cardName, ENT_QUOTES, 'UTF-8') ?></span>
                             <?php if ($kicker !== ''): ?><span class="home-popular-kicker"><?= htmlspecialchars($kicker, ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
-                            <span class="home-popular-moves"><?= htmlspecialchars(Opening::movesFrom((string) $p['pgn_moves'], 0), ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="home-popular-moves"><?= htmlspecialchars(Opening::keepNumbers(Opening::movesFrom((string) $p['pgn_moves'], 0)), ENT_QUOTES, 'UTF-8') ?></span>
                         </span>
                     </a>
                 </li>

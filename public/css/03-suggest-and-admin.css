@@ -266,12 +266,4 @@
     word-break: break-word;
 }
 .description-body a:hover { color: var(--accent-hover); }
-/* Citation refs at the bottom — render as compact source list. */
-.description-body p:last-of-type {
-    font-size: 0.85rem;
-    color: var(--muted);
-    border-top: 1px solid var(--border);
-    padding-top: var(--space-3);
-    margin-top: var(--space-4);
-}
 

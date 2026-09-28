@@ -233,3 +233,52 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
 @media (max-width: 600px) {
     .stats-levels td:first-child { white-space: normal; }
 }
+
+/* --- Opening page: the result bar and the tables share the column's edges;
+       a phone shows game counts as "209.1M" to leave room for the names --- */
+.opening-stats .stats-bar:not(.inline) { width: 100%; }
+.stats-moves { max-width: none; }
+.n-short { display: none; }
+@media (max-width: 600px) {
+    .n-long { display: none; }
+    .n-short { display: inline; }
+}
+
+/* --- Variation cards: every card in a row as tall as the tallest -------- */
+.child-list li:not([hidden]) { display: flex; }
+.child-list li > a { flex: 1; min-width: 0; }
+
+/* --- Home: ECO volume counts on one line; cards only evened out in columns */
+.group-count { margin-top: auto; }
+@media (max-width: 600px) {
+    .home-popular-list { grid-auto-rows: auto; }
+}
+
+/* --- Home, phone: the diagram beside the title, the text under both ------ */
+@media (max-width: 480px) {
+    .home-featured-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); grid-template-rows: auto 1fr; gap: var(--space-2) var(--space-3); align-items: start; }
+    .home-featured-body { display: contents; }
+    .home-featured-diagram { grid-row: span 2; }
+    .home-featured-snippet,
+    .home-featured-cta { grid-column: 1 / -1; }
+}
+
+/* --- Play and practice, phone: four buttons in two even rows ------------- */
+@media (max-width: 540px) {
+    .play-board-wrap .board-controls { display: grid; grid-template-columns: 1fr 1fr; }
+}
+
+/* --- Footer: a link or a licence never breaks in the middle -------------- */
+.footer-links a,
+.footer-credit { white-space: nowrap; }
+
+/* --- Variation cards: a long move tail drops under the name and wraps
+       there; a move number stays with its move (Opening::keepNumbers) ---- */
+.child-list li > a { flex-wrap: wrap; align-content: center; }
+.child-list-name { flex: 1 1 9rem; }
+.child-list-plies { white-space: normal; max-width: 100%; margin-left: auto; text-align: right; }
+
+/* --- Rankings, tablet: without the moves column the names get the room --- */
+@media (max-width: 1000px) {
+    .ranking-moves { display: none; }
+}
