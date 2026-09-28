@@ -59,7 +59,7 @@ ob_start();
                     <a href="<?= $baseEsc . $esc(I18n::url('/openings/' . $row['slug'])) ?>" title="<?= $esc($name . ' (' . $row['eco'] . ')') ?>">
                         <span class="eco-tag"><?= $esc($row['eco']) ?></span>
                         <span class="openings-letter-name"><?= $esc($label) ?><?php if (($row['tail'] ?? '') !== ''): ?>
-                            <span class="openings-letter-tail"><?= $esc($row['tail']) ?></span><?php endif; ?></span>
+                            <span class="openings-letter-tail"><?= $esc(Opening::keepNumbers((string) $row['tail'])) ?></span><?php endif; ?></span>
                         <span class="openings-letter-plies"><?= Opening::movesLabel((int) $row['move_count']) ?></span>
                     </a>
                 </li>

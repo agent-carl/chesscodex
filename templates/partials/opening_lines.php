@@ -34,7 +34,7 @@
                         <span class="eco-tag"><?= htmlspecialchars($c['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                         <span class="child-list-name"><?= htmlspecialchars($childLabel, ENT_QUOTES, 'UTF-8') ?></span>
                         <?php if ($childMoves !== ''): ?>
-                            <span class="child-list-plies"><?= htmlspecialchars($childMoves, ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="child-list-plies"><?= htmlspecialchars(Opening::keepNumbers($childMoves), ENT_QUOTES, 'UTF-8') ?></span>
                         <?php endif; ?>
                     </a>
                 </li>

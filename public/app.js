@@ -696,7 +696,9 @@ function renderStats(rootEl, data) {
             td1.appendChild(a);
         }
         tr.appendChild(td1);
-        const td2 = document.createElement('td'); td2.textContent = moveTotal.toLocaleString('en-US'); tr.appendChild(td2);
+        const td2 = document.createElement('td');
+        td2.innerHTML = `<span class="n-long">${moveTotal.toLocaleString('en-US')}</span><span class="n-short">${compactCount(moveTotal)}</span>`;
+        tr.appendChild(td2);
         const td3 = document.createElement('td');
         const inner = document.createElement('div');
         inner.className = 'stats-bar inline';
@@ -729,6 +731,15 @@ function renderStats(rootEl, data) {
 // Text alternative for a white/draw/black bar (same wording as the PHP side).
 function barLabel(w, d, b) {
     return `White ${w.toFixed(1)}% · Draw ${d.toFixed(1)}% · Black ${b.toFixed(1)}%`;
+}
+
+// 209,140,943 → "209.1M" (same thresholds as Rankings::compact in PHP).
+function compactCount(n) {
+    const one = (x) => String(Number(x.toFixed(1)));
+    if (n >= 999950000) return one(n / 1e9) + 'B';
+    if (n >= 999500) return one(n / 1e6) + 'M';
+    if (n >= 10000) return Math.round(n / 1000) + 'K';
+    return n.toLocaleString('en-US');
 }
 
 function renderStatsError(rootEl, message) {

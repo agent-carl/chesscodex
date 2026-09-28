@@ -94,7 +94,8 @@ a { color: var(--accent); text-decoration: none; }
 a:hover { color: var(--accent-hover); text-decoration: underline; }
 /* Links inside running text are underlined, so they don't rely on colour
    alone (Lighthouse "links rely on color"). Styled links opt out via a class. */
-p a:not([class]) {
+p a:not([class]),
+.description-body li a:not([class]) {
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 2px;
