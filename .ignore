@@ -1,4 +1,4 @@
-# Skipped by ripgrep-based search (Claude Code's Grep, `rg`); git still tracks
+# Skipped by ripgrep-based search (`rg`, editor search); git still tracks
 # them. Generated, vendored or bulk data files only add noise to searches.
 *.min.js
 *.min.css

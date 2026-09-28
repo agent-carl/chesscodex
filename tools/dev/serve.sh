@@ -23,7 +23,9 @@ if [ "$MODE" = "--fresh-db" ] || ! ls backups/chesscodex-*.sqlite.gz >/dev/null 
 fi
 
 mkdir -p "$DEV"
-tar --exclude=.git --exclude=.dev --exclude=.claude --exclude=deploy --exclude=docs \
+# Files kept only in this checkout (listed in .git/info/exclude) are left out too.
+LOCAL_ONLY=(); [ -f .git/info/exclude ] && LOCAL_ONLY=(--exclude-from=.git/info/exclude)
+tar "${LOCAL_ONLY[@]}" --exclude=.git --exclude=.dev --exclude=deploy --exclude=docs \
     --exclude=backups --exclude=config.php --exclude='db/*.sqlite' --exclude='db/*.sqlite-*' \
     --exclude=db/cache --exclude=db/og_cache --exclude=db/log --exclude=db/sitemap_cache.xml \
     -cf - . | tar -C "$DEV" -xf -
