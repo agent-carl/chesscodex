@@ -132,8 +132,12 @@ const Toast = (function () {
 // Generic clipboard helper used by share + tools buttons.
 async function copyToClipboard(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(text);
-        return;
+        try {
+            await navigator.clipboard.writeText(text);
+            return;
+        } catch (e) {
+            // Denied (an embedded browser, a page without focus): try the old way.
+        }
     }
     // execCommand fallback for older browsers / non-HTTPS dev contexts.
     const ta = document.createElement('textarea');
@@ -141,8 +145,9 @@ async function copyToClipboard(text) {
     ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
     document.body.appendChild(ta);
     ta.select();
-    document.execCommand('copy');
+    const ok = document.execCommand('copy');
     document.body.removeChild(ta);
+    if (!ok) throw new Error('copy failed');
 }
 
 // Share "Copy link" button — uses the Toast helper for feedback instead of
@@ -399,7 +404,7 @@ if (!dataNode) {
                 if (turn !== exploreLookup || !explore || !data || !data.match) return;
                 const a = document.createElement('a');
                 a.href = openingPathFmt.replace('{slug}', encodeURIComponent(data.match.slug));
-                a.textContent = data.match.name + (data.match.tail ? ' – ' + data.match.tail : '');
+                a.textContent = data.match.name + (data.match.tail ? ' – ' + data.match.tail : '') + ' (' + data.match.eco + ')';
                 // A named line exactly here, or the last one these moves passed.
                 exploreEl.append(data.match.exact ? ' — ' : ' — beyond the named lines; the last one was ', a);
             })

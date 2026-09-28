@@ -118,9 +118,11 @@ $lastSan   = static function (string $pgn): string {
 };
 foreach ($children as $c) {
     if ((int) $c['move_count'] !== $plies + 1) continue;
+    $short = $opening_short_name((string) $c['name'], (string) $o['name']);
+    // A line under this very name but another ECO code is told apart by the code.
+    if ($short === (string) $o['name']) $short = (string) $c['eco'] !== (string) $o['eco'] ? (string) $c['eco'] : 'same name';
     $nextLines[$lastSan((string) $c['pgn_moves'])] ??= [
-        'name' => $opening_short_name((string) $c['name'], (string) $o['name']) === (string) $o['name']
-            ? 'same name' : $opening_short_name((string) $c['name'], (string) $o['name']),
+        'name' => $short,
         'url'  => $baseUrl . I18n::url('/openings/' . $c['slug']),
     ];
 }
