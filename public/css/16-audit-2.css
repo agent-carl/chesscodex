@@ -282,3 +282,9 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
 @media (max-width: 1000px) {
     .ranking-moves { display: none; }
 }
+
+/* --- Statistics tables: a row lines up on its first line of text, so the
+       numbers sit level with the move when the name takes two lines. A move
+       with no named line is not floated: its text gives the cell a baseline. */
+.stats-moves td { vertical-align: baseline; }
+.stats-moves .stats-move:not(:has(.stats-move-line)) .stats-move-btn { float: none; }
