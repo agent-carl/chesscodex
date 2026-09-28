@@ -1,6 +1,6 @@
-# Nightly copy of the Chess Codex database (/etc/systemd/system/chesscodex-backup.service).
+# Nightly copy of the Caissa Codex database (/etc/systemd/system/chesscodex-backup.service).
 [Unit]
-Description=Back up the Chess Codex SQLite database
+Description=Back up the Caissa Codex SQLite database
 
 [Service]
 Type=oneshot

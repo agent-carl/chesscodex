@@ -1,5 +1,5 @@
 /**
- * Chess Codex service worker.
+ * Caissa Codex service worker.
  *
  * Strategy:
  *   - static assets (/vendor, /public + .js/.css/.wasm/.svg/.woff2…)

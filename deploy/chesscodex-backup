@@ -1,5 +1,5 @@
 #!/bin/sh
-# Chess Codex database backup (/usr/local/sbin/chesscodex-backup).
+# Caissa Codex database backup (/usr/local/sbin/chesscodex-backup).
 # ".backup" takes a consistent copy while the site keeps running (WAL mode),
 # then it's gzipped; the 14 newest copies are kept.
 # If /etc/chesscodex-backup-r2.conf exists (set-r2-backup.sh), the copy is also

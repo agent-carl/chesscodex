@@ -1,6 +1,6 @@
 # Runs chesscodex-backup.service every night, before the 04:00 update reboot window.
 [Unit]
-Description=Nightly Chess Codex database backup
+Description=Nightly Caissa Codex database backup
 
 [Timer]
 OnCalendar=*-*-* 03:30:00

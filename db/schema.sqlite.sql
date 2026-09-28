@@ -1,4 +1,4 @@
--- Chess Codex — full schema for the SQLite backend (config.php → db.driver = 'sqlite').
+-- Caissa Codex — full schema for the SQLite backend (config.php → db.driver = 'sqlite').
 -- Same tables and columns as the MySQL deployment, including the ones that
 -- used to arrive via db/migrations/ (description, codex_submissions,
 -- codex_view_log). Applied by tools/seed.php.

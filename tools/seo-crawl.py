@@ -1,4 +1,4 @@
-"""Crawl every URL in a Chess Codex sitemap and print a short SEO summary.
+"""Crawl every URL in a Caissa Codex sitemap and print a short SEO summary.
 
     python tools/seo-crawl.py                                  # live site, 2 workers
     python tools/seo-crawl.py http://127.0.0.1:8099 -w 1       # local copy (tools/dev/serve.sh)
@@ -14,7 +14,7 @@ import urllib.error, urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
 
-UA = "ChessCodexSEO-bot/1.0"
+UA = "CaissaCodexSEO-bot/1.0"
 
 
 class Page(HTMLParser):

@@ -1,5 +1,5 @@
 #!/bin/bash
-# One-time server setup for Chess Codex on the Raspberry Pi (Debian 13 "trixie").
+# One-time server setup for Caissa Codex on the Raspberry Pi (Debian 13 "trixie").
 #
 #   sudo bash pi-setup.sh
 #

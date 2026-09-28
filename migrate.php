@@ -27,7 +27,7 @@ if ($expected === '' || !hash_equals($expected, $given)) {
 }
 
 header('Content-Type: text/plain; charset=utf-8');
-echo "=== Chess Codex migrations ===\n\n";
+echo "=== Caissa Codex migrations ===\n\n";
 
 try {
     $results = Migrations::runAll();

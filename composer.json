@@ -1,10 +1,10 @@
 {
-    "name": "av-webdevs/chess-codex",
+    "name": "agent-carl/chesscodex",
     "description": "Free, ad-free encyclopedia of every named chess opening.",
     "type": "project",
     "license": "AGPL-3.0-or-later",
     "require": {
-        "php": ">=8.1"
+        "php": ">=8.3"
     },
     "require-dev": {
         "phpstan/phpstan": "^1.10"

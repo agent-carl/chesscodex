@@ -57,10 +57,9 @@ ob_start();
                 popular openings were written with the help of an AI assistant, based on
                 standard opening theory and the Lichess numbers shown on each page; if you
                 spot a mistake, the "Suggest an improvement or report a mistake" form under
-                the description reaches me. Other
-                descriptions are written by me or accepted from a community submission via
-                the suggest form. Pages without a description fall back to a generated
-                "Overview" built from the underlying data.
+                the description reaches me. Descriptions sent through that form are read
+                before anything is published. Pages without a description fall back to a
+                generated "Overview" built from the underlying data.
             </li>
         </ul>
     </section>
@@ -70,8 +69,9 @@ ob_start();
         <p>
             Vanilla PHP 8.4, SQLite, plain JavaScript (ES modules). No framework, no build
             step, no bundler — minified by a tiny in-repo PHP script. Self-hosted on a
-            Raspberry Pi 5 at home, served through Cloudflare. Source-first, optimized for
-            being readable rather than clever.
+            Raspberry Pi 5 at home, served through Cloudflare. The source code is on
+            <a href="https://github.com/agent-carl/chesscodex" rel="noopener">GitHub</a>
+            under the AGPL-3.0.
         </p>
         <p>
             Open-source libraries that do the heavy lifting:
@@ -99,12 +99,16 @@ ob_start();
             your name and email address if you give them (the email is never published) —
             together with your IP address, which is used only to fight spam. Like any web
             server, it also keeps access logs (IP address, page, time and browser) for about
-            two weeks.
+            two weeks. The database is backed up every night to private cloud storage
+            (Cloudflare R2), where each copy is deleted after 30 days.
         </p>
         <p>
-            The only outbound requests the site makes are to <code>lichess.org</code> for
+            Your repertoire, practice progress, recently viewed openings, engine level and
+            theme are kept in your browser's local storage and never leave your device.
+        <p>
+            Apart from the nightly backup, the only outbound requests the site makes are to <code>lichess.org</code> for
             opening statistics, and only server-side — your browser never talks to Lichess
-            directly.
+            directly, unless you open a line in Lichess yourself.
         </p>
     </section>
 
@@ -130,7 +134,7 @@ ob_start();
 <?php
 $body = ob_get_clean();
 $title = 'About Caissa Codex — a Free Chess Openings Encyclopedia';
-$description = 'About Caissa Codex — a free, ad-free encyclopedia of 3,690 chess openings, built as a hobby project by a high school student in Norway.';
+$description = 'About Caissa Codex — a free, ad-free encyclopedia of 3,690 named chess opening lines, built as a hobby project by a high school student in Norway.';
 $canonical = $siteUrl . $baseUrl . I18n::url('/about');
 $jsonLd = [
     '@context' => 'https://schema.org',

@@ -18,9 +18,9 @@ return [
     'home.title'               => 'Chess Openings Explorer — Moves, Win Rates & ECO Codes | Caissa Codex',
     'home.hero.h1'             => 'The Chess Openings Encyclopedia',
     'home.hero.lede'           => 'A free, ad-free reference of named chess openings and variations: moves on an interactive board, ECO codes, and win rates from millions of Lichess games.',
-    'home.hero.meta'           => '{count} openings indexed · 5 ECO groups · A–E',
-    'home.card.openings'       => '{count} openings',
-    'home.description'         => 'Explore {count} chess openings, from the Sicilian to rare gambits: moves on an interactive board, ECO codes, Lichess win rates and every variation. Free, no ads.',
+    'home.hero.meta'           => '{count} named lines · ECO codes A00–E99',
+    'home.card.openings'       => '{count} lines',
+    'home.description'         => 'Explore {count} chess openings and variations, from the Sicilian to rare gambits: moves on an interactive board, ECO codes and Lichess win rates. Free, no ads.',
 
     // Opening page
     'opening.parent'           => 'Parent:',
@@ -100,6 +100,6 @@ return [
     'error.404.title'          => 'Not found · Caissa Codex',
     'error.500.title'          => 'Internal error · Caissa Codex',
     'error.500.h1'             => 'Something went wrong',
-    'error.500.body'           => 'We hit an error rendering this page. The error has been logged and we\'ll look into it.',
+    'error.500.body'           => 'This page could not be shown. The error has been logged and will be looked into.',
     'error.back_home'          => 'Back to home',
 ];
