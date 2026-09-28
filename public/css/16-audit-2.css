@@ -38,10 +38,10 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
     .opening-grid { grid-template-rows: auto 1fr; }
     .opening-grid > .opening-board-wrap { grid-row: 1 / span 2; }
     .opening-grid > .opening-stats { grid-column: 2; min-height: 0; }
-    .opening-grid .stats-moves { max-width: none; width: 100%; }
-    .opening-grid .stats-moves .stats-bar.inline { width: 84px; }
-    .opening-grid .stats-moves td { padding-top: 0.45rem; padding-bottom: 0.45rem; }
-    .opening-grid .stats-moves td:nth-child(2) { font-size: 0.85rem; }
+    .opening-grid .opening-stats .stats-moves { max-width: none; width: 100%; }
+    .opening-grid .opening-stats .stats-moves .stats-bar.inline { width: 84px; }
+    .opening-grid .opening-stats .stats-moves td { padding-top: 0.45rem; padding-bottom: 0.45rem; }
+    .opening-grid .opening-stats .stats-moves td:nth-child(2) { font-size: 0.85rem; }
 }
 .opening-grid > .opening-stats { margin-top: 0; }
 .opening-grid > .opening-stats h2 { margin-top: 0; }
@@ -288,3 +288,23 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
        with no named line is not floated: its text gives the cell a baseline. */
 .stats-moves td { vertical-align: baseline; }
 .stats-moves .stats-move:not(:has(.stats-move-line)) .stats-move-btn { float: none; }
+
+/* --- Opening page, wide screen: "By rating" and master games fill the
+       board's column under the board. Rows: 1 the moves panel, 2 flexible,
+       3 by rating. The board spans 1–2 and the statistics 2–3, so the
+       flexible row takes whatever the board needs beyond the moves panel and
+       each column stacks without gaps. On a phone: source order. ---------- */
+.opening-grid > .opening-levels { margin-top: 0; }
+@media (min-width: 900px) {
+    .opening-grid { grid-template-rows: auto 1fr auto; }
+    .opening-grid > .opening-board-wrap { grid-column: 1; grid-row: 1 / span 2; }
+    .opening-grid > .opening-side { grid-column: 2; grid-row: 1; }
+    .opening-grid > .opening-stats { grid-column: 2; grid-row: 2 / -1; }
+    .opening-grid:not(:has(> .opening-levels)) { grid-template-rows: auto 1fr; }
+    .opening-grid > .opening-levels { grid-column: 1; grid-row: 3; }
+}
+/* The statistics column is narrowest just above the breakpoint: short counts there too. */
+@media (min-width: 900px) and (max-width: 1023px) {
+    .opening-stats .n-long { display: none; }
+    .opening-stats .n-short { display: inline; }
+}
