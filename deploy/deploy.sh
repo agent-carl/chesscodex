@@ -18,10 +18,12 @@ SSH=ssh
 
 EXCLUDES=(
     --exclude=.git --exclude=deploy --exclude=docs --exclude=backups --exclude=config.php
-    --exclude=.claude --exclude=.dev --exclude=.github --exclude=tools/dev --exclude=CLAUDE.md --exclude=.ignore
+    --exclude=.dev --exclude=.github --exclude=tools/dev --exclude=.ignore
     --exclude='db/*.sqlite' --exclude='db/*.sqlite-*' --exclude=db/log --exclude=db/og_cache --exclude=db/backups
     --exclude=_composer_vendor
 )
+# Files kept only in this checkout (listed in .git/info/exclude) stay here too.
+[ -f .git/info/exclude ] && EXCLUDES+=(--exclude-from=.git/info/exclude)
 if [ "${1:-}" != "--initial" ]; then
     EXCLUDES+=(--exclude=db/cache --exclude=db/sitemap_cache.xml)
 fi
