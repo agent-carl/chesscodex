@@ -1,0 +1,11 @@
+# Smooth fan curve for the Pi 5 (/etc/systemd/system/fan-curve.service).
+[Unit]
+Description=Smooth fan curve
+
+[Service]
+ExecStart=/usr/local/sbin/fan-curve
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

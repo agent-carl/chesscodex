@@ -1,0 +1,44 @@
+#!/bin/bash
+# Smooth fan curve for the Pi 5 (/usr/local/sbin/fan-curve, run by fan-curve.service).
+#
+# Every 2 s the CPU temperature, averaged so a short spike doesn't rev the fan,
+# sets the speed on a straight line: PWM_MIN at T_LOW and below (the fan never
+# stops), PWM_MAX at T_HIGH and above. The speed moves towards that target by
+# at most STEP per tick, so it rises and falls gradually instead of in steps.
+#
+# The kernel's own fan steps (fan_temp0..3 in config.txt, set by pi-update.sh
+# to 80 °C and up, all full speed) stay as a safety net: they only matter if
+# this script isn't running. Whatever the kernel writes, the next tick here
+# takes over again.
+set -u
+
+T_LOW=50        # °C: up to here, the quiet minimum
+T_HIGH=80       # °C: from here, full speed
+PWM_MIN=60      # of 255: quiet, ~1,900 rpm
+PWM_MAX=255
+STEP=8          # most PWM change per tick: minimum to full in ~50 s
+
+TEMP=/sys/class/thermal/thermal_zone0/temp
+PWM=$(ls -d /sys/devices/platform/cooling_fan/hwmon/hwmon*)/pwm1
+
+avg=$(cat "$TEMP")   # millidegrees
+while :; do
+    avg=$(( (avg * 4 + $(cat "$TEMP")) / 5 ))
+    if   [ "$avg" -le $(( T_LOW * 1000 )) ];  then target=$PWM_MIN
+    elif [ "$avg" -ge $(( T_HIGH * 1000 )) ]; then target=$PWM_MAX
+    else target=$(( PWM_MIN + (PWM_MAX - PWM_MIN) * (avg - T_LOW * 1000) / ((T_HIGH - T_LOW) * 1000) ))
+    fi
+
+    actual=$(cat "$PWM")    # read back each time: the kernel may have changed it
+    cur=$(( actual < PWM_MIN ? PWM_MIN : actual ))
+    if   [ "$target" -gt "$cur" ]; then new=$(( target - cur > STEP ? cur + STEP : target ))
+    else new=$(( cur - target > STEP ? cur - STEP : target ))
+    fi
+    # A change of a unit or two isn't audible: skip it so the fan holds steady,
+    # except to reach the ends of the range exactly.
+    diff=$(( new > actual ? new - actual : actual - new ))
+    if [ "$diff" -ge 3 ] || { [ "$diff" -gt 0 ] && { [ "$new" -eq "$PWM_MIN" ] || [ "$new" -eq "$PWM_MAX" ]; }; }; then
+        echo "$new" > "$PWM"
+    fi
+    sleep 2
+done
