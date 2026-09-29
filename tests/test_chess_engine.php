@@ -80,3 +80,21 @@ it('pin detection — Ne2 in Winawer when c3-knight is pinned', function () {
     // uppercase N is white).
     assert_true(strpos($f, '2N') !== false, 'c3 knight should still be there');
 });
+
+it('UCI to SAN: pieces, captures, castling, check', function () {
+    $e = new ChessEngine();
+    $san = [];
+    foreach (['e2e4', 'e7e5', 'g1f3', 'b8c6', 'f1b5', 'a7a6', 'b5c6', 'd7c6', 'e1g1', 'f7f6', 'f3e5', 'f6e5', 'd1h5'] as $uci) {
+        $san[] = $e->applyUci($uci);
+    }
+    assert_eq(['e4', 'e5', 'Nf3', 'Nc6', 'Bb5', 'a6', 'Bxc6', 'dxc6', 'O-O', 'f6', 'Nxe5', 'fxe5', 'Qh5+'], $san);
+});
+
+it('UCI to SAN: disambiguation and promotion', function () {
+    $e = new ChessEngine('4k3/8/8/8/8/8/4K3/R6R w - - 0 1');
+    assert_eq('Rad1', $e->applyUci('a1d1'));
+    $e = new ChessEngine('4k3/8/8/N7/8/8/8/N3K3 w - - 0 1');
+    assert_eq('N1b3', $e->applyUci('a1b3'));
+    $e = new ChessEngine('7k/P7/8/8/8/8/8/4K3 w - - 0 1');
+    assert_eq('a8=Q+', $e->applyUci('a7a8q'));
+});

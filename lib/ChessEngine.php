@@ -131,6 +131,52 @@ final class ChessEngine
         $this->doMove($candidates[0], $destIdx, $promotion);
     }
 
+    /**
+     * Apply one UCI move (e2e4, e7e8q; castling as the king's move, e1g1) and
+     * return it in SAN, for showing engine lines. A check gets "+"; mate isn't
+     * detected, so a mating move gets "+" too.
+     */
+    public function applyUci(string $uci): string
+    {
+        if (!preg_match('/^([a-h][1-8])([a-h][1-8])([qrbn]?)$/', $uci, $m)) {
+            throw new RuntimeException("Invalid UCI move: $uci");
+        }
+        $from = self::nameToIdx($m[1]);
+        $to   = self::nameToIdx($m[2]);
+        $promotion = $m[3] !== '' ? strtoupper($m[3]) : null;
+        $p = $this->board[$from];
+        if ($p === '' || ctype_upper($p) !== ($this->turn === 'w')) {
+            throw new RuntimeException("No piece to move for $uci. FEN: " . $this->fen());
+        }
+        $piece = strtoupper($p);
+
+        if ($piece === 'K' && abs($to - $from) === 2) {
+            $san = $to > $from ? 'O-O' : 'O-O-O';
+            $this->doCastle($to > $from);
+        } else {
+            $capture = $this->board[$to] !== '' || ($piece === 'P' && $to === $this->epSquare);
+            if ($piece === 'P') {
+                $san = ($capture ? $m[1][0] . 'x' : '') . $m[2] . ($promotion !== null ? '=' . $promotion : '');
+            } else {
+                // Disambiguate against the other pieces of this kind that can
+                // legally reach the square: by file, else by rank, else both.
+                $others = array_diff($this->findCandidates($piece, $to, ''), [$from]);
+                $disambig = '';
+                if ($others) {
+                    $sameFile = array_filter($others, static fn (int $i): bool => $i % 8 === $from % 8);
+                    $sameRank = array_filter($others, static fn (int $i): bool => intdiv($i, 8) === intdiv($from, 8));
+                    $disambig = !$sameFile ? $m[1][0] : (!$sameRank ? $m[1][1] : $m[1]);
+                }
+                $san = $piece . $disambig . ($capture ? 'x' : '') . $m[2];
+            }
+            $this->doMove($from, $to, $promotion);
+        }
+
+        $kingIdx = array_search($this->turn === 'w' ? 'K' : 'k', $this->board, true);
+        if ($kingIdx !== false && $this->isSquareAttacked($kingIdx, $this->turn !== 'w')) $san .= '+';
+        return $san;
+    }
+
     // ------------------------------------------------------------------
     // Move generation & disambiguation
     // ------------------------------------------------------------------
