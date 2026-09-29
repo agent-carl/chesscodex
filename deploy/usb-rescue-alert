@@ -1,0 +1,19 @@
+#!/bin/bash
+# At boot (/usr/local/sbin/usb-rescue-alert): when the Pi came up from the USB
+# rescue copy instead of the SD card, say so in Telegram, via the bot from
+# /etc/ssh-login-notify.conf. Retries for 10 minutes while the network comes up.
+set -u
+root=$(findmnt -no SOURCE /)
+case "$root" in /dev/mmcblk*) exit 0 ;; esac
+
+TG_CONF=/etc/ssh-login-notify.conf
+[ -r "$TG_CONF" ] || exit 0
+. "$TG_CONF"
+copy=$(cat /etc/usb-rescue-copy 2>/dev/null || echo "?")
+text="⚠️ Pi: загрузился с резервной флешки ($root) — SD-карта не видна или не загружается. Сайт работает на копии от $copy; правки в админке сейчас не сохранятся на SD."
+for _ in $(seq 20); do
+    curl -fsS -m 10 -o /dev/null --data-urlencode "chat_id=$CHAT_ID" --data-urlencode "text=$text" \
+        "https://api.telegram.org/bot$TOKEN/sendMessage" && exit 0
+    sleep 30
+done
+exit 1

@@ -1,0 +1,77 @@
+#!/bin/bash
+# Daily copy of the running system onto the USB flash drive's rescue partitions
+# (/usr/local/sbin/usb-rescue-sync), so the Pi can boot from the drive when the
+# SD card dies: the bootloader (BOOT_ORDER=0xf461: SD, NVMe, USB) falls back to
+# it by itself. Only changes are copied, so a normal run takes a minute or so.
+#
+# The copy gets the drive's own PARTUUIDs in cmdline.txt and fstab, the live
+# database is replaced by a consistent ".backup" copy, and /etc/usb-rescue-copy
+# records when it was made. Does nothing when the Pi runs from the copy itself.
+# The drive is laid out by usb-rescue-setup.sh. A failure sends a Telegram
+# message via the bot from /etc/ssh-login-notify.conf.
+set -euo pipefail
+
+SD=/dev/mmcblk0
+DB=/var/www/chesscodex/db/chesscodex.sqlite
+MNT=/run/usb-rescue
+TG_CONF=/etc/ssh-login-notify.conf
+
+alert() {
+    echo "$1" >&2
+    [ -r "$TG_CONF" ] || return 0
+    ( . "$TG_CONF"
+      curl -fsS -m 10 -o /dev/null --data-urlencode "chat_id=$CHAT_ID" \
+        --data-urlencode "text=⚠️ Pi: $1" \
+        "https://api.telegram.org/bot$TOKEN/sendMessage" ) >/dev/null 2>&1 || true
+}
+cleanup() {
+    status=$?
+    umount -R "$MNT" 2>/dev/null || true
+    [ $status -eq 0 ] || alert "резервная копия системы на флешке не обновилась ($(date +%F)), см. journalctl -u usb-rescue-sync"
+}
+
+if [ "$(findmnt -no SOURCE /)" != "${SD}p2" ]; then
+    echo "Running from $(findmnt -no SOURCE /), not the SD card: nothing to copy"
+    exit 0
+fi
+trap cleanup EXIT
+
+boot=$(blkid -L RESCUEBOOT) || { echo "No RESCUEBOOT partition: is the drive plugged in and set up?"; exit 1; }
+root=$(blkid -L rescueroot) || { echo "No rescueroot partition"; exit 1; }
+disk=/dev/$(lsblk -no PKNAME "$root")
+[ "/dev/$(lsblk -no PKNAME "$boot")" = "$disk" ] || { echo "RESCUEBOOT and rescueroot are on different disks"; exit 1; }
+sd_id=$(lsblk -dno PTUUID $SD)
+usb_id=$(lsblk -dno PTUUID "$disk")
+[ -n "$usb_id" ] && [ "$usb_id" != "$sd_id" ] || { echo "The drive's disk id is empty or the SD card's"; exit 1; }
+
+used=$(df -B1 --output=used / | tail -1)
+room=$(lsblk -bdno SIZE "$root")
+[ "$used" -lt $(( room * 9 / 10 )) ] || { echo "The rescue partition is too small for $used bytes"; exit 1; }
+
+mkdir -p "$MNT"
+mount "$root" "$MNT"
+# -x: this filesystem only, so /proc, /sys, /dev, /run, /boot/firmware and
+# /mnt/usb come across as empty mount points. Excluded paths are also kept
+# from --delete, so the database copy below survives the next run. Exit
+# code 24 = files that vanished while copying (logs, temp files) — harmless.
+rsync -aHAXx --numeric-ids --delete \
+    --exclude='/tmp/*' --exclude='/var/tmp/*' \
+    --exclude='/var/cache/apt/archives/*.deb' \
+    --exclude='/var/www/chesscodex/db/og_cache/*' \
+    --exclude="$DB" --exclude="$DB-wal" --exclude="$DB-shm" \
+    / "$MNT"/ || [ $? -eq 24 ]
+sqlite3 "$DB" ".backup '$MNT$DB'"
+sqlite3 "$MNT$DB" "PRAGMA integrity_check;" | grep -qx ok
+chown --reference="$DB" "$MNT$DB"
+chmod --reference="$DB" "$MNT$DB"
+sed -i "s/PARTUUID=$sd_id-0/PARTUUID=$usb_id-0/" "$MNT/etc/fstab"
+grep -q "PARTUUID=$usb_id-02" "$MNT/etc/fstab"
+date '+%F %H:%M' > "$MNT/etc/usb-rescue-copy"
+
+mount "$boot" "$MNT/boot/firmware"
+rsync -rt --delete --modify-window=1 /boot/firmware/ "$MNT/boot/firmware/"
+sed -i "s/root=PARTUUID=[^ ]*/root=PARTUUID=$usb_id-02/" "$MNT/boot/firmware/cmdline.txt"
+grep -q "root=PARTUUID=$usb_id-02" "$MNT/boot/firmware/cmdline.txt"
+
+echo "Rescue copy updated: $(df -h --output=used "$MNT" | tail -1 | xargs) used on $disk"
+umount -R "$MNT"

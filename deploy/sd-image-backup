@@ -38,6 +38,10 @@ cleanup() {
     rm -f "$IMG"
     [ $status -eq 0 ] || alert "образ SD-карты на флешку не удался ($DAY), см. journalctl -u sd-image-backup"
 }
+if [ "$(findmnt -no SOURCE /)" != "${SD}p2" ]; then
+    echo "Running from $(findmnt -no SOURCE /), not the SD card: no image"
+    exit 0
+fi
 trap cleanup EXIT
 
 mountpoint -q "$USB" || { echo "USB drive is not mounted at $USB"; exit 1; }

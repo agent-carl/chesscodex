@@ -1,0 +1,13 @@
+# Telegram message when the Pi boots from the USB rescue copy (/etc/systemd/system/usb-rescue-alert.service).
+[Unit]
+Description=Report a boot from the USB rescue copy
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/usb-rescue-alert
+TimeoutStartSec=15min
+
+[Install]
+WantedBy=multi-user.target

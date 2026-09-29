@@ -1,0 +1,12 @@
+# Daily rescue copy of the system on the USB drive (/etc/systemd/system/usb-rescue-sync.service).
+[Unit]
+Description=Update the bootable rescue copy of the system on the USB flash drive
+# Ordering only: a missing drive must still run the script, which sends the alert.
+After=mnt-usb.mount
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/usb-rescue-sync
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=1h
