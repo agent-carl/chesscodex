@@ -1,7 +1,8 @@
 #!/bin/sh
 # Caissa Codex database backup (/usr/local/sbin/chesscodex-backup).
 # ".backup" takes a consistent copy while the site keeps running (WAL mode),
-# then it's gzipped; the 14 newest copies are kept.
+# then it's gzipped; the 14 newest copies are kept, and the 30 newest on the
+# USB flash drive at /mnt/usb when it's mounted.
 # If /etc/chesscodex-backup-r2.conf exists (set-r2-backup.sh), the copy is also
 # uploaded to a Cloudflare R2 bucket, so a dead SD card doesn't take the
 # backups with it. The bucket's lifecycle rule deletes old copies there.
@@ -12,6 +13,8 @@ set -eu
 DB=/var/www/chesscodex/db/chesscodex.sqlite
 DIR=/var/backups/chesscodex
 DAY=$(date +%F)
+USB=/mnt/usb
+USB_DIR=$USB/backups/chesscodex
 R2_CONF=/etc/chesscodex-backup-r2.conf
 TG_CONF=/etc/ssh-login-notify.conf
 
@@ -33,6 +36,13 @@ gzip -f "$TMP"
 FILE="$DIR/chesscodex-$DAY.sqlite.gz"
 mv -f "$TMP.gz" "$FILE"
 ls -1t "$DIR"/chesscodex-*.sqlite.gz | tail -n +15 | xargs -r rm -f
+
+# A second local copy on the USB flash drive (30 kept), when it's plugged in.
+if mountpoint -q "$USB"; then
+    { install -d -m 750 -g www-data "$USB_DIR" && cp "$FILE" "$USB_DIR/" &&
+      ls -1t "$USB_DIR"/chesscodex-*.sqlite.gz | tail -n +31 | xargs -r rm -f; } ||
+        alert "копия бэкапа базы на флешку не удалась ($DAY)"
+fi
 
 if [ -r "$R2_CONF" ]; then
     . "$R2_CONF"

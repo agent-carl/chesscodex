@@ -1,0 +1,11 @@
+# Runs sd-image-backup.service early on Sunday, clear of the 03:30 database
+# backup and the 04:00 update reboot window.
+[Unit]
+Description=Weekly SD card image on the USB drive
+
+[Timer]
+OnCalendar=Sun *-*-* 01:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

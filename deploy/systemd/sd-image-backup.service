@@ -1,0 +1,12 @@
+# Weekly image of the SD card on the USB drive (/etc/systemd/system/sd-image-backup.service).
+[Unit]
+Description=Image the SD card onto the USB flash drive
+# Ordering only: a missing drive must still run the script, which sends the alert.
+After=mnt-usb.mount
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/sd-image-backup
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=2h

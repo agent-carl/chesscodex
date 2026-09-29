@@ -1,0 +1,98 @@
+#!/bin/bash
+# Weekly image of the SD card on the USB flash drive (/usr/local/sbin/sd-image-backup).
+#
+# The image is built file by file (rsync) into a fresh disk image with the SD
+# card's partition table and PARTUUIDs, so it boots as is: write it to a new
+# card with Raspberry Pi Imager ("Use custom") or dd. Its root partition is
+# only as big as the data, so after the first boot from the new card grow it:
+#   sudo raspi-config nonint do_expand_rootfs && sudo reboot
+# The live database is replaced in the image by a consistent ".backup" copy;
+# og_cache (redrawn on demand) is left out. The 2 newest images are kept.
+# The image holds every secret on the Pi (tunnel token, R2 keys, password
+# hashes), so the drive is as sensitive as the SD card itself.
+# A failure sends a Telegram message via the bot from /etc/ssh-login-notify.conf.
+set -euo pipefail
+
+USB=/mnt/usb
+OUT=$USB/sd-images
+SD=/dev/mmcblk0
+DB=/var/www/chesscodex/db/chesscodex.sqlite
+DAY=$(date +%F)
+IMG=$OUT/.pi-sd-$DAY.img
+MNT=/run/sd-image-backup
+TG_CONF=/etc/ssh-login-notify.conf
+LOOP=
+
+alert() {
+    echo "$1" >&2
+    [ -r "$TG_CONF" ] || return 0
+    ( . "$TG_CONF"
+      curl -fsS -m 10 -o /dev/null --data-urlencode "chat_id=$CHAT_ID" \
+        --data-urlencode "text=⚠️ Pi: $1" \
+        "https://api.telegram.org/bot$TOKEN/sendMessage" ) >/dev/null 2>&1 || true
+}
+cleanup() {
+    status=$?
+    umount -R "$MNT" 2>/dev/null || true
+    [ -n "$LOOP" ] && losetup -d "$LOOP" 2>/dev/null || true
+    rm -f "$IMG"
+    [ $status -eq 0 ] || alert "образ SD-карты на флешку не удался ($DAY), см. journalctl -u sd-image-backup"
+}
+trap cleanup EXIT
+
+mountpoint -q "$USB" || { echo "USB drive is not mounted at $USB"; exit 1; }
+install -d -m 700 "$OUT"
+
+# Partition table: the SD card's, with the root partition cut down to the
+# data it holds plus a quarter and 1 GiB of room.
+p1_start=$(cat /sys/block/mmcblk0/mmcblk0p1/start)
+p1_size=$(cat /sys/block/mmcblk0/mmcblk0p1/size)
+p2_start=$(cat /sys/block/mmcblk0/mmcblk0p2/start)
+used=$(df -B1 --output=used / | tail -1)
+p2_size=$(( (used * 5 / 4 + (1 << 30)) / 512 / 2048 * 2048 ))
+p2_size=$(( p2_size < $(cat /sys/block/mmcblk0/mmcblk0p2/size) ? p2_size : $(cat /sys/block/mmcblk0/mmcblk0p2/size) ))
+bytes=$(( (p2_start + p2_size) * 512 ))
+avail=$(df -B1 --output=avail "$USB" | tail -1)
+[ "$avail" -gt $(( used * 3 / 2 )) ] || { echo "Not enough room on $USB"; exit 1; }
+
+rm -f "$IMG"
+truncate -s "$bytes" "$IMG"
+sfdisk -q "$IMG" <<EOF
+label: dos
+label-id: 0x$(lsblk -dno PTUUID $SD)
+unit: sectors
+
+start=$p1_start, size=$p1_size, type=$(lsblk -no PARTTYPE ${SD}p1 | sed 's/^0x//')
+start=$p2_start, size=$p2_size, type=83
+EOF
+LOOP=$(losetup -fP --show "$IMG")
+mkfs.vfat -F 32 -n "$(lsblk -no LABEL ${SD}p1)" "${LOOP}p1" >/dev/null
+mkfs.ext4 -q -L "$(lsblk -no LABEL ${SD}p2)" "${LOOP}p2"
+
+mkdir -p "$MNT"
+mount "${LOOP}p2" "$MNT"
+# -x: this filesystem only, so /proc, /sys, /dev, /run, /boot/firmware and
+# /mnt/usb come across as empty mount points. Exit code 24 = files that
+# vanished while copying (logs, temp files) — harmless.
+rsync -aHAXx --numeric-ids --sparse \
+    --exclude='/tmp/*' --exclude='/var/tmp/*' \
+    --exclude='/var/cache/apt/archives/*.deb' \
+    --exclude='/var/www/chesscodex/db/og_cache/*' \
+    --exclude="$DB" --exclude="$DB-wal" --exclude="$DB-shm" \
+    / "$MNT"/ || [ $? -eq 24 ]
+sqlite3 "$DB" ".backup '$MNT$DB'"
+sqlite3 "$MNT$DB" "PRAGMA integrity_check;" | grep -qx ok
+chown --reference="$DB" "$MNT$DB"
+chmod --reference="$DB" "$MNT$DB"
+
+mount "${LOOP}p1" "$MNT/boot/firmware"
+rsync -rt --modify-window=1 /boot/firmware/ "$MNT/boot/firmware/"
+
+umount -R "$MNT"
+e2fsck -fn "${LOOP}p2" >/dev/null
+losetup -d "$LOOP"
+LOOP=
+
+mv -f "$IMG" "$OUT/pi-sd-$DAY.img"
+ls -1t "$OUT"/pi-sd-*.img | tail -n +3 | xargs -r rm -f
+echo "pi-sd-$DAY.img: $(du -h --apparent-size "$OUT/pi-sd-$DAY.img" | cut -f1) image, $(du -h "$OUT/pi-sd-$DAY.img" | cut -f1) on the drive"
