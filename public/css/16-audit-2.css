@@ -308,3 +308,31 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
     .opening-stats .n-long { display: none; }
     .opening-stats .n-short { display: inline; }
 }
+
+/* --- Opening page: Stockfish's evaluation under the board (EngineEval). */
+.engine-eval {
+    max-width: 520px;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.engine-eval .engine-eval-title { margin: 0 0 var(--space-2); font-size: 1rem; }
+.engine-eval p { margin: 0; }
+.engine-eval-score { font-size: 1.05rem; }
+.engine-eval-num {
+    display: inline-block;
+    min-width: 3.6em;
+    margin-right: var(--space-2);
+    padding: 0.05rem 0.4rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-weight: 600;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+.engine-eval-num[data-lean="white"] { background: #f4f1ea; color: #1b1b1b; }
+.engine-eval-num[data-lean="black"] { background: #2b2b2b; color: #f4f1ea; }
+.engine-eval-line { margin-top: var(--space-2) !important; }
+.engine-eval-pv { font-family: var(--font-mono); font-size: 0.9rem; }
+.engine-eval-src { margin-top: var(--space-2) !important; color: var(--muted); }

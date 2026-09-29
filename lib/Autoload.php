@@ -11,6 +11,7 @@ spl_autoload_register(static function (string $class): void {
         'Auth'             => __DIR__ . '/Auth.php',
         'Cache'            => __DIR__ . '/Cache.php',
         'ChessEngine'      => __DIR__ . '/ChessEngine.php',
+        'EngineEval'       => __DIR__ . '/EngineEval.php',
         'I18n'             => __DIR__ . '/I18n.php',
         'LevelStats'       => __DIR__ . '/LevelStats.php',
         'LichessExplorer'  => __DIR__ . '/LichessExplorer.php',
