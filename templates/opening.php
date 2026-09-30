@@ -481,8 +481,8 @@ $ogType = 'article';
 $canonical = $siteUrl . $baseUrl . I18n::url('/openings/' . $o['slug']);
 
 // SEO description, in the order searchers scan it: name and ECO code, how
-// the line scores on Lichess (the one thing the title can't say), its first
-// moves, the variations. Whole parts only, up to 160 characters, so search
+// the line scores on Lichess (the one thing the title can't say), Stockfish's
+// evaluation, its first moves, the variations. Whole parts only, up to 160 characters, so search
 // results never show it cut mid-phrase.
 // The first moves, cut after a whole move ("1. e4 e5 2. Nf3 Nc6…").
 $moveSnippet = $movesPretty;
@@ -496,6 +496,10 @@ if ($statsTotal > 0) {
     $descParts[] = sprintf('White wins %d%%, Black %d%%, draws %d%% in %s Lichess games',
         (int) round((float) $wPct), (int) round((float) $bPct), (int) round((float) $dPct),
         Rankings::compact($statsTotal));
+}
+// Stockfish's verdict on the final position: "Stockfish +0.34".
+if ($descEval = EngineEval::forFen((string) ($o['fen'] ?? ''))) {
+    $descParts[] = 'Stockfish ' . EngineEval::scoreText($descEval);
 }
 // Same-name lines share their first moves; their ending is what differs.
 $descParts[] = $lineTail !== '' ? 'line ending ' . $lineTail : $moveSnippet;
