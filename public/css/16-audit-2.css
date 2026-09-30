@@ -295,6 +295,8 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
        flexible row takes whatever the board needs beyond the moves panel and
        each column stacks without gaps. On a phone: source order. ---------- */
 .opening-grid > .opening-levels { margin-top: 0; }
+/* Its heading sits as close to the board as the statistics heading does to the moves panel. */
+.opening-grid > .opening-levels > h2 { margin-top: 0; }
 @media (min-width: 900px) {
     .opening-grid { grid-template-rows: auto 1fr auto; }
     .opening-grid > .opening-board-wrap { grid-column: 1; grid-row: 1 / span 2; }
