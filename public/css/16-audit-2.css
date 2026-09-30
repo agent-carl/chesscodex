@@ -309,7 +309,7 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
     .opening-stats .n-short { display: inline; }
 }
 
-/* --- Opening page: Stockfish's evaluation under the board (EngineEval). */
+/* --- Opening page: Stockfish's evaluation at the end of the statistics column (EngineEval). */
 .engine-eval {
     max-width: 520px;
     padding: var(--space-3) var(--space-4);
@@ -336,3 +336,4 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
 .engine-eval-line { margin-top: var(--space-2) !important; }
 .engine-eval-pv { font-family: var(--font-mono); font-size: 0.9rem; }
 .engine-eval-src { margin-top: var(--space-2) !important; color: var(--muted); }
+.opening-stats .engine-eval { max-width: none; margin-top: var(--space-5); }

@@ -1,9 +1,9 @@
 <?php
 /**
- * Stockfish's evaluation of the line's final position, under the board
- * (EngineEval, computed on the Pi by tools/engine-eval.php). Nothing until
- * the position has been evaluated.
- * Included by templates/opening.php, in its scope (all its variables).
+ * Stockfish's evaluation of the line's final position (EngineEval, computed
+ * on the Pi by tools/engine-eval.php), at the end of the Lichess statistics
+ * column. Nothing until the position has been evaluated.
+ * Included by templates/partials/opening_stats.php, in the page's scope.
  */
 $eval = EngineEval::forFen((string) ($o['fen'] ?? ''));
 if ($eval):

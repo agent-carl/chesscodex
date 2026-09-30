@@ -48,4 +48,6 @@
                 <?php endforeach; ?></tbody>
             </table>
             <p class="stats-attribution"<?= $statsTotal > 0 ? '' : ' hidden' ?>><small><?= htmlspecialchars(t('opening.stats.attribution'), ENT_QUOTES, 'UTF-8') ?> <span class="stats-cached-at"><?= $statsTotal > 0 ? htmlspecialchars($updated((string) $stats['cached_at']), ENT_QUOTES, 'UTF-8') : '' ?></span></small></p>
+            <?php /* Stockfish's evaluation closes this column, so "By rating" sits right under the board. */ ?>
+            <?php require __DIR__ . '/opening_eval.php'; ?>
         </section>

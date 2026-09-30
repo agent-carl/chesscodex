@@ -259,7 +259,6 @@ $island = [
             </div>
             <p class="board-explore" id="board-explore" aria-live="polite" hidden></p>
             <p class="board-hint"><?= htmlspecialchars(t('opening.board.hint'), ENT_QUOTES, 'UTF-8') ?></p>
-            <?php require __DIR__ . '/partials/opening_eval.php'; ?>
         </div>
 
         <aside class="opening-side">
