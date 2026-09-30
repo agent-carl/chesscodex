@@ -7,7 +7,12 @@ declare(strict_types=1);
  * off; --redo evaluates them again (after an engine upgrade, say).
  *
  *   php tools/engine-eval.php [--depth 30] [--limit N] [--threads 4] [--hash 64]
- *                             [--engine PATH] [--redo]
+ *                             [--engine PATH] [--redo] [--shard I/N]
+ *
+ * --shard I/N takes every N-th position starting at I (1..N), so N copies can
+ * run side by side on a many-core machine: one engine per position scales far
+ * better than many threads on one position. The results can then be copied
+ * to the Pi's database.
  *
  * On the Pi, at the lowest CPU priority so the site always comes first:
  *   nohup chrt -i 0 php tools/engine-eval.php --engine ~/bin/stockfish > ~/engine-eval.log 2>&1 < /dev/null &
@@ -19,13 +24,18 @@ if (PHP_SAPI !== 'cli') {
 require __DIR__ . '/../lib/Autoload.php';
 require_once __DIR__ . '/../lib/db.php';
 
-$opts    = getopt('', ['depth:', 'limit:', 'threads:', 'hash:', 'engine:', 'redo']);
+$opts    = getopt('', ['depth:', 'limit:', 'threads:', 'hash:', 'engine:', 'redo', 'shard:']);
 $depth   = (int) ($opts['depth'] ?? 30);
 $limit   = (int) ($opts['limit'] ?? 0);
 $threads = (int) ($opts['threads'] ?? 4);
 $hash    = (int) ($opts['hash'] ?? 64);
 $engine  = (string) ($opts['engine'] ?? 'stockfish');
 $redo    = isset($opts['redo']);
+[$shard, $shards] = array_map('intval', explode('/', (string) ($opts['shard'] ?? '1/1')) + [1 => 1]);
+if ($shards < 1 || $shard < 1 || $shard > $shards) {
+    fwrite(STDERR, "--shard must be I/N with 1 <= I <= N\n");
+    exit(1);
+}
 const PV_PLIES = 10;   // main line shown on the page
 
 EngineEval::ensureTable();
@@ -64,7 +74,8 @@ echo "$name, depth $depth, $threads threads, {$hash} MB hash\n";
 $done = $skipped = 0;
 $started = time();
 $todo = [];
-foreach ($rows as $r) {
+foreach ($rows as $k => $r) {
+    if ($k % $shards !== $shard - 1) continue;
     $fen = (string) ($r['fen'] ?: ChessEngine::fromPgn((string) $r['pgn_moves'])->fen());
     if (!$redo && EngineEval::depthOf($fen) !== null) { $skipped++; continue; }
     $todo[] = ['slug' => (string) $r['slug'], 'fen' => $fen];
@@ -98,12 +109,21 @@ foreach ($todo as $i => $t) {
         echo "  {$t['slug']}: line cut short ({$e->getMessage()})\n";
     }
     if (!$pvSan) continue;
-    EngineEval::store(
-        $t['fen'], $best['depth'],
-        $best['kind'] === 'cp' ? $sign * $best['score'] : null,
-        $best['kind'] === 'mate' ? $sign * $best['score'] : null,
-        $pvSan, $name
-    );
+    // Several shards share one database: wait out another shard's write.
+    for ($try = 1; ; $try++) {
+        try {
+            EngineEval::store(
+                $t['fen'], $best['depth'],
+                $best['kind'] === 'cp' ? $sign * $best['score'] : null,
+                $best['kind'] === 'mate' ? $sign * $best['score'] : null,
+                $pvSan, $name
+            );
+            break;
+        } catch (PDOException $e) {
+            if ($try >= 30 || !str_contains($e->getMessage(), 'locked')) throw $e;
+            usleep(500000);
+        }
+    }
     $done++;
     if ($done % 10 === 0 || $i + 1 === count($todo)) {
         $per  = (time() - $started) / $done;
