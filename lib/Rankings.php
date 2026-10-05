@@ -25,7 +25,7 @@ final class Rankings
         'best-openings-for-white' => 'The 50 lines that score best for White, among those played a million times or more.',
         'best-openings-for-black' => 'The 50 defenses and replies that score best for Black, by the same rule.',
         'popular-openings'        => 'The 100 most-played named lines, from 1.e4 down.',
-        'gambits'                 => 'The 100 most-played gambits and countergambits, with how often each side wins.',
+        'gambits'                 => 'Every gambit and countergambit A–Z, and the 100 most played with how often each side wins.',
     ];
 
     /** Games a line needs before it's ranked by score. */
@@ -109,6 +109,26 @@ final class Rankings
                 return array_slice($lines, 0, $level !== null ? 30 : 50);
         }
         return [];
+    }
+
+    /**
+     * Every gambit line (Opening::isGambit), A–Z as in Opening::allAlphabetical()
+     * — with its "tail" where several lines share a name — plus its cached
+     * Lichess game count where there is one (0 otherwise).
+     */
+    public static function allGambits(): array
+    {
+        $games = [];
+        foreach (self::all() as $r) $games[$r['id']] = $r['games'];
+        $out = [];
+        foreach (Opening::allAlphabetical() as $rows) {
+            foreach ($rows as $r) {
+                if (!Opening::isGambit((string) $r['name'])) continue;
+                $r['games'] = $games[(int) $r['id']] ?? 0;
+                $out[] = $r;
+            }
+        }
+        return $out;
     }
 
     /** $side's score in the line's games: wins plus half the draws, 0–1. */

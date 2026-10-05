@@ -15,7 +15,7 @@ return [
     'group.E'                  => 'Indian Defenses',
 
     // Home page
-    'home.title'               => 'Chess Openings Explorer — Moves, Win Rates & ECO Codes | Caissa Codex',
+    'home.title'               => 'Chess Openings Explorer — Moves & Win Rates | Caissa Codex',
     'home.hero.h1'             => 'The Chess Openings Encyclopedia',
     'home.hero.lede'           => 'A free, ad-free reference of named chess openings and variations: moves on an interactive board, ECO codes, and win rates from millions of Lichess games.',
     'home.hero.meta'           => '{count} named lines · ECO codes A00–E99',

@@ -298,6 +298,7 @@ final class Routes
         global $baseUrl, $siteUrl;
         Views::mark('ranking');
         $rows = Rankings::rows($page, $level);
+        $allGambits = $page === 'gambits' ? Rankings::allGambits() : [];
         require __DIR__ . '/../templates/ranking.php';
     }
 
