@@ -34,12 +34,13 @@ $texts = [
                  . ' — with White, draw and Black percentages for each.',
     ],
     'gambits' => [
-        'title' => 'Chess Gambits: the 100 Most Played, with Win Rates',
-        'h1'    => 'Chess gambits by popularity',
-        'lede'  => 'Lines that offer or accept a gambit, ranked by the number of rated Lichess games that reached them. "… Gambit Declined" lines are left out: nothing is sacrificed in them.',
-        'desc'  => 'The 100 most-played chess gambits and countergambits in rated Lichess games, each with its moves and how often White and Black win.',
+        'title' => 'List of All Chess Gambits (' . number_format(count($allGambits ?? [])) . ') with Moves & Win Rates',
+        'h1'    => 'Chess gambits',
+        'lede'  => 'All ' . number_format(count($allGambits ?? [])) . ' named lines that offer or accept a gambit: first the 100 most played, ranked by the number of rated Lichess games that reached them, then every gambit A–Z. Plain "… Gambit Declined" lines are left out, since nothing is sacrificed in them, but countergambits played against a gambit, such as the Falkbeer or the Albin, are included.',
+        'desc'  => 'List of all ' . number_format(count($allGambits ?? [])) . ' chess gambits and countergambits A–Z with their moves and ECO codes, and the 100 most played with how often White and Black win.',
     ],
 ][$page];
+$allGambits = $allGambits ?? [];
 
 // Level pages: the same ranking in one rating band, or in master games.
 $level     = $level ?? null;
@@ -110,6 +111,9 @@ ob_start();
     <?php if (!$rows): ?>
         <p class="ranking-method">The numbers for this level are still being collected from Lichess — check back in a few hours.</p>
     <?php endif; ?>
+    <?php if ($allGambits): ?>
+        <h2 class="ranking-heading">The 100 most-played gambits</h2>
+    <?php endif; ?>
     <div class="ranking-table-wrap"<?= $rows ? '' : ' hidden' ?>>
         <table class="ranking-table">
             <thead>
@@ -168,6 +172,43 @@ ob_start();
             high score says how a line does in practice, not that it is objectively best.
         <?php endif; ?>
     </p>
+
+    <?php if ($allGambits):
+        // Every gambit A–Z, grouped by opening like the letter pages.
+        $byFamily = [];
+        foreach ($allGambits as $g) $byFamily[Opening::family((string) $g['name'])][] = $g;
+        $familyId = static fn (string $f): string => 'gambits-' . str_replace(' ', '-', Opening::nameKey($f));
+    ?>
+    <section class="openings-index gambits-all" id="all-gambits">
+        <h2>All chess gambits A–Z <span class="openings-letter-count"><?= number_format(count($allGambits)) ?> lines</span></h2>
+        <p class="lede">Every named gambit and countergambit line, grouped by opening, with the number of rated Lichess games that reached it.</p>
+        <nav class="openings-families" aria-label="Openings with gambits">
+            <?php foreach ($byFamily as $family => $lines): ?>
+                <a href="#<?= $esc($familyId($family)) ?>"><?= $esc($family) ?> <span class="openings-jump-count"><?= count($lines) ?></span></a>
+            <?php endforeach; ?>
+        </nav>
+        <?php foreach ($byFamily as $family => $lines): ?>
+        <section class="openings-letter openings-family" id="<?= $esc($familyId($family)) ?>">
+            <h3><?= $esc($family) ?> <span class="openings-letter-count"><?= count($lines) === 1 ? '1 line' : count($lines) . ' lines' ?></span></h3>
+            <ul class="openings-letter-list">
+                <?php foreach ($lines as $g):
+                    $name  = (string) $g['name'];
+                    $label = $name === $family ? $family : ltrim(substr($name, strlen($family)), ':, ');
+                ?>
+                    <li>
+                        <a href="<?= $baseEsc . $esc(I18n::url('/openings/' . $g['slug'])) ?>" title="<?= $esc($name . ' (' . $g['eco'] . ')') ?>">
+                            <span class="eco-tag"><?= $esc($g['eco']) ?></span>
+                            <span class="openings-letter-name"><?= $esc($label) ?><?php if (($g['tail'] ?? '') !== ''): ?>
+                                <span class="openings-letter-tail"><?= $esc(Opening::keepNumbers((string) $g['tail'])) ?></span><?php endif; ?></span>
+                            <span class="openings-letter-plies"><?= $g['games'] > 0 ? $esc(Rankings::compact((int) $g['games'])) . ' games' : $esc(Opening::movesLabel((int) $g['move_count'])) ?></span>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </section>
+        <?php endforeach; ?>
+    </section>
+    <?php endif; ?>
 </article>
 <?php
 $body        = ob_get_clean();

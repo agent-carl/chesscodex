@@ -9,7 +9,7 @@ The statistics come from the Lichess opening explorer and masters database, cach
 - [List of chess openings A–Z](https://chesscodex.org/openings): all 140 openings and every named line, by letter
 - [ECO codes A00–E99](https://chesscodex.org/eco): the 500 ECO codes with the lines filed under each
 - [Chess opening identifier](https://chesscodex.org/search): name an opening from its moves, a PGN, a FEN position or part of its name
-- [Chess opening rankings](https://chesscodex.org/rankings): best openings for White and for Black (also by rating band), most popular openings, most-played gambits
+- [Chess opening rankings](https://chesscodex.org/rankings): best openings for White and for Black (also by rating band), most popular openings, all chess gambits A–Z with the most played ranked
 - [About](https://chesscodex.org/about): who made it, where the data comes from, privacy
 
 ## Opening pages
