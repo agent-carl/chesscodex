@@ -114,6 +114,7 @@ $tasks = [
     ['train.js',    'train.min.js',    'js'],
     ['repertoire.js', 'repertoire.min.js', 'js'],
     ['site.js',     'site.min.js',     'js'],
+    ['gambits.js',  'gambits.min.js',  'js'],
 ];
 
 $totalSrc = 0; $totalMin = 0;

@@ -46,3 +46,54 @@
     color: var(--muted);
 }
 .openings-letter-tail { margin-left: .4em; font-family: var(--font-mono); }
+
+/* /gambits: jump links, the name filter and the folded list of openings. */
+.gambits-jump { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-3) 0; }
+.gambits-jump a {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: .95rem;
+    text-decoration: none;
+}
+.gambits-jump a:hover { border-color: var(--accent); }
+.gambits-all { margin-top: var(--space-6, 2.5rem); }
+.gambits-all h2 { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-2); }
+.gambits-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    margin: var(--space-3) 0 var(--space-4);
+}
+.gambits-filter label { font-weight: 600; }
+.gambits-filter input {
+    flex: 1 1 16rem;
+    max-width: 28rem;
+    padding: .5rem .75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--fg);
+    font: inherit;
+}
+.gambits-filter input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.gambits-filter-count { color: var(--muted); font-size: .9rem; font-variant-numeric: tabular-nums; }
+.gambits-filter-empty { color: var(--muted); }
+.gambits-all [hidden] { display: none !important; }
+.gambits-all h3 { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-2); }
+.gambits-up { margin-left: auto; font-size: .8rem; font-weight: 400; color: var(--muted); }
+.gambits-more {
+    padding: .2rem .7rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: none;
+    color: var(--accent);
+    font: inherit;
+    font-size: .9rem;
+    cursor: pointer;
+}
+@media (min-width: 641px) { .gambits-more { display: none; } }
+@media (max-width: 640px) {
+    .gambits-families.is-folded a:nth-of-type(n+13) { display: none; }
+}
