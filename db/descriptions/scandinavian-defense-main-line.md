@@ -6,9 +6,9 @@ The Main Line of the [Scandinavian Defense](/openings/scandinavian-defense) (1.e
 
 ### Main lines
 
-- 4.d4, the usual move. The main line runs 4...c6 5.Nf3 Nf6 6.Bc4 Bf5 7.Bd2 e6, often reached by other move orders, when White chooses between the aggressive 8.Qe2 and the quiet 8.0-0. 4.d4 Nf6 is the [Mieses Variation](/openings/scandinavian-defense-main-line-mieses-variation) in this database.
+- 4.d4, the usual move. The main line runs 4...c6 5.Nf3 Nf6 6.Bc4 Bf5 7.Bd2 e6, often reached by other move orders, when White chooses between the aggressive 8.Qe2 and the quiet 8.O-O. 4.d4 Nf6 is the [Mieses Variation](/openings/scandinavian-defense-main-line-mieses-variation) in this database.
 - 4.Nf3 and 4.Bc4 often transpose to the same positions.
-- 4.g3, a fianchetto set-up aimed at Black's queenside: the main line is 4...Nf6 5.Bg2 c6 6.Nf3, intending 0-0, Rb1 and b4–b5. Anand, Baadur Jobava, Gyula Sax and Francisco Vallejo Pons have played it.
+- 4.g3, a fianchetto set-up aimed at Black's queenside: the main line is 4...Nf6 5.Bg2 c6 6.Nf3, intending O-O, Rb1 and b4–b5. Anand, Baadur Jobava, Gyula Sax and Francisco Vallejo Pons have played it.
 - 4.b4!?, the [Leonhardt Gambit](/openings/scandinavian-defense-main-line-leonhardt-gambit), also called the Kotrč–Mieses Gambit. Paul Saladin Leonhardt introduced it to master play against Jacques Mieses in 1907, and Lasker, Capablanca and Keres have played it. With correct play White should not have enough compensation, but that can be hard to prove over the board.
 
 ### Strengths and weaknesses

@@ -36,4 +36,4 @@ The Stafford is a fast-chess weapon for players who enjoy traps and quick attack
 
 ### The numbers
 
-The Lichess numbers show why it is popular online. Below 1800 Black scores 51–51.5% against White's 45–46%. From 1800 up, the advantage switches to White, with 48–48.5% against 46–47.5%. There are almost no master games with it (only a dozen in the database).
+On Lichess, below 1800, Black scores 51–51.5% against White's 45–46%. From 1800 up, the advantage switches to White, with 48–48.5% against 46–47.5%. There are almost no master games with it (only a dozen in the database).

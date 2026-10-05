@@ -11,7 +11,7 @@ White usually answers 4.e5, gaining space and hoping to show that the bishop on 
 ### Main lines
 
 - 4.e5, the [Advance Variation](/openings/french-defense-winawer-variation-advance-variation), 4...c5 5.a3 Bxc3+ 6.bxc3 Ne7:
-  - 7.Qg4, inviting great complications. Black can give up two kingside pawns in the Poisoned Pawn Variation, 7...Qc7 8.Qxg7 Rg8 9.Qxh7 cxd4, castle with 7...0-0, or play 7...Kf8. Judit Polgár is an expert on this line, and Garry Kasparov has played it;
+  - 7.Qg4, inviting great complications. Black can give up two kingside pawns in the Poisoned Pawn Variation, 7...Qc7 8.Qxg7 Rg8 9.Qxh7 cxd4, castle with 7...O-O, or play 7...Kf8. Judit Polgár is an expert on this line, and Garry Kasparov has played it;
   - 7.Nf3, a natural developing line, and 7.a4, which prepares Ba3 and was used successfully by Vasily Smyslov and Bobby Fischer;
   - 7.h4, a more aggressive try.
   6...Qc7, 6...Qa5 and 6...Nc6 are alternatives to 6...Ne7. After 5.a3 Black can also keep the pin with 5...Ba5, the Armenian Variation, enriched by Rafael Vaganian.

@@ -10,7 +10,7 @@ White puts the bishop on the long diagonal with Bg2 and prepares e4, since the b
 
 ### Main lines
 
-- 1...d5 2.Bg2, then 2...c6, the [Slav Formation](/openings/hungarian-opening-slav-formation), 2...e6, the [Catalan Formation](/openings/hungarian-opening-catalan-formation), or 2...c5, the [Reversed Modern Defense](/openings/hungarian-opening-reversed-modern-defense). With Nf3, 0-0 and d3 White often reaches a King's Indian Attack, as in 1.g3 d5 2.Bg2 Nf6 3.Nf3 c6 4.0-0 Bg4 5.d3 Nbd7 6.Nbd2 e5 7.e4.
+- 1...d5 2.Bg2, then 2...c6, the [Slav Formation](/openings/hungarian-opening-slav-formation), 2...e6, the [Catalan Formation](/openings/hungarian-opening-catalan-formation), or 2...c5, the [Reversed Modern Defense](/openings/hungarian-opening-reversed-modern-defense). With Nf3, O-O and d3 White often reaches a King's Indian Attack, as in 1.g3 d5 2.Bg2 Nf6 3.Nf3 c6 4.O-O Bg4 5.d3 Nbd7 6.Nbd2 e5 7.e4.
 - 1...Nf6, the [Indian Defense](/openings/hungarian-opening-indian-defense).
 - 1...c5, the [Sicilian Invitation](/openings/hungarian-opening-sicilian-invitation).
 - 1...g6, the [Symmetrical Variation](/openings/hungarian-opening-symmetrical-variation); with c4 the game can turn into an English Opening, for example 1.g3 g6 2.Bg2 Bg7 3.c4 e5 4.Nc3 d6.

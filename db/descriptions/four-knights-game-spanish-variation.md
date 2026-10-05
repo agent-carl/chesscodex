@@ -10,7 +10,7 @@ The bishop on b5 attacks the c6-knight, which defends e5. The game is often quie
 
 ### Main lines
 
-- 4...Bb4, the [Double Spanish](/openings/four-knights-game-spanish-variation-double-spanish), Black's most common move: the Ruy Lopez with mirrored moves added. Most games continue 5.0-0 0-0, then 6.d3 d6, the [Symmetrical Variation](/openings/four-knights-game-spanish-variation-symmetrical-variation), where the main line is 7.Bg5 Bxc3 8.bxc3 Qe7, Metger's unpin. Black must not mirror with 7...Bg4?, which loses a piece after 8.Bxf6 Qxf6 9.Nd5 Qd8 10.Bxc6 bxc6 11.Nxb4.
+- 4...Bb4, the [Double Spanish](/openings/four-knights-game-spanish-variation-double-spanish), Black's most common move: the Ruy Lopez with mirrored moves added. Most games continue 5.O-O O-O, then 6.d3 d6, the [Symmetrical Variation](/openings/four-knights-game-spanish-variation-symmetrical-variation), where the main line is 7.Bg5 Bxc3 8.bxc3 Qe7, Metger's unpin. Black must not mirror with 7...Bg4?, which loses a piece after 8.Bxf6 Qxf6 9.Nd5 Qd8 10.Bxc6 bxc6 11.Nxb4.
 - 4...Nd4, the [Rubinstein Variation](/openings/four-knights-game-spanish-variation-rubinstein-variation), named after Akiba Rubinstein, an unbalancing counter-gambit. 5.Ba4 is White's most common reply, 5.Bc4 a more modern one, and 5.Nxd4 a very drawish line that discourages many ambitious Black players.
 - 4...Bc5, the [Classical Variation](/openings/four-knights-game-spanish-variation-classical-variation), perfectly playable, as in the famous game Paulsen–Morphy from the First American Chess Congress of 1857.
 - 4...a6 5.Bxc6, the [Ranken Variation](/openings/four-knights-game-spanish-variation-ranken-variation); 5.Ba4 transposes to the Ruy Lopez.

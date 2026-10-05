@@ -12,7 +12,7 @@ Black builds a solid centre with ...d6 and ...e5, supported by ...Nbd7, and deve
 
 After 2...Nf6 the main lines are:
 
-- 3.Nc3 e5, the [Ukrainian Variation](/openings/old-indian-defense-ukrainian-variation), the main line: 4.Nf3 Nbd7 5.e4 ([Two Knights Variation](/openings/old-indian-defense-two-knights-variation)), and after 5...Be7 6.Be2 0-0 7.0-0 c6 8.Re1 White stands slightly better. 4.dxe5 dxe5 5.Qxd8+ Kxd8 does not seem to give White an advantage.
+- 3.Nc3 e5, the [Ukrainian Variation](/openings/old-indian-defense-ukrainian-variation), the main line: 4.Nf3 Nbd7 5.e4 ([Two Knights Variation](/openings/old-indian-defense-two-knights-variation)), and after 5...Be7 6.Be2 O-O 7.O-O c6 8.Re1 White stands slightly better. 4.dxe5 dxe5 5.Qxd8+ Kxd8 does not seem to give White an advantage.
 - 3.Nc3 Bf5, the [Janowski Variation](/openings/old-indian-defense-janowski-variation), introduced by Dawid Janowski in the 1920s to stop 4.e4. It became popular only in the 1980s, and Mikhail Tal, Bent Larsen, Florin Gheorghiu and Kamran Shirazi have all used it.
 - 3.Nc3 c6, the [Czech Variation](/openings/old-indian-defense-czech-variation-with-nc3).
 - 3.Nf3, when 3...Bg4 is the [Tartakower-Indian](/openings/old-indian-defense-tartakower-indian), 3...g6 usually transposes to the King's Indian, and 3...Nbd7 4.Nc3 to the main line.

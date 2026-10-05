@@ -33,4 +33,4 @@ The Bird suits creative attacking players who like to leave theory early and enj
 
 ### The numbers
 
-On Lichess the Bird is balanced. Below 1400 Black actually scores better, 49% against 46%. From 1400 to 2200 White scores 49.5–50% and Black 46%, and above 2200 it is 47% against 46%. In master games over the board White does poorly: White wins 28%, Black 34% and 38% are drawn. That confirms its reputation as a way to play for complications rather than for an advantage.
+On Lichess the Bird is balanced. Below 1400 Black actually scores better, 49% against 46%. From 1400 to 2200 White scores 49.5–50% and Black 46%, and above 2200 it is 47% against 46%. In master games over the board White does poorly: White wins 28%, Black 34% and 38% are drawn.

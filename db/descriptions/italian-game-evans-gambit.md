@@ -37,4 +37,4 @@ The Evans Gambit suits attacking 1.e4 players who like open positions and initia
 
 ### The numbers
 
-On Lichess the Evans is a strong club weapon: below 1800 White scores 53–54% and Black 43–44%. From 1800 to 2200 it is 52% against 44%. Above 2200 it is level at about 47.5% each. In master games over the board (a small sample of about 1,700 games), White wins 27%, Black 29% and 44% are drawn.
+On Lichess White does well at club level: below 1800 White scores 53–54% and Black 43–44%. From 1800 to 2200 it is 52% against 44%. Above 2200 it is level at about 47.5% each. In master games over the board (a small sample of about 1,700 games), White wins 27%, Black 29% and 44% are drawn.

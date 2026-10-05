@@ -21,7 +21,7 @@ Black develops the bishop with tempo and after 5.Be3 almost always adds a third 
 **Weaknesses**
 
 - In the Potter Variation White moves the knight to safety with tempo on the bishop.
-- Some natural moves lose material, such as 5.Be3 Nf6?? or 5...d6?.
+- Some natural moves are mistakes: after 5.Be3, 5...Nf6?? loses the bishop, and 5...d6? leaves Black with tripled c-pawns after 6.Nxc6 bxc6 7.Bxc5 dxc5.
 
 ### Who should play it
 

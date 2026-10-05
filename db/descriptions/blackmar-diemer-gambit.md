@@ -40,4 +40,4 @@ The BDG suits attacking club players who enjoy gambits and open kingside attacks
 
 ### The numbers
 
-On Lichess the BDG depends heavily on rating. Below 1400 Black scores better, 48.6% against 47%. From 1400 to 2200 White does better, 51–51.6% against 44.3–45.7%. Above 2200 it is 49% against 45%. There are only about 300 master games, too few to draw firm conclusions, which shows how rarely strong players use it.
+On Lichess the BDG depends heavily on rating. Below 1400 Black scores better, 48.6% against 47%. From 1400 to 2200 White does better, 51–51.6% against 44.3–45.7%. Above 2200 it is 49% against 45%. There are only about 300 master games, too few to draw firm conclusions.

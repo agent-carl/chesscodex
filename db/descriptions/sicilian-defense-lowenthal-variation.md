@@ -11,7 +11,7 @@ After 4...e5 5.Nb5 the knight eyes d6. In the Löwenthal proper, 5...a6, Black l
 ### Main lines
 
 - 5.Nb5 a6, the Löwenthal Variation proper, with 6.Nd6+ Bxd6 7.Qxd6 Qf6. It declined once it was established that White keeps the advantage in several lines.
-- 5.Nb5 d6, the [Kalashnikov Variation](/openings/sicilian-defense-kalashnikov-variation), popularised by Evgeny Sveshnikov in the late 1980s and now much more popular. Its ideas are close to the [Sveshnikov Variation](/openings/sicilian-defense-lasker-pelikan-variation): Black accepts a backward d-pawn and a weak d5-square in return for time spent chasing the knight.
+- 5.Nb5 d6, the [Kalashnikov Variation](/openings/sicilian-defense-kalashnikov-variation), which Black players revived in the late 1980s and which is now much more popular. Its ideas are close to the [Sveshnikov Variation](/openings/sicilian-defense-lasker-pelikan-variation): Black accepts a backward d-pawn and a weak d5-square in return for time spent chasing the knight.
 
 ### Strengths and weaknesses
 

@@ -6,11 +6,11 @@ The Philidor became a popular opening after François-André Danican Philidor ad
 
 ### The idea
 
-After 3...exd4 White usually recaptures with the knight. Black develops with ...Nf6, ...Be7 and ...0-0 and gets a compact defensive position, at the cost of less space.
+After 3...exd4 White usually recaptures with the knight. Black develops with ...Nf6, ...Be7 and ...O-O and gets a compact defensive position, at the cost of less space.
 
 ### Main lines
 
-- 4.Nxd4 Nf6 5.Nc3 Be7, the main line, called the Antoshin Variation after Vladimir Antoshin; Levon Aronian is a modern exponent. Black gets a strong defensive position after 6...0-0. White's sixth moves include 6.Bf4, which has become more popular, 6.g3, 6.Be2 and 6.Bc4; a typical line is 6.Bf4 0-0 7.Qd2 Nc6 8.0-0-0 Nxd4 9.Qxd4.
+- 4.Nxd4 Nf6 5.Nc3 Be7, the main line, called the Antoshin Variation after Vladimir Antoshin; Levon Aronian is a modern exponent. Black gets a strong defensive position after 6...O-O. White's sixth moves include 6.Bf4, which has become more popular, 6.g3, 6.Be2 and 6.Bc4; a typical line is 6.Bf4 O-O 7.Qd2 Nc6 8.O-O-O Nxd4 9.Qxd4.
 - 4.Nxd4 g6, the [Larsen Variation](/openings/philidor-defense-larsen-variation), fianchettoing the bishop; Bent Larsen played it in a few games, including a draw with Mikhail Tal in 1969.
 - 4.Nxd4 d5 5.exd5, the rare [Paulsen Attack](/openings/philidor-defense-paulsen-attack).
 - 4.Qxd4, which Paul Morphy favoured, intending 4...Nc6 5.Bb5 Bd7 6.Bxc6 Bxc6 7.Nc3 Nf6 8.Bg5 and long castling; it was played in many 19th-century games.
@@ -20,7 +20,7 @@ After 3...exd4 White usually recaptures with the knight. Black develops with ...
 **Strengths**
 
 - A strong defensive position once Black has castled.
-- Clear, simple development with ...Nf6, ...Be7 and ...0-0.
+- Clear, simple development with ...Nf6, ...Be7 and ...O-O.
 
 **Weaknesses**
 

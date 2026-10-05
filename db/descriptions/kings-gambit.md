@@ -37,4 +37,4 @@ The King's Gambit is for attacking players who enjoy risk and want to take the i
 
 ### The numbers
 
-The Lichess numbers show a classic "club weapon". Below 1800, White scores 53–54% and Black only 43%. Above 2200 the score is level at 47% each. In master games over the board it is even worse for White: White wins 29%, Black 35% and 36% are drawn. The King's Gambit is one of the few main openings where Black outscores White among masters.
+Below 1800 on Lichess, White scores 53–54% and Black only 43%. Above 2200 the score is level at 47% each. In master games over the board it is even worse for White: White wins 29%, Black 35% and 36% are drawn. The King's Gambit is one of the few main openings where Black outscores White among masters.

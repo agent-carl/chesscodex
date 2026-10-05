@@ -24,7 +24,7 @@ The g7-bishop is the heart of Black's position: it presses on d4, on the long di
 
 **Weaknesses**
 
-- The Yugoslav Attack is extremely dangerous. Kasparov remarked that White's attack "almost plays itself" there.
+- The Yugoslav Attack is extremely dangerous. Bobby Fischer remarked that White's attack there "almost plays itself".
 - The theory is concrete and forcing, and many lines end in mate if one side is a tempo slow.
 - Its popularity at top level declined from the late 1990s.
 
@@ -34,4 +34,4 @@ The Dragon is for tactical, attacking players who love opposite-side castling an
 
 ### The numbers
 
-On Lichess the Dragon is one of the few main lines where Black scores better than White at every band: 49–49.5% against 46–47% below 2200, and 46.7% against 46.3% above it. Among masters over the board the picture changes: White wins 39%, Black 23% and 37.5% are drawn, which matches the Dragon's reputation as a risky line at the highest level.
+On Lichess the Dragon is one of the few main lines where Black scores better than White at every band: 49–49.5% against 46–47% below 2200, and 46.7% against 46.3% above it. Among masters over the board the picture changes: White wins 39%, Black 23% and 37.5% are drawn.

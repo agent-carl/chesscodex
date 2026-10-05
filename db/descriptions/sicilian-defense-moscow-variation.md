@@ -10,7 +10,7 @@ After the check Black must block. In the main line White trades the light-square
 
 ### Main lines
 
-- 3...Bd7, the [main line](/openings/sicilian-defense-moscow-variation-main-line) and Black's most common choice. After 4.Bxd7+ Qxd7 White can play 5.0-0 followed by c3 and d4, or 5.c4 in Maróczy Bind style, the [Sokolsky Variation](/openings/sicilian-defense-moscow-variation-sokolsky-variation).
+- 3...Bd7, the [main line](/openings/sicilian-defense-moscow-variation-main-line) and Black's most common choice. After 4.Bxd7+ Qxd7 White can play 5.O-O followed by c3 and d4, or 5.c4 in Maróczy Bind style, the [Sokolsky Variation](/openings/sicilian-defense-moscow-variation-sokolsky-variation).
 - 3...Nc6, a position also reached from the [Rossolimo Variation](/openings/sicilian-defense-nyezhmetdinov-rossolimo-attack) after 2...Nc6 3.Bb5 d6.
 - 3...Nd7, the third way to block the check.
 

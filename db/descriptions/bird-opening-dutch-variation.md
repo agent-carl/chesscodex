@@ -4,12 +4,12 @@ The Dutch Variation of the [Bird Opening](/openings/bird-opening) (1.f4 d5) is B
 
 White has several set-ups, each borrowed from a Dutch system:
 
-- a kingside fianchetto with Nf3, g3, Bg2 and 0-0, a reversed Leningrad Dutch;
+- a kingside fianchetto with Nf3, g3, Bg2 and O-O, a reversed Leningrad Dutch;
 - a Stonewall formation with pawns on d4, e3 and f4, aiming for a kingside attack;
 - a queenside fianchetto to strengthen White's hold on e5;
-- by analogy with the Ilyin-Zhenevsky Dutch, Nf3, e3, Be2, 0-0 and d3, preparing the break e3–e4.
+- by analogy with the Ilyin-Zhenevsky Dutch, Nf3, e3, Be2, O-O and d3, preparing the break e3–e4.
 
-Timothy Taylor's book on the Bird suggests as a main line 1.f4 d5 2.Nf3 g6 3.e3 Bg7 4.Be2 Nf6 5.0-0 0-0 6.d3 c5.
+Timothy Taylor's book on the Bird suggests as a main line 1.f4 d5 2.Nf3 g6 3.e3 Bg7 4.Be2 Nf6 5.O-O O-O 6.d3 c5.
 
 ### Main lines
 

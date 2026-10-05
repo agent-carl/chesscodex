@@ -6,15 +6,15 @@ Former world champion Boris Spassky and Boris Gulko have played it occasionally,
 
 ### The idea
 
-Black develops actively and keeps the option of ...Nf6 or ...Nge7. White's most common reply, 4.c3, prepares d4 with tempo on the bishop; 4.0-0 is a close second, and 4.Nxe5 and 4.d3 are also seen.
+Black develops actively and keeps the option of ...Nf6 or ...Nge7. White's most common reply, 4.c3, prepares d4 with tempo on the bishop; 4.O-O is a close second, and 4.Nxe5 and 4.d3 are also seen.
 
 ### Main lines
 
 - 4.c3, the [Central Variation](/openings/ruy-lopez-classical-variation-central-variation):
   - 4...f5, the [Cordel Gambit](/openings/ruy-lopez-classical-variation-cordel-gambit), leading to sharp play; 5.d4 is considered the strongest reply;
-  - 4...Nf6, more solid; 5.0-0 transposes to the [Beverwijk Variation](/openings/ruy-lopez-berlin-defense-beverwijk-variation) of the Berlin Defence;
+  - 4...Nf6, more solid; 5.O-O transposes to the [Beverwijk Variation](/openings/ruy-lopez-berlin-defense-beverwijk-variation) of the Berlin Defence;
   - 4...Bb6 ([Charousek Variation](/openings/ruy-lopez-classical-variation-charousek-variation)), 4...Nge7 and 4...Qf6 are also played, while 4...d6 is weak to 5.d4.
-- 4.0-0, White's main alternative. 4...Nf6 again transposes to the Beverwijk, but the most common reply is 4...Nd4, a more positional line, for example 5.Nxd4 Bxd4 6.c3 Bb6 7.d4 c6.
+- 4.O-O, White's main alternative. 4...Nf6 again transposes to the Beverwijk, but the most common reply is 4...Nd4, a more positional line, for example 5.Nxd4 Bxd4 6.c3 Bb6 7.d4 c6.
 - 4.Nxe5, the fork trick: if Black takes with 4...Nxe5, White regains the piece with 5.d4. There is no clear refutation, though 4...Qe7 and 4...Qg5 are strong alternatives to 4...Nxe5.
 - With 3...a6 4.Ba4 Bc5 Black plays the [Cordel Defence Deferred](/openings/ruy-lopez-morphy-defense-classical-defense-deferred).
 

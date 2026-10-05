@@ -36,4 +36,4 @@ The London is ideal for players with little time for theory who want a reliable,
 
 ### The numbers
 
-On this exact line Lichess shows White at 51–52.5% and Black at 43.5–44.5% below 1800. At higher levels it is 47.5–49.5% for White against 44% for Black. In master games over the board, the London is very balanced: White wins 27%, Black 24% and 49% are drawn. That supports its reputation as a safe weapon rather than a way to win the opening.
+On this exact line Lichess shows White at 51–52.5% and Black at 43.5–44.5% below 1800. At higher levels it is 47.5–49.5% for White against 44% for Black. In master games over the board, the London is very balanced: White wins 27%, Black 24% and 49% are drawn.

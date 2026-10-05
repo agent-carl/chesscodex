@@ -6,7 +6,7 @@ The structure gives White two plans: advance the centre pawns with Nge2, f3 and 
 
 ### Main lines
 
-- 4...exd5 5.Bg5, the [Positional Variation](/openings/queens-gambit-declined-exchange-variation-positional-variation), threatening 6.Bxf6 and 7.Nxd5. The usual replies 5...c6 and 5...Be7 normally transpose; the main line continues 6.e3 Be7 7.Bd3 Nbd7 8.Qc2 0-0, followed by Nf3 or Nge2. 6.Qc2 is the [Reshevsky Variation](/openings/queens-gambit-declined-exchange-variation-reshevsky-variation).
+- 4...exd5 5.Bg5, the [Positional Variation](/openings/queens-gambit-declined-exchange-variation-positional-variation), threatening 6.Bxf6 and 7.Nxd5. The usual replies 5...c6 and 5...Be7 normally transpose; the main line continues 6.e3 Be7 7.Bd3 Nbd7 8.Qc2 O-O, followed by Nf3 or Nge2. 6.Qc2 is the [Reshevsky Variation](/openings/queens-gambit-declined-exchange-variation-reshevsky-variation).
 - Lines with ...h6 and Bh4, such as the [Carlsen Variation](/openings/queens-gambit-declined-exchange-variation-carlsen-variation) with ...Bg4.
 - 4...Nxd5, which usually transposes to the [Semi-Tarrasch Defense](/openings/queens-gambit-declined-semi-tarrasch-defense) after 5.e4 Nxc3 6.bxc3 c5 7.Nf3.
 

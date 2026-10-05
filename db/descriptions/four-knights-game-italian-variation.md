@@ -8,7 +8,7 @@ The trouble with 4.Nc3 is the fork trick: Black can take on e4 anyway with 4...N
 
 - 4...Nxe4 5.Nxe4 d5, the main line. It continues 6.Bd3 dxe4 7.Bxe4 Bd6; 6...Nb4 is also playable. 6.Bxd5? and 6.Bb5?! are weak.
 - 4...Nxe4 5.Bxf7+, the [Noa Gambit](/openings/four-knights-game-italian-variation-noa-gambit), superficially attractive but it gives Black the bishop pair and the centre: after 5...Kxf7 6.Nxe4 d5 White's attack peters out.
-- 4...Nxe4 5.0-0, closely related to the Boden–Kieseritzky Gambit, which White often has in mind with 4.Nc3. The gambit is not well regarded by theory, but it can offer good practical chances, especially in blitz.
+- 4...Nxe4 5.O-O, closely related to the Boden–Kieseritzky Gambit, which White often has in mind with 4.Nc3. The gambit is not well regarded by theory, but it can offer good practical chances, especially in blitz.
 - 4...Bc5, avoiding the complications and keeping the symmetry; it transposes to the quiet [Giuoco Pianissimo](/openings/italian-game-giuoco-pianissimo). A better move order for White to reach that position is 3...Bc5 4.Nc3 Nf6.
 
 ### Strengths and weaknesses

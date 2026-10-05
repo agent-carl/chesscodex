@@ -13,7 +13,7 @@ The Grünfeld is a deal: Black gives White the centre and then attacks it. After
 - [Exchange Variation](/openings/grunfeld-defense-exchange-variation) 4.cxd5 Nxd5 5.e4: the critical main line, with the [Modern Exchange](/openings/grunfeld-defense-exchange-variation-modern-exchange-variation) 7.Nf3 and the [Classical](/openings/grunfeld-defense-exchange-variation-classical-variation) 7.Bc4.
 - [Russian Variation](/openings/grunfeld-defense-russian-variation) 4.Nf3 Bg7 5.Qb3: White attacks d5 and builds a centre with e4, with Black's queen and queenside counterplay against it.
 - [Three Knights Variation](/openings/grunfeld-defense-three-knights-variation) 4.Nf3, with quieter systems like [5.Bf4](/openings/grunfeld-defense-three-knights-variation-hungarian-attack) and [5.e3](/openings/grunfeld-defense-three-knights-variation-burille-variation).
-- Anti-Grünfeld tries: the [Brinckmann Attack](/openings/grunfeld-defense-brinckmann-attack) 4.Bf4 and the [Stockholm Variation](/openings/grunfeld-defense-stockholm-variation) 4.Bg5.
+- Other fourth moves: the [Brinckmann Attack](/openings/grunfeld-defense-brinckmann-attack) 4.Bf4, generally considered a safer continuation than the Exchange Variation, and the [Stockholm Variation](/openings/grunfeld-defense-stockholm-variation) 4.Bg5.
 
 ### Strengths and weaknesses
 
