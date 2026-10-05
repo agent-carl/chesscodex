@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Google Search Console from the command line, for the sc-domain:chesscodex.org
  * property, through a service account with read-only access.
  *
- *   php tools/gsc.php                clicks and impressions by day, top queries and pages, sitemaps
+ *   php tools/gsc.php                clicks and impressions by day, top queries, pages and countries, sitemaps
  *   php tools/gsc.php --days 90      the same over 90 days (default 28)
  *   php tools/gsc.php inspect        index status of the main pages
  *   php tools/gsc.php inspect URL…   index status of these URLs (quota: 2,000 a day)
@@ -136,7 +136,7 @@ function summary(string $token, int $days): void
             printf("    %s %5d clicks %7d impressions  position %.1f\n",
                 $r['keys'][0], $r['clicks'], $r['impressions'], $r['position']);
         }
-        foreach (['query' => 'top queries', 'page' => 'top pages'] as $dimension => $title) {
+        foreach (['query' => 'top queries', 'page' => 'top pages', 'country' => 'top countries'] as $dimension => $title) {
             echo "  $title (clicks / impressions / position):\n";
             foreach ($rows([$dimension], 10) as $r) {
                 printf("    %5d %7d %6.1f  %s\n", $r['clicks'], $r['impressions'], $r['position'], $r['keys'][0]);
