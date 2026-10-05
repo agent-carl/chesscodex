@@ -25,7 +25,11 @@ select:focus-visible { outline-color: transparent; }
     *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+        /* 0s, not 0.01ms: transition-property defaults to `all`, so any
+           non-zero duration turns every style change into a transition and
+           a size read right after it (chessground on resize) gets the old
+           size — pieces end up bunched in one corner of the board. */
+        transition-duration: 0s !important;
         scroll-behavior: auto !important;
     }
 }
