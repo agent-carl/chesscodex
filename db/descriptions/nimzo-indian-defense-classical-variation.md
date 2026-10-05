@@ -21,7 +21,7 @@ White aims to get the two bishops without damaging the pawn structure: if Black 
 **Weaknesses**
 
 - White's queen moves several times and the kingside development is delayed.
-- In the Pirc Variation, the endgame after 12.Qd2 gives White a slight edge.
+- For Black, the Pirc Variation can end in the endgame after 13.Kxd2, which gives White a slight edge.
 
 ### Who should play it
 

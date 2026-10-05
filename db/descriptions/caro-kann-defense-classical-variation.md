@@ -6,7 +6,7 @@ Black brings the light-squared bishop out to f5 before playing ...e6, makes very
 
 ### Main lines
 
-- 5.Ng3 Bg6 6.h4, the [Main Line](/openings/caro-kann-defense-classical-variation-main-line). White usually continues 6...h6 7.Nf3 Nd7 8.h5 Bh7 9.Bd3 Bxd3 10.Qxd3 (8.h5 is the [Spassky Variation](/openings/caro-kann-defense-classical-variation-spassky-variation) in this database). The pawn on h5 looks ready to attack, but it can prove to be a weakness in an endgame.
+- 5.Ng3 Bg6 6.h4, the [Main Line](/openings/caro-kann-defense-classical-variation-main-line). The usual continuation is 6...h6 7.Nf3 Nd7 8.h5 Bh7 9.Bd3 Bxd3 10.Qxd3 (8.h5 is the [Spassky Variation](/openings/caro-kann-defense-classical-variation-spassky-variation) in this database). The pawn on h5 looks ready to attack, but it can prove to be a weakness in an endgame.
 - 5.Ng3 Bg6 6.f4, the [Maróczy Attack](/openings/caro-kann-defense-classical-variation-maroczy-attack), and 6.Nh3, the [Flohr Variation](/openings/caro-kann-defense-classical-variation-flohr-variation), are less common.
 
 Lines in which Black castles queenside gave the Caro-Kann its reputation of being solid but somewhat boring. More popular recently are lines with Black castling kingside or even leaving the king in the centre, which can be sharp and dynamic. When the players castle on opposite sides, White has attacking chances, as the brilliancy Milman–Fang, Foxwoods Open 2005, showed.
