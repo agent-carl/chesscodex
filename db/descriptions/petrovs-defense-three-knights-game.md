@@ -7,7 +7,7 @@ White often plays 3.Nc3 to avoid the lines that are unique to the Petrov. Black'
 ### Main lines
 
 - 3...Nc6, transposing to the Four Knights Game.
-- 3...Bb4, the main alternative. After 4.Nxe5 0-0 5.Be2 Re8 6.Nd3 Bxc3 7.dxc3 Nxe4 8.Nf4 d6 9.0-0, White has a slight advantage thanks to the bishop pair.
+- 3...Bb4, the main alternative. After 4.Nxe5 O-O 5.Be2 Re8 6.Nd3 Bxc3 7.dxc3 Nxe4 8.Nf4 d6 9.O-O, White has a slight advantage thanks to the bishop pair.
 - The similar position with the black knight on c6 instead of f6 is the [Three Knights Opening](/openings/three-knights-opening), which also usually leads to the Four Knights.
 
 ### Strengths and weaknesses

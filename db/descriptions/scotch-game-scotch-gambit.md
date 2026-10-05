@@ -12,12 +12,12 @@ White gives up the d4-pawn for the moment in return for quick development and pr
 
 - 4...Nf6, the most common reply:
   - 5.e5, the [Advance Variation](/openings/scotch-game-scotch-gambit-advance-variation), White's most common answer. The main line runs 5...d5 6.Bb5 Ne4; 5...Ng4 is the [Kingside Variation](/openings/scotch-game-scotch-gambit-kingside-variation);
-  - 5.0-0, also very common, often 5...Nxe4 6.Re1 d5 7.Bxd5 Qxd5 8.Nc3, the Anderssen Attack;
+  - 5.O-O, also very common, often 5...Nxe4 6.Re1 d5 7.Bxd5 Qxd5 8.Nc3, the Anderssen Attack;
   - 5.Ng5, the riskier [Perreux Variation](/openings/italian-game-two-knights-defense-perreux-variation).
 - 4...Bc5:
   - 5.c3, when 5...Nf6 transposes into the Classical Variation of the [Giuoco Piano](/openings/italian-game-giuoco-piano), where Black is known to have a satisfactory game. Accepting with 5...dxc3 is riskier, as White gets a lead in development after 6.Bxf7+ Kxf7 7.Qd5+ and Qxc5;
   - 5.Ng5, the [Sarratt Variation](/openings/scotch-game-scotch-gambit-sarratt-variation), generally considered premature: 5...Nh6 6.Nxf7 Nxf7 7.Bxf7+ Kxf7 8.Qh5+ g6 9.Qxc5. It was long thought inferior, perhaps because of the game Meek–Morphy, Mobile 1855, but has appeared in grandmaster play more recently with roughly equal chances;
-  - 5.0-0, the second most common move, leading to the [Max Lange Attack](/openings/italian-game-two-knights-defense-max-lange-attack) after 5...Nf6 6.e5, or to the [Cochrane-Anderssen Variation](/openings/scotch-game-scotch-gambit-cochrane-anderssen-variation) after 5...d6 6.c3 Bg4.
+  - 5.O-O, the second most common move, leading to the [Max Lange Attack](/openings/italian-game-two-knights-defense-max-lange-attack) after 5...Nf6 6.e5, or to the [Cochrane-Anderssen Variation](/openings/scotch-game-scotch-gambit-cochrane-anderssen-variation) after 5...d6 6.c3 Bg4.
 - 4...Bb4+, the [London Defense](/openings/scotch-game-scotch-gambit-london-defense), usually 5.c3 dxc3.
 - 4...Be7 transposes to the [Hungarian Defense](/openings/italian-game-hungarian-defense) of the Italian Game.
 

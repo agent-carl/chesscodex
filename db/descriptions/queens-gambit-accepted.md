@@ -44,4 +44,4 @@ The QGA suits players who want active piece play and a straightforward plan agai
 
 ### The numbers
 
-The Lichess numbers show why this opening needs understanding. Below 1800, White scores 55–56% and Black only 40–41%, one of the biggest edges for White among the main defences, largely because inexperienced players try to hold the pawn. Above 2200 the result is almost even (47% against 45%). In master games over the board, White wins 32.5%, Black 20% and 48% are drawn.
+Below 1800 on Lichess, White scores 55–56% and Black only 40–41%, one of the biggest edges for White among the main defences. Above 2200 the result is almost even (47% against 45%). In master games over the board, White wins 32.5%, Black 20% and 48% are drawn.

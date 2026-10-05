@@ -7,8 +7,8 @@ Black hopes to seize the initiative and set traps, but with correct play White w
 ### Main lines
 
 - 3.exd5, the main reply:
-  - 3...e4, the [Paulsen Countergambit](/openings/elephant-gambit-paulsen-countergambit). After 4.Qe2 Nf6, White keeps the extra pawn or a clear advantage in the lines analysed by Nick de Firmian, for example 5.d3 Be7 6.dxe4 0-0 7.Nc3 Re8 8.Bd2 Bb4 9.0-0-0. Tal–Lutikov, Tallinn 1964, went 4...f5 and also favoured White;
-  - 3...Bd6, the [Maróczy Gambit](/openings/elephant-gambit-maroczy-gambit); after 4.d4 e4 5.Ne5 Nf6 6.Nc3 0-0 7.Bc4, de Firmian judges that White is clearly better, though without an immediate attack;
+  - 3...e4, the [Paulsen Countergambit](/openings/elephant-gambit-paulsen-countergambit). After 4.Qe2 Nf6, White keeps the extra pawn or a clear advantage in the lines analysed by Nick de Firmian, for example 5.d3 Be7 6.dxe4 O-O 7.Nc3 Re8 8.Bd2 Bb4 9.O-O-O. Tal–Lutikov, Tallinn 1964, went 4...f5 and also favoured White;
+  - 3...Bd6, the [Maróczy Gambit](/openings/elephant-gambit-maroczy-gambit); after 4.d4 e4 5.Ne5 Nf6 6.Nc3 O-O 7.Bc4, de Firmian judges that White is clearly better, though without an immediate attack;
   - 3...Qxd5 regains the pawn but gives White a big lead in development after 4.Nc3.
 - 3.Nxe5, also good for White:
   - 3...Bd6 4.d4 dxe4 5.Bc4 Bxe5 6.Qh5 Qf6 7.dxe5, thought to be slightly better for White;

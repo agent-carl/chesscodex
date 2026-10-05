@@ -36,4 +36,4 @@ The Ruy Lopez suits patient, positional players who want to play for a win witho
 
 ### The numbers
 
-On Lichess White scores 51–52% below 2200 and Black about 44%. In master games over the board the Ruy Lopez is one of the most drawish openings on this site: 53% of games are drawn, White wins 29% and Black only 18.5%. This shows the opening's reputation well. White rarely loses, but a well-prepared Black player can often hold.
+On Lichess White scores 51–52% below 2200 and Black about 44%. In master games over the board the Ruy Lopez is one of the most drawish openings on this site: 53% of games are drawn, White wins 29% and Black only 18.5%.

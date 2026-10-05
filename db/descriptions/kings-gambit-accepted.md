@@ -15,7 +15,7 @@ By the late 19th century it was in decline, as leading players came to see it as
 - 3.Nf3 g5, the Classical Variation:
   - 4.h4 g4 5.Ne5, the [Kieseritzky Gambit](/openings/kings-gambit-accepted-kieseritzky-gambit), which modern writers such as John Shaw and Joseph Gallagher consider the main line. Boris Spassky used it to beat Fischer at Mar del Plata in 1960;
   - 4.h4 g4 5.Ng5, the [Allgaier Gambit](/openings/kings-gambit-accepted-allgaier-gambit), a knight sacrifice that modern theory considers unsound;
-  - 4.Bc4, usually aiming for the Muzio Gambit after 4...g4 5.0-0, where White sacrifices a knight for an attack on f7; 4...Bg7 is a safer reply, leading to the [Hanstein Gambit](/openings/kings-gambit-accepted-hanstein-gambit) or the [Philidor Gambit](/openings/kings-gambit-accepted-philidor-gambit);
+  - 4.Bc4, usually aiming for the Muzio Gambit after 4...g4 5.O-O, where White sacrifices a knight for an attack on f7; 4...Bg7 is a safer reply, leading to the [Hanstein Gambit](/openings/kings-gambit-accepted-hanstein-gambit) or the [Philidor Gambit](/openings/kings-gambit-accepted-philidor-gambit);
   - 4.Nc3, the [Quaade Gambit](/openings/kings-gambit-accepted-quaade-gambit), recommended by John Shaw in his 2013 book.
 - 3.Nf3 d6, the [Fischer Defense](/openings/kings-gambit-accepted-fischer-defense), which Fischer called "a high-class waiting move".
 - 3.Nf3 d5, the [Modern Defense](/openings/kings-gambit-accepted-modern-defense), returning the pawn.

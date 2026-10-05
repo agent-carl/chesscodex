@@ -6,12 +6,12 @@ The move is named after Paul Morphy, although he did not invent it. He played it
 
 ### The idea
 
-3...a6 "puts the question" to the bishop, a phrase attributed to Aron Nimzowitsch: White must exchange on c6 or retreat. After the usual retreat 4.Ba4, Black can later break the pin on the c6-knight with ...b5. The main line continues 4...Nf6, Morphy's own choice, and 5.0-0, which leaves the e4-pawn undefended because White can win it back if Black takes.
+3...a6 "puts the question" to the bishop, a phrase attributed to Aron Nimzowitsch: White must exchange on c6 or retreat. After the usual retreat 4.Ba4, Black can later break the pin on the c6-knight with ...b5. The main line continues 4...Nf6, Morphy's own choice, and 5.O-O, which leaves the e4-pawn undefended because White can win it back if Black takes.
 
 ### Main lines
 
 - 4.Bxc6, the [Exchange Variation](/openings/ruy-lopez-exchange-variation).
-- 4.Ba4 Nf6 [5.0-0](/openings/ruy-lopez-morphy-defense-2), then:
+- 4.Ba4 Nf6 [5.O-O](/openings/ruy-lopez-morphy-defense-2), then:
   - 5...Be7, the solid [Closed Defense](/openings/ruy-lopez-closed), the most common choice;
   - 5...Nxe4, the [Open Defense](/openings/ruy-lopez-open);
   - 5...b5 6.Bb3 Bb7, the [Arkhangelsk Variation](/openings/ruy-lopez-morphy-defense-arkhangelsk-variation);

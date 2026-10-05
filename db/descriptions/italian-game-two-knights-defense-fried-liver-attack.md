@@ -39,4 +39,4 @@ The Fried Liver is a classic weapon for attacking players at club level and in f
 
 ### The numbers
 
-The Lichess numbers are the most one-sided on this site. Below 1400, White wins 71% and Black only 27%. Between 1400 and 1800 it is 69% against 28.5%, and between 1800 and 2200 it is 64% against 32%. Even above 2200 White scores 54% against 42%. There are almost no master games with it (63 in the database), because strong players don't allow it.
+The Lichess numbers are among the most one-sided on this site. Below 1400, White wins 71% and Black only 27%. Between 1400 and 1800 it is 69% against 28.5%, and between 1800 and 2200 it is 64% against 32%. Even above 2200 White scores 54% against 42%. There are almost no master games with it: only 63 in the database.

@@ -10,7 +10,7 @@ After 3.Qxd4 Nc6 White's queen usually goes to e3, the [Paulsen Attack](/opening
 
 ### Main lines
 
-- [Normal Variation](/openings/center-game-normal-variation) 3.Qxd4 Nc6 4.Qe3 Nf6 ([Berger Variation](/openings/center-game-berger-variation)), where the main line is 5.Nc3 Bb4 6.Bd2 0-0 7.0-0-0 Re8. 5.Bd2 is considered safer for White.
+- [Normal Variation](/openings/center-game-normal-variation) 3.Qxd4 Nc6 4.Qe3 Nf6 ([Berger Variation](/openings/center-game-berger-variation)), where the main line is 5.Nc3 Bb4 6.Bd2 O-O 7.O-O-O Re8. 5.Bd2 is considered safer for White.
 - 4.Qc4, the rarer [Hall Variation](/openings/center-game-hall-variation).
 - Gambits instead of 3.Qxd4:
   - 3.c3, the [Danish Gambit](/openings/danish-gambit);

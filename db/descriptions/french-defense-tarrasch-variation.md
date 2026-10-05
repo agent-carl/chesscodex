@@ -11,7 +11,7 @@ Unlike 3.Nc3, the knight on d2 does not block the c-pawn, so White can support d
 ### Main lines
 
 - 3...c5, the [Open System](/openings/french-defense-tarrasch-variation-open-system):
-  - 4.exd5 exd5, usually leaving Black with an isolated queen's pawn. The main line runs 5.Ngf3 Nc6 6.Bb5 Bd6 7.0-0 Nge7 8.dxc5 Bxc5 9.Nb3 Bb6; if White neutralises Black's active pieces, White has a slight advantage in the ending;
+  - 4.exd5 exd5, usually leaving Black with an isolated queen's pawn. The main line runs 5.Ngf3 Nc6 6.Bb5 Bd6 7.O-O Nge7 8.dxc5 Bxc5 9.Nb3 Bb6; if White neutralises Black's active pieces, White has a slight advantage in the ending;
   - 4.exd5 Qxd5, the [Chistyakov Defense](/openings/french-defense-tarrasch-variation-chistyakov-defense), trading Black's c- and d-pawns for White's d- and e-pawns to get an extra centre pawn, in return for losing time with the queen;
   - 4.Ngf3, the [Euwe-Keres Line](/openings/french-defense-tarrasch-variation-open-system-euwe-keres-line), played by Paul Keres and Max Euwe;
   - 4.c3 ([Süchting Line](/openings/french-defense-tarrasch-variation-open-system-suchting-line)) gives White no advantage after 4...cxd4 5.cxd4 dxe4 6.Nxe4 Nf6.
