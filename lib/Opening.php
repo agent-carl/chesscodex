@@ -116,12 +116,14 @@ class Opening
     /**
      * distinguishingTail() for many rows at once, without a query per row:
      * id => tail for each row (id, name, eco, pgn_moves) that shares its name
-     * and ECO code with another row of $rows.
+     * and ECO code with another row of $rows — or only its name, with
+     * $ignoreEco, for lists where two "Benko Gambit" entries would otherwise
+     * differ only by their ECO tag.
      */
-    public static function lineTails(array $rows): array
+    public static function lineTails(array $rows, bool $ignoreEco = false): array
     {
         $groups = [];
-        foreach ($rows as $r) $groups[$r['name'] . "\n" . $r['eco']][(int) $r['id']] = (string) $r['pgn_moves'];
+        foreach ($rows as $r) $groups[$r['name'] . ($ignoreEco ? '' : "\n" . $r['eco'])][(int) $r['id']] = (string) $r['pgn_moves'];
         $tails = [];
         foreach ($groups as $group) {
             if (count($group) < 2) continue;
@@ -1006,13 +1008,13 @@ class Opening
      */
     public static function allAlphabetical(): array
     {
-        return Cache::remember('alphabetical-tails', 21600, static function (): array {
+        return Cache::remember('alphabetical-tails-v2', 21600, static function (): array {
             $rows = chess_codex_db()->query(
                 "SELECT id, eco, name, slug, move_count, pgn_moves
                  FROM codex_openings
                  ORDER BY name ASC, id ASC"
             )->fetchAll();
-            $tails = self::lineTails($rows);
+            $tails = self::lineTails($rows, true);
             $grouped = [];
             foreach ($rows as $row) {
                 $row['tail'] = $tails[(int) $row['id']] ?? '';

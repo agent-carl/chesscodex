@@ -36,7 +36,7 @@ $texts = [
     'gambits' => [
         'title' => 'List of All Chess Gambits (' . number_format(count($allGambits ?? [])) . ') with Moves & Win Rates',
         'h1'    => 'Chess gambits',
-        'lede'  => 'All ' . number_format(count($allGambits ?? [])) . ' named lines that offer or accept a gambit: first the 100 most played, ranked by the number of rated Lichess games that reached them, then every gambit A–Z. Plain "… Gambit Declined" lines are left out, since nothing is sacrificed in them, but countergambits played against a gambit, such as the Falkbeer or the Albin, are included.',
+        'lede'  => 'Every named line that offers or accepts a gambit — ' . number_format(count($allGambits ?? [])) . ' in all — with its moves and how often each side wins on Lichess.',
         'desc'  => 'List of all ' . number_format(count($allGambits ?? [])) . ' chess gambits and countergambits A–Z with their moves and ECO codes, and the 100 most played with how often White and Black win.',
     ],
 ][$page];
@@ -82,6 +82,12 @@ ob_start();
     <header>
         <h1><?= $esc($texts['h1']) ?></h1>
         <p class="lede"><?= $esc($texts['lede']) ?></p>
+        <?php if (!empty($allGambits)): ?>
+            <nav class="gambits-jump" aria-label="On this page">
+                <a href="#top-gambits">Top 100 by popularity</a>
+                <a href="#all-gambits">All <?= number_format(count($allGambits)) ?> gambits A–Z ↓</a>
+            </nav>
+        <?php endif; ?>
         <nav class="ranking-nav" aria-label="Other rankings">
             <?php foreach (Rankings::LABELS as $path => $label): ?>
                 <?php if ($path === $page): ?>
@@ -112,7 +118,7 @@ ob_start();
         <p class="ranking-method">The numbers for this level are still being collected from Lichess — check back in a few hours.</p>
     <?php endif; ?>
     <?php if ($allGambits): ?>
-        <h2 class="ranking-heading">The 100 most-played gambits</h2>
+        <h2 class="ranking-heading" id="top-gambits">The 100 most-played gambits</h2>
     <?php endif; ?>
     <div class="ranking-table-wrap"<?= $rows ? '' : ' hidden' ?>>
         <table class="ranking-table">
@@ -167,6 +173,11 @@ ob_start();
         fetched for the 500 most-played lines and refreshed monthly.
         <?php endif; ?>
         Each name appears once, as its most-played line.
+        <?php if ($page === 'gambits'): ?>
+            A line counts as a gambit when its name has "Gambit" or "Countergambit" in it. Plain
+            "… Gambit Declined" lines are left out, since nothing is sacrificed in them, but countergambits
+            played against a gambit, such as the Falkbeer or the Albin, are included.
+        <?php endif; ?>
         <?php if ($side): ?>
             At this level, sharp lines in which a natural-looking reply goes wrong score highest — a
             high score says how a line does in practice, not that it is objectively best.
@@ -182,14 +193,21 @@ ob_start();
     <section class="openings-index gambits-all" id="all-gambits">
         <h2>All chess gambits A–Z <span class="openings-letter-count"><?= number_format(count($allGambits)) ?> lines</span></h2>
         <p class="lede">Every named gambit and countergambit line, grouped by opening, with the number of rated Lichess games that reached it.</p>
-        <nav class="openings-families" aria-label="Openings with gambits">
+        <div class="gambits-filter" hidden>
+            <label for="gambits-q">Find a gambit</label>
+            <input id="gambits-q" type="search" placeholder="e.g. Halloween, Benko, Fried Liver" autocomplete="off" spellcheck="false">
+            <span class="gambits-filter-count" aria-live="polite"></span>
+        </div>
+        <p class="gambits-filter-empty" hidden>No gambit matches that name.</p>
+        <nav class="openings-families gambits-families" id="gambits-contents" aria-label="Openings with gambits">
             <?php foreach ($byFamily as $family => $lines): ?>
                 <a href="#<?= $esc($familyId($family)) ?>"><?= $esc($family) ?> <span class="openings-jump-count"><?= count($lines) ?></span></a>
             <?php endforeach; ?>
         </nav>
         <?php foreach ($byFamily as $family => $lines): ?>
         <section class="openings-letter openings-family" id="<?= $esc($familyId($family)) ?>">
-            <h3><?= $esc($family) ?> <span class="openings-letter-count"><?= count($lines) === 1 ? '1 line' : count($lines) . ' lines' ?></span></h3>
+            <h3><?= $esc($family) ?> <span class="openings-letter-count"><?= count($lines) === 1 ? '1 line' : count($lines) . ' lines' ?></span>
+                <a class="gambits-up" href="#gambits-contents">↑ Contents</a></h3>
             <ul class="openings-letter-list">
                 <?php foreach ($lines as $g):
                     $name  = (string) $g['name'];
@@ -208,6 +226,7 @@ ob_start();
         </section>
         <?php endforeach; ?>
     </section>
+    <script defer src="<?= $baseEsc ?>/public/gambits.min.js?v=<?= @filemtime(__DIR__ . '/../public/gambits.min.js') ?: 1 ?>"></script>
     <?php endif; ?>
 </article>
 <?php
