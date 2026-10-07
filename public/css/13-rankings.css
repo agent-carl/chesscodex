@@ -97,3 +97,7 @@
 @media (max-width: 640px) {
     .gambits-families.is-folded a:nth-of-type(n+13) { display: none; }
 }
+
+/* /gambits, "Stockfish against practice" (Rankings::gambitInsights). */
+.gambits-numbers h3 { margin: var(--space-5) 0 var(--space-2); font-size: 1.05rem; }
+.gambits-numbers .gambits-side { display: block; color: var(--muted); font-size: .85rem; }

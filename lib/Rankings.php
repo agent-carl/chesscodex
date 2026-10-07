@@ -149,6 +149,83 @@ final class Rankings
     }
 
     /** Keeps the first row of each name — the most-played one, as all() is sorted. */
+    /**
+     * Where Stockfish and practice part ways among the 100 most-played gambits
+     * (rows('gambits')), scored for the side that plays the gambit:
+     *  'dubious' — a pawn or more worse on the engine, yet 47% or more in the
+     *              1600–2500 games: + 'side', 'cp' (White's side), 'score';
+     *  'fading'  — the score falls by 3 points or more from under 1400 to 2200
+     *              and up: + 'side', 'low', 'high', 'masters' (null below 300 games).
+     * Eight of each, one per opening family, most played first / biggest fall
+     * first; kept six hours.
+     */
+    public static function gambitInsights(): array
+    {
+        return Cache::remember('gambit-insights-v1', 21600, static function (): array {
+            $rows  = self::rows('gambits');
+            $evals = EngineEval::forOpenings(array_column($rows, 'id'));
+            $low   = LevelStats::allAtLevel('beginners');
+            $high  = LevelStats::allAtLevel('experts');
+            $mast  = LevelStats::allAtLevel('masters');
+            $pct   = static fn (array $l, string $side): float => self::score($l, $side) * 100;
+            $dubious = $fading = [];
+            foreach ($rows as $r) {
+                $side = self::gambitSide($r);
+                $e    = $evals[$r['id']] ?? null;
+                if ($e && $e['mate'] === null && $e['cp'] !== null
+                    && ($side === 'white' ? $e['cp'] : -$e['cp']) <= -100 && $pct($r, $side) >= 47) {
+                    $dubious[] = $r + ['side' => $side, 'cp' => $e['cp'], 'score' => $pct($r, $side)];
+                }
+                $a = $low[$r['id']] ?? null;
+                $b = $high[$r['id']] ?? null;
+                if ($a && $b && $a['games'] >= 10000 && $b['games'] >= 10000) {
+                    [$sa, $sb] = [(int) round($pct($a, $side)), (int) round($pct($b, $side))];
+                    $m = $mast[$r['id']] ?? null;
+                    if ($sa - $sb >= 3) {
+                        $fading[] = $r + ['side' => $side, 'low' => $sa, 'high' => $sb,
+                                          'masters' => $m && $m['games'] >= 300 ? (int) round($pct($m, $side)) : null];
+                    }
+                }
+            }
+            usort($fading, static fn (array $x, array $y): int => [$y['low'] - $y['high'], $y['games']] <=> [$x['low'] - $x['high'], $x['games']]);
+            // One line per opening family, so three Englund lines don't fill a list.
+            $onePerFamily = static function (array $rows): array {
+                $seen = [];
+                return array_values(array_filter($rows, static function (array $r) use (&$seen): bool {
+                    $f = Opening::family((string) $r['name']);
+                    return !isset($seen[$f]) && ($seen[$f] = true);
+                }));
+            };
+            return ['dubious' => array_slice($onePerFamily($dubious), 0, 8), 'fading' => array_slice($onePerFamily($fading), 0, 8)];
+        });
+    }
+
+    /**
+     * The side that plays a line's gambit: the one whose move first brings
+     * "Gambit" (or "Countergambit") into the names along the line — so in
+     * "King's Gambit Accepted: King's Knight's Gambit" it is White's 2. f4,
+     * though Black and then White moved last. When that name ends in
+     * "Accepted" or "Defense", its last move was the other side's.
+     */
+    public static function gambitSide(array $line): string
+    {
+        static $plies = null;
+        $plies ??= chess_codex_db()->prepare('SELECT move_count FROM codex_openings WHERE id = :id');
+        $chain   = [...Opening::ancestors((int) $line['id']), $line];
+        $counter = stripos((string) $line['name'], 'countergambit') !== false;
+        foreach ($chain as $c) {
+            $name = (string) $c['name'];
+            if ($counter ? stripos($name, 'countergambit') === false : !Opening::isGambit($name)) continue;
+            $plies->execute(['id' => (int) $c['id']]);
+            $mover = (int) $plies->fetchColumn() % 2 === 1 ? 'white' : 'black';
+            // The move that took the gambit, or a defense named after it ("Scotch
+            // Gambit, Dubois Réti Defense" first appears after 4. d4 exd4).
+            if (preg_match('/accepted$|[:,]\s+(?!with\b)[^:,]*defense$/i', $name)) $mover = $mover === 'white' ? 'black' : 'white';
+            return $mover;
+        }
+        return (int) $line['move_count'] % 2 === 1 ? 'white' : 'black';
+    }
+
     private static function onePerName(array $rows): array
     {
         $seen = [];
