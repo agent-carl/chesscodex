@@ -297,6 +297,8 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
 .opening-grid > .opening-levels { margin-top: 0; }
 /* Its heading sits as close to the board as the statistics heading does to the moves panel. */
 .opening-grid > .opening-levels > h2 { margin-top: 0; }
+/* "The stronger the players, the …" (LevelStats::trend) between the heading and the table. */
+.opening-levels .levels-trend { max-width: 520px; margin: 0 0 var(--space-3); }
 @media (min-width: 900px) {
     .opening-grid { grid-template-rows: auto 1fr auto; }
     .opening-grid > .opening-board-wrap { grid-column: 1; grid-row: 1 / span 2; }
@@ -335,6 +337,7 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
 }
 .engine-eval-num[data-lean="white"] { background: #f4f1ea; color: #1b1b1b; }
 .engine-eval-num[data-lean="black"] { background: #2b2b2b; color: #f4f1ea; }
+.engine-eval-practice { margin-top: var(--space-2) !important; }
 .engine-eval-line { margin-top: var(--space-2) !important; }
 .engine-eval-pv { font-family: var(--font-mono); font-size: 0.9rem; }
 .engine-eval-src { margin-top: var(--space-2) !important; color: var(--muted); }

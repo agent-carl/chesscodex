@@ -154,8 +154,12 @@ if (dataNode) {
             if (data.match.exact) {
                 meta.textContent = `Exact match — you're playing this opening.`;
             } else {
-                const extra = playedPlies - data.match.plies;
-                meta.textContent = `Closest known opening, ${extra} half-move${extra === 1 ? '' : 's'} past documented theory.`;
+                // The first move past the named line: "9…Nd7" or "12. Rfe1".
+                const k = data.match.plies;
+                const san = chess.history()[k];
+                meta.textContent = san
+                    ? `Closest known opening — the game leaves known theory with ${Math.floor(k / 2) + 1}${k % 2 === 0 ? '. ' : '…'}${san}.`
+                    : `Closest known opening, ${playedPlies - k} half-moves past documented theory.`;
             }
         } else {
             resultEl.dataset.state = 'unknown';
