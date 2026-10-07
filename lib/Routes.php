@@ -299,6 +299,7 @@ final class Routes
         Views::mark('ranking');
         $rows = Rankings::rows($page, $level);
         $allGambits = $page === 'gambits' ? Rankings::allGambits() : [];
+        $insights   = $page === 'gambits' ? Rankings::gambitInsights() : ['dubious' => [], 'fading' => []];
         require __DIR__ . '/../templates/ranking.php';
     }
 

@@ -87,6 +87,9 @@ ob_start();
         <?php if (!empty($allGambits)): ?>
             <nav class="gambits-jump" aria-label="On this page">
                 <a href="#top-gambits">Top 100 by popularity</a>
+                <?php if (!empty($insights['dubious']) || !empty($insights['fading'])): ?>
+                    <a href="#stockfish-vs-practice">Stockfish against practice</a>
+                <?php endif; ?>
                 <a href="#all-gambits">All <?= number_format(count($allGambits)) ?> gambits A–Z ↓</a>
             </nav>
         <?php endif; ?>
@@ -193,6 +196,58 @@ ob_start();
             high score says how a line does in practice, not that it is objectively best.
         <?php endif; ?>
     </p>
+
+    <?php
+    // Gambits: where the engine and the results part ways (Rankings::gambitInsights).
+    $insights = $insights ?? ['dubious' => [], 'fading' => []];
+    $lineLink = static fn (array $r): string => '<a href="' . $baseEsc . $esc(I18n::url('/openings/' . $r['slug'])) . '"><span class="eco-tag">'
+        . $esc($r['eco']) . '</span> <span>' . $esc($r['name']) . '</span></a>';
+    if ($insights['dubious'] || $insights['fading']): ?>
+    <section class="gambits-numbers" id="stockfish-vs-practice">
+        <h2 class="ranking-heading">Stockfish against practice</h2>
+        <p class="lede">Stockfish judges a position by best play; the results show what happens in real games.
+            Among the 100 most-played gambits, scored for the side that plays the gambit (wins plus half the draws):</p>
+        <?php if ($insights['dubious']): ?>
+        <h3>Worse on the engine, fine in practice</h3>
+        <div class="ranking-table-wrap">
+            <table class="ranking-table">
+                <thead><tr><th>Opening</th><th class="ranking-num">Stockfish</th><th class="ranking-num">Gambit side scores</th></tr></thead>
+                <tbody>
+                <?php foreach ($insights['dubious'] as $r): ?>
+                    <tr>
+                        <td class="ranking-name"><?= $lineLink($r) ?></td>
+                        <td class="ranking-num"><?= $esc(EngineEval::scoreText(['cp' => $r['cp'], 'mate' => null])) ?></td>
+                        <td class="ranking-num"><?= ucfirst($r['side']) ?> <?= number_format($r['score'], 1) ?>%</td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php endif; ?>
+        <?php if ($insights['fading']): ?>
+        <h3>Weaker as the players get stronger</h3>
+        <div class="ranking-table-wrap">
+            <table class="ranking-table">
+                <thead><tr><th>Opening</th><th class="ranking-num">Under 1400</th><th class="ranking-num">2200+</th><th class="ranking-num">Masters</th></tr></thead>
+                <tbody>
+                <?php foreach ($insights['fading'] as $r): ?>
+                    <tr>
+                        <td class="ranking-name"><?= $lineLink($r) ?><span class="gambits-side">for <?= ucfirst($r['side']) ?></span></td>
+                        <td class="ranking-num"><?= (int) $r['low'] ?>%</td>
+                        <td class="ranking-num"><?= (int) $r['high'] ?>%</td>
+                        <td class="ranking-num"><?= $r['masters'] === null ? '—' : (int) $r['masters'] . '%' ?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php endif; ?>
+        <p class="ranking-method">Stockfish 19 at depth 30, after the line's last move, in pawns from White's side; "worse"
+            means a pawn or more. Scores: rated Lichess games between players rated 1600 to 2500, and by rating band for the
+            <?= number_format(LevelStats::lineCount()) ?> most-played lines; masters: over-the-board games of players rated
+            2200 and up, shown from 300 games.</p>
+    </section>
+    <?php endif; ?>
 
     <?php if ($allGambits):
         // Every gambit A–Z, grouped by opening like the letter pages.
