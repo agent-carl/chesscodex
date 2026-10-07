@@ -61,7 +61,7 @@ if ($side !== null && $level !== null) {
         'title' => "Best Chess Openings for $Side $titleFor",
         'h1'    => "Best chess openings for $Side $for",
         'lede'  => "Lines where $Side makes the last move, ranked by $Side's score — wins plus half the draws — in $pool. "
-                 . 'Among the 500 most-played lines, those reached in at least '
+                 . 'Among the ' . number_format(LevelStats::lineCount()) . ' most-played lines, those reached in at least '
                  . number_format(Rankings::MIN_GAMES_AT_LEVEL[$level] ?? Rankings::MIN_GAMES_AT_LEVEL['default'])
                  . ' games at this level.',
         'desc'  => "The openings that score best for $Side in $pool, with $Side, draw and "
@@ -173,10 +173,10 @@ ob_start();
         they are a week old.
         <?php elseif ($level === 'masters'): ?>
         Numbers: the Lichess masters database — over-the-board games between players rated 2200 and up —
-        fetched for the 500 most-played lines and refreshed monthly.
+        fetched for the <?= number_format(LevelStats::lineCount()) ?> most-played lines and refreshed monthly.
         <?php else: ?>
         Numbers: rated blitz, rapid and classical games on Lichess between players <?= $esc($levelWord[$level][1]) ?>,
-        fetched for the 500 most-played lines and refreshed monthly.
+        fetched for the <?= number_format(LevelStats::lineCount()) ?> most-played lines and refreshed monthly.
         <?php endif; ?>
         Each name appears once, as its most-played line.
         <?php if ($page === 'gambits'): ?>
