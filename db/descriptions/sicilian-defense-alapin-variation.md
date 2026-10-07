@@ -36,4 +36,4 @@ The Alapin suits 1.e4 players who want a sound, low-theory answer to the Sicilia
 
 ### The numbers
 
-On Lichess results barely change with rating: White scores 49–49.9% and Black 42.9–46.6%, and draws rise from 3.5% under 1400 to 8.1% from 2200 up. In master games over the board, White wins 28.5%, Black 27.7% and 43.8% are drawn.
+On Lichess results barely change with rating: White wins 49–49.9% and Black 42.9–46.6%, and draws rise from 3.5% under 1400 to 8.1% from 2200 up. In master games over the board, White wins 28.5%, Black 27.7% and 43.8% are drawn.

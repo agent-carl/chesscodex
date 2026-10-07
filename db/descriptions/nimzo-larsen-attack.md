@@ -34,4 +34,4 @@ The b2-bishop is the key piece. It controls e5 and d4 and aims at Black's kingsi
 
 ### The numbers
 
-On Lichess 1.b3 is balanced: White scores 49–49.5% and Black 45.5–46.5% below 2200, and 48.7% against 44% above it. In master games over the board, White wins 33%, Black 29% and 38% are drawn, so the result is closer to even than after 1.e4 or 1.d4.
+On Lichess 1.b3 is balanced: White wins 49–49.5% and Black 45.5–46.5% below 2200, and 48.7% against 44% above it. In master games over the board, White wins 33%, Black 29% and 38% are drawn, so the result is closer to even than after 1.e4 or 1.d4.

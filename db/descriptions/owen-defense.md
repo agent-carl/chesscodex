@@ -2,7 +2,7 @@ The Owen Defense (1.e4 b6) is an offbeat reply to [1.e4](/openings/kings-pawn-ga
 
 ### Origins
 
-It is named after the Rev. John Owen, a 19th-century vicar and strong amateur player who used 1...b6 regularly, including two games against Paul Morphy in 1858 (he won one and lost one). Earlier examples appear in the 17th-century writings of Gioachino Greco. Isidor Gunsberg played it with success in 1889, Bent Larsen and Michael Basman revived it in the 1970s, and more recently Tony Miles, Pavel Blatný, Magnus Carlsen and Hikaru Nakamura have used it.
+It is named after the Rev. John Owen, a 19th-century vicar and strong amateur player who used 1...b6 regularly, including two games against Paul Morphy in 1858 (he won one and lost one). Earlier examples appear in the 17th-century writings of Gioachino Greco. Isidor Gunsberg played it with success in 1889, Bent Larsen and Michael Basman revived it in the 1970s, and more recently Tony Miles and Pavel Blatný have used it, and Magnus Carlsen and Hikaru Nakamura have played it in online blitz.
 
 ### The idea
 
@@ -37,4 +37,4 @@ The Owen suits players who like to counterattack a pawn centre and want an offbe
 
 ### The numbers
 
-On Lichess White scores 49.8–51% and Black 43.5–46.5%: Black does best under 1800 (46.2–46.5%) and worst from 2200 up (43.5%). There are only about 1,900 master games, too few to draw firm conclusions.
+On Lichess White wins 49.8–51% and Black 43.5–46.5%: Black does best under 1800 (46.2–46.5%) and worst from 2200 up (43.5%). There are only about 1,900 master games, too few to draw firm conclusions.

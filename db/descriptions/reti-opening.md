@@ -34,4 +34,4 @@ The Réti suits positional players who like flexible, manoeuvring games and want
 
 ### The numbers
 
-On Lichess the Réti scores well for White: 53–54% for White and 41–43.5% for Black below 2200, and 50% against 42% above it. In master games over the board, White wins 34%, Black 24% and 42% are drawn.
+On Lichess the Réti does well for White: 53–54% for White and 41–43.5% for Black below 2200, and 50% against 42% above it. In master games over the board, White wins 34%, Black 24% and 42% are drawn.

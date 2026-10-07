@@ -38,4 +38,4 @@ In order of popularity: 1...Nf6, 1...d5, 1...c5 (the [Sicilian Invitation](/open
 
 ### The numbers
 
-On Lichess White scores 49.2–51.2% and Black 42–46.3%; Black does best under 1400 (46.3%). Draws rise from 4.2–4.4% below 1800 to 8.3% from 2200 up. In master games over the board, White wins 33.3%, Black 22.2% and 44.5% are drawn.
+On Lichess White wins 49.2–51.2% and Black 42–46.3%; Black does best under 1400 (46.3%). Draws rise from 4.2–4.4% below 1800 to 8.3% from 2200 up. In master games over the board, White wins 33.3%, Black 22.2% and 44.5% are drawn.

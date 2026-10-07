@@ -45,4 +45,4 @@ Many players meet everything with the same set-up instead of learning the Queen'
 
 ### The numbers
 
-On Lichess White scores 48.8–50.5% and Black 43.6–45.3% at every rating band, with draws rising from 4.1–4.2% below 1800 to 7.6% from 2200 up. In master games over the board, White wins 32.5%, Black 22.7% and 44.8% are drawn.
+On Lichess White wins 48.8–50.5% and Black 43.6–45.3% at every rating band, with draws rising from 4.1–4.2% below 1800 to 7.6% from 2200 up. In master games over the board, White wins 32.5%, Black 22.7% and 44.8% are drawn.

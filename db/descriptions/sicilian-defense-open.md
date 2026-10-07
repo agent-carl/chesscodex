@@ -35,4 +35,4 @@ The Open Sicilian with 2...Nc6 suits Black players who want a fighting game agai
 
 ### The numbers
 
-On Lichess White scores 48.7% against Black's 46.3%. Under 1400 White leads 51.0% against 45.3%; the gap narrows with rating, to 49.5% against 46.5% at 1400–1799, 48.6% against 46.3% at 1800–2199 and 47.1% against 45.2% from 2200 up. In about 78,200 master games 45.4% were drawn; White won 30.2% and Black 24.4%.
+On Lichess White wins 48.7% against Black's 46.3%. Under 1400 White leads 51.0% against 45.3%; the gap narrows with rating, to 49.5% against 46.5% at 1400–1799, 48.6% against 46.3% at 1800–2199 and 47.1% against 45.2% from 2200 up. In about 78,200 master games 45.4% were drawn; White won 30.2% and Black 24.4%.

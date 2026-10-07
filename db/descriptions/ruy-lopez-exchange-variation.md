@@ -14,7 +14,7 @@ After 4...dxc6 Black has doubled c-pawns but the bishop pair as compensation, so
   - 5.O-O, the most common move, sometimes called the Barendregt Variation after Johan Barendregt ([Normal Variation](/openings/ruy-lopez-exchange-variation-normal-variation) in this database). Unlike 5.d4, it forces Black to defend e5, usually with 5...f6 ([Gligorić Variation](/openings/ruy-lopez-exchange-variation-gligoric-variation)), 5...Bg4, 5...Qd6 (the sharpest, preparing long castling; [Bronstein Variation](/openings/ruy-lopez-exchange-variation-bronstein-variation)), 5...Qf6, 5...Qe7 or 5...Bd6 ([King's Bishop Variation](/openings/ruy-lopez-exchange-variation-kings-bishop-variation));
   - 5.Nc3 ([Keres Variation](/openings/ruy-lopez-exchange-variation-keres-variation)), usually met by 5...f6;
   - 5.d4 exd4 6.Qxd4 Qxd4 7.Nxd4, most often followed by 7...Bd7, Lasker's line.
-- 4...bxc6, the [Lutikov Variation](/openings/ruy-lopez-exchange-variation-lutikov-variation), is rarely played because 5.d4 exd4 6.Qxd4 gives White control of the centre.
+- 4...bxc6, the [Lutikov Variation](/openings/ruy-lopez-exchange-variation-lutikov-variation), is much less popular than 4...dxc6. Black gets the half-open b-file, but the central pawn structure becomes awkward.
 
 ### Strengths and weaknesses
 

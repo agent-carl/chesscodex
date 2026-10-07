@@ -2,7 +2,7 @@ The King's Indian Defense (1.d4 Nf6 2.c4 g6 3.Nc3 Bg7) is the most combative rep
 
 ### Origins
 
-The "Indian" defences take their name from the moves of the Indian player Moheschunder Bannerjee, who introduced fianchetto setups to European players in his games against John Cochrane in the 1850s. Savielly Tartakower popularised the term in the 1920s. Until the mid-1930s the King's Indian was regarded as highly suspect. Three Soviet players, Alexander Konstantinopolsky, Isaac Boleslavsky and David Bronstein, made it respected and popular. It was a favourite of world champions Bobby Fischer and Garry Kasparov, and today Hikaru Nakamura and Teimour Radjabov play it. Its popularity dipped in the early 2000s, when Vladimir Kramnik's play against it led Kasparov to give it up.
+The name "Indian Defence" was attributed to the openings that the Indian player Moheschunder Bannerjee used against John Cochrane in the 1850s, and Savielly Tartakower popularised the term in the early 1920s. Until the mid-1930s the King's Indian was regarded as highly suspect. Three Soviet players, Alexander Konstantinopolsky, Isaac Boleslavsky and David Bronstein, made it respected and popular. It was a favourite of world champions Bobby Fischer and Garry Kasparov, and today Hikaru Nakamura and Teimour Radjabov play it. Its popularity dipped in the early 2000s, when Vladimir Kramnik's play against it led Kasparov to give it up.
 
 ### The idea
 
@@ -38,4 +38,4 @@ The KID is for fighters: players who want to attack, accept risk and like tactic
 
 ### The numbers
 
-On Lichess the KID is balanced below 2200, with White at 48–49% and Black at 47–48%. Above 2200, White wins 48% and Black 44%. In master games over the board, White wins 35%, Black 22.5% and 43% are drawn. That is a fighting profile with fewer draws than the [Queen's Gambit Declined](/openings/queens-gambit-declined), but a lower score for Black.
+On Lichess the KID is balanced below 2200, with White at 48–49% and Black at 47–48%. Above 2200, White wins 48% and Black 44%. In master games over the board, White wins 35%, Black 22.5% and 43% are drawn. Draws are less common than in the [Queen's Gambit Declined](/openings/queens-gambit-declined), where 47% of master games are drawn.

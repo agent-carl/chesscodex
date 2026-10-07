@@ -36,4 +36,4 @@ The Caro-Kann is ideal for players who want reliable, low-risk positions against
 
 ### The numbers
 
-On Lichess the Caro-Kann is balanced at every level: Black scores 47–49% below 2200, which is slightly better than White in the lower bands. Above 2200 White edges ahead 48% to 44%. In master games over the board, White wins 32%, Black 24% and 43% are drawn.
+On Lichess the Caro-Kann is balanced at every level: Black wins 47–49% below 2200, which is slightly better than White in the lower bands. Above 2200 White edges ahead 48% to 44%. In master games over the board, White wins 32%, Black 24% and 43% are drawn.

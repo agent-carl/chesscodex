@@ -36,4 +36,4 @@ The Slav suits solid positional players who want a reliable defence to 1.d4 with
 
 ### The numbers
 
-On Lichess White scores 50–51% and Black 44–45% at every band below 2200, and 50% against 42% above it. In master games over the board the Slav is one of the most drawish lines on this site: 52% draws, White wins 31% and Black 17%. It is very hard to beat, but it rarely gives Black a win.
+On Lichess White wins 50–51% and Black 44–45% at every band below 2200, and 50% against 42% above it. In master games over the board, 52% of games are drawn, White wins 31% and Black only 17%.

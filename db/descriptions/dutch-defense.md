@@ -40,4 +40,4 @@ The Dutch suits ambitious players who want a fighting, unbalanced game against 1
 
 ### The numbers
 
-On Lichess White scores 50–51% and Black 45–46% below 2200, and 50% against 43% above it. In master games over the board, White wins 36%, Black 23% and 41% are drawn. That is a fighting profile, with fewer draws than the Queen's Gambit Declined or the Slav.
+On Lichess White wins 50–51% and Black 45–46% below 2200, and 50% against 43% above it. In master games over the board, White wins 36%, Black 23% and 41% are drawn. Draws are less common than in the Queen's Gambit Declined (47%) or the Slav (52%).

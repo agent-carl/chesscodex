@@ -2,7 +2,7 @@ The Marshall Defense (1.d4 d5 2.c4 Nf6) is a rare and fairly dubious way of decl
 
 ### Origins
 
-The defence is named after Frank Marshall, who devised the move and played it in the 1920s. He gave it up after losing with it to Alexander Alekhine at Baden-Baden in 1925, and it is no longer used by experienced players.
+The defence is named after Frank Marshall, who played it in the 1920s. He gave it up after losing with it to Alexander Alekhine at Baden-Baden in 1925, and it is no longer used by experienced players.
 
 ### The idea
 
@@ -34,4 +34,4 @@ Because it is considered dubious, the Marshall Defense is at most an occasional 
 
 ### The numbers
 
-On Lichess White scores well at every level: 52.7% against 43.5% under 1400, 53.3% against 42.6% at 1400–1799, 53.7% against 41.4% at 1800–2199 and 54.5% against 39.2% from 2200 up. There are only a few hundred master games, too few to draw firm conclusions.
+On Lichess White does well at every level: 52.7% against 43.5% under 1400, 53.3% against 42.6% at 1400–1799, 53.7% against 41.4% at 1800–2199 and 54.5% against 39.2% from 2200 up. There are only a few hundred master games, too few to draw firm conclusions.

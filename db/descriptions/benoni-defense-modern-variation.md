@@ -36,4 +36,4 @@ The Modern Benoni is for combative, well-prepared players who want to play for a
 
 ### The numbers
 
-On Lichess, below 1800 White scores 51–53% and Black 44–46%. Between 1800 and 2200 Black is ahead, 48% against 47%. Above 2200, White leads 49% to 45%. In master games over the board the Modern Benoni is very decisive: White wins 44%, Black 26%, and only 30% are drawn.
+On Lichess, below 1800 White wins 51–53% and Black 44–46%. Between 1800 and 2200 Black is ahead, 48% against 47%. Above 2200, White leads 49% to 45%. In master games over the board the Modern Benoni is very decisive: White wins 44%, Black 26%, and only 30% are drawn.

@@ -2,7 +2,7 @@ The Fried Liver Attack (1.e4 e5 2.Nf3 Nc6 3.Bc4 Nf6 4.Ng5 d5 5.exd5 Nxd5 6.Nxf7)
 
 ### Origins
 
-The Fried Liver has been known for centuries. The earliest known example is a game played by Giulio Cesare Polerio before 1606, and the defence with the king protecting the d5-knight is described in a manuscript probably written around 1580–1590. It is also called the Fegatello Attack. The name comes from an Italian dish of liver wrapped in netting, just as Black's king is wrapped in White's mating net.
+The Fried Liver has been known for centuries. The earliest known example is a game played by Giulio Cesare Polerio before 1606. It is also called the Fegatello Attack. The name comes from an Italian dish of liver wrapped in netting, just as Black's king is wrapped in White's mating net.
 
 ### The idea
 
@@ -39,4 +39,4 @@ The Fried Liver is a classic weapon for attacking players at club level and in f
 
 ### The numbers
 
-The Lichess numbers are among the most one-sided on this site. Below 1400, White wins 71% and Black only 27%. Between 1400 and 1800 it is 69% against 28.5%, and between 1800 and 2200 it is 64% against 32%. Even above 2200 White scores 54% against 42%. There are almost no master games with it: only 63 in the database.
+The Lichess numbers are among the most one-sided on this site. Below 1400, White wins 71% and Black only 27%. Between 1400 and 1800 it is 69% against 28.5%, and between 1800 and 2200 it is 64% against 32%. Even above 2200 White wins 54% against 42%. There are almost no master games with it: only 63 in the database.

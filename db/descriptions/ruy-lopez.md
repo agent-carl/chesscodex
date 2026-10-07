@@ -2,7 +2,7 @@ The Ruy Lopez, or Spanish Opening (1.e4 e5 2.Nf3 Nc6 3.Bb5), is one of the most 
 
 ### Origins
 
-The opening is named after Ruy López de Segura, a 16th-century Spanish priest who studied it in his chess book of 1561. It appears even earlier, in the Göttingen manuscript from around 1490. The main line with 3...a6 is called the [Morphy Defense](/openings/ruy-lopez-morphy-defense) after the American genius Paul Morphy, whose games made the move popular. A common nickname for the opening is "the Spanish Torture", because White's pressure can last deep into the middlegame.
+The opening is named after Ruy López de Segura, a 16th-century Spanish priest who studied it in his chess book of 1561. It appears even earlier, in the Göttingen manuscript from around 1490. The main line with 3...a6 is called the [Morphy Defense](/openings/ruy-lopez-morphy-defense) after the American player Paul Morphy, who played it in his 1858 match against Adolf Anderssen; the move was later named after him, although he did not originate it. A common nickname for the opening is "the Spanish Torture", because it is difficult for Black to achieve equality.
 
 ### The idea
 
@@ -36,4 +36,4 @@ The Ruy Lopez suits patient, positional players who want to play for a win witho
 
 ### The numbers
 
-On Lichess White scores 51–52% below 2200 and Black about 44%. In master games over the board the Ruy Lopez is one of the most drawish openings on this site: 53% of games are drawn, White wins 29% and Black only 18.5%.
+On Lichess White wins 51–52% below 2200 and Black about 44%. In master games over the board, 53% of games are drawn, White wins 29% and Black only 18.5%.

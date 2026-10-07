@@ -35,4 +35,4 @@ The Berlin suits solid, endgame-minded players who want a reliable defence again
 
 ### The numbers
 
-The Berlin's numbers show the gap between club and master chess. On Lichess below 2200, White scores 51.5–52.5% and Black 43–43.5%. Above 2200 it is 48% against 43%. Among masters over the board it is the "Berlin Wall": 65% of games are drawn, White wins 21% and Black 14%.
+The Berlin's numbers show the gap between club and master chess. On Lichess below 2200, White wins 51.5–52.5% and Black 43–43.5%. Above 2200 it is 48% against 43%. Among masters over the board it is the "Berlin Wall": 65% of games are drawn, White wins 21% and Black 14%.

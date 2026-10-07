@@ -35,4 +35,4 @@ The names Heinrichsen and Baltic come from the Lithuanian player Arved Heinrichs
 
 ### The numbers
 
-On Lichess Black scores better below 1800: 48.9% against 46.2% under 1400 and 48.3% against 47.5% at 1400–1799. From 1800 White leads, 50.4% against 44.9% at 1800–2199 and 49.4% against 43.8% from 2200 up. In about 4,000 master games White won 28.2%, Black 31.0%, and 40.7% were drawn.
+On Lichess Black wins more often below 1800: 48.9% against 46.2% under 1400 and 48.3% against 47.5% at 1400–1799. From 1800 White leads, 50.4% against 44.9% at 1800–2199 and 49.4% against 43.8% from 2200 up. In about 4,000 master games White won 28.2%, Black 31.0%, and 40.7% were drawn.

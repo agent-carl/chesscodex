@@ -32,4 +32,4 @@ Since 1...d6 is playable for Black against any first move, the mirror move is pl
 
 ### The numbers
 
-On Lichess Black scores better at most levels: 50.2% against 44.6% for White under 1400, 50.0% against 45.7% at 1400–1799 and 48.1% against 47.1% at 1800–2199. From 2200 up White is slightly ahead, 46.9% against 46.3%. There are only about 800 master games, too few to draw firm conclusions.
+On Lichess Black wins more often at most levels: 50.2% against 44.6% for White under 1400, 50.0% against 45.7% at 1400–1799 and 48.1% against 47.1% at 1800–2199. From 2200 up White is slightly ahead, 46.9% against 46.3%. There are only about 800 master games, too few to draw firm conclusions.

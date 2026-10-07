@@ -2,7 +2,7 @@ The Modern Defense (1.e4 g6) is a flexible hypermodern reply to 1.e4. Black fian
 
 ### Origins
 
-The opening is also known as the Robatsch Defense, after the Austrian master Karl Robatsch. In 1965 the tenth edition of *Modern Chess Openings* grouped it with the Pirc as the "Pirc–Robatsch Defense". The 1972 book *The Modern Defence* by Raymond Keene and George Botterill helped popularise it. The Canadian grandmaster Duncan Suttles was one of its leading exponents, and British grandmasters Nigel Davies and Colin McNab, Judit Polgár and Magnus Carlsen have played it. Carlsen calls one variant the "Norwegian Rat".
+The opening is also known as the Robatsch Defense, after the Austrian master Karl Robatsch. In 1965 the tenth edition of *Modern Chess Openings* grouped it with the Pirc as the "Pirc–Robatsch Defense". The 1972 book *The Modern Defence* by Raymond Keene and George Botterill helped popularise it. The Canadian grandmaster Duncan Suttles was one of its leading exponents, and the British grandmasters Nigel Davies and Colin McNab have played it. Magnus Carlsen calls a variant with ...Nf6 and ...Nh5 the "Norwegian Rat", and he played it against Michael Adams at the 2010 Olympiad.
 
 ### The idea
 
@@ -27,7 +27,6 @@ Black plays ...g6, ...Bg7 and ...d6, and delays ...Nf6. That is the main differe
 
 - White gets a big centre and plenty of space. If Black's counterattack is late, Black is squeezed.
 - White's extra options (c3, c4, early f4 or Be3 and Qd2) require Black to know several structures.
-- It is played less often than the main defences at the top level.
 
 ### Who should play it
 
@@ -35,4 +34,4 @@ The Modern suits creative, counterattacking players who like to keep options ope
 
 ### The numbers
 
-On Lichess the Modern is balanced: White scores 48.5–49% and Black 46–47.5% at every band below 2200, and 47% against 46% above it. The master numbers are striking: over the board, White wins 36%, Black 31%, and only 33% are drawn. It is one of the most decisive defences to 1.e4 on this site, with one of the best winning percentages for Black.
+On Lichess the Modern is balanced: White wins 48.5–49% and Black 46–47.5% at every band below 2200, and 47% against 46% above it. In master games over the board, White wins 36%, Black 31%, and only 33% are drawn. It is one of the most decisive defences to 1.e4 on this site, with one of the best winning percentages for Black.

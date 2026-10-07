@@ -2,7 +2,7 @@ The Old Indian Defense (1.d4 d6 2.c4) usually continues with ...Nf6, reaching th
 
 ### Origins
 
-Mikhail Chigorin pioneered the defence late in his career. It is considered sound but has never reached the popularity of the King's Indian, because the bishop on e7 is less active than on g7. Some King's Indian players use it to avoid particular anti-King's Indian systems, such as the Sämisch and Averbakh Variations.
+Mikhail Chigorin pioneered the defence late in his career. It is considered sound, though developing the bishop on e7 is less active than the fianchetto on g7, and it has never reached the popularity of the King's Indian. Some King's Indian players use it to avoid particular anti-King's Indian systems, such as the Sämisch and Averbakh Variations.
 
 ### The idea
 

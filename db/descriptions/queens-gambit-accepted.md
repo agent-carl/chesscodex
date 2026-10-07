@@ -2,7 +2,7 @@ The Queen's Gambit Accepted (1.d4 d5 2.c4 dxc4) is Black's most direct answer to
 
 ### Origins
 
-Taking on c4 is one of the oldest ideas in the Queen's Gambit. For a long time it had a poor reputation, because Black often tried to keep the extra pawn and fell behind in development. Its modern form, where Black returns the pawn and counterattacks in the centre, was established in the 20th century. Since then it has been a respected defence at every level, including world championship play.
+The Queen's Gambit Accepted is mentioned in chess literature as early as the 15th century. For a long time Black's play centred on holding on to the c4-pawn. The first modern ideas came in the 1886 World Championship match between Wilhelm Steinitz and Johannes Zukertort: Steinitz returned the pawn, left White with an isolated pawn on d4 and then played against that weakness. Even with this treatment the opening had a slightly dubious reputation in the early 20th century. Alexander Alekhine introduced further ideas for Black, and from the 1930s it was played at the highest level. It became less popular after the Second World War, when the Indian defences were heavily played. At the end of the 1990s a number of elite players added it to their repertoires, and today it is considered sound.
 
 ### The idea
 
@@ -44,4 +44,4 @@ The QGA suits players who want active piece play and a straightforward plan agai
 
 ### The numbers
 
-Below 1800 on Lichess, White scores 55–56% and Black only 40–41%, one of the biggest edges for White among the main defences. Above 2200 the result is almost even (47% against 45%). In master games over the board, White wins 32.5%, Black 20% and 48% are drawn.
+Below 1800 on Lichess, White wins 55–56% and Black only 40–41%. Above 2200 the result is almost even (47% against 45%). In master games over the board, White wins 32.5%, Black 20% and 48% are drawn.

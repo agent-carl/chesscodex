@@ -2,7 +2,7 @@ The Vienna Game (1.e4 e5 2.Nc3) is a flexible open game. Instead of the usual 2.
 
 ### Origins
 
-The opening is named after the city of Vienna. It was a fashionable novelty in the 19th century: in 1888 a New York Times reviewer wrote that since Morphy only one new opening had been introduced, the Vienna. Wilhelm Steinitz favoured his Steinitz Gambit (2...Nc6 3.f4 exf4 4.d4), in which White's king walks into the open, in line with his belief that "the King is a fighting piece". Later Vasily Smyslov scored well with the quiet Mieses Variation (2...Nf6 3.g3). Today it is especially popular at club level. On Lichess it appears in about as many games under 1400 as between 1400 and 1800, far more than among experts.
+It was a fashionable novelty in the 19th century: in 1888 a New York Times reviewer wrote that since Morphy only one new opening had been introduced, the Vienna. Wilhelm Steinitz favoured his Steinitz Gambit (2...Nc6 3.f4 exf4 4.d4), in which White's king walks into the open, in line with his belief that "the King is a fighting piece". Later Vasily Smyslov scored well with the quiet Mieses Variation (2...Nf6 3.g3). Today it is especially popular at club level. On Lichess it appears in about as many games under 1400 as between 1400 and 1800, far more than among experts.
 
 ### The idea
 
@@ -41,4 +41,4 @@ The Vienna suits players who want an active open game with less theory, and thos
 
 ### The numbers
 
-On Lichess White scores 50–52% and Black 44–46% below 2200, and 50% against 43% above it. In master games over the board, White wins 30%, Black 26% and 44% are drawn.
+On Lichess White wins 50–52% and Black 44–46% below 2200, and 50% against 43% above it. In master games over the board, White wins 30%, Black 26% and 44% are drawn.

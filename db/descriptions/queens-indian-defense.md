@@ -2,7 +2,7 @@ The Queen's Indian Defense (1.d4 Nf6 2.c4 e6 3.Nf3 b6) is a solid hypermodern de
 
 ### Origins
 
-The Queen's Indian follows hypermodern principles: Black controls the centre with pieces from a distance instead of occupying it with pawns. From the 1950s to the 1980s the classical main line was 4.g3 Bb7. From the 1980s, 4...Ba6 became the topical line. Grandmasters such as Alexander Beliavsky, Veselin Topalov and Magnus Carlsen have played the 5.Qc2 line against it. Tigran Petrosian favoured 4.e3 as White, and Garry Kasparov used the Petrosian Variation 4.a3 early in his career.
+The Queen's Indian follows hypermodern principles: Black controls the centre with pieces instead of occupying it with pawns. It is regarded as the sister opening of the [Nimzo-Indian](/openings/nimzo-indian-defense), since both aim to stop White from taking full control of the centre with e4. Against 4.g3, which has long been White's most popular line, the standard reply through the 1970s was 4...Bb7; since then 4...Ba6 has become the topical line. Grandmasters such as Alexander Beliavsky, Veselin Topalov and Magnus Carlsen have played the 5.Qc2 line against it. Tigran Petrosian favoured 4.e3 as White, and Garry Kasparov used the Petrosian Variation 4.a3 early in his career.
 
 ### The idea
 
@@ -34,4 +34,4 @@ The Queen's Indian suits positional players who want a solid, low-risk defence t
 
 ### The numbers
 
-On Lichess the Queen's Indian is balanced at club level: White scores 48–49.5% and Black 47% below 1800. From 1800 up, White edges ahead, 47.5–48% against 44–45.5%. In master games over the board, 52% of games are drawn, White wins 28% and Black 19.5%.
+On Lichess the Queen's Indian is balanced at club level: White wins 48–49.5% and Black 47% below 1800. From 1800 up, White edges ahead, 47.5–48% against 44–45.5%. In master games over the board, 52% of games are drawn, White wins 28% and Black 19.5%.

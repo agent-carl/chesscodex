@@ -34,4 +34,4 @@ The Dragon is for tactical, attacking players who love opposite-side castling an
 
 ### The numbers
 
-On Lichess the Dragon is one of the few main lines where Black scores better than White at every band: 49–49.5% against 46–47% below 2200, and 46.7% against 46.3% above it. Among masters over the board the picture changes: White wins 39%, Black 23% and 37.5% are drawn.
+On Lichess the Dragon is one of the few main lines where Black wins more often than White at every band: 49–49.5% against 46–47% below 2200, and 46.7% against 46.3% above it. Among masters over the board the picture changes: White wins 39%, Black 23% and 37.5% are drawn.

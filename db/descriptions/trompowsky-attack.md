@@ -36,4 +36,4 @@ The Trompowsky suits practical 1.d4 players who want to avoid main-line theory a
 
 ### The numbers
 
-On Lichess the Trompowsky is even below 1800, with about 48% each. From 1800 up White does better, with 49.5% against 43–45%. In master games over the board, White wins 34%, Black 28.5% and 37.5% are drawn, a fighting profile with fewer draws than the main lines after 2.c4.
+On Lichess the Trompowsky is even below 1800, with about 48% each. From 1800 up White does better, with 49.5% against 43–45%. In master games over the board, White wins 34%, Black 28.5% and 37.5% are drawn.

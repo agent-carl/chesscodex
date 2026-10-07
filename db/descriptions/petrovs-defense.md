@@ -37,4 +37,4 @@ The Petrov suits solid players who want a safe answer to 1.e4, and players who n
 
 ### The numbers
 
-The Lichess numbers show a big difference between levels. Below 1400, White scores 53% and Black only 43%. From 1400 to 2200 it evens out to 49–50.5% against 45.5%. Above 2200 it is 47% against 44%. In master games over the board the Petrov is one of the most drawish openings on this site: 61% of games are drawn, White wins 27% and Black only 12%.
+The Lichess numbers show a big difference between levels. Below 1400, White wins 53% and Black only 43%. From 1400 to 2200 it evens out to 49–50.5% against 45.5%. Above 2200 it is 47% against 44%. In master games over the board the Petrov is one of the most drawish openings on this site: 61% of games are drawn, White wins 27% and Black only 12%.

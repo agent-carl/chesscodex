@@ -2,7 +2,7 @@ The Classical Variation of the [Giuoco Piano](/openings/italian-game-giuoco-pian
 
 ### Origins
 
-4.c3 Nf6, Black's main reply, was first analysed by Gioachino Greco in the 17th century, and Greco consistently answered 3...Bc5 with 4.c3 while other players of his time tended to prefer 4.O-O. The sharp Møller Attack in the 5.d4 line only appeared in 1898. In the 20th century the slow 5.d3, the Giuoco Pianissimo, became more common than the traditional 5.d4, and from the 1980s the modern lines with c3 and d3 became dominant; Anatoly Karpov used them twice against Viktor Korchnoi in the 1981 World Championship.
+4.c3 Nf6, Black's main reply, was first analysed by Gioachino Greco in the 17th century, and Greco consistently answered 3...Bc5 with 4.c3 while other players of his time tended to prefer 4.O-O. The sharp Møller Attack in the 5.d4 line only appeared in 1898. The slow 5.d3, the Giuoco Pianissimo, had been a frequent sideline for centuries. Despite its drawish reputation it became more popular after John Nunn and Anatoly Karpov took it up in the 1980s, and the modern lines with c3 and d3 became the dominant variation; Karpov used them twice against Viktor Korchnoi in the 1981 World Championship.
 
 ### The idea
 

@@ -2,7 +2,7 @@ The Pirc Defense (1.e4 d6 2.d4 Nf6 3.Nc3 g6) is a hypermodern reply to 1.e4. Bla
 
 ### Origins
 
-The Pirc was occasionally played in the 19th century but was considered an irregular opening. It began to gain popularity only after the Second World War. It is named after the Slovenian grandmaster Vasja Pirc, who played it often from the late 1940s onwards. In Russia and the other former Soviet countries it is often called the Ufimtsev Defence, after the Soviet master Anatoly Ufimtsev. By the 1960s it was regarded as playable, largely thanks to the Canadian grandmaster Duncan Suttles. Later players who used it include Jan Timman, Zurab Azmaiparashvili and Nick de Firmian. It is a close relative of the [Modern Defense](/openings/modern-defense) (1...g6), where Black delays ...Nf6.
+The Pirc was occasionally played in the 19th century but was considered an irregular opening. It began to gain popularity only after the Second World War. It is named after the Slovenian grandmaster Vasja Pirc, who played it often from the late 1940s onwards. In Russia and the other former Soviet countries it is often called the Ufimtsev Defence, after the Soviet master Anatoly Ufimtsev. By the 1960s it was regarded as playable, largely thanks to the Canadian grandmaster Duncan Suttles. Later, Jan Timman played the Austrian Attack successfully with both colours, and Zurab Azmaiparashvili had good results with the Pirc as Black. It is a close relative of the [Modern Defense](/openings/modern-defense) (1...g6), where Black delays ...Nf6.
 
 ### The idea
 
@@ -35,4 +35,4 @@ The Pirc suits counterattacking players who are comfortable defending a cramped 
 
 ### The numbers
 
-On Lichess the Pirc is balanced at club level: White scores 49–50% and Black 46–47% at every band below 2200, and 49% against 45% above it. In master games over the board, White wins 38%, Black 26% and only 36% are drawn. That is a sharp profile: Black wins more often than in most main defences, but also loses more often.
+On Lichess the Pirc is balanced at club level: White wins 49–50% and Black 46–47% at every band below 2200, and 49% against 45% above it. In master games over the board, White wins 38%, Black 26% and only 36% are drawn. That is a sharp profile: Black wins more often than in most main defences, but also loses more often.

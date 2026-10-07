@@ -2,7 +2,7 @@ The Moscow Variation (1.e4 c5 2.Nf3 d6 3.Bb5+), also called the Canal–Sokolsky
 
 ### Origins
 
-Grandmasters sometimes choose the Moscow when they want to avoid theory; Garry Kasparov played it in the online game Kasparov versus the World. Sergei Rublevsky and Tomáš Oral are experts in the line, and Magnus Carlsen has played it extensively.
+Grandmasters sometimes choose the Moscow when they want to avoid theory; Garry Kasparov played it in the online game Kasparov versus the World. Sergei Rublevsky and Tomáš Oral are experts in the line.
 
 ### The idea
 

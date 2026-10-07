@@ -2,7 +2,7 @@ Bird's Opening (1.f4) is an offbeat but respectable first move. White fights for
 
 ### Origins
 
-The move 1.f4 was first mentioned by Luis Ramírez de Lucena in 1497. It is named after the English player Henry Bird, who first played it in 1855 and continued to use it for the next 40 years. The *Hereford Times* named it after him in 1885. Aron Nimzowitsch, Savielly Tartakower and Bent Larsen played it regularly, and more recently Mikhail Gurevich and Henrik Danielsen.
+The move 1.f4 was first mentioned by Luis Ramírez de Lucena in 1497. It is named after the English player Henry Bird, who first played it in 1855 and continued to use it for the next 40 years. The *Hereford Times* named it after him in 1885. In the first half of the 20th century Aron Nimzowitsch and Savielly Tartakower sometimes played it, and later grandmasters who used it with some regularity include Bent Larsen, Mikhail Gurevich and Henrik Danielsen.
 
 ### The idea
 
@@ -33,4 +33,4 @@ The Bird suits creative attacking players who like to leave theory early and enj
 
 ### The numbers
 
-On Lichess the Bird is balanced. Below 1400 Black actually scores better, 49% against 46%. From 1400 to 2200 White scores 49.5–50% and Black 46%, and above 2200 it is 47% against 46%. In master games over the board White does poorly: White wins 28%, Black 34% and 38% are drawn.
+On Lichess the Bird is balanced. Below 1400 Black actually wins more often, 49% against 46%. From 1400 to 2200 White wins 49.5–50% and Black 46%, and above 2200 it is 47% against 46%. In master games over the board White does poorly: White wins 28%, Black 34% and 38% are drawn.

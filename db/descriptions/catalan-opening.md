@@ -34,4 +34,4 @@ The Catalan suits positional 1.d4 players who like long-term pressure, endgames 
 
 ### The numbers
 
-On Lichess White scores 52–53% and Black 41.5–43.5% below 2200, and 50% against 41% above it, one of the better results for White among the 1.d4 openings on this site. In master games over the board, the Catalan is very solid: 52.5% of games are drawn, White wins 27% and Black 20%.
+On Lichess White wins 52–53% and Black 41.5–43.5% below 2200, and 50% against 41% above it. In master games over the board, the Catalan is very solid: 52.5% of games are drawn, White wins 27% and Black 20%.

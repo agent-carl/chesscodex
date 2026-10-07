@@ -35,4 +35,4 @@ The Danish suits attacking players who love open positions and bishops, and it i
 
 ### The numbers
 
-On Lichess White does well at club level: below 2200 White scores 53.5–55% and Black 42–43.5%. Above 2200 it is closer, 48% against 46%. There are only about 200 master games with it, too few to judge.
+On Lichess White does well at club level: below 2200 White wins 53.5–55% and Black 42–43.5%. Above 2200 it is closer, 48% against 46%. There are only about 200 master games with it, too few to judge.

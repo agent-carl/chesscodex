@@ -36,4 +36,4 @@ The Center Game suits attacking players who like opposite-side castling and fast
 
 ### The numbers
 
-On Lichess White scores well above 1400: 52.2% against 44.2% at 1400–1799 and 53.3% against 42.6% at 1800–2199. Under 1400 it is 50.5% against 45.4%, and from 2200 up 49.7% against 44.2%. There are only about 1,900 master games, too few to draw firm conclusions.
+On Lichess White does well above 1400: 52.2% against 44.2% at 1400–1799 and 53.3% against 42.6% at 1800–2199. Under 1400 it is 50.5% against 45.4%, and from 2200 up 49.7% against 44.2%. There are only about 1,900 master games, too few to draw firm conclusions.

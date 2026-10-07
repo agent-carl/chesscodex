@@ -2,7 +2,7 @@ The Semi-Slav Defense (1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 e6) is one of the richest
 
 ### Origins
 
-The Meran Variation takes its name from the town of Meran (Merano) in northern Italy, where it was used successfully at a tournament in 1924. There Ernst Grünfeld beat both Akiba Rubinstein and Rudolf Spielmann with it. The idea had already appeared in a 1906 game between Carl Schlechter and Julius Perlis. Since then it has been a regular guest in world championship matches: the 2008 Kramnik–Anand match featured the Meran with 10.e5, and the 2013 Carlsen–Anand match featured the Marshall Gambit with 4.e4.
+The Meran Variation takes its name from the town of Meran (Merano) in northern Italy, where it was used successfully at a tournament in 1924. There it was used successfully in the game Grünfeld–Rubinstein, and two rounds later Ernst Grünfeld adopted the same variation against Rudolf Spielmann, winning as well. The idea had already appeared in a 1906 game between Carl Schlechter and Julius Perlis. Since then it has been a regular guest in world championship matches: the 2008 Kramnik–Anand match featured the Meran with 10.e5, and the 2013 Carlsen–Anand match featured the Marshall Gambit with 4.e4.
 
 ### The idea
 
@@ -37,4 +37,4 @@ The Semi-Slav suits well-prepared, ambitious players who want both solidity and 
 
 ### The numbers
 
-On Lichess White scores 51–52% and Black 43–45% at every band below 2200, and 51% against 42% above it. In master games over the board it is very drawish: 60% of games are drawn, White wins 24% and Black 16%.
+On Lichess White wins 51–52% and Black 43–45% at every band below 2200, and 51% against 42% above it. In master games over the board it is very drawish: 60% of games are drawn, White wins 24% and Black 16%.

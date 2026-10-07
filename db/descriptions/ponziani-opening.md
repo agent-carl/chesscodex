@@ -35,4 +35,4 @@ The Ponziani suits players who want an offbeat open game and like sharp position
 
 ### The numbers
 
-On Lichess the results hardly change with rating: White scores 48.2–50.3% and Black 45.2–46.4%, and draws grow from 3.8% below 1800 to 6.5% from 2200 up. There are only about 1,600 master games, too few to draw firm conclusions.
+On Lichess the results hardly change with rating: White wins 48.2–50.3% and Black 45.2–46.4%, and draws grow from 3.8% below 1800 to 6.5% from 2200 up. There are only about 1,600 master games, too few to draw firm conclusions.

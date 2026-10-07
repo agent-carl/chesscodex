@@ -36,4 +36,4 @@ The Englund is a surprise weapon for blitz and bullet players who enjoy traps an
 
 ### The numbers
 
-On Lichess the Englund holds up surprisingly well at club level: White scores 48.5–50% and Black 46–47.5% below 2200. Above 2200 White pulls ahead, 50.7% against 43.5%. There are only 115 master games with it, too few to judge.
+On Lichess the Englund holds up well at club level: White wins 48.5–50% and Black 46–47.5% below 2200. Above 2200 White pulls ahead, 50.7% against 43.5%. There are only 115 master games with it, too few to judge.

@@ -36,4 +36,4 @@ The Classical Variation suits Black players who like active piece play and want 
 
 ### The numbers
 
-On Lichess White scores about 50% at every level: 49.5% against 46.7% under 1400, 49.8% against 46.3% at 1400–1799, 50.5% against 45.0% at 1800–2199 and 49.0% against 44.6% from 2200 up. There are only about 2,000 master games, too few to draw firm conclusions.
+On Lichess White wins about 50% at every level: 49.5% against 46.7% under 1400, 49.8% against 46.3% at 1400–1799, 50.5% against 45.0% at 1800–2199 and 49.0% against 44.6% from 2200 up. There are only about 2,000 master games, too few to draw firm conclusions.
