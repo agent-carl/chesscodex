@@ -40,4 +40,4 @@ The Italian is an excellent first opening for players who meet 1...e5, and it gr
 
 ### The numbers
 
-On Lichess White scores about 51% (Black 45%) below 1800, and the gap narrows to 48% against 46% above 2200. In master games over the board almost half of the games (47%) are drawn: White wins 30%, Black 23%.
+On Lichess White wins about 51% (Black 45%) below 1800, and the gap narrows to 48% against 46% above 2200. In master games over the board almost half of the games (47%) are drawn: White wins 30%, Black 23%.

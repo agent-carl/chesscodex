@@ -35,4 +35,4 @@ The Grünfeld suits well-prepared, concrete players who like dynamic, piece-driv
 
 ### The numbers
 
-The Grünfeld is one of the few main openings where Black scores better than White on Lichess below 2200: about 48–49% for Black against 46–48% for White. Above 2200, White leads 47% to 44%. In master games over the board, 51% of games are drawn, White wins 29% and Black 20%.
+The Grünfeld is one of the few main openings where Black wins more often than White on Lichess below 2200: about 48–49% for Black against 46–48% for White. Above 2200, White leads 47% to 44%. In master games over the board, 51% of games are drawn, White wins 29% and Black 20%.

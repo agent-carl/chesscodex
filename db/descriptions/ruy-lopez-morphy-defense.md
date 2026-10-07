@@ -38,4 +38,4 @@ The Morphy Defense is the standard choice for Black players who meet 1.e4 with 1
 
 ### The numbers
 
-On Lichess White scores well at every level: 52.4% against 43.2% under 1400, 50.9% against 44.6% at 1400–1799, 49.9% against 44.6% at 1800–2199, and 48.1% against 44.0% from 2200 up. In about 115,800 master games 50.9% were drawn; White won 29.8% and Black 19.3%.
+On Lichess White does well at every level: 52.4% against 43.2% under 1400, 50.9% against 44.6% at 1400–1799, 49.9% against 44.6% at 1800–2199, and 48.1% against 44.0% from 2200 up. In about 115,800 master games 50.9% were drawn; White won 29.8% and Black 19.3%.

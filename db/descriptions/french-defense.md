@@ -2,7 +2,7 @@ The French Defense (1.e4 e6) is a solid, counterattacking answer to 1.e4. Black 
 
 ### Origins
 
-The name comes from a correspondence match between London and Paris in 1834, in which the Paris team used 1...e6 successfully. In the early 20th century Géza Maróczy made it his main weapon against 1.e4. After the First World War Aron Nimzowitsch and Mikhail Botvinnik popularised 3...Bb4, and later Tigran Petrosian, Viktor Korchnoi and Wolfgang Uhlmann were among its leading players.
+The name comes from a correspondence match between London and Paris in 1834, in which the Paris team adopted 1...e6 on the advice of Jacques Chamouillet. In the early 20th century Géza Maróczy made it his main weapon against 1.e4. After the First World War Aron Nimzowitsch and Mikhail Botvinnik popularised 3...Bb4, and later Tigran Petrosian, Viktor Korchnoi and Wolfgang Uhlmann were among its leading players.
 ### The idea
 
 After 2.d4 d5 the typical structure arises when White pushes e4–e5. White gets more space on the kingside, and Black's pawns stand on e6 and d5. Black then attacks the base of White's chain with ...c5, and sometimes the head of it with ...f6. The well-known problem piece is Black's light-squared bishop on c8, which is shut in by its own pawn on e6. Freeing it, or trading it with ...b6 and ...Ba6, is a recurring theme.
@@ -36,4 +36,4 @@ The French suits players who like closed positions, pawn structures and countera
 
 ### The numbers
 
-The French scores almost exactly 50–50 on Lichess from beginner to advanced level, with White at 48% and Black at 47–48%. Above 2200, White edges ahead 48% to 44.5%. In master games over the board, White wins 35% and Black 24%, with 41% draws.
+On Lichess the French is close to even from beginner to advanced level: White wins 48% and Black 47–48%. Above 2200, White edges ahead 48% to 44.5%. In master games over the board, White wins 35% and Black 24%, with 41% draws.

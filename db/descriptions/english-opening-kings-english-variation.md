@@ -33,4 +33,4 @@ The King's English suits White players who like Sicilian-type positions but pref
 
 ### The numbers
 
-On Lichess White scores about 51%: 50.3% against 45.9% under 1400, 51.7% against 44.4% at 1400–1799, 51.5% against 43.5% at 1800–2199 and 49.4% against 43.3% from 2200 up. In about 50,100 master games 47.8% were drawn; White won 29.1% and Black 23.1%.
+On Lichess White wins about 51%: 50.3% against 45.9% under 1400, 51.7% against 44.4% at 1400–1799, 51.5% against 43.5% at 1800–2199 and 49.4% against 43.3% from 2200 up. In about 50,100 master games 47.8% were drawn; White won 29.1% and Black 23.1%.

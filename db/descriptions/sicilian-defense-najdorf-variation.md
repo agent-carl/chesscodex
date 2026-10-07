@@ -36,4 +36,4 @@ The Najdorf suits ambitious players who enjoy sharp, double-edged positions and 
 
 ### The numbers
 
-On Lichess, Black scores slightly better than White below 1800: 49% against 47%. Between 1800 and 2200 it is even, at 47.5% each. Above 2200, White edges ahead 49% to 45%. In master games over the board, 51% of games are drawn, White wins 27% and Black 22%.
+On Lichess, Black wins slightly more often than White below 1800: 49% against 47%. Between 1800 and 2200 it is even, at 47.5% each. Above 2200, White edges ahead 49% to 45%. In master games over the board, 51% of games are drawn, White wins 27% and Black 22%.

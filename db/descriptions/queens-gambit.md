@@ -2,7 +2,7 @@ The Queen's Gambit (1.d4 d5 2.c4) is White's classical main line against 1...d5.
 
 ### Origins
 
-The Queen's Gambit is mentioned in the Göttingen manuscript of 1490, one of the oldest chess books, and was later analysed by Alessandro Salvio (1604) and Gioachino Greco. It did not become common until the Vienna tournament of 1873, and it reached its peak in the 1920s and 1930s. In the 1927 world championship match between Capablanca and Alekhine, 32 of the 34 games began with it. After the Second World War many players switched to the Indian defences against 1.d4, but the Queen's Gambit is still one of the main openings at every level. The 2020 Netflix series named after it made the name familiar far beyond the chess world.
+The Queen's Gambit is mentioned in the Göttingen manuscript of 1490, one of the oldest chess books, and was later analysed by Alessandro Salvio (1604) and Gioachino Greco. It did not become common until the Vienna tournament of 1873, and it reached its peak in the 1920s and 1930s. In the 1927 world championship match between Capablanca and Alekhine, 32 of the 34 games began with it. After the Second World War many players switched to the Indian defences against 1.d4, but the Queen's Gambit is still one of the main openings at every level.
 
 ### The idea
 
@@ -35,4 +35,4 @@ The Queen's Gambit is the natural choice for players who start with 1.d4 and wan
 
 ### The numbers
 
-On Lichess the Queen's Gambit scores well for White at club level: 53–54% for White and 43% for Black below 1800, and 49% against 43% above 2200. In master games over the board, about half the games are drawn (49.5%), White wins 32% and Black 18.5%.
+On Lichess the Queen's Gambit does well for White at club level: 53–54% for White and 43% for Black below 1800, and 49% against 43% above 2200. In master games over the board, about half the games are drawn (49.5%), White wins 32% and Black 18.5%.

@@ -37,4 +37,4 @@ Among the rarer answers are the [Nimzowitsch Defense](/openings/nimzowitsch-defe
 
 ### The numbers
 
-1.e4 is the most-played first move on Lichess. White scores 48.1–50.2% and Black 44.8–46.5% at every rating band; draws rise from 4% under 1400 to 7.1% from 2200 up. In master games over the board, White wins 32%, Black 24.2% and 43.8% are drawn.
+1.e4 is the most-played first move on Lichess. White wins 48.1–50.2% and Black 44.8–46.5% at every rating band; draws rise from 4% under 1400 to 7.1% from 2200 up. In master games over the board, White wins 32%, Black 24.2% and 43.8% are drawn.

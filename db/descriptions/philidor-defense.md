@@ -35,4 +35,4 @@ The Philidor suits solid, defensive players who like a fixed setup and slow mano
 
 ### The numbers
 
-On Lichess White scores 51–52% and Black 43–44.5% at every band below 2200, and 50% against 43% above it. It is played very often at club level: most of its Lichess games are below 1800. In master games over the board, White wins 41%, Black 25% and 34.5% are drawn, one of the better master scores for White among the replies to 2.Nf3.
+On Lichess White wins 51–52% and Black 43–44.5% at every band below 2200, and 50% against 43% above it. It is played very often at club level: most of its Lichess games are below 1800. In master games over the board, White wins 41%, Black 25% and 34.5% are drawn, one of the better master scores for White among the replies to 2.Nf3.

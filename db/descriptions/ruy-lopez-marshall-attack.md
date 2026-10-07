@@ -35,4 +35,4 @@ The Marshall suits well-prepared 1...e5 players who like the initiative and don'
 
 ### The numbers
 
-The Marshall is the rare opening where Black wins more than White on Lichess. Between 1400 and 2200, Black scores 53.5–55.5% and White only 41%. Above 2200, Black still leads, 49% against 43.6%. Among masters over the board it is the most drawish line on this site: 76% of games are drawn, White wins 14% and Black 10%.
+The Marshall is the rare opening where Black wins more than White on Lichess. Between 1400 and 2200, Black wins 53.5–55.5% and White only 41%. Above 2200, Black still leads, 49% against 43.6%. Among masters over the board it is one of the most drawish lines on this site: 76% of games are drawn, White wins 14% and Black 10%.

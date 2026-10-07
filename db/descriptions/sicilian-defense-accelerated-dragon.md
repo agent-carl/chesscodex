@@ -6,7 +6,7 @@ Skipping ...d6 is the point of the move order. If White tries a Yugoslav Attack 
 
 ### Main lines
 
-- 5.c4, the [Maróczy Bind](/openings/sicilian-defense-accelerated-dragon-maroczy-bind), the critical test of Black's move order. White's pawns on c4 and e4 restrain ...d5 and ...b5 and try to cramp Black. Play is less tactical than in many Sicilians, with a lot of strategic manoeuvring. The main line is 5...Bg7 6.Be3 Nf6 7.Nc3, when 7...O-O or 7...Ng4 ([Breyer Variation](/openings/sicilian-defense-accelerated-dragon-maroczy-bind-breyer-variation)) are most often played.
+- 5.c4, the [Maróczy Bind](/openings/sicilian-defense-accelerated-dragon-maroczy-bind), the critical test of Black's move order. White's pawns on c4 and e4 restrain ...d5 and ...b5 and try to cramp Black. Play is less tactical than in many Sicilians, with a lot of strategic manoeuvring. The main line is 5...Bg7 6.Be3 Nf6 7.Nc3 O-O 8.Be2 d6 9.O-O; 7...Ng4 is the [Breyer Variation](/openings/sicilian-defense-accelerated-dragon-maroczy-bind-breyer-variation) in this database.
 - 5.Nc3, the [Modern Variation](/openings/sicilian-defense-accelerated-dragon-modern-variation), usually with 5...Bg7 6.Be3 Nf6 7.Bc4 ([Modern Bc4 Variation](/openings/sicilian-defense-accelerated-dragon-modern-bc4-variation)).
 - 5.Nxc6, the [Exchange Variation](/openings/sicilian-defense-accelerated-dragon-exchange-variation).
 - The same positions can be reached through the [Hyperaccelerated Dragon](/openings/sicilian-defense-hyperaccelerated-dragon), 2...g6.

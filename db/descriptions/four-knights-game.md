@@ -36,4 +36,4 @@ The Four Knights is ideal for beginners and improving players who want sound, pr
 
 ### The numbers
 
-On Lichess the Four Knights is very balanced: White scores 48–49% and Black 45.5–46.5% below 2200, and 48% against 43% above it. In master games over the board it is drawish: 50% of games are drawn, White wins 27% and Black 23%.
+On Lichess the Four Knights is very balanced: White wins 48–49% and Black 45.5–46.5% below 2200, and 48% against 43% above it. In master games over the board it is drawish: 50% of games are drawn, White wins 27% and Black 23%.

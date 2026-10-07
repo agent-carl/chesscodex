@@ -40,4 +40,4 @@ The Horwitz suits Black players with a French or Dutch repertoire who want to ke
 
 ### The numbers
 
-On Lichess White scores about 51% at every level: 50.9% against 45.1% under 1400, 51.2% against 44.8% at 1400–1799, 51.0% against 43.9% at 1800–2199 and 50.0% against 42.6% from 2200 up. In about 41,700 master games White won 34.5%, Black 24.7%, and 40.8% were drawn.
+On Lichess White wins about 51% at every level: 50.9% against 45.1% under 1400, 51.2% against 44.8% at 1400–1799, 51.0% against 43.9% at 1800–2199 and 50.0% against 42.6% from 2200 up. In about 41,700 master games White won 34.5%, Black 24.7%, and 40.8% were drawn.

@@ -2,7 +2,7 @@ The Nimzo-Indian Defense (1.d4 Nf6 2.c4 e6 3.Nc3 Bb4) is considered one of the b
 
 ### Origins
 
-The first known game with the opening is Englisch–Blackburne, London 1883, but it is named after Aron Nimzowitsch, a leader of the hypermodern school, who introduced it to master chess in the early 20th century. Hypermodern players believed the centre could be controlled by pieces from a distance instead of occupied by pawns, and the Nimzo-Indian is one of the most successful products of that idea. It has been played by every world champion since Capablanca, and Svetozar Gligorić and Lajos Portisch were among its great experts.
+The first known game with the opening is Englisch–Blackburne, London 1883, but it is named after Aron Nimzowitsch, a leader of the hypermodern school, who introduced it to master chess in the early 20th century. In hypermodern style, Black fights for the centre without occupying it with pawns: by pinning the c3-knight, Black prevents White's e4. It has been played by every world champion since Capablanca, and Svetozar Gligorić and Lajos Portisch were among its great experts.
 
 ### The idea
 
@@ -36,4 +36,4 @@ The Nimzo suits strategic players who like concrete imbalances and structures, a
 
 ### The numbers
 
-On Lichess White scores 48–50% and Black 46–47% across all bands. Above 2200 it is 48% against 44%. In master games over the board the Nimzo is one of Black's best defences to 1.d4 in this database: White wins 29%, Black 24% and 47% are drawn.
+On Lichess White wins 48–50% and Black 46–47% across all bands. Above 2200 it is 48% against 44%. In master games over the board the Nimzo is one of Black's best defences to 1.d4 in this database: White wins 29%, Black 24% and 47% are drawn.

@@ -33,4 +33,4 @@ The Spanish Four Knights suits White players who like classical, positional ches
 
 ### The numbers
 
-On Lichess White scores about 50% at every level: 50.1% against 44.9% under 1400, 49.9% against 45.3% at 1400–1799, 50.4% against 43.9% at 1800–2199 and 49.4% against 42.2% from 2200 up. In about 7,600 master games 50.1% were drawn; White won 28.3% and Black 21.6%.
+On Lichess White wins about 50% at every level: 50.1% against 44.9% under 1400, 49.9% against 45.3% at 1400–1799, 50.4% against 43.9% at 1800–2199 and 49.4% against 42.2% from 2200 up. In about 7,600 master games 50.1% were drawn; White won 28.3% and Black 21.6%.

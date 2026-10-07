@@ -35,4 +35,4 @@ The Scandinavian suits practical players who want a reliable, low-theory defence
 
 ### The numbers
 
-On Lichess the Scandinavian holds up well at club level: White scores 48–50% and Black 46–47% at every band below 2200. Among masters the picture changes. Over the board, White wins 38.5%, Black only 24.5%, and 37% are drawn, the best master score for White against any of the main answers to 1.e4 on this site.
+On Lichess the Scandinavian is close to even at club level: White wins 48–50% and Black 46–47% at every band below 2200. Among masters the picture changes. Over the board, White wins 38.5%, Black only 24.5%, and 37% are drawn, the best master score for White against any of the main answers to 1.e4 on this site.

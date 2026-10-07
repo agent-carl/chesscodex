@@ -35,4 +35,4 @@ The Giuoco Piano suits beginners learning how to develop and fight for the centr
 
 ### The numbers
 
-On Lichess the results are almost identical at every level: White scores 47.6–49.4% and Black 45.7–46.9%, with draws growing from 3.7% under 1400 to 6.7% from 2200 up. In master games over the board, half the games are drawn (50.2%); White wins 27.4% and Black 22.3%.
+On Lichess the results are almost identical at every level: White wins 47.6–49.4% and Black 45.7–46.9%, with draws growing from 3.7% under 1400 to 6.7% from 2200 up. In master games over the board, half the games are drawn (50.2%); White wins 27.4% and Black 22.3%.

@@ -36,4 +36,4 @@ Alekhine's Defense suits counterattacking players who like provocative, unbalanc
 
 ### The numbers
 
-The Lichess numbers change sharply with rating. Below 1400 White scores 52% and Black only 44%. From 1800 to 2200 Black is ahead, 49% against 46%. Above 2200 it is close, at 47% against 46%. In master games over the board, White wins 37%, Black 26% and 37% are drawn, so it is one of the more decisive defences to 1.e4.
+The Lichess numbers change sharply with rating. Below 1400 White wins 52% and Black only 44%. From 1800 to 2200 Black is ahead, 49% against 46%. Above 2200 it is close, at 47% against 46%. In master games over the board, White wins 37%, Black 26% and 37% are drawn, so it is one of the more decisive defences to 1.e4.

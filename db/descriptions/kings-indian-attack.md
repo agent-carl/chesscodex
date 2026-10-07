@@ -34,4 +34,4 @@ The KIA suits players who want a universal system with White, prefer understandi
 
 ### The numbers
 
-On Lichess, White scores about 50% and Black 45–46% below 1800. Between 1800 and 2200 White does better, 53% against 41%, and above 2200 it is 50.5% against 41%. In master games over the board, White wins 34%, Black 22% and 44% are drawn.
+On Lichess, White wins about 50% and Black 45–46% below 1800. Between 1800 and 2200 White does better, 53% against 41%, and above 2200 it is 50.5% against 41%. In master games over the board, White wins 34%, Black 22% and 44% are drawn.

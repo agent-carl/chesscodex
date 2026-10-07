@@ -28,7 +28,7 @@ White can also avoid the main theory with an "Anti-Sicilian": the [Alapin](/open
 
 **Weaknesses**
 
-- The Open Sicilian is the most heavily analysed opening in chess. In sharp lines one forgotten move can lose on the spot.
+- In the 20th century the Sicilian became the most played and most analysed opening at both club and master level. In sharp lines one forgotten move can lose on the spot.
 - Black must be ready for many different Anti-Sicilians, each with its own ideas.
 - Black's king often stays in the centre for a while, so a lack of care is punished quickly.
 
@@ -40,4 +40,4 @@ It is especially effective against 1.e4 players who want a standard open game, b
 
 ### The numbers
 
-On Lichess the Sicilian scores almost exactly even at every rating level: White wins about 47–48% and Black 45–49%. Among masters playing over the board, draws rise to about 43%. White scores 31% and Black 26%, which is one of the better results for Black among the main replies to 1.e4.
+On Lichess the Sicilian is almost exactly even at every rating level: White wins about 47–48% and Black 45–49%. Among masters playing over the board, draws rise to about 43%. White wins 31% and Black 26%.

@@ -16,7 +16,7 @@ The opening is largely based on tactics on the queenside or against the f6- and 
 - [1...d5](/openings/polish-opening-with-d5), claiming the centre without exposing the pawn; after 2.Bb2, one idea is 2...Qd6, attacking b4 and supporting ...e5.
 - 1...Nf6, leading to King's Indian ([King's Indian Variation](/openings/polish-opening-kings-indian-variation)), Queen's Indian or Queen's Gambit set-ups.
 - 1...c6, the [Outflank Variation](/openings/polish-opening-outflank-variation), often with ...Qb6 or ...a5 in mind.
-- 1...c5, the [Birmingham Gambit](/openings/polish-opening-birmingham-gambit), a sharp pawn sacrifice usually played to avoid theory.
+- 1...c5, the [Birmingham Gambit](/openings/polish-opening-birmingham-gambit).
 - 1...f5, a [Dutch](/openings/polish-opening-dutch-defense) set-up.
 
 ### Strengths and weaknesses

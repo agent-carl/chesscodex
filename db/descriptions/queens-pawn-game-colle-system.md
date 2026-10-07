@@ -35,4 +35,4 @@ The Colle suits beginners and club players who want a simple, reliable system wi
 
 ### The numbers
 
-On Lichess the Colle is balanced: White scores 48.5–50% and Black 45.5–46% below 2200, and 47% against 44% above it. In master games over the board (about 5,600 games) Black actually scores slightly better: White wins 26%, Black 27% and 47% are drawn.
+On Lichess the Colle is balanced: White wins 48.5–50% and Black 45.5–46% below 2200, and 47% against 44% above it. In master games over the board (about 5,600 games) Black actually wins slightly more often: White wins 26%, Black 27% and 47% are drawn.

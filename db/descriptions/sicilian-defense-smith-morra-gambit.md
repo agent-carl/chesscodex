@@ -33,4 +33,4 @@ The Smith-Morra suits attacking 1.e4 players who want active piece play against 
 
 ### The numbers
 
-On Lichess the Smith-Morra is balanced: below 1800 Black scores slightly more (49% against 47–48%). From 1800 up White edges ahead, 48–49% against 46%. There are few master games (about 3,600), and in them White wins 26%, Black 34% and 39% are drawn. The gambit is popular at club level and played only occasionally by masters.
+On Lichess the Smith-Morra is balanced: below 1800 Black wins slightly more often (49% against 47–48%). From 1800 up White edges ahead, 48–49% against 46%. There are few master games (about 3,600), and in them White wins 26%, Black 34% and 39% are drawn. The gambit is popular at club level and played only occasionally by masters.

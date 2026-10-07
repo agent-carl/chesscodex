@@ -39,4 +39,4 @@ The Scotch Gambit suits attacking players who like open positions and are comfor
 
 ### The numbers
 
-On Lichess White scores very well below 2200: 55.3% against 41.8% under 1400, 55.6% against 41.0% at 1400–1799 and 53.0% against 42.4% at 1800–2199. From 2200 up the lead narrows to 48.4% against 44.4%. There are only about 2,800 master games, too few to draw firm conclusions.
+On Lichess White does very well below 2200: 55.3% against 41.8% under 1400, 55.6% against 41.0% at 1400–1799 and 53.0% against 42.4% at 1800–2199. From 2200 up the lead narrows to 48.4% against 44.4%. There are only about 2,800 master games, too few to draw firm conclusions.

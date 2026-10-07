@@ -35,4 +35,4 @@ The Advance suits White players who want a space advantage and a straightforward
 
 ### The numbers
 
-On Lichess Black scores better overall, 49.8% against 45.7%. Black is ahead at 1400–1799 (50.9% against 45.2%) and 1800–2199 (49.1% against 46.3%). Under 1400 White is slightly ahead, 48.7% against 47.6%, and from 2200 up White leads 48.3% against 45.4%. In about 15,900 master games White won 36.4%, Black 28.8%, and 34.8% were drawn.
+On Lichess Black wins more often overall, 49.8% against 45.7%. Black is ahead at 1400–1799 (50.9% against 45.2%) and 1800–2199 (49.1% against 46.3%). Under 1400 White is slightly ahead, 48.7% against 47.6%, and from 2200 up White leads 48.3% against 45.4%. In about 15,900 master games White won 36.4%, Black 28.8%, and 34.8% were drawn.

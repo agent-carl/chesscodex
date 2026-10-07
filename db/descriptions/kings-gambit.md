@@ -2,7 +2,7 @@ The King's Gambit (1.e4 e5 2.f4) is the most famous gambit in chess. White sacri
 
 ### Origins
 
-The King's Gambit appears in Lucena's book of 1497. Ruy López de Segura was the first to publish analysis of it, and Giulio Cesare Polerio also examined it. It was one of the most popular openings of the Romantic era: the famous "Immortal Game" of 1851, Adolf Anderssen's win against Lionel Kieseritzky in London, began with it. It declined from the late 19th century as defensive technique improved, and Wilhelm Steinitz argued that it was logically flawed. In 1960 Boris Spassky beat Bobby Fischer with it in a famous game at Mar del Plata. Fischer then wrote an article titled "A Bust to the King's Gambit", recommending 3...d6, now called the [Fischer Defense](/openings/kings-gambit-accepted-fischer-defense). Today it is rare at elite level, although Magnus Carlsen and Hikaru Nakamura have played it, and it remains popular at club level.
+The King's Gambit appears in Lucena's book of 1497. Ruy López de Segura was the first to publish analysis of it, and Giulio Cesare Polerio also examined it. It was one of the most popular openings of the Romantic era: the famous "Immortal Game" of 1851, Adolf Anderssen's win against Lionel Kieseritzky in London, began with it. By the late 19th century it was in decline, as leading players became aware that it and other popular gambits were likely unsound. Wilhelm Steinitz argued that attacks should only be started after the opponent has made a mistake, and as 1...e5 is not a mistake, he considered the King's Gambit logically flawed. In 1960 Boris Spassky beat Bobby Fischer with it in a famous game at Mar del Plata. Fischer then wrote an article titled "A Bust to the King's Gambit", recommending 3...d6, now called the [Fischer Defense](/openings/kings-gambit-accepted-fischer-defense). Today it is rare at elite level, although Magnus Carlsen and Hikaru Nakamura have played it, and it remains popular at club level.
 
 ### The idea
 
@@ -37,4 +37,4 @@ The King's Gambit is for attacking players who enjoy risk and want to take the i
 
 ### The numbers
 
-Below 1800 on Lichess, White scores 53–54% and Black only 43%. Above 2200 the score is level at 47% each. In master games over the board it is even worse for White: White wins 29%, Black 35% and 36% are drawn. The King's Gambit is one of the few main openings where Black outscores White among masters.
+Below 1800 on Lichess, White wins 53–54% and Black only 43%. Above 2200 both sides win 47%. In master games over the board it is even worse for White: White wins 29%, Black 35% and 36% are drawn. The King's Gambit is one of the few main openings where Black outscores White among masters.

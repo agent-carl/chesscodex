@@ -35,4 +35,4 @@ The Bishop's Opening suits flexible 1.e4 players who want to avoid the Petrov an
 
 ### The numbers
 
-On Lichess it is played very often at club level. Below 1800 White scores 51% and Black 45%. From 1800 up it narrows to 49–50% against 45–46%. In master games over the board, White wins 34%, Black 22% and 43% are drawn.
+On Lichess it is played very often at club level. Below 1800 White wins 51% and Black 45%. From 1800 up it narrows to 49–50% against 45–46%. In master games over the board, White wins 34%, Black 22% and 43% are drawn.

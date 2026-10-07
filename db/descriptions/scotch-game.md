@@ -35,4 +35,4 @@ The Scotch suits players who want an active, open game against 1...e5 without me
 
 ### The numbers
 
-On Lichess White scores 52–53% and Black 42–43% below 2200. Above 2200 White's lead is smaller, 49% against 44%. In master games over the board, White wins 30%, Black 25% and 46% are drawn.
+On Lichess White wins 52–53% and Black 42–43% below 2200. Above 2200 White's lead is smaller, 49% against 44%. In master games over the board, White wins 30%, Black 25% and 46% are drawn.
