@@ -70,6 +70,8 @@ if ($side !== null && $level !== null) {
 }
 
 $pct = static fn (int $n, int $of): float => $of > 0 ? $n * 100 / $of : 0.0;
+// Gambits: Stockfish's verdict beside the results, to set the practice against it.
+$evals = $page === 'gambits' ? EngineEval::forOpenings(array_column($rows, 'id')) : [];
 // First moves only: "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4…".
 $moves = static function (string $pgn): string {
     if (mb_strlen($pgn) <= 40) return $pgn;
@@ -130,6 +132,7 @@ ob_start();
                     <th class="ranking-num">Games</th>
                     <th><span class="th-long">White / Draw / Black</span><span class="th-short">W / D / B</span></th>
                     <?php if ($side): ?><th class="ranking-num"><?= $side === 'white' ? 'White' : 'Black' ?> score</th><?php endif; ?>
+                    <?php if ($evals): ?><th class="ranking-num" title="Stockfish after the line's last move, in pawns from White's side">Stockfish</th><?php endif; ?>
                 </tr>
             </thead>
             <tbody>
@@ -154,6 +157,9 @@ ob_start();
                         </span>
                     </td>
                     <?php if ($side): ?><td class="ranking-num"><?= number_format($r['score'] * 100, 1) ?>%</td><?php endif; ?>
+                    <?php if ($evals): $e = $evals[(int) $r['id']] ?? null; ?>
+                        <td class="ranking-num"<?= $e ? ' title="' . $esc(EngineEval::verdict($e)) . '"' : '' ?>><?= $e ? $esc(EngineEval::scoreText($e)) : '—' ?></td>
+                    <?php endif; ?>
                 </tr>
             <?php endforeach; ?>
             </tbody>
@@ -177,6 +183,10 @@ ob_start();
             A line counts as a gambit when its name has "Gambit" or "Countergambit" in it. Plain
             "… Gambit Declined" lines are left out, since nothing is sacrificed in them, but countergambits
             played against a gambit, such as the Falkbeer or the Albin, are included.
+            <?php if ($evals): ?>
+            The Stockfish column is the engine's evaluation after the line's last move, in pawns from White's
+            side — set it against the results to see which gambits do better in practice than on the engine.
+            <?php endif; ?>
         <?php endif; ?>
         <?php if ($side): ?>
             At this level, sharp lines in which a natural-looking reply goes wrong score highest — a

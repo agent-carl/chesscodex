@@ -15,9 +15,12 @@
         $initials = array_map(static fn (string $w): string => mb_substr($w, 0, 1) . '.', preg_split('/[\s.]+/u', trim($m[2]), -1, PREG_SPLIT_NO_EMPTY) ?: []);
         return trim($m[1]) . ', ' . implode(' ', $initials);
     };
+    // The side whose move ends the line is the one that chooses it.
+    $trend = $levels ? LevelStats::trend($levels, $plies % 2 === 1 ? 'white' : 'black') : null;
     if ($levels): ?>
     <section class="opening-levels">
         <h2>By rating</h2>
+        <?php if ($trend !== null): ?><p class="levels-trend"><?= htmlspecialchars($trend, ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
         <table class="stats-moves stats-levels">
             <thead><tr><th>Players</th><th>Games</th><th><span class="th-long">White / Draw / Black</span><span class="th-short">W / D / B</span></th></tr></thead>
             <tbody>

@@ -39,7 +39,7 @@ return [
     'opening.variations.hide'  => 'Show fewer',
 
     // Search page
-    'search.title'             => 'Chess Opening Identifier — Find Any Opening by Moves or FEN',
+    'search.title'             => 'Chess Opening Identifier — Find Any Opening by Moves, PGN or FEN',
     'search.h1'                => 'Chess Opening Identifier',
     'search.lede'              => 'Find any chess opening by name, by the moves of a game (pasted or played on the board) or by a FEN position, with its ECO code and the lines that follow.',
     'search.paste.label'       => 'Or paste the moves',

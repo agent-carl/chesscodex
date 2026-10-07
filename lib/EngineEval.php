@@ -53,6 +53,50 @@ final class EngineEval
         ];
     }
 
+    /**
+     * opening id => ['cp', 'mate'] for those of these openings whose final
+     * position was evaluated, in one query (for the ranking tables).
+     */
+    public static function forOpenings(array $ids): array
+    {
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+        if ($ids === []) return [];
+        try {
+            $stmt = chess_codex_db()->prepare(
+                'SELECT o.id, e.score_cp, e.mate FROM codex_openings o JOIN codex_engine_eval e ON e.fen = o.fen
+                 WHERE o.id IN (' . implode(',', array_fill(0, count($ids), '?')) . ')'
+            );
+            $stmt->execute($ids);
+        } catch (PDOException) {
+            return [];
+        }
+        $out = [];
+        foreach ($stmt as $r) {
+            $out[(int) $r['id']] = [
+                'cp'   => $r['score_cp'] === null ? null : (int) $r['score_cp'],
+                'mate' => $r['mate'] === null ? null : (int) $r['mate'],
+            ];
+        }
+        return $out;
+    }
+
+    /**
+     * A sentence for when practice disagrees with the engine: Stockfish has one
+     * side clearly better (1.5 pawns or more), yet the other side still scores
+     * 45% or more in the Lichess games of $stats (['white', 'draws', 'black']).
+     * Null otherwise.
+     */
+    public static function practice(array $e, array $stats): ?string
+    {
+        $games = $stats['white'] + $stats['draws'] + $stats['black'];
+        if ($e['mate'] !== null || $e['cp'] === null || abs($e['cp']) < 150 || $games < 1000) return null;
+        $worse = $e['cp'] > 0 ? 'black' : 'white';
+        $score = ($stats[$worse] + $stats['draws'] / 2) * 100 / $games;
+        if ($score < 45) return null;
+        return sprintf('Even so, %s scores %s%% here in practice: wins plus half the draws in rated Lichess games between players rated 1600 to 2500.',
+            ucfirst($worse), number_format($score, 1));
+    }
+
     /** Depth of the stored evaluation of a position; null when there is none. */
     public static function depthOf(string $fen): ?int
     {

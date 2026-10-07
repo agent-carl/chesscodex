@@ -23,6 +23,10 @@ final class LevelStats
     /** Master games kept per line. */
     private const TOP_GAMES = 5;
 
+    /** Games trend() needs in each Lichess band, and in the masters database to mention it. */
+    private const TREND_MIN_GAMES        = 2000;
+    private const TREND_MIN_MASTER_GAMES = 300;
+
     public static function ensureTable(): void
     {
         chess_codex_db()->exec(
@@ -65,6 +69,33 @@ final class LevelStats
             ];
         }
         return array_intersect_key(array_replace(self::LEVELS, $byLevel), $byLevel);
+    }
+
+    /**
+     * One sentence on how the line does as the players get stronger: the
+     * score of $side (the side whose move ends the line) under 1400 and at
+     * 2200 and up, plus master games when there are enough of them. Null
+     * without enough games at both ends. $levels is forOpening()'s array.
+     */
+    public static function trend(array $levels, string $side): ?string
+    {
+        $low  = $levels['beginners'] ?? null;
+        $high = $levels['experts'] ?? null;
+        if (($low['games'] ?? 0) < self::TREND_MIN_GAMES || ($high['games'] ?? 0) < self::TREND_MIN_GAMES) return null;
+        $score = static fn (array $l): int => (int) round(($l[$side] + $l['draws'] / 2) * 100 / $l['games']);
+        [$a, $b] = [$score($low), $score($high)];
+        $Side    = ucfirst($side);
+        $numbers = $a === $b ? "$Side scores $a% both under 1400 and at 2200 and up" : "$Side scores $a% under 1400, $b% at 2200 and up";
+        $masters = $levels['masters'] ?? null;
+        if (($masters['games'] ?? 0) >= self::TREND_MIN_MASTER_GAMES) {
+            $numbers .= ($a === $b ? ', and ' : ' and ') . $score($masters) . '% in master games';
+        }
+        $numbers .= ' (wins plus half the draws).';
+        return match (true) {
+            $b - $a >= 3 => "The stronger the players, the better this line does for $Side: $numbers",
+            $a - $b >= 3 => "The stronger the players, the worse this line does for $Side: $numbers",
+            default      => "Rating changes little here: $numbers",
+        };
     }
 
     /** opening_id => ['white', 'draws', 'black', 'games'] at one level, for the rankings. */
