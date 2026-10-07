@@ -98,6 +98,16 @@ final class LevelStats
         };
     }
 
+    /** How many lines have numbers by level (tools/fetch-levels.php takes the most-played first). */
+    public static function lineCount(): int
+    {
+        try {
+            return (int) chess_codex_db()->query('SELECT COUNT(DISTINCT opening_id) FROM codex_level_stats')->fetchColumn();
+        } catch (PDOException) {
+            return 0;
+        }
+    }
+
     /** opening_id => ['white', 'draws', 'black', 'games'] at one level, for the rankings. */
     public static function allAtLevel(string $level): array
     {
