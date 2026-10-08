@@ -55,7 +55,15 @@ $title = $o['name'] . ' (' . $o['eco'] . ')' . ($lineTail !== '' ? ' – ' . $li
 // with, as far as 60 characters allow: "Italian Game (C50) – Chess Opening
 // Moves & Win Rates", "Queen's Gambit Declined (D30): Chess Moves & Win
 // Rates", "Sicilian Defense: Najdorf Variation (B90): Moves & Win Rates".
-if ($lineTail === '') {
+// Other names it goes by (Opening::aliases). One with words the name lacks
+// goes into the title, where it fits: "Ruy Lopez (C60) – Spanish Opening:
+// Moves & Win Rates" also answers "spanish opening".
+$aliases    = Opening::aliases((string) $o['name']);
+$titleAlias = $lineTail === '' ? Opening::titleAlias((string) $o['name']) : null;
+if ($titleAlias !== null && mb_strlen($title . ' – ' . $titleAlias) <= 60) {
+    $title .= ' – ' . $titleAlias;
+    if (mb_strlen($title . ': Moves & Win Rates') <= 60) $title .= ': Moves & Win Rates';
+} elseif ($lineTail === '') {
     $suffixes = [': Chess Moves & Win Rates', ': Moves & Win Rates'];
     if (stripos((string) $o['name'], 'Opening') === false) array_unshift($suffixes, ' – Chess Opening Moves & Win Rates');
     foreach ($suffixes as $suffix) {
@@ -236,6 +244,10 @@ $island = [
         <h1><?= htmlspecialchars($o['name'], ENT_QUOTES, 'UTF-8') ?><?php if ($lineTail !== ''): ?>
             <?php /* Same-name lines: the moves that tell this one apart, as in the title. */ ?>
             <span class="opening-title-tail"><?= htmlspecialchars($lineTail, ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?></h1>
+        <?php if ($aliases): ?>
+            <p class="opening-aka">Also known as <?= implode(' or ', array_map(
+                static fn (string $a): string => '<strong>' . htmlspecialchars($a, ENT_QUOTES, 'UTF-8') . '</strong>', $aliases)) ?></p>
+        <?php endif; ?>
     </header>
 
     <?php
@@ -562,6 +574,7 @@ $jsonLd = [
             '@type'            => 'Article',
             'headline'         => $title,
             'name'             => $o['name'],
+        ] + ($aliases ? ['alternateName' => $aliases] : []) + [
             'description'      => $description,
             'url'              => $canonical,
             'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonical],

@@ -298,6 +298,11 @@ final class Routes
     {
         global $baseUrl, $siteUrl;
         Views::mark('ranking');
+        if ($page === 'best-gambits-for-beginners') {
+            $gambits = Rankings::bestGambitsForBeginners();
+            require __DIR__ . '/../templates/best_gambits.php';
+            return;
+        }
         $rows = Rankings::rows($page, $level);
         $allGambits = $page === 'gambits' ? Rankings::allGambits() : [];
         $insights   = $page === 'gambits' ? Rankings::gambitInsights() : ['dubious' => [], 'fading' => []];
