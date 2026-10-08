@@ -254,7 +254,8 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
                 <a href="<?= $baseEsc . $esc(I18n::url('/openings')) ?>">All openings A–Z</a> ·
                 <a href="<?= $baseEsc . $esc(I18n::url('/eco')) ?>">ECO codes</a> ·
                 <?php foreach (Rankings::LABELS as $fPath => $fLabel): ?><a href="<?= $baseEsc . $esc(I18n::url('/' . $fPath)) ?>"><?= $esc($fLabel) ?></a> · <?php endforeach; ?>
-                <a href="<?= $baseEsc . $esc(I18n::url('/search')) ?>">Opening identifier</a>
+                <a href="<?= $baseEsc . $esc(I18n::url('/search')) ?>">Opening identifier</a> ·
+                <a href="<?= $baseEsc . $esc(I18n::url('/train')) ?>">Opening trainer</a>
             </p>
         </nav>
         <?php endif; ?>

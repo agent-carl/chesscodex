@@ -124,6 +124,8 @@ final class Routes
         $rows['pages'] .= $row($base . '/');
         $rows['pages'] .= $row($base . '/openings');
         $rows['pages'] .= $row($base . '/search');   // the opening identifier
+        $rows['pages'] .= $row($base . '/train');    // the opening trainer, and its indexed pages
+        foreach (Opening::described() as $d) $rows['pages'] .= $row($base . '/train/' . $d['slug']);
         $rows['pages'] .= $row($base . '/about');
         foreach (array_keys(Opening::allAlphabetical()) as $letter) {
             if (preg_match('/^[A-Z]$/', (string) $letter)) $rows['pages'] .= $row($base . '/openings/letter/' . strtolower((string) $letter));
@@ -264,6 +266,15 @@ final class Routes
         header('X-Robots-Tag: noindex');
         header('Cache-Control: public, max-age=0, s-maxage=86400');
         echo $pgn;
+    }
+
+    /** /train — the opening trainer: the described openings to practise, by side. */
+    public static function trainIndex(): void
+    {
+        global $baseUrl, $siteUrl;
+        Views::mark('train');
+        $openings = Opening::described();
+        require __DIR__ . '/../templates/train_index.php';
     }
 
     /** /train/<slug> — practise the line (or its named continuations) move by move. */
