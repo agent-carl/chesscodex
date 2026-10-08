@@ -279,10 +279,11 @@ $island = [
             <ol id="move-list" class="move-list move-list-paired" aria-label="<?= htmlspecialchars(t('opening.moves'), ENT_QUOTES, 'UTF-8') ?>"></ol>
 
             <div class="opening-actions">
-                <?php /* nofollow: the 3,690 play pages are noindex, no crawl needed. */ ?>
+                <?php /* nofollow: the 3,690 play pages are noindex, no crawl needed; so are the
+                         trainers, except those of the described lines (templates/train.php). */ ?>
                 <a class="board-cta" rel="nofollow" href="<?= htmlspecialchars($baseUrl . I18n::url('/play/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"
                    data-prefetch="<?= $baseEsc ?>/vendor/stockfish.js?v=<?= substr((string) @hash_file('xxh3', __DIR__ . '/../vendor/stockfish.js'), 0, 8) ?> <?= $baseEsc ?>/vendor/stockfish.wasm"><?= htmlspecialchars(t('opening.board.cta'), ENT_QUOTES, 'UTF-8') ?></a>
-                <a class="board-cta board-cta-secondary" rel="nofollow"
+                <a class="board-cta board-cta-secondary"<?= empty($o['description']) ? ' rel="nofollow"' : '' ?>
                    href="<?= htmlspecialchars($baseUrl . I18n::url('/train/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"
                    title="Play this line's moves from memory, with review on a schedule">Practice the line</a>
                 <div class="repertoire-toggle"

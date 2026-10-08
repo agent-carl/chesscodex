@@ -221,6 +221,31 @@ class Opening
         return $stmt->fetchAll();
     }
 
+    /**
+     * The lines with a written description (slug, name, eco, pgn_moves,
+     * move_count, popularity), most played first: the openings /train lists
+     * and whose trainer pages are indexed.
+     */
+    public static function described(): array
+    {
+        return chess_codex_db()->query(
+            "SELECT slug, name, eco, pgn_moves, move_count, popularity FROM codex_openings
+             WHERE description IS NOT NULL AND description <> '' ORDER BY popularity DESC, move_count, id"
+        )->fetchAll();
+    }
+
+    /** How many lines withContinuations() gives for this line, itself included. */
+    public static function continuationCount(array $opening): int
+    {
+        require_once __DIR__ . '/parser.php';
+        $canon = chess_codex_canonicalize_pgn((string) $opening['pgn_moves']);
+        $stmt = chess_codex_db()->prepare(
+            'SELECT COUNT(*) FROM codex_openings WHERE pgn_canon = :c OR (pgn_canon >= :lo AND pgn_canon < :hi)'
+        );
+        $stmt->execute(['c' => $canon, 'lo' => $canon . ' ', 'hi' => $canon . '!']);
+        return (int) $stmt->fetchColumn();
+    }
+
     /** Rows (slug, name, eco, pgn_moves, popularity) for up to 200 slugs, in the order given. */
     public static function bySlugs(array $slugs): array
     {

@@ -91,6 +91,7 @@ $router->add('#^/eco/([A-Ea-e][0-9]{2})$#', [Routes::class, 'eco']);
 $router->add('/about',               [Routes::class, 'about']);
 $router->add('/rankings',            [Routes::class, 'rankingsIndex']);
 $router->add('/repertoire',          [Routes::class, 'repertoire']);
+$router->add('/train',               [Routes::class, 'trainIndex']);
 $router->add('/api/pgn',             [Routes::class, 'apiPgn']);
 $router->add('#^/train/([a-z0-9-]+)/?$#',    [Routes::class, 'train']);
 $router->add('#^/(best-openings-for-white|best-openings-for-black)/(beginners|intermediate|advanced|experts|masters)$#', [Routes::class, 'ranking']);
