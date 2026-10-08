@@ -12,18 +12,22 @@ $side    = match ($page) {
     'best-openings-for-black' => 'black',
     default                   => null,
 };
+// The leader by the last part of its name: " — the Fried Liver Attack leads with 57.2%".
+$leader = isset($first['score'])
+    ? ' — the ' . preg_replace('/^.*[:,]\s*/', '', (string) $first['name']) . ' leads with ' . number_format($first['score'] * 100, 1) . '%'
+    : '';
 $texts = [
     'best-openings-for-white' => [
         'title' => 'Best Chess Openings for White, Ranked by Lichess Results',
         'h1'    => 'Best chess openings for White',
         'lede'  => 'Lines where White makes the last move — positions White can steer the game into — ranked by White\'s score: wins plus half the draws. Only lines played in at least a million games are ranked.',
-        'desc'  => 'The 50 openings that score best for White in rated Lichess games, among lines played at least a million times, with White, draw and Black percentages for each.',
+        'desc'  => 'The 50 openings that score best for White in Lichess games, among lines played over a million times' . $leader . '.',
     ],
     'best-openings-for-black' => [
         'title' => 'Best Chess Openings for Black, Ranked by Lichess Results',
         'h1'    => 'Best chess openings for Black',
         'lede'  => 'Lines where Black makes the last move — the defenses and replies Black can choose — ranked by Black\'s score: wins plus half the draws. Only lines played in at least a million games are ranked.',
-        'desc'  => 'The 50 openings that score best for Black in rated Lichess games, among lines played at least a million times, with White, draw and Black percentages for each.',
+        'desc'  => 'The 50 openings that score best for Black in Lichess games, among lines played over a million times' . $leader . '.',
     ],
     'popular-openings' => [
         'title' => 'Most Popular Chess Openings: the Top 100 on Lichess',
@@ -122,6 +126,27 @@ ob_start();
     <?php if (!$rows): ?>
         <p class="ranking-method">The numbers for this level are still being collected from Lichess — check back in a few hours.</p>
     <?php endif; ?>
+    <?php
+    // Best-for pages: the answer to "what's the best opening for White?" in a
+    // sentence, from the ranking below.
+    $answerLink = static fn (array $r): string => '<a href="' . $baseEsc . $esc(I18n::url('/openings/' . $r['slug'])) . '">'
+        . $esc($r['name']) . '</a>';
+    $scorePct = static fn (array $r): string => number_format($r['score'] * 100, 1) . '%';
+    if ($side !== null && $rows):
+        $where = match (true) {
+            $level === null      => 'Among lines played at least a million times on Lichess',
+            $level === 'masters' => 'In master games',
+            default              => 'Among Lichess players ' . $levelWord[$level][1],
+        };
+        $next = array_slice($rows, 1, 2); ?>
+        <p class="ranking-answer">
+            <?= $where ?>, <?= $answerLink($rows[0]) ?> scores best for <?= ucfirst($side) ?>:
+            <?= $scorePct($rows[0]) ?> (wins plus half the draws) in <?= $esc(Rankings::compact($rows[0]['games'])) ?> games<?php
+            if ($next): ?>, ahead of <?= implode(' and ', array_map(static fn (array $r): string =>
+                $answerLink($r) . ' (' . $scorePct($r) . ')', $next)) ?><?php endif; ?>.
+        </p>
+        <h2 class="ranking-heading">The <?= count($rows) ?> best-scoring lines</h2>
+    <?php endif; ?>
     <?php if ($allGambits): ?>
         <h2 class="ranking-heading" id="top-gambits">The 100 most-played gambits</h2>
     <?php endif; ?>
@@ -196,6 +221,33 @@ ob_start();
             high score says how a line does in practice, not that it is objectively best.
         <?php endif; ?>
     </p>
+
+    <?php
+    // The overall best-for page: the leader at each level, linking to its ranking.
+    $leaders = [];
+    if ($side !== null && $level === null) {
+        foreach (LevelStats::LEVELS as $key => $l) {
+            $top = Rankings::rows($page, $key)[0] ?? null;
+            if ($top !== null) $leaders[$key] = [$l['label'], $top];
+        }
+    }
+    if ($leaders): ?>
+    <section class="ranking-by-level">
+        <h2 class="ranking-heading">Best openings for <?= ucfirst($side) ?> by rating</h2>
+        <p>
+            What scores best changes with the players' strength. The leader at each level, among the
+            <?= number_format(LevelStats::lineCount()) ?> most-played lines — each level has its own ranking:
+        </p>
+        <ul>
+            <?php foreach ($leaders as $key => [$label, $top]): ?>
+            <li>
+                <a href="<?= $baseEsc . $esc(I18n::url('/' . $page . '/' . $key)) ?>"><?= $esc($label) ?></a>:
+                <?= $answerLink($top) ?> — <?= $scorePct($top) ?>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+    </section>
+    <?php endif; ?>
 
     <?php
     // Gambits: where the engine and the results part ways (Rankings::gambitInsights).

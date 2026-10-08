@@ -34,7 +34,7 @@ ob_start();
     <?php foreach ($families as $letter => $list): ?>
         <section class="openings-letter" id="letter-<?= $esc($letter) ?>">
             <h2><?= $esc($letter) ?>
-                <a class="openings-letter-count" href="<?= $letterUrl((string) $letter) ?>">all <?= $counts[$letter] ?> lines →</a>
+                <a class="openings-letter-count" href="<?= $letterUrl((string) $letter) ?>"><?= $counts[$letter] === 1 ? 'its 1 line' : 'all ' . $counts[$letter] . ' lines' ?> →</a>
             </h2>
             <ul class="openings-letter-list">
                 <?php foreach ($list as $f): ?>
@@ -58,10 +58,21 @@ $description = 'All ' . $familyCount . ' chess openings from A to Z, with the ' 
 $canonical = $siteUrl . $baseUrl . I18n::url('/openings');
 $jsonLd = [
     '@context' => 'https://schema.org',
-    '@type'    => 'CollectionPage',
-    'name'     => 'List of chess openings A–Z',
-    'url'      => $canonical,
-    'description' => $description,
-    'inLanguage'  => I18n::locale(),
+    '@graph'   => [
+        [
+            '@type'       => 'CollectionPage',
+            'name'        => 'List of chess openings A–Z',
+            'url'         => $canonical,
+            'description' => $description,
+            'inLanguage'  => I18n::locale(),
+        ],
+        [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'List of chess openings A–Z', 'item' => $canonical],
+            ],
+        ],
+    ],
 ];
 require __DIR__ . '/layout.php';

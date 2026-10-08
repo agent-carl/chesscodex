@@ -12,7 +12,7 @@ Live: <https://chesscodex.org>
   where the line sits in the opening tree, its variations and the lines one move
   away by another move order, the moves played next with their Lichess results,
   results by rating band and in master games, and a PGN download.
-- **Descriptions** of the 50 most popular openings (history, ideas, main lines,
+- **Descriptions** of the most popular openings and lines, 140 so far (history, ideas, main lines,
   strengths and weaknesses); other pages get an overview built from the data.
 - **Browse** by name (A–Z), by ECO code, or by rankings built from Lichess games:
   the best openings for White and for Black (overall and by rating band), the

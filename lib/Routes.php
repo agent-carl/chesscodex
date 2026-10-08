@@ -77,7 +77,8 @@ final class Routes
 
     /**
      * Serves one sitemap file from db/cache/sitemap/, rebuilding all of them
-     * once a day (delete that folder to rebuild sooner, e.g. after adding URLs).
+     * once a day and after a deploy of this file (delete that folder to
+     * rebuild sooner, e.g. after adding descriptions).
      */
     private static function serveSitemap(string $name): void
     {
@@ -86,7 +87,8 @@ final class Routes
         $path = "$dir/$name.xml";
         // A file under 100 bytes is a broken write, never a real sitemap.
         if (is_file($path) && filesize($path) > 100 && is_file("$dir/index.xml")
-            && (time() - filemtime("$dir/index.xml")) < 86400) {
+            && (time() - filemtime("$dir/index.xml")) < 86400
+            && filemtime("$dir/index.xml") >= filemtime(__FILE__)) {
             header('X-Cache: HIT');
             readfile($path);
             return;
@@ -138,8 +140,8 @@ final class Routes
         }
 
         // Opening pages change when their Lichess numbers are refreshed, so
-        // that date is their <lastmod>. Not the thin lines (noindex on their
-        // pages, see Opening::isThin).
+        // that date is their <lastmod>. Every named line, the rarely played
+        // ones too (see Opening::FEW_GAMES).
         $updated = array_column(Rankings::all(), 'updated', 'slug');
         $stmt = chess_codex_db()->query(
             "SELECT slug, name, popularity, (description IS NOT NULL AND description <> '') AS described
@@ -147,7 +149,6 @@ final class Routes
         );
         $rank = 0;
         foreach ($stmt as $r) {
-            if (Opening::isThin($r)) continue;
             if ($r['described']) {
                 $part = 'openings-described';
             } else {
