@@ -33,11 +33,22 @@ $title       = 'Chess Opening Rankings from Lichess Games | Caissa Codex';
 $description = 'Best chess openings for White and for Black, the most popular openings and the most-played gambits, ranked from rated Lichess games.';
 $canonical   = $siteUrl . $baseUrl . I18n::url('/rankings');
 $jsonLd = [
-    '@context'    => 'https://schema.org',
-    '@type'       => 'CollectionPage',
-    'name'        => 'Chess opening rankings',
-    'url'         => $canonical,
-    'description' => $description,
-    'inLanguage'  => I18n::locale(),
+    '@context' => 'https://schema.org',
+    '@graph'   => [
+        [
+            '@type'       => 'CollectionPage',
+            'name'        => 'Chess opening rankings',
+            'url'         => $canonical,
+            'description' => $description,
+            'inLanguage'  => I18n::locale(),
+        ],
+        [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Chess opening rankings', 'item' => $canonical],
+            ],
+        ],
+    ],
 ];
 require __DIR__ . '/layout.php';

@@ -101,3 +101,10 @@
 /* /gambits, "Stockfish against practice" (Rankings::gambitInsights). */
 .gambits-numbers h3 { margin: var(--space-5) 0 var(--space-2); font-size: 1.05rem; }
 .gambits-numbers .gambits-side { display: block; color: var(--muted); font-size: .85rem; }
+
+/* Best-for pages: the one-sentence answer above the table, and the leader
+   at each rating level below it. */
+.ranking-answer { max-width: 70ch; font-size: 1.05rem; line-height: 1.6; margin: 0 0 var(--space-5); }
+.ranking-by-level { max-width: 70ch; margin: var(--space-6) 0; }
+.ranking-by-level ul { padding-left: 1.3rem; line-height: 1.6; }
+.ranking-by-level li { margin-bottom: var(--space-2); }

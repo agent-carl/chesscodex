@@ -6,22 +6,12 @@ require_once __DIR__ . '/db.php';
 class Opening
 {
     /**
-     * Lines played in fewer Lichess games than this are kept out of search
-     * engines (noindex, not in the sitemap): with no numbers to show, their
-     * pages are the generated text alone. 115 of 3,690 in September 2026.
+     * Below this many Lichess games a line's percentages say little, and its
+     * page says so. These lines stay indexed: 115 of 3,690 in September 2026,
+     * and the rare named gambits among them (Mellon Gambit) are searched for
+     * and ranked well even while they were noindex.
      */
-    public const THIN_GAMES = 100;
-
-    /**
-     * True for a line below THIN_GAMES (its popularity is the cached game
-     * count) — except mates and traps, which people search for as tactics
-     * however rarely rated games reach them (Fool's Mate: 0).
-     */
-    public static function isThin(array $opening): bool
-    {
-        return (int) ($opening['popularity'] ?? 0) < self::THIN_GAMES
-            && !preg_match('/\b(Mate|Trap)\b/', (string) ($opening['name'] ?? ''));
-    }
+    public const FEW_GAMES = 100;
 
     /**
      * The position diagram og.php draws (720×720 PNG), path from the site
@@ -171,9 +161,8 @@ class Opening
     /**
      * Every ECO code that has named lines, in code order: code => [
      *   'count' => lines filed under it,
-     *   'label' => the opening most of them belong to — "X & Y" or
-     *              "X, Y & more" when the code mixes several (A00 has 143
-     *              lines from over a dozen irregular openings),
+     *   'label' => what they are, see ecoLabel() (A00 has 143 lines from
+     *              over a dozen irregular openings: "X, Y & more"),
      *   'slug'  => its shortest line,
      *   'moves' => that line's moves ("1. c4 e5"), which tell apart the
      *              many codes that share a label ("English Opening"),
@@ -181,39 +170,32 @@ class Opening
      */
     public static function ecoCodes(): array
     {
-        return Cache::remember('eco_codes_v2', 3600, static function (): array {
+        return Cache::remember('eco_codes_v3', 3600, static function (): array {
             $rows = chess_codex_db()->query(
                 'SELECT eco, name, slug, pgn_moves FROM codex_openings ORDER BY eco, move_count, id'
             )->fetchAll();
             $codes = [];
             foreach ($rows as $r) {
                 $e = (string) $r['eco'];
-                $family = self::family((string) $r['name']);
                 $codes[$e]['count'] = ($codes[$e]['count'] ?? 0) + 1;
                 $codes[$e]['slug'] ??= (string) $r['slug'];
                 $codes[$e]['moves'] ??= trim((string) $r['pgn_moves']);
-                $codes[$e]['families'][$family] = ($codes[$e]['families'][$family] ?? 0) + 1;
+                $codes[$e]['names'][] = (string) $r['name'];
             }
             foreach ($codes as &$c) {
-                arsort($c['families']);   // stable: ties keep shortest-line order
-                $names = array_keys($c['families']);
-                $c['label'] = match (true) {
-                    count($names) === 1 => $names[0],
-                    count($names) === 2 => $names[0] . ' & ' . $names[1],
-                    default             => $names[0] . ', ' . $names[1] . ' & more',
-                };
-                unset($c['families']);
+                $c['label'] = self::ecoLabel($c['names']);
+                unset($c['names']);
             }
             unset($c);
             return $codes;
         });
     }
 
-    /** All lines filed under one ECO code, shortest first. */
+    /** All lines filed under one ECO code, shortest first, with their cached Lichess game counts. */
     public static function byEco(string $eco): array
     {
         $stmt = chess_codex_db()->prepare(
-            'SELECT id, eco, name, slug, pgn_moves, move_count FROM codex_openings
+            'SELECT id, eco, name, slug, pgn_moves, move_count, popularity FROM codex_openings
              WHERE eco = :e ORDER BY move_count, name, id'
         );
         $stmt->execute(['e' => $eco]);
@@ -279,6 +261,51 @@ class Opening
     public static function family(string $name): string
     {
         return trim(preg_split('/[:,]/', $name, 2)[0]);
+    }
+
+    /**
+     * What to call an ECO code, from the names of its lines (shortest first):
+     * the variation at least 60% of them belong to, when they are all one
+     * opening ("Sicilian Defense: Najdorf Variation" for B90, not just
+     * "Sicilian Defense"); otherwise the opening, or "X & Y" / "X, Y & more"
+     * when the code mixes several.
+     */
+    public static function ecoLabel(array $names): string
+    {
+        $families = $variations = [];
+        foreach ($names as $name) {
+            $family = self::family((string) $name);
+            $families[$family] = ($families[$family] ?? 0) + 1;
+            if (str_contains((string) $name, ':')) {
+                $variation = trim(explode(',', (string) $name, 2)[0]);
+                $variations[$variation] = ($variations[$variation] ?? 0) + 1;
+            }
+        }
+        arsort($families);   // stable: ties keep shortest-line order
+        $top = array_keys($families);
+        if (count($top) === 1) {
+            arsort($variations);
+            $variation = array_key_first($variations);
+            return $variation !== null && $variations[$variation] >= 0.6 * count($names) ? $variation : $top[0];
+        }
+        return count($top) === 2 ? $top[0] . ' & ' . $top[1] : $top[0] . ', ' . $top[1] . ' & more';
+    }
+
+    /**
+     * The first sentence of a description's opening paragraph, as plain text
+     * (links and emphasis unwrapped), for the meta description. Null when
+     * the description is empty or starts with a heading.
+     */
+    public static function leadSentence(string $markdown): ?string
+    {
+        $para = trim(explode("\n\n", trim($markdown), 2)[0]);
+        if ($para === '' || str_starts_with($para, '#')) return null;
+        $para = (string) preg_replace('/\[([^\]]+)\]\([^)]*\)/', '$1', $para);
+        $para = (string) preg_replace('/\*{1,2}([^*]+)\*{1,2}/', '$1', $para);
+        $para = trim((string) preg_replace('/\s+/', ' ', $para));
+        // A sentence ends at ". " before a capital, a quote or a bracket;
+        // "1.e4" and "5...a6" have no space after the dot.
+        return preg_match('/^(.+?[.!?])(?=\s+["“(A-Z]|$)/u', $para, $m) ? $m[1] : $para;
     }
 
     /** "1. e4 c5 2. Nf3" → ['e4', 'c5', 'Nf3'] (check marks kept). */

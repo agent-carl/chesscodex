@@ -153,6 +153,7 @@ if ($statsTotal > 0) {
             $h((intdiv($plies, 2) + 1) . ($whiteNext ? '. ' : '…') . $top['san']),
             (int) round($topGames * 100 / $statsTotal));
     }
+    if ($statsTotal < Opening::FEW_GAMES) $sentence .= ' That is too few games for the percentages to mean much.';
     $overview[] = $sentence;
 }
 if ($childCount > 0) {
@@ -513,8 +514,22 @@ foreach ($descParts as $i => $part) {
     if (mb_strlen($next) > 160 && $i > 0) continue;   // skip a part that doesn't fit, try the shorter ones after it
     $description = $next;
 }
-// Lines with almost no games stay out of search engines (and the sitemap).
-$noindex = Opening::isThin($o);
+// A described line leads with its description's first sentence, which says
+// what the line is, then as much of the numbers as fits.
+$lead = !empty($o['description']) ? Opening::leadSentence((string) $o['description']) : null;
+if ($lead !== null && mb_strlen($lead) <= 160) {
+    $results = sprintf('White wins %d%%, Black %d%%', (int) round((float) $wPct), (int) round((float) $bPct));
+    $tries = $statsTotal > 0 ? [
+        sprintf('%s, draws %d%% in %s Lichess games', $results, (int) round((float) $dPct), Rankings::compact($statsTotal))
+            . ($descEval ? '; Stockfish ' . EngineEval::scoreText($descEval) : '') . '.',
+        sprintf('%s, draws %d%% in %s Lichess games.', $results, (int) round((float) $dPct), Rankings::compact($statsTotal)),
+        $results . ' on Lichess.',
+    ] : [];
+    $description = $lead;
+    foreach ($tries as $try) {
+        if (mb_strlen($lead . ' ' . $try) <= 160) { $description = $lead . ' ' . $try; break; }
+    }
+}
 
 // OG image absolute URL for the JSON-LD `image`: the same URL as og:image in
 // layout.php, including its ?v= (hash of og.php).

@@ -86,6 +86,16 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
     $searchUrl = $baseUrl . I18n::url('/search');
     ?>
     <section class="about-section search-about">
+        <h2>What opening did I play?</h2>
+        <p>
+            Copy the moves of your game and paste them into the box above — move numbers are optional,
+            and a whole PGN from Lichess, chess.com or a database works too, headers and clock comments
+            included. Or play the first moves on the board. The identifier names the opening and the
+            deepest named line your game followed, shows its ECO code and the move with which your
+            game left the named lines, and links to the line's page: how it scores in rated Lichess
+            games — for the most-played lines also by rating band and in master games — and what
+            Stockfish makes of the position.
+        </p>
         <h2>How the identifier works</h2>
         <p>
             Every one of the 3,690 named lines in the Lichess chess-openings dataset is indexed by

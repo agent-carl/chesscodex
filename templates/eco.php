@@ -23,6 +23,19 @@ $rootStats = StatsCache::cached(ChessEngine::fromPgn((string) $root['pgn_moves']
 $rootGames = $rootStats ? $rootStats['white'] + $rootStats['black'] + $rootStats['draws'] : 0;
 $pct = static fn (int $x): string => number_format($rootGames > 0 ? $x * 100 / $rootGames : 0, 1);
 
+// When the label is one variation (Opening::ecoLabel), how many lines are its.
+$inLabel = str_contains((string) $info['label'], ':')
+    ? count(array_filter($lines, static fn (array $l): bool =>
+        $l['name'] === $info['label'] || str_starts_with((string) $l['name'], $info['label'] . ',')))
+    : 0;
+// The most played line, by cached Lichess games — unless it's the shortest,
+// whose numbers the next paragraph gives.
+$mostPlayed = null;
+foreach ($lines as $l) {
+    if ((int) $l['popularity'] > (int) ($mostPlayed['popularity'] ?? 0)) $mostPlayed = $l;
+}
+if ($mostPlayed !== null && $mostPlayed['slug'] === $root['slug']) $mostPlayed = null;
+
 ob_start();
 ?>
 <article class="eco-page">
@@ -37,6 +50,15 @@ ob_start();
             <?= $n === 1 ? 'It is' : 'The shortest is' ?>
             <a href="<?= $esc($openingUrl($root['slug'])) ?>"><?= $esc($root['name']) ?></a>:
             <code><?= $esc(Opening::keepNumbers((string) $root['pgn_moves'])) ?></code>.
+            <?php if ($n > 1 && $inLabel > 0): ?>
+                <?= $inLabel === $n ? 'All of them are' : $inLabel . ' of the ' . $n . ' are' ?> lines of the
+                <?= $esc($info['label']) ?>.
+            <?php endif; ?>
+            <?php if ($n > 1 && $mostPlayed !== null): ?>
+                The most played is
+                <a href="<?= $esc($openingUrl($mostPlayed['slug'])) ?>"><?= $esc($mostPlayed['name']) ?></a>,
+                reached in <?= number_format((int) $mostPlayed['popularity']) ?> rated Lichess games.
+            <?php endif; ?>
         </p>
         <?php if ($rootGames > 0): ?>
         <p>
@@ -50,13 +72,14 @@ ob_start();
     <?php if ($n > 1): ?>
     <table class="eco-lines">
         <thead>
-            <tr><th>Opening</th><th>Moves</th><th>Length</th></tr>
+            <tr><th>Opening</th><th>Moves</th><th class="eco-games" title="Rated Lichess games between players rated 1600 to 2500">Games</th><th>Length</th></tr>
         </thead>
         <tbody>
             <?php foreach ($lines as $l): ?>
             <tr>
                 <td><a href="<?= $esc($openingUrl($l['slug'])) ?>"><?= $esc($l['name']) ?></a></td>
                 <td><code><?= $esc(Opening::keepNumbers((string) $l['pgn_moves'])) ?></code></td>
+                <td class="eco-games"><?= $esc(Rankings::compact((int) $l['popularity'])) ?></td>
                 <td><?= Opening::movesLabel((int) $l['move_count']) ?></td>
             </tr>
             <?php endforeach; ?>
@@ -84,7 +107,7 @@ $rootMoves = trim((string) $root['pgn_moves']);
 $mixed = str_contains((string) $info['label'], '&');
 if (!$mixed && mb_strlen($title . ' (' . $rootMoves . ')') <= 58) $title .= ' (' . $rootMoves . ')';
 if ($n > 1) $title .= mb_strlen($title . ' — ' . $n . ' Lines with Moves') <= 70 ? ' — ' . $n . ' Lines with Moves' : ' — ' . $n . ' Lines';
-$description = 'ECO ' . $code . ' — ' . $info['label'] . ': '
+$description = 'ECO ' . $code . ' (' . $info['label'] . '): '
              . ($n === 1 ? 'one named line, ' . $rootMoves : ($mixed ? $n . ' named lines of several openings' : $n . ' named lines starting ' . $rootMoves))
              . ', each with its moves, an interactive board and Lichess win rates.';
 // A code with a single line would only repeat that opening's own page.
