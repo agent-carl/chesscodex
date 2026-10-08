@@ -16,7 +16,8 @@ Live: <https://chesscodex.org>
   strengths and weaknesses); other pages get an overview built from the data.
 - **Browse** by name (A–Z), by ECO code, or by rankings built from Lichess games:
   the best openings for White and for Black (overall and by rating band), the
-  most popular openings and the most popular gambits.
+  most popular openings, the most popular gambits and the gambits that score best
+  for beginners.
 - **Opening identifier**: name the opening of a game from pasted moves, a PGN,
   moves played on a board, or a FEN.
 - **Practice** a line from memory with spaced repetition, keep a **repertoire**

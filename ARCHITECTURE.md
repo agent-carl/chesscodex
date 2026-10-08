@@ -159,7 +159,7 @@ at the top of it.
 /openings, /openings/letter/<a-z>   index of the 140 openings, all lines by letter
 /openings/<slug>                    opening page        /openings/<slug>.pgn  the line + continuations
 /eco, /eco/<code>                   ECO codes
-/rankings, /best-openings-for-white|black[/<level>], /popular-openings, /gambits
+/rankings, /best-openings-for-white|black[/<level>], /popular-openings, /gambits, /best-gambits-for-beginners
 /search                             name search + identifier (moves, PGN, FEN)
 /play/<slug>, /train/<slug>         Stockfish (noindex), trainer
 /repertoire, /about, /random (302)

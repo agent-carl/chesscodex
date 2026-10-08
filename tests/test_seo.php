@@ -13,6 +13,37 @@ it('leadSentence: the first sentence of a description, plain text', function () 
     assert_eq(null, Opening::leadSentence("### Origins\n\nText."), 'starts with a heading');
 });
 
+it('aliases: other names from db/aliases.tsv; the title takes one with new words', function () {
+    assert_eq(['Spanish Opening', 'Spanish Game'], Opening::aliases('Ruy Lopez'));
+    assert_eq([], Opening::aliases('Ruy Lopez: Morphy Defense'), 'only the exact name');
+    assert_eq('Spanish Opening', Opening::titleAlias('Ruy Lopez'));
+    assert_eq(null, Opening::titleAlias('Dutch Defense: Stonewall Variation'), 'Stonewall Dutch has no new word');
+    assert_eq(null, Opening::titleAlias('Sicilian Defense'));
+});
+
+it('name search finds a line by another of its names', function () {
+    $rows = array_map([Opening::class, 'indexRow'], [
+        ['id' => 1, 'eco' => 'C42', 'name' => "Petrov's Defense", 'slug' => 'petrovs-defense', 'depth' => 1, 'move_count' => 4, 'popularity' => 100],
+        ['id' => 2, 'eco' => 'C40', 'name' => "King's Knight Opening", 'slug' => 'kings-knight-opening', 'depth' => 1, 'move_count' => 3, 'popularity' => 900],
+        ['id' => 3, 'eco' => 'A90', 'name' => 'Dutch Defense: Stonewall Variation', 'slug' => 'dutch-stonewall', 'depth' => 2, 'move_count' => 14, 'popularity' => 50],
+        ['id' => 4, 'eco' => 'A80', 'name' => 'Dutch Defense', 'slug' => 'dutch-defense', 'depth' => 1, 'move_count' => 2, 'popularity' => 5000],
+    ]);
+    assert_eq("Petrov's Defense", Opening::rankByName($rows, 'russian game')[0]['name'] ?? null);
+    assert_eq('Dutch Defense: Stonewall Variation', Opening::rankByName($rows, 'stonewall dutch')[0]['name'] ?? null);
+    assert_eq(false, array_key_exists('aliases', Opening::rankByName($rows, 'dutch')[0]), 'index fields stay internal');
+});
+
+it('gambitKey: a line counts once per gambit', function () {
+    assert_eq('Danish Gambit', Rankings::gambitKey('Danish Gambit Accepted: Copenhagen Defense'));
+    assert_eq('Danish Gambit', Rankings::gambitKey('Danish Gambit'));
+    assert_eq('Greco Gambit', Rankings::gambitKey('Italian Game: Classical Variation, Greco Gambit, Modern Line'));
+    assert_eq('Vienna Gambit', Rankings::gambitKey('Vienna Game: Vienna Gambit'));
+    assert_eq('Vienna Gambit', Rankings::gambitKey('Vienna Gambit, with Max Lange Defense'));
+    assert_eq('Paulsen Countergambit', Rankings::gambitKey('Elephant Gambit: Paulsen Countergambit'), 'a countergambit first');
+    assert_eq('Falkbeer Countergambit', Rankings::gambitKey("King's Gambit Declined: Falkbeer Countergambit"));
+    assert_eq('Ruy Lopez', Rankings::gambitKey('Ruy Lopez'));
+});
+
 it('ecoLabel: the variation most lines of a code share, else the family', function () {
     $najdorf = ['Sicilian Defense: Najdorf Variation', 'Sicilian Defense: Najdorf Variation, Adams Attack',
         'Sicilian Defense: Najdorf Variation, English Attack', 'Sicilian Defense: Scheveningen Variation, Delayed Keres Attack'];

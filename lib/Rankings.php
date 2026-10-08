@@ -6,27 +6,32 @@ require_once __DIR__ . '/ChessEngine.php';
 require_once __DIR__ . '/StatsCache.php';
 
 /**
- * Ranked lists for /gambits, /best-openings-for-white, /best-openings-for-black
- * and /popular-openings, built from the cached Lichess numbers
- * (codex_stats_cache) — they never call Lichess.
+ * Ranked lists for /gambits, /best-openings-for-white, /best-openings-for-black,
+ * /popular-openings and /best-gambits-for-beginners, built from the cached
+ * Lichess numbers (codex_stats_cache, codex_level_stats) — they never call Lichess.
  */
 final class Rankings
 {
     /** The ranking pages (path => link text), in the order they link to each other. */
     public const LABELS = [
-        'best-openings-for-white' => 'Best openings for White',
-        'best-openings-for-black' => 'Best openings for Black',
-        'popular-openings'        => 'Most popular openings',
-        'gambits'                 => 'Chess gambits',
+        'best-openings-for-white'    => 'Best openings for White',
+        'best-openings-for-black'    => 'Best openings for Black',
+        'popular-openings'           => 'Most popular openings',
+        'gambits'                    => 'Chess gambits',
+        'best-gambits-for-beginners' => 'Best gambits for beginners',
     ];
 
     /** One line each for the /rankings hub. */
     public const BLURBS = [
-        'best-openings-for-white' => 'The 50 lines that score best for White, among those played a million times or more.',
-        'best-openings-for-black' => 'The 50 defenses and replies that score best for Black, by the same rule.',
-        'popular-openings'        => 'The 100 most-played named lines, from 1.e4 down.',
-        'gambits'                 => 'Every gambit and countergambit A–Z, and the 100 most played with how often each side wins.',
+        'best-openings-for-white'    => 'The 50 lines that score best for White, among those played a million times or more.',
+        'best-openings-for-black'    => 'The 50 defenses and replies that score best for Black, by the same rule.',
+        'popular-openings'           => 'The 100 most-played named lines, from 1.e4 down.',
+        'gambits'                    => 'Every gambit and countergambit A–Z, and the 100 most played with how often each side wins.',
+        'best-gambits-for-beginners' => 'The gambits that score best for White and for Black among players rated under 1400, and how they do at 2200 and up.',
     ];
+
+    /** How many gambits per side /best-gambits-for-beginners lists. */
+    public const BEST_GAMBITS = 20;
 
     /** Games a line needs before it's ranked by score. */
     public const MIN_GAMES = 1000000;
@@ -198,6 +203,68 @@ final class Rankings
             };
             return ['dubious' => array_slice($onePerFamily($dubious), 0, 8), 'fading' => array_slice($onePerFamily($fading), 0, 8)];
         });
+    }
+
+    /**
+     * /best-gambits-for-beginners: per side ('white', 'black'), the gambits
+     * that score best for the side playing them among players rated under
+     * 1400 — lines with at least MIN_GAMES_AT_LEVEL games there, one per
+     * gambit (gambitKey) — each with 'low' (score under 1400, 0–100), 'games'
+     * (games under 1400), 'high' (score at 2200+, null below 10,000 games)
+     * and 'eval' (EngineEval row or null). BEST_GAMBITS each; kept six hours.
+     */
+    public static function bestGambitsForBeginners(): array
+    {
+        return Cache::remember('best-gambits-beginners-v2', 21600, static function (): array {
+            $low  = LevelStats::allAtLevel('beginners');
+            $high = LevelStats::allAtLevel('experts');
+            $min  = self::MIN_GAMES_AT_LEVEL['default'];
+            $out  = ['white' => [], 'black' => []];
+            foreach (self::all() as $r) {
+                $l = $low[$r['id']] ?? null;
+                if ($l === null || $l['games'] < $min || !Opening::isGambit($r['name'])) continue;
+                $side = self::gambitSide($r);
+                $h    = $high[$r['id']] ?? null;
+                $out[$side][] = array_merge($r, [
+                    'side'  => $side,
+                    'low'   => self::score($l, $side) * 100,
+                    'games' => $l['games'],
+                    'high'  => $h && $h['games'] >= 10000 ? self::score($h, $side) * 100 : null,
+                ]);
+            }
+            foreach ($out as &$rows) {
+                usort($rows, static fn (array $a, array $b): int => [$b['low'], $b['games']] <=> [$a['low'], $a['games']]);
+                $seen = [];
+                $rows = array_slice(array_values(array_filter($rows, static function (array $r) use (&$seen): bool {
+                    $k = self::gambitKey($r['name']);
+                    return !isset($seen[$k]) && ($seen[$k] = true);
+                })), 0, self::BEST_GAMBITS);
+                $evals = EngineEval::forOpenings(array_column($rows, 'id'));
+                foreach ($rows as &$r) $r['eval'] = $evals[$r['id']] ?? null;
+                unset($r);
+            }
+            unset($rows);
+            return $out;
+        });
+    }
+
+    /**
+     * The gambit a line plays, so the lines of one gambit count once: its
+     * countergambit if it has one, else its first gambit, without "Accepted"
+     * — "Danish Gambit Accepted: Copenhagen Defense" → "Danish Gambit",
+     * "Vienna Game: Vienna Gambit" and "Vienna Gambit, with Max Lange
+     * Defense" → "Vienna Gambit", "King's Gambit Declined: Falkbeer
+     * Countergambit" → "Falkbeer Countergambit".
+     */
+    public static function gambitKey(string $name): string
+    {
+        $parts = array_map('trim', preg_split('/[:,]/', $name) ?: [$name]);
+        $pick  = null;
+        foreach ($parts as $part) {
+            if (stripos($part, 'countergambit') !== false) { $pick = $part; break; }
+            if ($pick === null && stripos($part, 'gambit') !== false) $pick = $part;
+        }
+        return $pick === null ? $name : (string) preg_replace('/\s+Accepted$/i', '', $pick);
     }
 
     /**

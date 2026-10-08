@@ -163,6 +163,8 @@ html .cg-wrap coords.squares { text-transform: none; }
 .opening-breadcrumb [aria-current] { color: var(--fg); font-weight: 500; }
 .opening-header { margin-bottom: var(--space-4); }
 .opening-header h1 { margin: var(--space-1) 0 0; }
+.opening-aka { margin: var(--space-1) 0 0; color: var(--muted); font-size: 0.95rem; }
+.opening-aka strong { color: var(--fg-soft); font-weight: 600; }
 
 /* --- Opening page: board, moves and actions --------------------------- */
 @media (min-width: 900px) {

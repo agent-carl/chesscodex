@@ -264,6 +264,41 @@ class Opening
     }
 
     /**
+     * Other names a line goes by (db/aliases.tsv: "Spanish Opening" for the
+     * Ruy Lopez, "Stonewall Dutch"), each checked against the line's
+     * Wikipedia article. [] for most lines.
+     */
+    public static function aliases(string $name): array
+    {
+        static $map = null;
+        if ($map === null) {
+            $map = [];
+            $fh = @fopen(__DIR__ . '/../db/aliases.tsv', 'r');
+            if ($fh) {
+                fgetcsv($fh, null, "\t", '"', '');   // header
+                while (($row = fgetcsv($fh, null, "\t", '"', '')) !== false) {
+                    if (count($row) >= 2 && $row[0] !== '') $map[$row[0]][] = trim($row[1]);
+                }
+                fclose($fh);
+            }
+        }
+        return $map[$name] ?? [];
+    }
+
+    /**
+     * The first alias with a word the name lacks ("Spanish Opening" for the
+     * Ruy Lopez, not "Najdorf Sicilian"), for the page title; null if none.
+     */
+    public static function titleAlias(string $name): ?string
+    {
+        $words = explode(' ', self::nameKey($name));
+        foreach (self::aliases($name) as $alias) {
+            if (array_diff(explode(' ', self::nameKey($alias)), $words)) return $alias;
+        }
+        return null;
+    }
+
+    /**
      * What to call an ECO code, from the names of its lines (shortest first):
      * the variation at least 60% of them belong to, when they are all one
      * opening ("Sicilian Defense: Najdorf Variation" for B90, not just
@@ -623,7 +658,7 @@ class Opening
             return $stmt->fetchAll();
         }
 
-        $rows = Cache::remember('name-index', 21600, static function (): array {
+        $rows = Cache::remember('name-index-v2', 21600, static function (): array {
             $stmt = chess_codex_db()->query(
                 "SELECT id, eco, name, slug, depth, move_count, popularity FROM codex_openings"
             );
@@ -644,9 +679,10 @@ class Opening
     ];
 
     /**
-     * Adds what rankByName() matches on: 'key' (nameKey of the name) and
+     * Adds what rankByName() matches on: 'key' (nameKey of the name),
      * 'starts', the first word of each part of the name ("Sicilian Defense",
-     * "Dragon Variation", "Yugoslav Attack"), which gets a bonus.
+     * "Dragon Variation", "Yugoslav Attack"), which gets a bonus, and
+     * 'aliases', the nameKeys of its other names (aliases()).
      */
     public static function indexRow(array $r): array
     {
@@ -655,8 +691,9 @@ class Opening
             $w = explode(' ', self::nameKey($part))[0];
             if ($w !== '') $starts[] = $w;
         }
-        $r['key']    = self::nameKey((string) $r['name']);
-        $r['starts'] = $starts;
+        $r['key']     = self::nameKey((string) $r['name']);
+        $r['starts']  = $starts;
+        $r['aliases'] = array_map([self::class, 'nameKey'], self::aliases((string) $r['name']));
         return $r;
     }
 
@@ -676,7 +713,9 @@ class Opening
 
         $scored = [];
         foreach ($rows as $row) {
-            $nameWords = explode(' ', $row['key']);
+            $aliases   = $row['aliases'] ?? [];
+            // An alias's words count as the name's ("russian game" finds Petrov's Defense).
+            $nameWords = array_merge(explode(' ', $row['key']), ...array_map(static fn (string $a): array => explode(' ', $a), $aliases));
             $score = 0;
             $fuzzy = false;
             foreach ($words as $i => $qw) {
@@ -694,8 +733,9 @@ class Opening
                     if (str_starts_with($start, $qw)) { $score += 30; break; }
                 }
             }
-            if ($row['key'] === $query) $score += 1000;
-            elseif (str_starts_with($row['key'], $query)) $score += 500;
+            if ($row['key'] === $query || in_array($query, $aliases, true)) $score += 1000;
+            elseif (str_starts_with($row['key'], $query)
+                || array_filter($aliases, static fn (string $a): bool => str_starts_with($a, $query))) $score += 500;
             if (str_starts_with($nameWords[0], $words[0])) $score += 200;
             if ((self::NAME_PREFERRED[$query] ?? null) === $row['key']) $score += 1500;
             if ($fuzzy) $score -= 600;
@@ -710,7 +750,7 @@ class Opening
         $limit = max(1, min(50, $limit));
         $byName = [];
         foreach ($scored as [, , , , $row]) {
-            unset($row['key'], $row['starts']);
+            unset($row['key'], $row['starts'], $row['aliases']);
             $byName[$row['name']] ??= $row;
             if (count($byName) === $limit) break;
         }
