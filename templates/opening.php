@@ -349,6 +349,30 @@ $island = [
     </div>
 
     <?php
+    // How the side to move answers the line, from the same Lichess numbers:
+    // the reply that scores best, the most played one and the worst of the
+    // main ones (Replies), headed the way people search: "How to play against
+    // the London System". A line that shares its name names its last move.
+    $whiteToMove = $plies % 2 === 0;
+    $mainReplies = $statsTotal > 0 ? Replies::main($stats['top_moves'] ?? [], $statsTotal, $whiteToMove) : [];
+    if ($mainReplies):
+        $answersTitle = $lineTail === ''
+            ? 'How to play against ' . Opening::article((string) $o['name']) . $o['name']
+            : 'How to answer ' . $lastMoveText;
+        $lineOf = static fn (string $san): ?array => isset($nextLines[$san]) && !preg_match('/^[A-E]\d\d$/', $nextLines[$san]['name'])
+            ? [$nextLines[$san]['name'], $nextLines[$san]['url']]
+            : null;
+    ?>
+    <section class="opening-answers" aria-labelledby="opening-answers-title">
+        <h2 id="opening-answers-title"><?= htmlspecialchars($answersTitle, ENT_QUOTES, 'UTF-8') ?></h2>
+        <p><?= Replies::html($mainReplies, $whiteToMove, (intdiv($plies, 2) + 1) . ($whiteToMove ? '. ' : '…'), $lineOf,
+            isset($eval) && !empty($eval['pv']) ? (string) $eval['pv'][0] : null) ?></p>
+        <p class="opening-answers-note"><small>Main answers: those played in at least 5% of these games. Score: <?= $whiteToMove ? 'White' : 'Black' ?>'s wins
+            plus half the draws, in rated Lichess games between players rated 1600 to 2500.</small></p>
+    </section>
+    <?php endif; ?>
+
+    <?php
     // One form for both: a description of the line, or a mistake on the page.
     // Reports reach the admin queue marked (Submissions::REPORT_MARK) and are
     // never published. Shown in the Overview when there is no description yet.
