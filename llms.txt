@@ -2,7 +2,7 @@
 
 > A free, ad-free encyclopedia of the 3,690 named chess openings and variations in the Lichess chess-openings dataset (public domain), at https://chesscodex.org. Every line has its own page with the moves on an interactive board, its ECO code, where it sits in the opening tree, and how it scores in rated Lichess games — overall, by rating band and in master games.
 
-The statistics come from the Lichess opening explorer and masters database, cached on the server and refreshed regularly. The most popular openings and lines (140 so far) have written descriptions; other pages get an overview generated from that data. Built and run as a hobby project by a high school student in Norway; the source code is at https://github.com/agent-carl/chesscodex (AGPL-3.0).
+The statistics come from the Lichess opening explorer and masters database, cached on the server and refreshed regularly. The most popular openings and lines (141 so far) have written descriptions; other pages get an overview generated from that data. Built and run as a hobby project by a high school student in Norway; the source code is at https://github.com/agent-carl/chesscodex (AGPL-3.0).
 
 ## Main pages
 
