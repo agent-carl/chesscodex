@@ -2,6 +2,7 @@
 /** @var array $groups */
 /** @var array $popular */
 /** @var array $gambits */
+/** @var array $firstMoves  Opening::firstMoveTree() */
 /** @var array|null $featured  Opening-of-the-day, deterministic per date. */
 /** @var string $baseUrl */
 /** @var string $siteUrl */
@@ -133,7 +134,50 @@ $renderStrip(
     '/gambits',
     'The 100 most-played gambits'
 );
+
+// One step of the first-move tree: its move, then its name unless the step
+// above already said it (then only screen readers get the name).
+$firstMoveLink = static function (array $n) use ($baseEsc): string {
+    $name = htmlspecialchars($n['name'], ENT_QUOTES, 'UTF-8');
+    return '<a href="' . $baseEsc . htmlspecialchars(I18n::url('/openings/' . $n['slug']), ENT_QUOTES, 'UTF-8') . '"'
+        . ($n['label'] === '' ? ' title="' . $name . '"' : '') . '>'
+        . '<span class="first-move-san">' . htmlspecialchars($n['san'], ENT_QUOTES, 'UTF-8') . '</span>'
+        . ($n['label'] !== '' ? ' ' . htmlspecialchars($n['label'], ENT_QUOTES, 'UTF-8') : '<span class="visually-hidden"> ' . $name . '</span>')
+        . '</a>';
+};
 ?>
+<?php if (!empty($firstMoves['main'])): ?>
+<section class="home-popular home-first-moves">
+    <header class="home-popular-head">
+        <h2>Openings by first move</h2>
+        <p class="home-popular-lede">White's most played first moves, Black's main replies and the main second moves, in order of how often they are played on Lichess.</p>
+    </header>
+    <div class="first-moves">
+        <?php foreach ($firstMoves['main'] as $first): ?>
+            <div class="first-move">
+                <h3><?= $firstMoveLink($first) ?></h3>
+                <ul class="first-move-replies">
+                    <?php foreach ($first['replies'] as $reply): ?>
+                        <li><?= $firstMoveLink($reply) ?>
+                            <?php if ($reply['seconds']): ?>
+                                <ul class="first-move-seconds">
+                                    <?php foreach ($reply['seconds'] as $second): ?>
+                                        <li><?= $firstMoveLink($second) ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endforeach; ?>
+    </div>
+    <?php if ($firstMoves['other']): ?>
+        <p class="first-moves-other">Other first moves:
+            <?= implode(' · ', array_map($firstMoveLink, $firstMoves['other'])) ?></p>
+    <?php endif; ?>
+</section>
+<?php endif; ?>
 
 <section class="home-popular home-rankings">
     <header class="home-popular-head">

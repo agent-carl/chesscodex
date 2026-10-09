@@ -21,6 +21,17 @@ it('aliases: other names from db/aliases.tsv; the title takes one with new words
     assert_eq(null, Opening::titleAlias('Sicilian Defense'));
 });
 
+it('article: "the" before a name, none before a person\'s possessive', function () {
+    assert_eq('the ', Opening::article('Caro-Kann Defense'));
+    assert_eq('the ', Opening::article('Ruy Lopez: Morphy Defense'));
+    assert_eq('the ', Opening::article("King's Gambit Accepted"));
+    assert_eq('the ', Opening::article("Queen's Pawn Game: London System"));
+    assert_eq('the ', Opening::article("Bishop's Opening"));
+    assert_eq('the ', Opening::article("Van't Kruijs Opening"));
+    assert_eq('',     Opening::article("Petrov's Defense: Classical Attack"));
+    assert_eq('',     Opening::article("Anderssen's Opening"));
+});
+
 it('name search finds a line by another of its names', function () {
     $rows = array_map([Opening::class, 'indexRow'], [
         ['id' => 1, 'eco' => 'C42', 'name' => "Petrov's Defense", 'slug' => 'petrovs-defense', 'depth' => 1, 'move_count' => 4, 'popularity' => 100],
