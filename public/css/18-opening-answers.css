@@ -1,0 +1,14 @@
+/* --- Opening page: how to play against the line ------------------------- */
+.opening-answers { margin-top: var(--space-5); }
+.opening-answers h2 {
+    margin: 0 0 var(--space-3);
+    font-size: 1.35rem;
+}
+.opening-answers p {
+    margin: 0 0 var(--space-2);
+    max-width: 75ch;
+    line-height: 1.65;
+}
+.opening-answers a { color: var(--accent); }
+.opening-answers a:hover { color: var(--accent-hover); text-decoration: underline; }
+.opening-answers-note { color: var(--muted); }

@@ -21,6 +21,7 @@ spl_autoload_register(static function (string $class): void {
         'PgnTree'          => __DIR__ . '/PgnTree.php',
         'Rankings'         => __DIR__ . '/Rankings.php',
         'RateLimit'        => __DIR__ . '/RateLimit.php',
+        'Replies'          => __DIR__ . '/Replies.php',
         'Router'           => __DIR__ . '/Router.php',
         'Routes'           => __DIR__ . '/Routes.php',
         'RoutesAdmin'      => __DIR__ . '/RoutesAdmin.php',

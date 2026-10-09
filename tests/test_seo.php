@@ -32,6 +32,30 @@ it('article: "the" before a name, none before a person\'s possessive', function 
     assert_eq('',     Opening::article("Anderssen's Opening"));
 });
 
+it('Replies: the main answers and which scores best, from the side to move', function () {
+    $m = static fn (string $san, int $w, int $d, int $b): array => ['san' => $san, 'white' => $w, 'draws' => $d, 'black' => $b];
+    // Black to move; 10,000 games. Nc6 is under 5%, h6 under 100 games.
+    $top = [$m('e6', 5100, 600, 4300), $m('c5', 1800, 200, 2000), $m('Nc6', 200, 20, 180), $m('h6', 50, 0, 40)];
+    $main = Replies::main($top, 16000, false);
+    assert_eq(['e6', 'c5'], array_column($main, 'san'));
+    assert_eq(52.5, round($main[1]['score'], 1), 'score: wins plus half the draws, for Black');
+    [$most, $best, $worst] = Replies::picks($main);
+    assert_eq(['e6', 'c5', 'e6'], [$most['san'], $best['san'], $worst['san']]);
+    assert_eq([], Replies::main([$m('e6', 500, 0, 500), $m('c5', 50, 0, 40)], 1090, false), 'one main answer is no choice');
+
+    $none = static fn (string $san): ?array => null;
+    assert_eq('<strong>3…c5</strong> scores best for Black: 52.5%, with Black winning 50.0% and White 45.0% of 4,000 games.'
+        . ' The most played answer, <strong>3…e6</strong>, scores lowest: 46.0% in 10K games.'
+        . ' Stockfish\'s first choice is <strong>3…Bf5</strong>.',
+        Replies::html($main, false, '3…', $none, 'Bf5'));
+    $named = static fn (string $san): ?array => $san === 'e6' ? ['Main Line', '/openings/x'] : null;
+    $mainWhite = Replies::main([$m('e6', 5100, 600, 4300), $m('c5', 1800, 200, 2000)], 14000, true);
+    assert_eq('The most played answer, <strong>4. e6</strong> (<a href="/openings/x">Main Line</a>), also scores best for White:'
+        . ' 54.0%, with White winning 51.0% and Black 43.0% of 10K games.'
+        . ' Of the main answers, <strong>4. c5</strong> scores lowest: 47.5%. Stockfish\'s first choice is also <strong>4. e6</strong>.',
+        Replies::html($mainWhite, true, '4. ', $named, 'e6'));
+});
+
 it('name search finds a line by another of its names', function () {
     $rows = array_map([Opening::class, 'indexRow'], [
         ['id' => 1, 'eco' => 'C42', 'name' => "Petrov's Defense", 'slug' => 'petrovs-defense', 'depth' => 1, 'move_count' => 4, 'popularity' => 100],
