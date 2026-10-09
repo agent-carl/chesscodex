@@ -129,6 +129,19 @@ class Opening
     }
 
     /**
+     * The side whose choice a line's name records: the side that made its
+     * last move — except that a name whose last part is a Defense or a
+     * Countergambit is Black's even where Lichess files it after White's
+     * reply ("King's Indian Defense" is 1. d4 Nf6 2. c4 g6 3. Nc3).
+     */
+    public static function nameSide(string $name, int $plies): string
+    {
+        $last = trim((string) preg_replace('/^.*[:,]/', '', $name));
+        if (preg_match('/(Defen[cs]e|Countergambit)$/', $last)) return 'black';
+        return $plies % 2 === 1 ? 'white' : 'black';
+    }
+
+    /**
      * The article an opening's name takes in a sentence: "a variation of the
      * Caro-Kann Defense", but "of Petrov's Defense" — names that open with a
      * person's possessive take none (King's, Queen's and Bishop's do).
@@ -257,14 +270,15 @@ class Opening
     }
 
     /**
-     * The lines with a written description (slug, name, eco, pgn_moves,
-     * move_count, popularity), most played first: the openings /train lists
-     * and whose trainer pages are indexed.
+     * The lines with a written description (id, slug, name, eco, fen,
+     * pgn_moves, move_count, popularity), most played first: the openings
+     * /train and /how-to-play-against list, and whose trainer pages are
+     * indexed.
      */
     public static function described(): array
     {
         return chess_codex_db()->query(
-            "SELECT slug, name, eco, pgn_moves, move_count, popularity FROM codex_openings
+            "SELECT id, slug, name, eco, fen, pgn_moves, move_count, popularity FROM codex_openings
              WHERE description IS NOT NULL AND description <> '' ORDER BY popularity DESC, move_count, id"
         )->fetchAll();
     }

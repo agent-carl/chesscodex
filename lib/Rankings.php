@@ -19,6 +19,7 @@ final class Rankings
         'popular-openings'           => 'Most popular openings',
         'gambits'                    => 'Chess gambits',
         'best-gambits-for-beginners' => 'Best gambits for beginners',
+        'how-to-play-against'        => 'How to play against popular openings',
     ];
 
     /** One line each for the /rankings hub. */
@@ -28,6 +29,7 @@ final class Rankings
         'popular-openings'           => 'The 100 most-played named lines, from 1.e4 down.',
         'gambits'                    => 'Every gambit and countergambit A–Z, and the 100 most played with how often each side wins.',
         'best-gambits-for-beginners' => 'The gambits that score best for White and for Black among players rated under 1400, and how they do at 2200 and up.',
+        'how-to-play-against'        => 'The answer that scores best against each of the described openings, the most played one and Stockfish\'s choice.',
     ];
 
     /** How many gambits per side /best-gambits-for-beginners lists. */
@@ -202,6 +204,47 @@ final class Rankings
                 }));
             };
             return ['dubious' => array_slice($onePerFamily($dubious), 0, 8), 'fading' => array_slice($onePerFamily($fading), 0, 8)];
+        });
+    }
+
+    /**
+     * /how-to-play-against: the described openings (Opening::described()),
+     * most played first, by the side to move after them — 'black' answers
+     * White's openings, 'white' Black's defenses — each with 'games' (in the
+     * position), 'moveNo' ("3…"), 'best' and 'most' (Replies::picks() rows)
+     * and 'engine' (Stockfish's first move, null if not evaluated). Only the
+     * lines whose page asks "How to play against …": the name's main line,
+     * with the other side to move (Opening::nameSide()), and two or more main
+     * answers (Replies::main()). Kept six hours.
+     */
+    public static function answers(): array
+    {
+        return Cache::remember('answers-v1', 21600, static function (): array {
+            $out = ['black' => [], 'white' => []];
+            foreach (Opening::described() as $o) {
+                $plies = (int) $o['move_count'];
+                $whiteToMove = $plies % 2 === 0;
+                if (Opening::distinguishingTail($o) !== ''
+                    || Opening::nameSide((string) $o['name'], $plies) === ($whiteToMove ? 'white' : 'black')) continue;
+                $stats = StatsCache::cached(ChessEngine::fromPgn((string) $o['pgn_moves'])->uciHistory());
+                $total = $stats ? $stats['white'] + $stats['black'] + $stats['draws'] : 0;
+                $main = $total > 0 ? Replies::main($stats['top_moves'] ?? [], $total, $whiteToMove) : [];
+                if ($main === []) continue;
+                [$most, $best] = Replies::picks($main);
+                $eval = EngineEval::forFen((string) $o['fen']);
+                $out[$whiteToMove ? 'white' : 'black'][] = [
+                    'slug'      => (string) $o['slug'],
+                    'name'      => (string) $o['name'],
+                    'eco'       => (string) $o['eco'],
+                    'pgn_moves' => (string) $o['pgn_moves'],
+                    'games'     => $total,
+                    'moveNo'    => (intdiv($plies, 2) + 1) . ($whiteToMove ? '. ' : '…'),
+                    'best'      => $best,
+                    'most'      => $most,
+                    'engine'    => $eval && !empty($eval['pv']) ? (string) $eval['pv'][0] : null,
+                ];
+            }
+            return $out;
         });
     }
 

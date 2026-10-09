@@ -350,13 +350,15 @@ $island = [
 
     <?php
     // How the side to move answers the line, from the same Lichess numbers:
-    // the reply that scores best, the most played one and the worst of the
+    // the reply that scores best, the most played one and the lowest of the
     // main ones (Replies), headed the way people search: "How to play against
-    // the London System". A line that shares its name names its last move.
+    // the London System". Where that would be wrong — a line that shares its
+    // name, or one whose name is the side to move's own (King's Indian
+    // Defense, after 3. Nc3) — it names the last move instead.
     $whiteToMove = $plies % 2 === 0;
     $mainReplies = $statsTotal > 0 ? Replies::main($stats['top_moves'] ?? [], $statsTotal, $whiteToMove) : [];
     if ($mainReplies):
-        $answersTitle = $lineTail === ''
+        $answersTitle = $lineTail === '' && Opening::nameSide((string) $o['name'], $plies) !== ($whiteToMove ? 'white' : 'black')
             ? 'How to play against ' . Opening::article((string) $o['name']) . $o['name']
             : 'How to answer ' . $lastMoveText;
         $lineOf = static fn (string $san): ?array => isset($nextLines[$san]) && !preg_match('/^[A-E]\d\d$/', $nextLines[$san]['name'])
@@ -368,7 +370,8 @@ $island = [
         <p><?= Replies::html($mainReplies, $whiteToMove, (intdiv($plies, 2) + 1) . ($whiteToMove ? '. ' : '…'), $lineOf,
             isset($eval) && !empty($eval['pv']) ? (string) $eval['pv'][0] : null) ?></p>
         <p class="opening-answers-note"><small>Main answers: those played in at least 5% of these games. Score: <?= $whiteToMove ? 'White' : 'Black' ?>'s wins
-            plus half the draws, in rated Lichess games between players rated 1600 to 2500.</small></p>
+            plus half the draws, in rated Lichess games between players rated 1600 to 2500.
+            <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/how-to-play-against'), ENT_QUOTES, 'UTF-8') ?>">How to play against other popular openings</a></small></p>
     </section>
     <?php endif; ?>
 
