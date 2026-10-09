@@ -47,27 +47,42 @@ $opening_crumb = static function (string $name, ?string $prevName) use ($opening
 };
 
 $o = $opening;
-// Lines that share a name + ECO code get their final moves appended, so each
-// page has its own <title> instead of up to 14 identical ones.
+// Lines that share a name get their final moves appended, so each page has
+// its own <title> instead of up to 14 identical ones — all but the name's
+// main line, which keeps the plain name (Opening::distinguishingTail).
 $lineTail = Opening::distinguishingTail($o);
 $title = $o['name'] . ' (' . $o['eco'] . ')' . ($lineTail !== '' ? ' – ' . $lineTail : '');
 // Titles also say what the page is and offers, in the words people search
-// with, as far as 60 characters allow: "Italian Game (C50) – Chess Opening
-// Moves & Win Rates", "Queen's Gambit Declined (D30): Chess Moves & Win
-// Rates", "Sicilian Defense: Najdorf Variation (B90): Moves & Win Rates".
+// with, as far as 60 characters allow: the first of these that fits.
+// "Italian Game (C50) – Chess Opening Moves & Win Rates", "Queen's Gambit
+// Declined (D30): Chess Moves & Win Rates", "Sicilian Defense: Najdorf
+// Variation (B90): Moves & Win Rates".
 // Other names it goes by (Opening::aliases). One with words the name lacks
 // goes into the title, where it fits: "Ruy Lopez (C60) – Spanish Opening:
 // Moves & Win Rates" also answers "spanish opening".
-$aliases    = Opening::aliases((string) $o['name']);
-$titleAlias = $lineTail === '' ? Opening::titleAlias((string) $o['name']) : null;
-if ($titleAlias !== null && mb_strlen($title . ' – ' . $titleAlias) <= 60) {
-    $title .= ' – ' . $titleAlias;
-    if (mb_strlen($title . ': Moves & Win Rates') <= 60) $title .= ': Moves & Win Rates';
-} elseif ($lineTail === '') {
-    $suffixes = [': Chess Moves & Win Rates', ': Moves & Win Rates'];
-    if (stripos((string) $o['name'], 'Opening') === false) array_unshift($suffixes, ' – Chess Opening Moves & Win Rates');
-    foreach ($suffixes as $suffix) {
-        if (mb_strlen($title . $suffix) <= 60) { $title .= $suffix; break; }
+// The main line of a shared name shows its moves first while they are
+// short, as people search them ("1 e4 d6" finds the Pirc): "Pirc Defense
+// (B00): 1. e4 d6 – Ufimtsev Defense", "French Defense (C00): 1. e4 e6 –
+// Chess Moves & Win Rates".
+$aliases = Opening::aliases((string) $o['name']);
+if ($lineTail === '') {
+    $titleAlias = Opening::titleAlias((string) $o['name']);
+    $choices    = [];
+    if ((int) $o['move_count'] <= 4 && Opening::nameCount((string) $o['name']) > 1) {
+        $withMoves = $title . ': ' . trim((string) $o['pgn_moves']);
+        if ($titleAlias !== null) $choices[] = $withMoves . ' – ' . $titleAlias;
+        $choices[] = $withMoves . ' – Chess Moves & Win Rates';
+        $choices[] = $withMoves . ' – Moves & Win Rates';
+    }
+    if ($titleAlias !== null) {
+        $choices[] = $title . ' – ' . $titleAlias . ': Moves & Win Rates';
+        $choices[] = $title . ' – ' . $titleAlias;
+    }
+    if (stripos((string) $o['name'], 'Opening') === false) $choices[] = $title . ' – Chess Opening Moves & Win Rates';
+    $choices[] = $title . ': Chess Moves & Win Rates';
+    $choices[] = $title . ': Moves & Win Rates';
+    foreach ($choices as $choice) {
+        if (mb_strlen($choice) <= 60) { $title = $choice; break; }
     }
 }
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
@@ -147,7 +162,8 @@ $link = static fn (array $r, ?string $text = null): string =>
 $kind = $isGambit ? 'a gambit' : ($isDeclined ? 'a declined gambit' : null);
 $overview = [$parent
     ? sprintf('<strong>%s</strong> (ECO %s, %s) is %s %s, reached after %s — %s.', $nameEsc, $ecoEsc, $h($ecoGroupLabel),
-        $kind ?? 'a variation', ($kind ? 'in ' : 'of ') . $link($parent), $movesEsc, Opening::movesLabel($plies))
+        $kind ?? 'a variation', ($kind ? 'in ' : 'of ') . Opening::article((string) $parent['name']) . $link($parent),
+        $movesEsc, Opening::movesLabel($plies))
     : sprintf('<strong>%s</strong> (ECO %s, %s) is %s that starts %s.', $nameEsc, $ecoEsc, $h($ecoGroupLabel), $kind ?? 'a chess opening', $movesEsc)];
 if ($statsTotal > 0) {
     $sentence = sprintf('In %s rated Lichess games between players rated 1600 to 2500, White won %s%%, Black %s%% and %s%% were drawn.',

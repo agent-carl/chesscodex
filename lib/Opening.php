@@ -87,20 +87,55 @@ class Opening
     }
 
     /**
-     * Lichess gives several distinct move orders the same name and ECO code
-     * (14 lines are all "Italian Game: Classical Variation, Giuoco
-     * Pianissimo", C54). For those, returns the shortest run of final moves
-     * that no other line with that name ends with, e.g. "6…a6 7. Re1", so
-     * titles and descriptions can tell the pages apart. '' when the name +
-     * ECO pair is unique.
+     * Lichess gives several distinct move orders the same name (14 lines are
+     * all "Italian Game: Classical Variation, Giuoco Pianissimo", C54; seven
+     * are "Caro-Kann Defense", under B10, B12 and B15). For those, returns
+     * the shortest run of final moves that no other line with that name ends
+     * with, e.g. "6…a6 7. Re1", so titles and descriptions can tell the pages
+     * apart. '' when the name is unique, and for the name's main line — the
+     * shortest, then the most played, as in the breadcrumb — whose page is
+     * the one people mean by the name: "Caro-Kann Defense" is 1. e4 c6.
      */
     public static function distinguishingTail(array $opening): string
     {
-        $stmt = chess_codex_db()->prepare(
-            'SELECT pgn_moves FROM codex_openings WHERE name = :n AND eco = :e AND id <> :id'
-        );
-        $stmt->execute(['n' => $opening['name'], 'e' => $opening['eco'], 'id' => $opening['id']]);
-        return self::tailAgainst((string) $opening['pgn_moves'], $stmt->fetchAll(PDO::FETCH_COLUMN));
+        $group = self::sameName((string) $opening['name']);
+        if (count($group) < 2 || (int) $group[0]['id'] === (int) $opening['id']) return '';
+        $others = [];
+        foreach ($group as $r) {
+            if ((int) $r['id'] !== (int) $opening['id']) $others[] = (string) $r['pgn_moves'];
+        }
+        return self::tailAgainst((string) $opening['pgn_moves'], $others);
+    }
+
+    /** How many named lines carry this exact name: 1 when it is unique. */
+    public static function nameCount(string $name): int
+    {
+        return count(self::sameName($name));
+    }
+
+    /** Every line with this exact name, its main line (see distinguishingTail()) first. */
+    private static function sameName(string $name): array
+    {
+        static $memo = [];
+        if (!isset($memo[$name])) {
+            $stmt = chess_codex_db()->prepare(
+                'SELECT id, pgn_moves FROM codex_openings WHERE name = :n
+                 ORDER BY move_count ASC, popularity DESC, id ASC'
+            );
+            $stmt->execute(['n' => $name]);
+            $memo[$name] = $stmt->fetchAll();
+        }
+        return $memo[$name];
+    }
+
+    /**
+     * The article an opening's name takes in a sentence: "a variation of the
+     * Caro-Kann Defense", but "of Petrov's Defense" — names that open with a
+     * person's possessive take none (King's, Queen's and Bishop's do).
+     */
+    public static function article(string $name): string
+    {
+        return preg_match("/^(?!(?:King|Queen|Bishop|Knight)'s )\\S+'s /", $name) ? '' : 'the ';
     }
 
     /**
@@ -537,6 +572,83 @@ class Opening
         $cached = Cache::remember('gambits_' . substr(md5(serialize(self::FAMOUS_GAMBITS)), 0, 8), 21600,
             static fn (): array => self::resolveCuratedNames(self::FAMOUS_GAMBITS, 50));
         return array_slice($cached, 0, $limit);
+    }
+
+    /**
+     * The homepage's "Openings by first move", from Lichess game counts:
+     * 'main' — White's four most played first moves, each with Black's main
+     * replies (3% of its games or more; up to seven after the two big first
+     * moves, 1. e4 and 1. d4, and four after the others) and, after the two
+     * biggest replies that have a fifth of its games, White's main second
+     * moves (5% of the reply's games or more, up to five); 'other' — the next
+     * eight first moves. Every step is a named line: san ("1…c5"), name, slug
+     * and label, the name without what the step above already says
+     * ("Closed" under 1…c5 Sicilian Defense, '' for the same name). Cached on
+     * disk for 6 h.
+     */
+    public static function firstMoveTree(): array
+    {
+        return Cache::remember('first-moves-v1', 21600, static function (): array {
+            $rows = chess_codex_db()->query(
+                'SELECT name, slug, pgn_canon, popularity FROM codex_openings
+                 WHERE move_count <= 3 ORDER BY popularity DESC, id ASC'
+            )->fetchAll();
+            $next = [];   // the moves before => the named lines one move on, most played first
+            $seen = [];
+            foreach ($rows as $r) {
+                $canon = (string) $r['pgn_canon'];
+                if (isset($seen[$canon])) continue;
+                $seen[$canon] = true;
+                $next[implode(' ', array_slice(explode(' ', $canon), 0, -1))][] = $r;
+            }
+            $node = static function (array $r, ?array $above): array {
+                $tokens = explode(' ', (string) $r['pgn_canon']);
+                $ply    = count($tokens);
+                $name   = (string) $r['name'];
+                $label  = $name;
+                if ($above !== null) {
+                    $prev = (string) $above['name'];
+                    if ($name === $prev) {
+                        $label = '';
+                    } elseif (str_starts_with($name, $prev . ': ') || str_starts_with($name, $prev . ', ')) {
+                        $label = substr($name, strlen($prev) + 2);
+                    } elseif (str_contains($name, ': ') && self::family($name) === self::family($prev)) {
+                        $label = substr($name, strlen(self::family($name)) + 2);
+                    }
+                }
+                return [
+                    'san'   => (intdiv($ply - 1, 2) + 1) . ($ply % 2 === 1 ? '. ' : '…') . end($tokens),
+                    'name'  => $name,
+                    'label' => $label,
+                    'slug'  => (string) $r['slug'],
+                ];
+            };
+            $share = static fn (array $r, array $of): float => (int) $r['popularity'] / max(1, (int) $of['popularity']);
+
+            $tree = ['main' => [], 'other' => []];
+            foreach ($next[''] ?? [] as $i => $first) {
+                if ($i >= 4) {
+                    if (count($tree['other']) < 8) $tree['other'][] = $node($first, null);
+                    continue;
+                }
+                $replies   = [];
+                $branching = 0;
+                foreach ($next[(string) $first['pgn_canon']] ?? [] as $reply) {
+                    if ($share($reply, $first) < 0.03 || count($replies) >= ($i < 2 ? 7 : 4)) break;
+                    $item = $node($reply, $first) + ['seconds' => []];
+                    if ($branching < 2 && $share($reply, $first) >= 0.2) {
+                        $branching++;
+                        foreach ($next[(string) $reply['pgn_canon']] ?? [] as $second) {
+                            if ($share($second, $reply) < 0.05 || count($item['seconds']) >= 5) break;
+                            $item['seconds'][] = $node($second, $reply);
+                        }
+                    }
+                    $replies[] = $item;
+                }
+                $tree['main'][] = $node($first, null) + ['replies' => $replies];
+            }
+            return $tree;
+        });
     }
 
     /**

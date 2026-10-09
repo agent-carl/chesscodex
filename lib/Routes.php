@@ -198,6 +198,7 @@ final class Routes
         unset($g);
         $popular = Opening::topPopular(12);
         $gambits = Opening::topGambits(12);
+        $firstMoves = Opening::firstMoveTree();
         $featured = Opening::ofTheDay();
         require __DIR__ . '/../templates/home.php';
     }

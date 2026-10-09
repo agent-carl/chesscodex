@@ -86,7 +86,7 @@ trait RoutesApi
                 'depth' => (int) $match['depth'],
                 'plies' => (int) $match['move_count'],
                 'exact' => (bool) $match['exact'],
-                // Lines sharing this name and ECO code: the moves that end this one.
+                // Lines sharing this name: the moves that end this one ('' for the name's main line).
                 'tail'  => Opening::distinguishingTail($match),
             ] : null,
             'continuations' => array_map(static fn ($c) => [
