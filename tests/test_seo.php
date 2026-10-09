@@ -56,6 +56,15 @@ it('Replies: the main answers and which scores best, from the side to move', fun
         Replies::html($mainWhite, true, '4. ', $named, 'e6'));
 });
 
+it('nameSide: whose choice the name records', function () {
+    assert_eq('white', Opening::nameSide("Queen's Pawn Game: London System", 5));
+    assert_eq('black', Opening::nameSide('Sicilian Defense', 2));
+    assert_eq('white', Opening::nameSide('Sicilian Defense: Closed', 3), 'the last part decides');
+    assert_eq('black', Opening::nameSide("King's Indian Defense", 5), 'filed after 3. Nc3, still Black\'s');
+    assert_eq('black', Opening::nameSide("King's Gambit Declined: Falkbeer Countergambit", 4));
+    assert_eq('white', Opening::nameSide('Italian Game: Two Knights Defense, Fried Liver Attack', 11));
+});
+
 it('name search finds a line by another of its names', function () {
     $rows = array_map([Opening::class, 'indexRow'], [
         ['id' => 1, 'eco' => 'C42', 'name' => "Petrov's Defense", 'slug' => 'petrovs-defense', 'depth' => 1, 'move_count' => 4, 'popularity' => 100],

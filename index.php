@@ -95,7 +95,7 @@ $router->add('/train',               [Routes::class, 'trainIndex']);
 $router->add('/api/pgn',             [Routes::class, 'apiPgn']);
 $router->add('#^/train/([a-z0-9-]+)/?$#',    [Routes::class, 'train']);
 $router->add('#^/(best-openings-for-white|best-openings-for-black)/(beginners|intermediate|advanced|experts|masters)$#', [Routes::class, 'ranking']);
-$router->add('#^/(best-openings-for-white|best-openings-for-black|popular-openings|gambits|best-gambits-for-beginners)$#', [Routes::class, 'ranking']);
+$router->add('#^/(best-openings-for-white|best-openings-for-black|popular-openings|gambits|best-gambits-for-beginners|how-to-play-against)$#', [Routes::class, 'ranking']);
 $router->add('/',                    [Routes::class, 'home']);
 $router->add('#^/openings/([a-z0-9-]+)\.pgn$#', [Routes::class, 'openingPgn']);
 $router->add('#^/openings/([a-z0-9-]+)/?$#', [Routes::class, 'opening']);

@@ -315,6 +315,11 @@ final class Routes
             require __DIR__ . '/../templates/best_gambits.php';
             return;
         }
+        if ($page === 'how-to-play-against') {
+            $answers = Rankings::answers();
+            require __DIR__ . '/../templates/answers.php';
+            return;
+        }
         $rows = Rankings::rows($page, $level);
         $allGambits = $page === 'gambits' ? Rankings::allGambits() : [];
         $insights   = $page === 'gambits' ? Rankings::gambitInsights() : ['dubious' => [], 'fading' => []];

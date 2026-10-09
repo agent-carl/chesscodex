@@ -12,3 +12,7 @@
 .opening-answers a { color: var(--accent); }
 .opening-answers a:hover { color: var(--accent-hover); text-decoration: underline; }
 .opening-answers-note { color: var(--muted); }
+
+/* /how-to-play-against: one answer per cell, move and score together. */
+.answers-move { white-space: nowrap; }
+.answers-move code { font-family: var(--font-mono); font-size: .85rem; color: var(--fg-soft); }
