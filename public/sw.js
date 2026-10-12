@@ -7,6 +7,7 @@
  *   - HTML pages: network-first with cache fallback, capped at MAX_HTML
  *   - API / sitemap / robots / admin: never cached (admin pages carry CSRF
  *     tokens and submitters' emails — they must not linger in Cache Storage)
+ *   - worker scripts (Stockfish): left to the network and the HTTP cache
  *
  * Cache name has a version suffix so deploys (which flip the asset-URL
  * `?v=<hash>` query) end up with new entries; old caches are pruned on
@@ -67,6 +68,13 @@ function offlinePage() {
 self.addEventListener('fetch', (event) => {
     const req = event.request;
     if (req.method !== 'GET') return;
+
+    // stockfish.js finds its wasm through the #fragment of the worker URL.
+    // Cache Storage ignores fragments when matching and answers with the URL
+    // the copy was stored under, so the stockfish.js prefetched on an opening
+    // page (no "#stockfish.wasm") made the engine on /play ask for its default
+    // stockfish-nnue-16-single.wasm, get a 404 and fail to load.
+    if (req.destination === 'worker' || req.destination === 'sharedworker') return;
 
     const url = new URL(req.url);
     if (url.origin !== self.location.origin) return;
