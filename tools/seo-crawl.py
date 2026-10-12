@@ -6,11 +6,13 @@
 
 Checks status codes, <title> and meta description (empty, duplicate, length),
 canonical, robots, H1 count, JSON-LD validity and missing image alt text.
+Internal links between the sitemap pages (rel=nofollow left out) give each
+page its click depth from the home page and its number of linking pages.
 The User-Agent contains "bot", so Views::track() doesn't count these visits.
 Standard library only.
 """
 import argparse, collections, html, json, re, statistics, sys, time
-import urllib.error, urllib.request
+import urllib.error, urllib.parse, urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
 
@@ -22,6 +24,7 @@ class Page(HTMLParser):
         super().__init__()
         self.title, self.meta, self.canon, self.h1, self.no_alt = "", {}, None, 0, 0
         self.ld, self._in_title, self._in_ld, self._buf = [], False, False, ""
+        self.links = []
 
     def handle_starttag(self, tag, a):
         a = dict(a)
@@ -31,6 +34,7 @@ class Page(HTMLParser):
         elif tag == "link" and a.get("rel") == "canonical": self.canon = a.get("href")
         elif tag == "h1": self.h1 += 1
         elif tag == "img" and a.get("alt") is None: self.no_alt += 1
+        elif tag == "a" and a.get("href") and "nofollow" not in (a.get("rel") or ""): self.links.append(a["href"])
         elif tag == "script" and a.get("type") == "application/ld+json": self._in_ld, self._buf = True, ""
 
     def handle_endtag(self, tag):
@@ -59,9 +63,12 @@ def audit(url):
     for block in p.ld:
         try: json.loads(block)
         except ValueError: ld_ok = False
+    host = urllib.parse.urlsplit(url).netloc
+    links = {urllib.parse.urldefrag(urllib.parse.urljoin(url, html.unescape(h)))[0] for h in p.links}
     return {"url": url, "status": status, "time": round(dt, 3), "title": p.title.strip(),
             "desc": p.meta.get("description", ""), "robots": p.meta.get("robots", ""),
-            "canon": p.canon, "h1": p.h1, "no_alt": p.no_alt, "ld_ok": ld_ok}
+            "canon": p.canon, "h1": p.h1, "no_alt": p.no_alt, "ld_ok": ld_ok,
+            "links": sorted(u for u in links if urllib.parse.urlsplit(u).netloc == host and u != url)}
 
 
 def main():
@@ -83,6 +90,18 @@ def main():
     if args.limit: urls = urls[: args.limit]
     with ThreadPoolExecutor(args.workers) as ex:
         pages = list(ex.map(audit, urls))
+
+    # Link graph between the sitemap pages: linking pages and clicks from "/".
+    known = {p["url"] for p in pages}
+    inlinks = collections.Counter(u for p in pages for u in p["links"] if u in known)
+    graph = {p["url"]: [u for u in p["links"] if u in known] for p in pages}
+    depth, queue = {base + "/": 0}, collections.deque([base + "/"])
+    while queue:
+        u = queue.popleft()
+        for v in graph.get(u, []):
+            if v not in depth: depth[v] = depth[u] + 1; queue.append(v)
+    for p in pages:
+        p["inlinks"], p["depth"] = inlinks[p["url"]], depth.get(p["url"])
     if args.out: json.dump(pages, open(args.out, "w", encoding="utf-8"), ensure_ascii=False)
 
     def report(label, bad):
@@ -107,6 +126,11 @@ def main():
     report("broken JSON-LD", [p["url"] for p in pages if not p["ld_ok"]])
     report("images without alt", [p["url"] for p in pages if p["no_alt"]])
     print(f"title > 70 chars: {sum(len(p['title']) > 70 for p in pages)}")
+    levels = collections.Counter(p["depth"] for p in pages)
+    print("clicks from the home page: " + ", ".join(f"{d}: {levels[d]}" for d in sorted(k for k in levels if k is not None))
+          + f", unreachable: {levels[None]}")
+    report("no sitemap page links here", [p["url"] for p in pages if not p["inlinks"] and p["url"] != base + "/"])
+    report("only one sitemap page links here", [p["url"] for p in pages if p["inlinks"] == 1])
 
 
 if __name__ == "__main__":
