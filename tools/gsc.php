@@ -10,6 +10,7 @@ declare(strict_types=1);
  *   php tools/gsc.php inspect        index status of the main pages
  *   php tools/gsc.php inspect URL…   index status of these URLs (quota: 2,000 a day)
  *   php tools/gsc.php coverage       index status of every sitemap URL (see coverage() for options)
+ *   php tools/gsc.php queries        query → page pairs with 5+ impressions over 28 days (--days N, --min N)
  *
  * The key is the service account's JSON file, kept outside the repo:
  * %USERPROFILE%\.chesscodex\gsc-key.json, or the path in $GSC_KEY. Its Google
@@ -146,11 +147,35 @@ function summary(string $token, int $days): void
     }
 
     echo "Sitemaps:\n";
-    foreach (api($token, 'GET', "$site/sitemaps")['sitemap'] ?? [] as $s) {
+    $print = static function (array $s, string $indent): void {
         $urls = array_sum(array_map(static fn (array $c): int => (int) ($c['submitted'] ?? 0), $s['contents'] ?? []));
-        printf("  %s — submitted %s, read %s, %d URLs, %d errors, %d warnings%s\n",
-            $s['path'], local_time($s['lastSubmitted'] ?? null), local_time($s['lastDownloaded'] ?? null),
+        printf("%s%s — submitted %s, read %s, %d URLs, %d errors, %d warnings%s\n",
+            $indent, $s['path'], local_time($s['lastSubmitted'] ?? null), local_time($s['lastDownloaded'] ?? null),
             $urls, $s['errors'] ?? 0, $s['warnings'] ?? 0, empty($s['isPending']) ? '' : ', pending');
+    };
+    foreach (api($token, 'GET', "$site/sitemaps")['sitemap'] ?? [] as $s) {
+        $print($s, '  ');
+        if (empty($s['isSitemapsIndex'])) continue;
+        foreach (api($token, 'GET', "$site/sitemaps?sitemapIndex=" . rawurlencode($s['path']))['sitemap'] ?? [] as $child) {
+            $print($child, '    ');
+        }
+    }
+}
+
+/** Query and page pairs with at least $min impressions, most first: titles and texts worth sharpening. */
+function queries(string $token, int $days, int $min): void
+{
+    $site = '/webmasters/v3/sites/' . rawurlencode(PROPERTY);
+    $rows = api($token, 'POST', "$site/searchAnalytics/query", [
+        'startDate' => date('Y-m-d', strtotime("-$days days")), 'endDate' => date('Y-m-d'),
+        'dimensions' => ['query', 'page'], 'rowLimit' => 25000, 'dataState' => 'all',
+    ])['rows'] ?? [];
+    $rows = array_filter($rows, static fn (array $r): bool => $r['impressions'] >= $min);
+    usort($rows, static fn (array $a, array $b): int => $b['impressions'] <=> $a['impressions']);
+    echo "Last $days days, queries with $min+ impressions (clicks / impressions / position):\n";
+    foreach ($rows as $r) {
+        printf("  %5d %6d %6.1f  %s → %s\n", $r['clicks'], $r['impressions'], $r['position'],
+            $r['keys'][0], substr($r['keys'][1], strlen(SITE)) ?: '/');
     }
 }
 
@@ -364,8 +389,14 @@ if (($args[0] ?? '') === 'inspect') {
     inspect(access_token(), $urls);
 } elseif (($args[0] ?? '') === 'coverage') {
     coverage(array_slice($args, 1));
+} elseif (($args[0] ?? '') === 'queries') {
+    $opt = static function (string $name, int $default) use ($args): int {
+        $i = array_search("--$name", $args, true);
+        return $i === false ? $default : max(1, (int) ($args[$i + 1] ?? $default));
+    };
+    queries(access_token(), $opt('days', 28), $opt('min', 5));
 } elseif ($args === [] || $args[0] === '--days') {
     summary(access_token(), max(1, (int) ($args[1] ?? 28)));
 } else {
-    fail('Usage: php tools/gsc.php [--days N] | inspect [URL…] | coverage [--max-age N] [--keep-indexed] [--parallel N] [--limit N] [--out FILE]');
+    fail('Usage: php tools/gsc.php [--days N] | inspect [URL…] | coverage [--max-age N] [--keep-indexed] [--parallel N] [--limit N] [--out FILE] | queries [--days N] [--min N]');
 }
