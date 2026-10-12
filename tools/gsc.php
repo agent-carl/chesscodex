@@ -277,6 +277,8 @@ function inspect_parallel(array $urls, int $parallel, callable $done): ?string
  * for --max-age days, so a run stopped by the daily quota resumes the next day.
  *
  *   --max-age N    reuse inspections up to N days old (default 3; 0 = check all again)
+ *   --keep-indexed reuse an "indexed" answer whatever its age, so only the URLs
+ *                  that were not indexed are inspected again
  *   --parallel N   requests at a time (default 10)
  *   --limit N      inspect at most N URLs this run
  *   --out FILE     one line per URL, tab-separated (default %USERPROFILE%\.chesscodex\gsc-coverage.tsv)
@@ -288,6 +290,7 @@ function coverage(array $args): void
         return $i === false ? $default : (string) ($args[$i + 1] ?? $default);
     };
     $maxAge    = (float) $opt('max-age', '3');
+    $keep      = in_array('--keep-indexed', $args, true);
     $parallel  = max(1, (int) $opt('parallel', '10'));
     $out       = $opt('out', home_file('gsc-coverage.tsv'));
     $cacheFile = home_file('gsc-inspect.json');
@@ -300,12 +303,14 @@ function coverage(array $args): void
     $all     = array_merge(...array_values($parts));
     $shown   = impressions_by_page(access_token());
     $todo    = array_values(array_filter($all, static fn (string $u): bool =>
-        !isset($shown[$u]) && (time() - ($cache[$u]['checked'] ?? 0)) > $maxAge * 86400));
+        !isset($shown[$u])
+        && !($keep && ($cache[$u]['verdict'] ?? '') === 'PASS')
+        && (time() - ($cache[$u]['checked'] ?? 0)) > $maxAge * 86400));
     $indexed = count(array_intersect_key($shown, array_flip($all)));
-    $fresh   = count($all) - $indexed - count($todo);
+    $reused  = count($all) - $indexed - count($todo);
     $todo    = array_slice($todo, 0, (int) $opt('limit', (string) count($todo)));
-    printf("Sitemap: %d URLs; %d have impressions, %d were inspected less than %s days ago; inspecting %d now\n",
-        count($all), $indexed, $fresh, $maxAge, count($todo));
+    printf("Sitemap: %d URLs; %d have impressions, %d earlier answers reused; inspecting %d now\n",
+        count($all), $indexed, $reused, count($todo));
 
     $n     = 0;
     $begun = time();
@@ -362,5 +367,5 @@ if (($args[0] ?? '') === 'inspect') {
 } elseif ($args === [] || $args[0] === '--days') {
     summary(access_token(), max(1, (int) ($args[1] ?? 28)));
 } else {
-    fail('Usage: php tools/gsc.php [--days N] | inspect [URL…] | coverage [--max-age N] [--parallel N] [--limit N] [--out FILE]');
+    fail('Usage: php tools/gsc.php [--days N] | inspect [URL…] | coverage [--max-age N] [--keep-indexed] [--parallel N] [--limit N] [--out FILE]');
 }
