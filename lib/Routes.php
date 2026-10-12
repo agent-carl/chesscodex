@@ -61,6 +61,19 @@ final class Routes
      */
     public const SITEMAP_PARTS = ['pages', 'eco', 'openings-described', 'openings-top', 'openings-mid', 'openings-rest'];
 
+    /**
+     * Sitemap <lastmod>: the day a page last changed in a way a reader would
+     * notice. Set a group's date here when a change shows on all of its pages
+     * (template, layout links, titles); an opening page also moves with its
+     * Lichess numbers, a described opening and its trainer with the
+     * description file.
+     */
+    private const TEMPLATE_CHANGED = [
+        'pages'    => '2026-10-09',   // home: openings by first move; /how-to-play-against
+        'eco'      => '2026-10-08',   // specific ECO labels, the /eco explainer
+        'openings' => '2026-10-09',   // "How to play against …", titles of same-name lines
+    ];
+
     /** /sitemap.xml — the index of the parts. */
     public static function sitemap(): void
     {
@@ -111,39 +124,46 @@ final class Routes
         $base   = $siteUrl . $baseUrl;
         $escUrl = static fn (string $u): string => htmlspecialchars($u, ENT_QUOTES | ENT_XML1, 'UTF-8');
 
-        // No <changefreq> or <priority>: Google ignores them. <lastmod> only
-        // where it's accurate — stamping today's date on every URL every day
-        // taught search engines to ignore it. (English-only — no hreflang.)
-        // $image: the page's position diagram, for Google Images.
-        $row = static fn (string $loc, ?string $lastmod = null, ?string $image = null): string => '  <url><loc>' . $escUrl($loc) . '</loc>'
-            . ($lastmod ? '<lastmod>' . $lastmod . '</lastmod>' : '')
-            . ($image ? '<image:image><image:loc>' . $escUrl($image) . '</image:loc></image:image>' : '') . "</url>\n";
+        // No <changefreq> or <priority>: Google ignores them. <lastmod> is the
+        // day the page last changed (TEMPLATE_CHANGED) — never today's date on
+        // every URL, which taught search engines to ignore it. (English-only —
+        // no hreflang.) $image: the page's position diagram, for Google Images.
         $rows    = array_fill_keys(self::SITEMAP_PARTS, '');
         $lastmod = array_fill_keys(self::SITEMAP_PARTS, null);
+        $add = static function (string $part, string $loc, string $date, ?string $image = null) use (&$rows, &$lastmod, $escUrl): void {
+            $rows[$part] .= '  <url><loc>' . $escUrl($loc) . '</loc><lastmod>' . $date . '</lastmod>'
+                . ($image ? '<image:image><image:loc>' . $escUrl($image) . '</image:loc></image:image>' : '') . "</url>\n";
+            if ($lastmod[$part] === null || $date > $lastmod[$part]) $lastmod[$part] = $date;
+        };
+        $described = static function (string $slug): string {
+            $time = @filemtime(__DIR__ . '/../db/descriptions/' . $slug . '.md');
+            return $time ? date('Y-m-d', $time) : '';
+        };
+        $hubs = self::TEMPLATE_CHANGED['pages'];
+        $eco  = self::TEMPLATE_CHANGED['eco'];
 
-        $rows['pages'] .= $row($base . '/');
-        $rows['pages'] .= $row($base . '/openings');
-        $rows['pages'] .= $row($base . '/search');   // the opening identifier
-        $rows['pages'] .= $row($base . '/train');    // the opening trainer, and its indexed pages
-        foreach (Opening::described() as $d) $rows['pages'] .= $row($base . '/train/' . $d['slug']);
-        $rows['pages'] .= $row($base . '/about');
+        $add('pages', $base . '/', $hubs);
+        $add('pages', $base . '/openings', $hubs);
+        $add('pages', $base . '/search', $hubs);   // the opening identifier
+        $add('pages', $base . '/train', $hubs);    // the opening trainer, and its indexed pages
+        foreach (Opening::described() as $d) $add('pages', $base . '/train/' . $d['slug'], max($hubs, $described((string) $d['slug'])));
+        $add('pages', $base . '/about', $hubs);
         foreach (array_keys(Opening::allAlphabetical()) as $letter) {
-            if (preg_match('/^[A-Z]$/', (string) $letter)) $rows['pages'] .= $row($base . '/openings/letter/' . strtolower((string) $letter));
+            if (preg_match('/^[A-Z]$/', (string) $letter)) $add('pages', $base . '/openings/letter/' . strtolower((string) $letter), $hubs);
         }
-        $rows['pages'] .= $row($base . '/rankings');
-        foreach (array_keys(Rankings::LABELS) as $path) $rows['pages'] .= $row($base . '/' . $path);
+        $add('pages', $base . '/rankings', $hubs);
+        foreach (array_keys(Rankings::LABELS) as $path) $add('pages', $base . '/' . $path, $hubs);
         foreach (['best-openings-for-white', 'best-openings-for-black'] as $path) {
-            foreach (array_keys(LevelStats::LEVELS) as $level) $rows['pages'] .= $row($base . '/' . $path . '/' . $level);
+            foreach (array_keys(LevelStats::LEVELS) as $level) $add('pages', $base . '/' . $path . '/' . $level, $hubs);
         }
 
-        $rows['eco'] .= $row($base . '/eco');
+        $add('eco', $base . '/eco', $eco);
         foreach (Opening::ecoCodes() as $code => $c) {
-            if ($c['count'] > 1) $rows['eco'] .= $row($base . '/eco/' . $code);   // single-line codes are noindex
+            if ($c['count'] > 1) $add('eco', $base . '/eco/' . $code, $eco);   // single-line codes are noindex
         }
 
-        // Opening pages change when their Lichess numbers are refreshed, so
-        // that date is their <lastmod>. Every named line, the rarely played
-        // ones too (see Opening::FEW_GAMES).
+        // Opening pages also change when their Lichess numbers are refreshed.
+        // Every named line, the rarely played ones too (see Opening::FEW_GAMES).
         $updated = array_column(Rankings::all(), 'updated', 'slug');
         $stmt = chess_codex_db()->query(
             "SELECT slug, name, popularity, (description IS NOT NULL AND description <> '') AS described
@@ -157,9 +177,9 @@ final class Routes
                 $rank++;
                 $part = $rank <= 500 ? 'openings-top' : ($rank <= 1500 ? 'openings-mid' : 'openings-rest');
             }
-            $date = $updated[$r['slug']] ?? null;
-            $rows[$part] .= $row($base . '/openings/' . $r['slug'], $date, $base . Opening::diagramPath((string) $r['slug'], true));
-            if ($date !== null && ($lastmod[$part] === null || $date > $lastmod[$part])) $lastmod[$part] = $date;
+            $date = max(self::TEMPLATE_CHANGED['openings'], (string) ($updated[$r['slug']] ?? ''),
+                $r['described'] ? $described((string) $r['slug']) : '');
+            $add($part, $base . '/openings/' . $r['slug'], $date, $base . Opening::diagramPath((string) $r['slug'], true));
         }
 
         $files = [];
