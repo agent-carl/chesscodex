@@ -90,8 +90,27 @@ final class LichessExplorer
         ], $wait);
     }
 
+    /**
+     * Results with their month-by-month history ('history': [{month: 'Y-m',
+     * white, draws, black}, …]) in the games fetch() counts; [] moves = every
+     * game. For tools/fetch-years.php, which waits longer than a page would.
+     */
+    public static function fetchHistory(array $uciMoves): array
+    {
+        return self::request(self::ENDPOINT, [
+            'play'        => implode(',', $uciMoves),
+            'moves'       => 0,
+            'topGames'    => 0,
+            'recentGames' => 0,
+            'speeds'      => 'blitz,rapid,classical',
+            'ratings'     => '1600,1800,2000,2200,2500',
+            'variant'     => 'standard',
+            'history'     => 'true',
+        ], true, 20);
+    }
+
     /** One explorer request under the lock; the decoded JSON. */
-    private static function request(string $endpoint, array $params, bool $wait): array
+    private static function request(string $endpoint, array $params, bool $wait, int $timeout = self::TIMEOUT_S): array
     {
         $token = self::token();
         if ($token === '') {
@@ -103,8 +122,8 @@ final class LichessExplorer
         $pauseUntil = 0.0;
         try {
             $body = function_exists('curl_init')
-                ? self::fetchViaCurl($url)
-                : self::fetchViaStream($url);
+                ? self::fetchViaCurl($url, $timeout)
+                : self::fetchViaStream($url, $timeout);
         } catch (LichessRateLimitedException $e) {
             $pauseUntil = microtime(true) + self::COOLDOWN_S;
             throw $e;
@@ -119,12 +138,12 @@ final class LichessExplorer
         return $data;
     }
 
-    private static function fetchViaCurl(string $url): string
+    private static function fetchViaCurl(string $url, int $timeout): string
     {
         $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => self::TIMEOUT_S,
+            CURLOPT_TIMEOUT        => $timeout,
             CURLOPT_CONNECTTIMEOUT => self::TIMEOUT_S,
             CURLOPT_USERAGENT      => 'caissa-codex/1.0 (https://chesscodex.org)',
             CURLOPT_HTTPHEADER     => [
@@ -153,7 +172,7 @@ final class LichessExplorer
         return (string) $body;
     }
 
-    private static function fetchViaStream(string $url): string
+    private static function fetchViaStream(string $url, int $timeout): string
     {
         if (!ini_get('allow_url_fopen')) {
             throw new RuntimeException('Neither curl nor allow_url_fopen is available on this host.');
@@ -161,7 +180,7 @@ final class LichessExplorer
         $ctx = stream_context_create([
             'http' => [
                 'method'  => 'GET',
-                'timeout' => self::TIMEOUT_S,
+                'timeout' => $timeout,
                 'header'  => "User-Agent: caissa-codex/1.0 (https://chesscodex.org)\r\n"
                            . "Accept: application/json\r\n"
                            . 'Authorization: Bearer ' . self::token() . "\r\n",
