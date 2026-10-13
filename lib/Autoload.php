@@ -28,6 +28,7 @@ spl_autoload_register(static function (string $class): void {
         'RoutesApi'        => __DIR__ . '/RoutesApi.php',
         'StatsCache'       => __DIR__ . '/StatsCache.php',
         'Submissions'      => __DIR__ . '/Submissions.php',
+        'TrendChart'       => __DIR__ . '/TrendChart.php',
         'YearStats'        => __DIR__ . '/YearStats.php',
         'Views'            => __DIR__ . '/Views.php',
     ];

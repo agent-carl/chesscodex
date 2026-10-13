@@ -65,11 +65,11 @@ final class Routes
      * Sitemap <lastmod>: the day a page last changed in a way a reader would
      * notice. Set a group's date here when a change shows on all of its pages
      * (template, layout links, titles); an opening page also moves with its
-     * Lichess numbers, a described opening and its trainer with the
-     * description file.
+     * Lichess numbers and its numbers by year, a described opening and its
+     * trainer with the description file.
      */
     private const TEMPLATE_CHANGED = [
-        'pages'    => '2026-10-09',   // home: openings by first move; /how-to-play-against
+        'pages'    => '2026-10-13',   // home: first moves with their shares; /opening-trends in the nav
         'eco'      => '2026-10-08',   // specific ECO labels, the /eco explainer
         'openings' => '2026-10-09',   // "How to play against …", titles of same-name lines
     ];
@@ -162,11 +162,13 @@ final class Routes
             if ($c['count'] > 1) $add('eco', $base . '/eco/' . $code, $eco);   // single-line codes are noindex
         }
 
-        // Opening pages also change when their Lichess numbers are refreshed.
-        // Every named line, the rarely played ones too (see Opening::FEW_GAMES).
+        // Opening pages also change when their Lichess numbers are refreshed,
+        // or their numbers by year (the chart). Every named line, the rarely
+        // played ones too (see Opening::FEW_GAMES).
         $updated = array_column(Rankings::all(), 'updated', 'slug');
+        $byYear  = YearStats::fetchedDates();
         $stmt = chess_codex_db()->query(
-            "SELECT slug, name, popularity, (description IS NOT NULL AND description <> '') AS described
+            "SELECT id, slug, name, popularity, (description IS NOT NULL AND description <> '') AS described
              FROM codex_openings ORDER BY popularity DESC, move_count ASC, id"
         );
         $rank = 0;
@@ -178,7 +180,7 @@ final class Routes
                 $part = $rank <= 500 ? 'openings-top' : ($rank <= 1500 ? 'openings-mid' : 'openings-rest');
             }
             $date = max(self::TEMPLATE_CHANGED['openings'], (string) ($updated[$r['slug']] ?? ''),
-                $r['described'] ? $described((string) $r['slug']) : '');
+                $byYear[(int) $r['id']] ?? '', $r['described'] ? $described((string) $r['slug']) : '');
             $add($part, $base . '/openings/' . $r['slug'], $date, $base . Opening::diagramPath((string) $r['slug'], true));
         }
 
@@ -338,6 +340,11 @@ final class Routes
         if ($page === 'how-to-play-against') {
             $answers = Rankings::answers();
             require __DIR__ . '/../templates/answers.php';
+            return;
+        }
+        if ($page === 'opening-trends') {
+            $trends = Rankings::trends();
+            require __DIR__ . '/../templates/trends.php';
             return;
         }
         $rows = Rankings::rows($page, $level);

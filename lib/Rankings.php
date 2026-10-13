@@ -20,6 +20,7 @@ final class Rankings
         'gambits'                    => 'Chess gambits',
         'best-gambits-for-beginners' => 'Best gambits for beginners',
         'how-to-play-against'        => 'How to play against popular openings',
+        'opening-trends'             => 'Opening trends',
     ];
 
     /** One line each for the /rankings hub. */
@@ -30,7 +31,12 @@ final class Rankings
         'gambits'                    => 'Every gambit and countergambit A–Z, and the 100 most played with how often each side wins.',
         'best-gambits-for-beginners' => 'The gambits that score best for White and for Black among players rated under 1400, and how they do at 2200 and up.',
         'how-to-play-against'        => 'The answer that scores best against each of the described openings, the most played one and Stockfish\'s choice.',
+        'opening-trends'             => 'The openings played more and less than ten years ago, by their share of Lichess games each year.',
     ];
+
+    /** Lines per list on /opening-trends, and the share of the games a line needs at the larger end of its change. */
+    public const TRENDS = 20;
+    public const TREND_MIN_SHARE = 0.0005;
 
     /** How many gambits per side /best-gambits-for-beginners lists. */
     public const BEST_GAMBITS = 20;
@@ -204,6 +210,65 @@ final class Rankings
                 }));
             };
             return ['dubious' => array_slice($onePerFamily($dubious), 0, 8), 'fading' => array_slice($onePerFamily($fading), 0, 8)];
+        });
+    }
+
+    /**
+     * /opening-trends: how each line's share of the games moved from
+     * YearStats::FIRST_YEAR ('from') to the last full year ('to'). 'rising'
+     * and 'falling': the biggest changes either way — at least a fifth, one
+     * line per family, TRENDS each, among lines with TREND_MIN_SHARE of the
+     * games at the larger end; 'gained' and 'lost': the lines whose share
+     * moved most in points; 'firstMoves': White's first moves, most played
+     * first; 'lines': how many lines have numbers by year. Each row: id, slug,
+     * name, eco, moves, years (year => share), first, last, ratio. Kept six hours.
+     */
+    public static function trends(): array
+    {
+        return Cache::remember('opening-trends-v1', 21600, static function (): array {
+            $from   = YearStats::FIRST_YEAR;
+            $to     = YearStats::lastFullYear();
+            $shares = YearStats::allShares();
+            $out    = ['from' => $from, 'to' => $to, 'lines' => count($shares), 'rising' => [], 'falling' => [],
+                       'gained' => null, 'lost' => null, 'firstMoves' => []];
+            if ($to === null || $to - $from < 4 || !$shares) return $out;
+
+            $ids  = implode(',', array_map('intval', array_keys($shares)));
+            $rows = chess_codex_db()->query("SELECT id, slug, name, eco, pgn_moves, move_count FROM codex_openings WHERE id IN ($ids)")->fetchAll();
+            $lines = [];
+            foreach ($rows as $r) {
+                $years = $shares[(int) $r['id']];
+                if (count($years) !== $to - $from + 1 || ($years[$from] ?? 0) <= 0 || ($years[$to] ?? 0) <= 0) continue;
+                $row = ['id' => (int) $r['id'], 'slug' => (string) $r['slug'], 'name' => (string) $r['name'], 'eco' => (string) $r['eco'],
+                        'moves' => (string) $r['pgn_moves'], 'years' => $years, 'first' => $years[$from], 'last' => $years[$to], 'ratio' => $years[$to] / $years[$from]];
+                if ((int) $r['move_count'] === 1) {
+                    $out['firstMoves'][] = $row;
+                } else {
+                    $lines[] = $row;
+                }
+            }
+            usort($out['firstMoves'], static fn (array $a, array $b): int => $b['last'] <=> $a['last']);
+
+            $onePerFamily = static function (array $rows): array {
+                $seen = [];
+                return array_values(array_filter($rows, static function (array $r) use (&$seen): bool {
+                    $f = Opening::family($r['name']);
+                    return !isset($seen[$f]) && ($seen[$f] = true);
+                }));
+            };
+            $rising  = array_filter($lines, static fn (array $r): bool => $r['ratio'] >= 1.2 && $r['last'] >= self::TREND_MIN_SHARE);
+            $falling = array_filter($lines, static fn (array $r): bool => $r['ratio'] <= 1 / 1.2 && $r['first'] >= self::TREND_MIN_SHARE);
+            usort($rising, static fn (array $a, array $b): int => $b['ratio'] <=> $a['ratio']);
+            usort($falling, static fn (array $a, array $b): int => $a['ratio'] <=> $b['ratio']);
+            $out['rising']  = array_slice($onePerFamily($rising), 0, self::TRENDS);
+            $out['falling'] = array_slice($onePerFamily($falling), 0, self::TRENDS);
+
+            foreach ($lines as $r) {
+                $move = $r['last'] - $r['first'];
+                if ($move > 0 && ($out['gained'] === null || $move > $out['gained']['last'] - $out['gained']['first'])) $out['gained'] = $r;
+                if ($move < 0 && ($out['lost'] === null || $move < $out['lost']['last'] - $out['lost']['first'])) $out['lost'] = $r;
+            }
+            return $out;
         });
     }
 

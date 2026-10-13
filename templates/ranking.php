@@ -76,6 +76,16 @@ if ($side !== null && $level !== null) {
 $pct = static fn (int $n, int $of): float => $of > 0 ? $n * 100 / $of : 0.0;
 // Gambits: Stockfish's verdict beside the results, to set the practice against it.
 $evals = $page === 'gambits' ? EngineEval::forOpenings(array_column($rows, 'id')) : [];
+// The most popular openings also show how their share of the games moved
+// since YearStats::FIRST_YEAR (/opening-trends has the whole story).
+$trendFrom   = YearStats::FIRST_YEAR;
+$trendTo     = $page === 'popular-openings' ? YearStats::lastFullYear() : null;
+$trendShares = $trendTo !== null ? YearStats::allShares() : [];
+$trendCell   = static function (int $id) use ($trendShares, $trendFrom, $trendTo, $esc): string {
+    $y = $trendShares[$id] ?? [];
+    if (($y[$trendFrom] ?? 0) <= 0 || ($y[$trendTo] ?? 0) <= 0) return '—';
+    return TrendChart::sparkline($y) . ' <span class="ranking-trend-change">' . $esc(YearStats::change($y[$trendTo] / $y[$trendFrom])) . '</span>';
+};
 // First moves only: "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4…".
 $moves = static function (string $pgn): string {
     if (mb_strlen($pgn) <= 40) return $pgn;
@@ -161,6 +171,7 @@ ob_start();
                     <th><span class="th-long">White / Draw / Black</span><span class="th-short">W / D / B</span></th>
                     <?php if ($side): ?><th class="ranking-num"><?= $side === 'white' ? 'White' : 'Black' ?> score</th><?php endif; ?>
                     <?php if ($evals): ?><th class="ranking-num" title="Stockfish after the line's last move, in pawns from White's side">Stockfish</th><?php endif; ?>
+                    <?php if ($trendShares): ?><th class="ranking-trend" title="The line's share of the games each year, and its change from <?= $trendFrom ?> to <?= $trendTo ?>"><?= $trendFrom ?>–<?= $trendTo ?></th><?php endif; ?>
                 </tr>
             </thead>
             <tbody>
@@ -188,6 +199,7 @@ ob_start();
                     <?php if ($evals): $e = $evals[(int) $r['id']] ?? null; ?>
                         <td class="ranking-num"<?= $e ? ' title="' . $esc(EngineEval::verdict($e)) . '"' : '' ?>><?= $e ? $esc(EngineEval::scoreText($e)) : '—' ?></td>
                     <?php endif; ?>
+                    <?php if ($trendShares): ?><td class="ranking-trend"><?= $trendCell((int) $r['id']) ?></td><?php endif; ?>
                 </tr>
             <?php endforeach; ?>
             </tbody>
@@ -206,7 +218,9 @@ ob_start();
         Numbers: rated blitz, rapid and classical games on Lichess between players <?= $esc($levelWord[$level][1]) ?>,
         fetched for the <?= number_format(LevelStats::lineCount()) ?> most-played lines and refreshed monthly.
         <?php endif; ?>
-        Each name appears once, as its most-played line.
+        Each name appears once, as its most-played line.<?php if ($trendShares): ?>
+        <?= $trendFrom ?>–<?= $trendTo ?>: the line's share of the games each year and how it changed —
+        <a href="<?= $baseEsc . $esc(I18n::url('/opening-trends')) ?>">the openings that rose and fell the most</a>.<?php endif; ?>
         <?php if ($page === 'gambits'): ?>
             A line counts as a gambit when its name has "Gambit" or "Countergambit" in it. Plain
             "… Gambit Declined" lines are left out, since nothing is sacrificed in them, but countergambits

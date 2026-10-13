@@ -595,14 +595,15 @@ class Opening
      * moves, 1. e4 and 1. d4, and four after the others) and, after the two
      * biggest replies that have a fifth of its games, White's main second
      * moves (5% of the reply's games or more, up to five); 'other' — the next
-     * eight first moves. Every step is a named line: san ("1…c5"), name, slug
-     * and label, the name without what the step above already says
-     * ("Closed" under 1…c5 Sicilian Defense, '' for the same name). Cached on
-     * disk for 6 h.
+     * eight first moves. Every step is a named line: san ("1…c5", also split
+     * into no "1…" and move "c5"), name, slug, label — the name without what
+     * the step above already says ("Closed" under 1…c5 Sicilian Defense, ''
+     * for the same name) — and share: its part of the games after the step
+     * above (of all games for a first move). Cached on disk for 6 h.
      */
     public static function firstMoveTree(): array
     {
-        return Cache::remember('first-moves-v1', 21600, static function (): array {
+        return Cache::remember('first-moves-v2', 21600, static function (): array {
             $rows = chess_codex_db()->query(
                 'SELECT name, slug, pgn_canon, popularity FROM codex_openings
                  WHERE move_count <= 3 ORDER BY popularity DESC, id ASC'
@@ -615,7 +616,10 @@ class Opening
                 $seen[$canon] = true;
                 $next[implode(' ', array_slice(explode(' ', $canon), 0, -1))][] = $r;
             }
-            $node = static function (array $r, ?array $above): array {
+            $share = static fn (array $r, array $of): float => (int) $r['popularity'] / max(1, (int) $of['popularity']);
+            // Every game starts with one of the first moves, so their games add up to all of them.
+            $allGames = ['popularity' => array_sum(array_map(static fn (array $r): int => (int) $r['popularity'], $next[''] ?? []))];
+            $node = static function (array $r, ?array $above) use ($share, $allGames): array {
                 $tokens = explode(' ', (string) $r['pgn_canon']);
                 $ply    = count($tokens);
                 $name   = (string) $r['name'];
@@ -630,14 +634,17 @@ class Opening
                         $label = substr($name, strlen(self::family($name)) + 2);
                     }
                 }
+                $no = (intdiv($ply - 1, 2) + 1) . ($ply % 2 === 1 ? '.' : '…');
                 return [
-                    'san'   => (intdiv($ply - 1, 2) + 1) . ($ply % 2 === 1 ? '. ' : '…') . end($tokens),
+                    'san'   => $no . ($ply % 2 === 1 ? ' ' : '') . end($tokens),
+                    'no'    => $no,
+                    'move'  => end($tokens),
                     'name'  => $name,
                     'label' => $label,
                     'slug'  => (string) $r['slug'],
+                    'share' => $share($r, $above ?? $allGames),
                 ];
             };
-            $share = static fn (array $r, array $of): float => (int) $r['popularity'] / max(1, (int) $of['popularity']);
 
             $tree = ['main' => [], 'other' => []];
             foreach ($next[''] ?? [] as $i => $first) {

@@ -106,6 +106,52 @@ final class YearStats
         return $out;
     }
 
+    /**
+     * opening_id => [year => share] of the full years from FIRST_YEAR on, for
+     * every line with numbers by year (one query; the rankings use it).
+     */
+    public static function allShares(): array
+    {
+        $all = self::rows(self::ALL_GAMES);
+        try {
+            $rows = chess_codex_db()->query(
+                'SELECT opening_id, year, white_wins + draws + black_wins AS games, months FROM codex_year_stats
+                 WHERE opening_id <> ' . self::ALL_GAMES . ' AND months = 12 AND year >= ' . self::FIRST_YEAR . '
+                 ORDER BY opening_id, year'
+            )->fetchAll();
+        } catch (PDOException) {
+            return [];
+        }
+        $out = [];
+        foreach ($rows as $r) {
+            $total = $all[(int) $r['year']] ?? null;
+            if ($total === null || $total['months'] !== 12 || $total['games'] === 0) continue;
+            $out[(int) $r['opening_id']][(int) $r['year']] = (int) $r['games'] / $total['games'];
+        }
+        return $out;
+    }
+
+    /** opening_id => the day its numbers by year were fetched ('Y-m-d'), for the sitemap. */
+    public static function fetchedDates(): array
+    {
+        try {
+            $rows = chess_codex_db()->query(
+                'SELECT opening_id, MAX(fetched_at) AS at FROM codex_year_stats WHERE opening_id <> ' . self::ALL_GAMES . ' GROUP BY opening_id'
+            )->fetchAll();
+        } catch (PDOException) {
+            return [];
+        }
+        return array_combine(array_map(static fn (array $r): int => (int) $r['opening_id'], $rows),
+                             array_map(static fn (array $r): string => substr((string) $r['at'], 0, 10), $rows));
+    }
+
+    /** The last year with all twelve months counted, or null. */
+    public static function lastFullYear(): ?int
+    {
+        $full = array_keys(array_filter(self::rows(self::ALL_GAMES), static fn (array $y): bool => $y['months'] === 12));
+        return $full ? max($full) : null;
+    }
+
     /** The last month counted ('Y-m'): the year of the last row, through its number of months. */
     public static function lastMonth(): ?string
     {
@@ -113,6 +159,74 @@ final class YearStats
         if (!$all) return null;
         $year = max(array_keys($all));
         return sprintf('%d-%02d', $year, $all[$year]['months']);
+    }
+
+    /** A share as a percentage, two significant digits below 1%: 13.3%, 1.9%, 0.48%, 0.0071%. */
+    public static function percent(float $share): string
+    {
+        $p = $share * 100;
+        if ($p >= 1) return number_format($p, 1) . '%';
+        if ($p <= 0) return '0%';
+        $decimals = min(8, 1 - (int) floor(log10($p)));
+        return rtrim(rtrim(number_format($p, $decimals), '0'), '.') . '%';
+    }
+
+    /** A change of share as a ratio, read as ×2.7 from double on, else +65% / −24% / 0%. */
+    public static function change(float $ratio): string
+    {
+        if ($ratio >= 2) return '×' . number_format($ratio, 1);
+        $pct = (int) round(($ratio - 1) * 100);
+        return ($pct > 0 ? '+' : ($pct < 0 ? '−' : '')) . abs($pct) . '%';
+    }
+
+    /**
+     * One sentence on how the line's share moved from FIRST_YEAR to the last
+     * full year, with its peak when that stands out; null without every full
+     * year from FIRST_YEAR on. $subject starts the sentence ("The Caro-Kann
+     * Defense", "This line"). Plain text.
+     */
+    public static function sentence(array $years, string $subject): ?string
+    {
+        $shares = [];
+        foreach ($years as $year => $y) {
+            if ($y['months'] === 12) $shares[$year] = $y['share'];
+        }
+        if (!isset($shares[self::FIRST_YEAR]) || count($shares) < 5) return null;
+        $from = self::FIRST_YEAR;
+        $to   = max(array_keys($shares));
+        if (count($shares) !== $to - $from + 1) return null;
+        [$first, $last] = [$shares[$from], $shares[$to]];
+        if ($first <= 0 || $last <= 0) return null;
+        $peak    = max($shares);
+        $peakAt  = (int) array_search($peak, $shares, true);
+        $low     = min($shares);
+        $lowAt   = (int) array_search($low, $shares, true);
+        $inside  = static fn (int $year): bool => $year !== $from && $year !== $to;
+        $p       = static fn (float $s): string => self::percent($s);
+        $ratio   = $last / $first;
+        $peakNote = $inside($peakAt) && $peak >= 1.1 * max($first, $last) ? " (its peak: {$p($peak)} in $peakAt)" : '';
+
+        if ($ratio >= 1.2) {
+            $times = (int) floor($ratio);
+            $how = $ratio >= 2
+                ? 'is played more than ' . ([2 => 'twice', 3 => 'three times', 4 => 'four times', 5 => 'five times', 6 => 'six times',
+                    7 => 'seven times', 8 => 'eight times', 9 => 'nine times'][$times] ?? "$times times") . " as often as in $from"
+                : "has gained ground since $from";
+            return "$subject $how: {$p($last)} of Lichess games in $to, up from {$p($first)}$peakNote.";
+        }
+        if ($ratio <= 1 / 1.2) {
+            $how = $ratio <= 0.5 ? "is played less than half as often as in $from" : "has lost ground since $from";
+            return "$subject $how: {$p($last)} of Lichess games in $to, down from {$p($first)}$peakNote.";
+        }
+        if ($inside($peakAt) && $peak >= 1.15 * $last) {
+            return "$subject peaked in $peakAt at {$p($peak)} of Lichess games and has slipped since: {$p($last)} in $to.";
+        }
+        if ($inside($lowAt) && $low <= $last / 1.15) {
+            return "$subject dipped to {$p($low)} of Lichess games in $lowAt and has recovered since: {$p($last)} in $to.";
+        }
+        return $peak / $low < 1.1
+            ? "$subject holds steady at about {$p($last)} of Lichess games a year since $from."
+            : "$subject has stayed between {$p($low)} and {$p($peak)} of Lichess games a year since $from ({$p($last)} in $to).";
     }
 
     /** How many lines have numbers by year. */

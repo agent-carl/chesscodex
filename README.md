@@ -42,7 +42,8 @@ rules, so the same security headers and Content Security Policy apply locally.
 Game statistics come from the Lichess Opening Explorer, which needs a personal
 API token (`lichess_token` in `config.php`, no scopes). Without one the pages
 work but show no statistics. Results by rating band and master games are
-fetched by a slow background job (`tools/fetch-levels.php`); please keep to one
+fetched by a slow background job (`tools/fetch-levels.php`), and the share of
+the games by year by another (`tools/fetch-years.php`); please keep to one
 request at a time — the explorer allows about 20 a minute.
 
 ## Checks

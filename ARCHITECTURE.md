@@ -71,6 +71,10 @@ The opening page is the most complex template. Order of operations:
      `Submissions::REPORT_MARK`, never published)
    - By rating / master games (`LevelStats`), Description (Parsedown, safe
      mode, auto-TOC for ≥ 3 headings)
+   - Popularity by year (`YearStats`): the line's share of the games each
+     year since 2016, a sentence and a chart (`TrendChart`: an SVG line with
+     HTML labels and a table of every year; `public/charts.js` adds the
+     crosshair tooltip). /opening-trends ranks the lines by the change
    - Variations and "Other lines from the same position" (siblings), named
      by what they add to the name above and the moves that lead there;
      Transpositions; Subtree (`<details>`, with a filter for long lists);
@@ -107,6 +111,7 @@ codex_openings              ← 3,690 rows, the canonical opening list
 
 codex_stats_cache            ← Lichess explorer results per position (fen_hash PK)
 codex_level_stats            ← results by rating band + master games (tools/fetch-levels.php)
+codex_year_stats             ← games per year for a line, opening_id 0 = every game (tools/fetch-years.php)
 codex_submissions            ← suggested descriptions and problem reports
 codex_view_log               ← daily view counts per page type / opening
 codex_opening_lines          ← reserved
@@ -114,7 +119,7 @@ codex_migrations             ← migration tracker (db/migrations/sqlite/, none 
 ```
 
 Pages never call Lichess: statistics come from the tables above, filled by
-slow sequential CLI jobs on the Pi (the stats prewarm, fetch-levels).
+slow sequential CLI jobs on the Pi (the stats prewarm, fetch-levels, fetch-years).
 
 ## Caching layers
 

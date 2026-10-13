@@ -135,34 +135,52 @@ $renderStrip(
     'The 100 most-played gambits'
 );
 
-// One step of the first-move tree: its move, then its name unless the step
-// above already said it (then only screen readers get the name).
-$firstMoveLink = static function (array $n) use ($baseEsc): string {
-    $name = htmlspecialchars($n['name'], ENT_QUOTES, 'UTF-8');
-    return '<a href="' . $baseEsc . htmlspecialchars(I18n::url('/openings/' . $n['slug']), ENT_QUOTES, 'UTF-8') . '"'
-        . ($n['label'] === '' ? ' title="' . $name . '"' : '') . '>'
-        . '<span class="first-move-san">' . htmlspecialchars($n['san'], ENT_QUOTES, 'UTF-8') . '</span>'
-        . ($n['label'] !== '' ? ' ' . htmlspecialchars($n['label'], ENT_QUOTES, 'UTF-8') : '<span class="visually-hidden"> ' . $name . '</span>')
-        . '</a>';
+// One step of the first-move tree: its move (number muted), its name — in a
+// chip only what the step above doesn't already say, in a row the whole name,
+// muted when it is the same — and its share of the games after the step above.
+$fmPct = static function (float $share): string {
+    $p = round($share * 100, 1);
+    return ($p >= 10 ? (string) round($p) : ($p >= 0.1 ? number_format($p, 1) : '<0.1')) . '%';
 };
+$fmLink = static function (array $n, string $class, bool $withPct = false) use ($baseEsc, $fmPct): string {
+    $esc  = static fn (string $s): string => htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
+    $name = match (true) {
+        $n['label'] !== ''     => ' <span class="fm-name">' . $esc($n['label']) . '</span>',
+        $class === 'fm-link'   => ' <span class="fm-name is-same">' . $esc($n['name']) . '</span>',
+        default                => '<span class="visually-hidden"> ' . $esc($n['name']) . '</span>',
+    };
+    return '<a class="' . $class . '" href="' . $baseEsc . $esc(I18n::url('/openings/' . $n['slug'])) . '"'
+        . ($n['label'] === '' && $class !== 'fm-link' ? ' title="' . $esc($n['name']) . '"' : '') . '>'
+        . '<span class="fm-move"><span class="fm-no">' . $esc($n['no']) . '</span>' . $esc($n['move']) . '</span>'
+        . $name . ($withPct ? ' <span class="fm-pct">' . $esc($fmPct($n['share'])) . '</span>' : '') . '</a>';
+};
+// The first move's bar is a part of all games (on a track); the replies' bars
+// compare them with the most played one, which fills its bar.
+$fmBar = static fn (float $width, string $class = 'fm-bar'): string =>
+    '<span class="' . $class . '" aria-hidden="true"><i style="width:' . round($width * 100, 1) . '%"></i></span>';
 ?>
 <?php if (!empty($firstMoves['main'])): ?>
 <section class="home-popular home-first-moves">
     <header class="home-popular-head">
         <h2>Openings by first move</h2>
-        <p class="home-popular-lede">White's most played first moves, Black's main replies and the main second moves, in order of how often they are played on Lichess.</p>
+        <p class="home-popular-lede">White's most played first moves, Black's main replies and White's main second moves, with the share of the games each one gets on Lichess.</p>
     </header>
     <div class="first-moves">
-        <?php foreach ($firstMoves['main'] as $first): ?>
+        <?php foreach ($firstMoves['main'] as $first):
+            $topReply = max(array_column($first['replies'], 'share') ?: [1]); ?>
             <div class="first-move">
-                <h3><?= $firstMoveLink($first) ?></h3>
-                <ul class="first-move-replies">
+                <h3 class="fm-head"><?= $fmLink($first, 'fm-head-link') ?>
+                    <span class="fm-pct"><?= htmlspecialchars($fmPct($first['share']), ENT_QUOTES, 'UTF-8') ?><span class="visually-hidden"> of all games</span></span></h3>
+                <?= $fmBar($first['share'], 'fm-bar is-head') ?>
+                <ul class="fm-replies">
                     <?php foreach ($first['replies'] as $reply): ?>
-                        <li><?= $firstMoveLink($reply) ?>
+                        <li>
+                            <div class="fm-row"><?= $fmLink($reply, 'fm-link') ?><?= $fmBar($reply['share'] / $topReply) ?>
+                                <span class="fm-pct"><?= htmlspecialchars($fmPct($reply['share']), ENT_QUOTES, 'UTF-8') ?></span></div>
                             <?php if ($reply['seconds']): ?>
-                                <ul class="first-move-seconds">
+                                <ul class="fm-chips">
                                     <?php foreach ($reply['seconds'] as $second): ?>
-                                        <li><?= $firstMoveLink($second) ?></li>
+                                        <li><?= $fmLink($second, 'fm-chip', true) ?></li>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php endif; ?>
@@ -173,16 +191,25 @@ $firstMoveLink = static function (array $n) use ($baseEsc): string {
         <?php endforeach; ?>
     </div>
     <?php if ($firstMoves['other']): ?>
-        <p class="first-moves-other">Other first moves:
-            <?= implode(' · ', array_map($firstMoveLink, $firstMoves['other'])) ?></p>
+        <div class="first-moves-other">
+            <h3>Other first moves</h3>
+            <ul class="fm-chips">
+                <?php foreach ($firstMoves['other'] as $other): ?>
+                    <li><?= $fmLink($other, 'fm-chip', true) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
     <?php endif; ?>
+    <p class="first-moves-note">A first move's percentage is its share of all games; a reply's or a second move's, its share
+        of the games that reach the move above it. Rated Lichess games between players rated 1600 to 2500.
+        <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/opening-trends'), ENT_QUOTES, 'UTF-8') ?>">Opening trends since <?= YearStats::FIRST_YEAR ?></a></p>
 </section>
 <?php endif; ?>
 
 <section class="home-popular home-rankings">
     <header class="home-popular-head">
         <h2>Rankings from Lichess games</h2>
-        <p class="home-popular-lede">Which openings score best for each side, which are played most, and the most-played gambits.</p>
+        <p class="home-popular-lede">Which openings score best for each side, which are played most and which more than ten years ago, and the most-played gambits.</p>
     </header>
     <ul class="home-rankings-list">
         <?php foreach (Rankings::LABELS as $path => $label): ?>

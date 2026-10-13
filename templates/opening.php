@@ -376,6 +376,27 @@ $island = [
     <?php endif; ?>
 
     <?php
+    // How often the line is played year by year: its share of the games, from
+    // the explorer's history (YearStats, fetched for the most-played lines).
+    // A line that shares its name is "this line", as in the answers above.
+    $years = YearStats::forOpening((int) $o['id']);
+    $yearsSentence = $years ? YearStats::sentence($years,
+        $lineTail === '' ? ucfirst(Opening::article((string) $o['name']) . $o['name']) : 'This line') : null;
+    if ($yearsSentence !== null):
+        $yearsLast = max(array_keys($years));
+        $yearsPartial = $years[$yearsLast]['months'] < 12;
+    ?>
+    <section class="opening-years" aria-labelledby="opening-years-title">
+        <h2 id="opening-years-title">Popularity by year</h2>
+        <p><?= htmlspecialchars($yearsSentence, ENT_QUOTES, 'UTF-8') ?></p>
+        <?= TrendChart::years($years, 'Line chart: share of games by year, ' . YearStats::FIRST_YEAR . ' to ' . $yearsLast . '. The numbers are in the table below.') ?>
+        <p class="trend-caption">Share of rated Lichess games between players rated 1600 to 2500 (blitz, rapid and classical)
+            that reach this position, by year<?= $yearsPartial ? '; ' . $yearsLast . ': January to ' . date('F', mktime(0, 0, 0, $years[$yearsLast]['months'], 1)) : '' ?>.
+            <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/opening-trends'), ENT_QUOTES, 'UTF-8') ?>">Which openings are rising and falling</a></p>
+    </section>
+    <?php endif; ?>
+
+    <?php
     // One form for both: a description of the line, or a mistake on the page.
     // Reports reach the admin queue marked (Submissions::REPORT_MARK) and are
     // never published. Shown in the Overview when there is no description yet.
@@ -523,6 +544,9 @@ $island = [
 </aside>
 
 <script defer src="<?= $baseEsc ?>/public/opening.min.js?v=<?= @filemtime(__DIR__ . '/../public/opening.min.js') ?: 1 ?>"></script>
+<?php if ($yearsSentence !== null): ?>
+<script defer src="<?= $baseEsc ?>/public/charts.min.js?v=<?= @filemtime(__DIR__ . '/../public/charts.min.js') ?: 1 ?>"></script>
+<?php endif; ?>
 
 <script type="application/json" id="opening-data">
 <?= htmlspecialchars(json_encode($island, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), ENT_NOQUOTES, 'UTF-8') ?>
