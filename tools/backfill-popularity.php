@@ -19,13 +19,10 @@ if (PHP_SAPI !== 'cli') {
     exit;
 }
 
-require __DIR__ . '/../lib/Autoload.php';
-require_once __DIR__ . '/../lib/db.php';
-require_once __DIR__ . '/../lib/ChessEngine.php';
-require_once __DIR__ . '/../lib/StatsCache.php';
+require __DIR__ . '/../_composer_vendor/autoload.php';
 
 $pdo  = chess_codex_db();
-$rows = $pdo->query('SELECT id, slug, pgn_moves, popularity FROM codex_openings')->fetchAll();
+$rows = $pdo->query('SELECT id, slug, uci, popularity FROM codex_openings')->fetchAll();
 
 $update    = $pdo->prepare('UPDATE codex_openings SET popularity = :p WHERE id = :id');
 $withStats = 0;
@@ -34,7 +31,7 @@ $failed    = [];
 $pdo->beginTransaction();
 foreach ($rows as $r) {
     try {
-        $stats = StatsCache::cached(ChessEngine::fromPgn((string) $r['pgn_moves'])->uciHistory());
+        $stats = StatsCache::cached(Opening::uci($r));
     } catch (Throwable $e) {
         $failed[] = "{$r['slug']}: {$e->getMessage()}";
         continue;

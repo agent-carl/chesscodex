@@ -4,6 +4,10 @@
  * on the server by tools/engine-eval.php), at the end of the Lichess statistics
  * column. Nothing until the position has been evaluated.
  * Included by templates/partials/opening_stats.php, in the page's scope.
+ *
+ * @var array      $o           the opening
+ * @var array|null $stats       its cached Lichess numbers
+ * @var int        $statsTotal  games in them
  */
 $eval = EngineEval::forFen((string) ($o['fen'] ?? ''));
 if ($eval):

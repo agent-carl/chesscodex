@@ -7,5 +7,18 @@ db/*.sqlite
 db/*.sqlite-*
 backups/
 
+# What the site writes at run time
+db/cache/
+db/og_cache/
+db/log/
+
+# Packages (composer.lock and package-lock.json pin them) and tool caches
+_composer_vendor/
+node_modules/
+.phpunit.cache/
+
 # Local test copy of the site (tools/dev/serve.sh)
 .dev/
+
+# Staging folder of the deploy script
+.deploy/

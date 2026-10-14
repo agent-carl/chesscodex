@@ -3,10 +3,16 @@
 *.min.js
 *.min.css
 vendor/
+_composer_vendor/
+node_modules/
+composer.lock
+package-lock.json
 db/*.tsv
-db/sitemap_cache.xml
 db/cache/
 db/og_cache/
 db/log/
 backups/
 .dev/
+config.php
+.DS_Store
+*.log

@@ -27,12 +27,12 @@ foreach ($h as [, $name, $value]) header("$name: $value");
 
 $wellKnown = strncmp($path, '/.well-known/', 13) === 0;
 if (!$wellKnown && preg_match('#/\.#', $path)) return $deny(403);
-if (preg_match('#^/(db|lib|tools|tests|deploy|docs|_composer_vendor)(/|$)#', $path)) return $deny(403);
-if (preg_match('#\.(sql|md|tsv|neon|lock|log)$#', $path)) return $deny(403);
-if (preg_match('#^/(config\.php|config\.example\.php|composer\.json|VERSION)$#', $path)) return $deny(403);
+if (preg_match('#^/(db|lib|tools|tests|deploy|docs|_composer_vendor|node_modules)(/|$)#', $path)) return $deny(403);
+if (preg_match('#\.(sql|md|tsv|neon|lock|log|dist)$#', $path)) return $deny(403);
+if (preg_match('#^/(config\.php|config\.example\.php|composer\.json|package(-lock)?\.json|VERSION)$#', $path)) return $deny(403);
 
-if (in_array($path, ['/index.php', '/og.php', '/prewarm.php', '/migrate.php'], true)) {
-    require $root . $path;      // nginx allows the maintenance scripts from 127.0.0.1
+if (in_array($path, ['/index.php', '/og.php', '/prewarm.php'], true)) {
+    require $root . $path;      // nginx allows prewarm.php from 127.0.0.1 only
     return true;
 }
 if (preg_match('#\.php$#', $path)) return $deny(404);

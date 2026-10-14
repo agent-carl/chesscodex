@@ -16,14 +16,6 @@ declare(strict_types=1);
  * Errors (timeout, non-200, malformed JSON) bubble up as exceptions so the
  * caller can choose between serving stale cache or surfacing the failure.
  */
-final class LichessBusyException extends RuntimeException
-{
-    /** Seconds until it's worth trying again. */
-    public int $retryAfter = 2;
-}
-
-final class LichessRateLimitedException extends RuntimeException {}
-
 final class LichessExplorer
 {
     private const ENDPOINT     = 'https://explorer.lichess.ovh/lichess';

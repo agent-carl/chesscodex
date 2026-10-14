@@ -43,7 +43,7 @@ ob_start();
             <ul class="openings-letter-list eco-code-list">
                 <?php foreach ($bySide[$side] as $o): $n = $counts[$o['slug']] ?? 1; ?>
                     <li>
-                        <a href="<?= $baseEsc . $esc(I18n::url('/train/' . $o['slug'])) ?>">
+                        <a href="<?= $baseEsc . $esc('/train/' . $o['slug']) ?>">
                             <span class="eco-tag"><?= $esc($o['eco']) ?></span>
                             <span class="eco-code-text">
                                 <span class="openings-letter-name"><?= $esc($o['name']) ?></span>
@@ -73,15 +73,15 @@ ob_start();
         <h2>Practise your own repertoire</h2>
         <p>
             On any opening page, add the line to your repertoire with <strong>+ White</strong> or
-            <strong>+ Black</strong>. <a href="<?= $baseEsc . $esc(I18n::url('/repertoire')) ?>">My repertoire</a>
+            <strong>+ Black</strong>. <a href="<?= $baseEsc . $esc('/repertoire') ?>">My repertoire</a>
             then drills all the lines you saved for one side together.
         </p>
         <h2>Any other line</h2>
         <p>
             Every one of the <?= number_format(array_sum(Opening::countsByGroup())) ?> named lines has a
             <strong>Practice the line</strong> button on its page. Find a line by name or by its moves in the
-            <a href="<?= $baseEsc . $esc(I18n::url('/search')) ?>">opening identifier</a>, or browse the
-            <a href="<?= $baseEsc . $esc(I18n::url('/openings')) ?>">openings A–Z</a>.
+            <a href="<?= $baseEsc . $esc('/search') ?>">opening identifier</a>, or browse the
+            <a href="<?= $baseEsc . $esc('/openings') ?>">openings A–Z</a>.
         </p>
     </section>
 </article>
@@ -90,7 +90,7 @@ $body        = ob_get_clean();
 $title       = 'Chess Opening Trainer: Practice Openings Move by Move';
 $description = 'Free chess opening trainer: play the moves of ' . count($openings)
              . ' openings from memory, with the replies played for you and spaced-repetition review. No account needed.';
-$canonical   = $siteUrl . $baseUrl . I18n::url('/train');
+$canonical   = $siteUrl . $baseUrl . '/train';
 $jsonLd = [
     '@context' => 'https://schema.org',
     '@graph'   => [
@@ -102,12 +102,12 @@ $jsonLd = [
             'applicationCategory' => 'GameApplication',
             'operatingSystem'     => 'Any',
             'isAccessibleForFree' => true,
-            'inLanguage'          => I18n::locale(),
+            'inLanguage'          => 'en',
         ],
         [
             '@type' => 'BreadcrumbList',
             'itemListElement' => [
-                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . '/'],
                 ['@type' => 'ListItem', 'position' => 2, 'name' => 'Chess opening trainer', 'item' => $canonical],
             ],
         ],

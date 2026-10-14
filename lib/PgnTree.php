@@ -15,11 +15,11 @@ final class PgnTree
      */
     public static function build(array $lines, string $event, string $site, array $headers = []): string
     {
-        $root = ['kids' => [], 'weight' => 0, 'names' => []];
+        $root = self::node();
         foreach ($lines as $l) {
             $node = &$root;
             foreach (self::sans((string) $l['pgn_moves']) as $san) {
-                $node['kids'][$san] ??= ['kids' => [], 'weight' => 0, 'names' => []];
+                $node['kids'][$san] ??= self::node();
                 $node = &$node['kids'][$san];
                 $node['weight'] = max($node['weight'], (int) ($l['popularity'] ?? 0));
             }
@@ -34,6 +34,17 @@ final class PgnTree
             $out .= '[' . $k . ' "' . addcslashes((string) $v, '"\\') . "\"]\n";
         }
         return $out . "\n" . wordwrap(trim(self::line($root, 0, false) . ' *'), 80, "\n") . "\n";
+    }
+
+    /**
+     * A tree node: the moves played from here, the most popularity among the
+     * lines through it, and the names of the lines that end here.
+     *
+     * @return array{kids: array<string, array<mixed>>, weight: int, names: list<string>}
+     */
+    private static function node(): array
+    {
+        return ['kids' => [], 'weight' => 0, 'names' => []];
     }
 
     /** Movetext from $node on, the heaviest branch first; $ply 0 = White to move. */

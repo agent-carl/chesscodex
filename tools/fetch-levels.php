@@ -16,10 +16,7 @@ if (PHP_SAPI !== 'cli') {
     http_response_code(404);
     exit;
 }
-require __DIR__ . '/../lib/Autoload.php';
-require_once __DIR__ . '/../lib/db.php';
-require_once __DIR__ . '/../lib/ChessEngine.php';
-require_once __DIR__ . '/../lib/LichessExplorer.php';
+require __DIR__ . '/../_composer_vendor/autoload.php';
 
 $opts   = getopt('', ['limit:', 'max-age:']);
 $limit  = (int) ($opts['limit'] ?? 500);
@@ -27,7 +24,7 @@ $maxAge = (int) ($opts['max-age'] ?? 30) * 86400;
 
 LevelStats::ensureTable();
 $stmt = chess_codex_db()->prepare(
-    'SELECT id, slug, pgn_moves FROM codex_openings ORDER BY popularity DESC, id LIMIT :n'
+    'SELECT id, slug, uci FROM codex_openings ORDER BY popularity DESC, id LIMIT :n'
 );
 $stmt->bindValue('n', $limit, PDO::PARAM_INT);
 $stmt->execute();
@@ -36,7 +33,7 @@ $lines = $stmt->fetchAll();
 $done = $skipped = $failed = 0;
 $started = time();
 foreach ($lines as $i => $line) {
-    $uci = ChessEngine::fromPgn((string) $line['pgn_moves'])->uciHistory();
+    $uci = Opening::uci($line);
     foreach (array_keys(LevelStats::LEVELS) as $level) {
         $at = LevelStats::fetchedAt((int) $line['id'], $level);
         if ($at !== null && time() - strtotime($at) < $maxAge) { $skipped++; continue; }

@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/db.php';
-
 /**
  * CRUD over codex_submissions — user-suggested descriptions waiting for
  * admin review.

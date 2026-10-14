@@ -7,7 +7,7 @@ $esc     = static fn ($s): string => htmlspecialchars((string) $s, ENT_QUOTES, '
 $baseEsc = $esc($baseUrl);
 $pct     = static fn (float $share): string => $esc(YearStats::percent($share));
 // To the opening page's own chart.
-$lineUrl = static fn (array $r): string => $baseEsc . $esc(I18n::url('/openings/' . $r['slug'])) . '#opening-years-title';
+$lineUrl = static fn (array $r): string => $baseEsc . $esc('/openings/' . $r['slug']) . '#opening-years-title';
 $lineA   = static fn (array $r): string => $esc(Opening::article($r['name'])) . '<a href="' . $lineUrl($r) . '">' . $esc($r['name']) . '</a>';
 // The moves too, where one name covers several positions (King's Pawn Game: 1. e4, and 1. e4 e5).
 $lineAM  = static fn (array $r): string => $lineA($r) . ' (<code>' . $esc($r['moves']) . '</code>)';
@@ -41,10 +41,10 @@ ob_start();
                 <?php if ($path === $page): ?>
                     <strong aria-current="page"><?= $esc($label) ?></strong>
                 <?php else: ?>
-                    <a href="<?= $baseEsc . $esc(I18n::url('/' . $path)) ?>"><?= $esc($label) ?></a>
+                    <a href="<?= $baseEsc . $esc('/' . $path) ?>"><?= $esc($label) ?></a>
                 <?php endif; ?>
             <?php endforeach; ?>
-            <a href="<?= $baseEsc . $esc(I18n::url('/openings')) ?>">All openings A–Z</a>
+            <a href="<?= $baseEsc . $esc('/openings') ?>">All openings A–Z</a>
         </nav>
     </header>
 
@@ -101,10 +101,10 @@ ob_start();
         </p>
     <?php endif; ?>
     <p class="ranking-method">
-        More: <a href="<?= $baseEsc . $esc(I18n::url('/popular-openings')) ?>">the most popular openings</a> ·
-        <a href="<?= $baseEsc . $esc(I18n::url('/best-openings-for-white')) ?>">best openings for White</a> ·
-        <a href="<?= $baseEsc . $esc(I18n::url('/best-openings-for-black')) ?>">for Black</a> ·
-        <a href="<?= $baseEsc . $esc(I18n::url('/gambits')) ?>">chess gambits</a>
+        More: <a href="<?= $baseEsc . $esc('/popular-openings') ?>">the most popular openings</a> ·
+        <a href="<?= $baseEsc . $esc('/best-openings-for-white') ?>">best openings for White</a> ·
+        <a href="<?= $baseEsc . $esc('/best-openings-for-black') ?>">for Black</a> ·
+        <a href="<?= $baseEsc . $esc('/gambits') ?>">chess gambits</a>
     </p>
 </article>
 <?php if ($ready): ?>
@@ -117,7 +117,7 @@ $description = $ready && $trends['gained']
       . $trends['gained']['name'] . ' went from ' . YearStats::percent($trends['gained']['first']) . ' to ' . YearStats::percent($trends['gained']['last'])
       . ' of the games. The openings that rose, the ones that fell, and the first moves.'
     : 'Which chess openings are played more and which less than ten years ago, by their share of Lichess games each year.';
-$canonical   = $siteUrl . $baseUrl . I18n::url('/' . $page);
+$canonical   = $siteUrl . $baseUrl . '/' . $page;
 $noindex     = !$ready;
 $all         = array_merge($trends['rising'], $trends['falling']);
 $jsonLd = [
@@ -128,7 +128,7 @@ $jsonLd = [
             'name'        => 'Chess opening trends',
             'url'         => $canonical,
             'description' => $description,
-            'inLanguage'  => I18n::locale(),
+            'inLanguage'  => 'en',
             'mainEntity'  => [
                 '@type'           => 'ItemList',
                 'numberOfItems'   => count($all),
@@ -136,14 +136,14 @@ $jsonLd = [
                     '@type'    => 'ListItem',
                     'position' => $i + 1,
                     'name'     => $r['name'],
-                    'url'      => $siteUrl . $baseUrl . I18n::url('/openings/' . $r['slug']),
+                    'url'      => $siteUrl . $baseUrl . '/openings/' . $r['slug'],
                 ], array_keys($all), $all),
             ],
         ],
         [
             '@type' => 'BreadcrumbList',
             'itemListElement' => [
-                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . '/'],
                 ['@type' => 'ListItem', 'position' => 2, 'name' => 'Chess opening trends', 'item' => $canonical],
             ],
         ],

@@ -3,6 +3,16 @@
  * An opening page's Lichess statistics: the result bar and the table of
  * next moves (second column beside the board on a wide screen).
  * Included by templates/opening.php, in its scope (all its variables).
+ *
+ * @var array      $o
+ * @var int        $plies       the line's length in plies
+ * @var array|null $stats       cached Lichess numbers
+ * @var int        $statsTotal  games in them
+ * @var array      $statsRows   the next moves
+ * @var string     $wPct
+ * @var string     $dPct
+ * @var string     $bPct
+ * @var Closure(string, string, string): string $barLabel
  */
 ?>
         <?php

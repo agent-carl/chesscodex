@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- tools/check.sh runs the unit tests; the smoke tests check a running site over HTTP (tests/SmokeTest.php). -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="_composer_vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="_composer_vendor/autoload.php"
+         cacheDirectory=".phpunit.cache"
+         defaultTestSuite="unit"
+         colors="true">
+    <testsuites>
+        <testsuite name="unit">
+            <directory>tests</directory>
+            <exclude>tests/SmokeTest.php</exclude>
+        </testsuite>
+        <testsuite name="smoke">
+            <file>tests/SmokeTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>

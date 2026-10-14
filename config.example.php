@@ -19,8 +19,8 @@ return [
     // Override only if behind a reverse proxy that loses scheme/host.
     'site_url' => '',
 
-    // Long random string. The seed.php endpoint refuses to run unless the
-    // request carries ?token=<this value>. Generate once with e.g.
+    // Long random string. The statistics prewarm (prewarm.php) refuses to run
+    // unless the request carries token=<this value>. Generate once with e.g.
     // `php -r "echo bin2hex(random_bytes(32));"` and keep it secret.
     'seed_token' => 'CHANGE_ME_TO_A_LONG_RANDOM_HEX_STRING',
 

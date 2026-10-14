@@ -2,23 +2,20 @@
 declare(strict_types=1);
 
 /**
- * Builds the openings table from the Lichess TSVs in db/*.tsv. CLI-only
- * replacement for the old token-gated /seed.php.
+ * Builds the openings table from the Lichess TSVs in db/*.tsv.
  *
  *   php tools/seed.php            create the schema and import (refuses if openings exist)
- *   php tools/seed.php --force    drop ALL codex_* tables and rebuild — loses descriptions,
- *                                 submissions, view counts and the stats cache
- *   php tools/seed.php --verify   only compare the database with the old site's snapshots
+ *   php tools/seed.php --force    drop the codex_* tables and rebuild — loses descriptions,
+ *                                 submissions and the stats cache
  *
  * Reproduces the original import exactly, so ids and URLs stay the same:
  *   - ids follow TSV order (a.tsv → e.tsv);
  *   - duplicate slugs get -2, -3, … in (move_count, eco, pgn) order;
  *   - parent = row whose canonical PGN is the longest strict prefix, within
  *     the same ECO letter (chess_codex_resolve_parents); depth = hops to root.
- * FEN is computed server-side so /search can match positions.
- *
- * After importing, rows are checked against db/cache/alphabetical.json and
- * db/sitemap_cache.xml, which were written by the original deployment.
+ * The moves are played with p-chess/chess for the final position's FEN (so
+ * /search can match positions) and the moves in UCI (the key of a line's
+ * Lichess statistics).
  */
 
 if (PHP_SAPI !== 'cli') {
@@ -26,48 +23,43 @@ if (PHP_SAPI !== 'cli') {
     exit;
 }
 
-require __DIR__ . '/../lib/Autoload.php';
-require_once __DIR__ . '/../lib/db.php';
-require_once __DIR__ . '/../lib/parser.php';
-require_once __DIR__ . '/../lib/ChessEngine.php';
+require __DIR__ . '/../_composer_vendor/autoload.php';
+
+use PChess\Chess\Chess;
 
 $force  = in_array('--force', $argv, true);
-$verify = in_array('--verify', $argv, true);
 
 $pdo    = chess_codex_db();
 $root   = dirname(__DIR__);
 
 $existing = seed_openings_count($pdo);
 
-if ($verify) {
-    exit(seed_verify($pdo, $root) ? 0 : 1);
-}
 if ($existing > 0 && !$force) {
     fwrite(STDERR, "codex_openings already has $existing rows — nothing to do.\n"
-        . "Re-run with --force to rebuild from scratch (wipes descriptions, submissions and stats),\n"
-        . "or with --verify to check the data.\n");
+        . "Re-run with --force to rebuild from scratch (wipes descriptions, submissions and stats).\n");
     exit(1);
 }
 
 // ---------------------------------------------------------------- schema
 echo "Creating schema…\n";
-    foreach (['codex_view_log', 'codex_submissions', 'codex_stats_cache', 'codex_opening_lines',
-              'codex_openings', 'codex_migrations'] as $table) {
-        $pdo->exec("DROP TABLE IF EXISTS $table");
-    }
-    $pdo->exec((string) file_get_contents($root . '/db/schema.sqlite.sql'));
-    $pdo->exec('PRAGMA journal_mode = WAL');   // persistent: readers never block the writer
-    // SQLite creates the file 0644 whatever the umask. When the web server runs
-    // as another user in the file's group (www-data on the server), it needs group
-    // write — and the -wal/-shm files inherit the database file's mode.
-    $file = (string) $pdo->query('PRAGMA database_list')->fetch()['file'];
-    if ($file !== '') @chmod($file, 0664);
+// codex_view_log and codex_migrations: tables of retired features in older databases.
+foreach (['codex_view_log', 'codex_submissions', 'codex_stats_cache', 'codex_opening_lines',
+          'codex_openings', 'codex_migrations'] as $table) {
+    $pdo->exec("DROP TABLE IF EXISTS $table");
+}
+$pdo->exec((string) file_get_contents($root . '/db/schema.sqlite.sql'));
+$pdo->exec('PRAGMA journal_mode = WAL');   // persistent: readers never block the writer
+// SQLite creates the file 0644 whatever the umask. When the web server runs
+// as another user in the file's group (www-data on the server), it needs group
+// write — and the -wal/-shm files inherit the database file's mode.
+$file = (string) $pdo->query('PRAGMA database_list')->fetch()['file'];
+if ($file !== '') @chmod($file, 0664);
 
 // ---------------------------------------------------------------- parse TSVs
 echo "Reading db/*.tsv…\n";
-$rows      = [];
-$fenFailed = [];
-$id        = 0;
+$rows   = [];
+$failed = [];
+$id     = 0;
 foreach (['a', 'b', 'c', 'd', 'e'] as $letter) {
     $fh = fopen("$root/db/$letter.tsv", 'r');
     if ($fh === false) {
@@ -82,17 +74,14 @@ foreach (['a', 'b', 'c', 'd', 'e'] as $letter) {
         $id++;
 
         $canon = chess_codex_canonicalize_pgn($pgn);
-        try {
-            $fen = ChessEngine::fromPgn($pgn)->fen();
-        } catch (Throwable $e) {
-            $fen = null;
-            $fenFailed[] = "$id $name: " . $e->getMessage();
-        }
+        [$fen, $uci] = seed_play($pgn);
+        if ($fen === null) $failed[] = "$id $name: $pgn";
 
         $rows[$id] = [
             'eco'        => $eco,
             'name'       => $name,
             'fen'        => $fen,
+            'uci'        => $uci,
             'pgn_moves'  => $pgn,
             'pgn_canon'  => $canon,
             'move_count' => chess_codex_count_plies($pgn),
@@ -131,8 +120,8 @@ $depth = static function (int $id) use (&$depth, $parents): int {
 echo 'Importing ' . count($rows) . " openings…\n";
 $pdo->beginTransaction();
 $insert = $pdo->prepare(
-    'INSERT INTO codex_openings (id, eco, name, slug, parent_id, depth, fen, pgn_moves, pgn_canon, move_count, popularity)
-     VALUES (:id, :eco, :name, :slug, NULL, :depth, :fen, :pgn, :canon, :mc, 0)'
+    'INSERT INTO codex_openings (id, eco, name, slug, parent_id, depth, fen, pgn_moves, uci, pgn_canon, move_count, popularity)
+     VALUES (:id, :eco, :name, :slug, NULL, :depth, :fen, :pgn, :uci, :canon, :mc, 0)'
 );
 foreach ($rows as $rowId => $r) {
     $insert->execute([
@@ -143,6 +132,7 @@ foreach ($rows as $rowId => $r) {
         'depth' => $depth($rowId),
         'fen'   => $r['fen'],
         'pgn'   => $r['pgn_moves'],
+        'uci'   => $r['uci'],
         'canon' => $r['pgn_canon'],
         'mc'    => $r['move_count'],
     ]);
@@ -157,10 +147,9 @@ $pdo->commit();
 $pdo->exec('ANALYZE');
 
 echo "Done: " . count($rows) . " openings, " . count(array_filter($parents, fn ($p) => $p !== null))
-    . " with a parent, FEN computed for " . (count($rows) - count($fenFailed)) . ".\n";
-foreach (array_slice($fenFailed, 0, 5) as $msg) echo "  FEN failed — $msg\n";
-
-exit(seed_verify($pdo, $root) ? 0 : 1);
+    . " with a parent, moves played for " . (count($rows) - count($failed)) . ".\n";
+foreach (array_slice($failed, 0, 5) as $msg) echo "  illegal move in $msg\n";
+exit($failed === [] ? 0 : 1);
 
 // ================================================================ helpers
 
@@ -171,70 +160,15 @@ function seed_openings_count(PDO $pdo): int
     return (int) $pdo->query('SELECT COUNT(*) FROM codex_openings')->fetchColumn();
 }
 
-/**
- * Compare the database with snapshots the original deployment left behind:
- * db/cache/alphabetical.json (id, eco, name, slug, move_count of every row),
- * db/cache/{popular,gambits}.json (depth for a sample) and the sitemap (URLs).
- */
-function seed_verify(PDO $pdo, string $root): bool
+/** The FEN after the moves and the moves in UCI ("e2e4 c7c5"); [null, ''] when a move is illegal. */
+function seed_play(string $pgn): array
 {
-    echo "\nVerifying against the old site's snapshots…\n";
-    $db = [];
-    foreach ($pdo->query('SELECT id, eco, name, slug, move_count, depth FROM codex_openings') as $r) {
-        $db[(int) $r['id']] = $r;
+    $chess = new Chess();
+    $uci   = [];
+    foreach (preg_split('/\s+/', trim((string) preg_replace('/\d+\.(\.\.)?/', ' ', $pgn))) ?: [] as $san) {
+        $move = $chess->move($san);
+        if ($move === null) return [null, ''];
+        $uci[] = $move->from . $move->to . ($move->promotion ?? '');
     }
-    $ok = true;
-
-    $alpha = json_decode((string) @file_get_contents("$root/db/cache/alphabetical.json"), true);
-    if (is_array($alpha)) {
-        $seen = 0;
-        $diff = [];
-        foreach ($alpha as $group) {
-            foreach ($group as $old) {
-                $seen++;
-                $new = $db[(int) $old['id']] ?? null;
-                foreach (['eco', 'name', 'slug', 'move_count'] as $f) {
-                    if ($new === null || (string) $new[$f] !== (string) $old[$f]) {
-                        $diff[] = "id {$old['id']} $f: old=" . json_encode($old[$f] ?? null, JSON_UNESCAPED_UNICODE)
-                            . ' new=' . json_encode($new[$f] ?? null, JSON_UNESCAPED_UNICODE);
-                    }
-                }
-            }
-        }
-        printf("  alphabetical.json: %d rows checked, %d differences\n", $seen, count($diff));
-        foreach (array_slice($diff, 0, 10) as $d) echo "    $d\n";
-        $ok = $ok && $diff === [] && $seen === count($db);
-    } else {
-        echo "  alphabetical.json: not found, skipped\n";
-    }
-
-    $depthChecked = 0;
-    $depthDiff    = [];
-    foreach (['popular', 'gambits'] as $file) {
-        $list = json_decode((string) @file_get_contents("$root/db/cache/$file.json"), true);
-        foreach (is_array($list) ? $list : [] as $old) {
-            $depthChecked++;
-            $new = $db[(int) $old['id']] ?? null;
-            if ($new === null || (int) $new['depth'] !== (int) $old['depth']) {
-                $depthDiff[] = "id {$old['id']} ({$old['slug']}): old depth {$old['depth']}, new " . ($new['depth'] ?? 'missing');
-            }
-        }
-    }
-    printf("  depth (popular/gambits.json): %d checked, %d differences\n", $depthChecked, count($depthDiff));
-    foreach (array_slice($depthDiff, 0, 10) as $d) echo "    $d\n";
-    $ok = $ok && $depthDiff === [];
-
-    $sitemap = (string) @file_get_contents("$root/db/sitemap_cache.xml");
-    if ($sitemap !== '' && preg_match_all('#/openings/([a-z0-9-]+)</loc>#', $sitemap, $m)) {
-        $oldSlugs = array_flip($m[1]);
-        $newSlugs = array_flip(array_column($db, 'slug'));
-        $missing  = array_diff_key($oldSlugs, $newSlugs);
-        $extra    = array_diff_key($newSlugs, $oldSlugs);
-        printf("  sitemap: %d old URLs, %d missing now, %d new\n", count($oldSlugs), count($missing), count($extra));
-        foreach (array_slice(array_keys($missing), 0, 5) as $s) echo "    missing: /openings/$s\n";
-        $ok = $ok && $missing === [];
-    }
-
-    echo $ok ? "OK — ids, slugs and tree match the original site.\n" : "MISMATCH — see above.\n";
-    return $ok;
+    return [$chess->fen(), implode(' ', $uci)];
 }

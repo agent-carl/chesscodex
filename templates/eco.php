@@ -8,7 +8,7 @@
 /** @var string $siteUrl */
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 $esc     = static fn ($s) => htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
-$openingUrl = static fn (string $slug): string => $baseUrl . I18n::url('/openings/' . $slug);
+$openingUrl = static fn (string $slug): string => $baseUrl . '/openings/' . $slug;
 
 $vol      = $code[0];
 $n        = count($lines);
@@ -17,9 +17,7 @@ $families = count(array_unique(array_map([Opening::class, 'family'], array_colum
 
 // Lichess numbers for the shortest line's position, when cached (never
 // fetched from here: this page must not wait on Lichess).
-require_once __DIR__ . '/../lib/ChessEngine.php';
-require_once __DIR__ . '/../lib/StatsCache.php';
-$rootStats = StatsCache::cached(ChessEngine::fromPgn((string) $root['pgn_moves'])->uciHistory());
+$rootStats = StatsCache::cached(Opening::uci($root));
 $rootGames = $rootStats ? $rootStats['white'] + $rootStats['black'] + $rootStats['draws'] : 0;
 $pct = static fn (int $x): string => number_format($rootGames > 0 ? $x * 100 / $rootGames : 0, 1);
 
@@ -39,7 +37,7 @@ if ($mostPlayed !== null && $mostPlayed['slug'] === $root['slug']) $mostPlayed =
 ob_start();
 ?>
 <article class="eco-page">
-    <p class="eco-back"><a href="<?= $baseEsc . $esc(I18n::url('/eco')) ?>#volume-<?= $vol ?>">← All ECO codes</a></p>
+    <p class="eco-back"><a href="<?= $baseEsc . $esc('/eco') ?>#volume-<?= $vol ?>">← All ECO codes</a></p>
     <h1>ECO <?= $code ?>: <?= $esc($info['label']) ?></h1>
 
     <section class="about-section">
@@ -89,10 +87,10 @@ ob_start();
 
     <nav class="eco-nav" aria-label="Neighbouring ECO codes">
         <?php if ($prevCode): ?>
-            <a href="<?= $baseEsc . $esc(I18n::url('/eco/' . $prevCode)) ?>">← ECO <?= $prevCode ?></a>
+            <a href="<?= $baseEsc . $esc('/eco/' . $prevCode) ?>">← ECO <?= $prevCode ?></a>
         <?php else: ?><span></span><?php endif; ?>
         <?php if ($nextCode): ?>
-            <a href="<?= $baseEsc . $esc(I18n::url('/eco/' . $nextCode)) ?>">ECO <?= $nextCode ?> →</a>
+            <a href="<?= $baseEsc . $esc('/eco/' . $nextCode) ?>">ECO <?= $nextCode ?> →</a>
         <?php endif; ?>
     </nav>
 </article>
@@ -112,7 +110,7 @@ $description = 'ECO ' . $code . ' (' . $info['label'] . '): '
              . ', each with its moves, an interactive board and Lichess win rates.';
 // A code with a single line would only repeat that opening's own page.
 $noindex   = $n === 1;
-$canonical = $siteUrl . $baseUrl . I18n::url('/eco/' . $code);
+$canonical = $siteUrl . $baseUrl . '/eco/' . $code;
 $jsonLd = [
     '@context' => 'https://schema.org',
     '@graph'   => [
@@ -121,13 +119,13 @@ $jsonLd = [
             'name'        => 'ECO ' . $code . ': ' . $info['label'],
             'url'         => $canonical,
             'description' => $description,
-            'inLanguage'  => I18n::locale(),
+            'inLanguage'  => 'en',
         ],
         [
             '@type' => 'BreadcrumbList',
             'itemListElement' => [
-                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
-                ['@type' => 'ListItem', 'position' => 2, 'name' => 'ECO codes', 'item' => $siteUrl . $baseUrl . I18n::url('/eco')],
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . '/'],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'ECO codes', 'item' => $siteUrl . $baseUrl . '/eco'],
                 ['@type' => 'ListItem', 'position' => 3, 'name' => 'ECO ' . $code, 'item' => $canonical],
             ],
         ],

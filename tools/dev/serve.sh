@@ -31,8 +31,11 @@ mkdir -p "$DEV"
 LOCAL_ONLY=(); [ -f .git/info/exclude ] && LOCAL_ONLY=(--exclude-from=.git/info/exclude)
 tar "${LOCAL_ONLY[@]}" --exclude=.git --exclude=.dev --exclude=deploy --exclude=docs \
     --exclude=backups --exclude=config.php --exclude='db/*.sqlite' --exclude='db/*.sqlite-*' \
-    --exclude=db/cache --exclude=db/og_cache --exclude=db/log --exclude=db/sitemap_cache.xml \
+    --exclude=db/cache --exclude=db/og_cache --exclude=db/log \
+    --exclude=_composer_vendor --exclude=node_modules \
     -cf - . | tar -C "$DEV" -xf -
+# The PHP libraries as on the server: composer.lock without the development tools.
+composer install --no-dev --no-interaction --quiet --working-dir="$DEV"
 mkdir -p "$DEV/db/cache" "$DEV/db/og_cache" "$DEV/db/log"
 # og.php redraws a card older than its own ctime, but on Windows that is the
 # creation time, which an overwrite keeps: drop the drawn cards instead.

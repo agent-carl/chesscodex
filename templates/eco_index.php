@@ -26,7 +26,7 @@ ob_start();
         <p class="lede">
             The ECO system files every chess opening under one of 500 codes in five volumes.
             Here are all of them with the <?= number_format($total) ?> named lines behind them —
-            or browse the <a href="<?= $baseEsc . $esc(I18n::url('/openings')) ?>">openings A–Z</a>.
+            or browse the <a href="<?= $baseEsc . $esc('/openings') ?>">openings A–Z</a>.
             <a href="#what-are-eco-codes">What ECO codes are</a> is explained below the list.
         </p>
         <nav class="openings-jump" aria-label="Jump to volume">
@@ -51,7 +51,7 @@ ob_start();
                     <li>
                         <?php if ($c): ?>
                         <?php /* The moves tell apart the codes that share a name (A13–A39 are all "English Opening"). */ ?>
-                        <a href="<?= $baseEsc . $esc(I18n::url('/eco/' . $code)) ?>">
+                        <a href="<?= $baseEsc . $esc('/eco/' . $code) ?>">
                             <span class="eco-tag"><?= $code ?></span>
                             <span class="eco-code-text">
                                 <span class="openings-letter-name"><?= $esc($c['label']) ?></span>
@@ -104,8 +104,8 @@ ob_start();
             <?= number_format($total) ?> named lines one code. A code usually holds several named lines,
             and a big opening fills many codes<?php if ($spans('Sicilian Defense', 'B20', 'B99')): ?>:
             the Sicilian Defense has lines under every code from
-            <a href="<?= $baseEsc . $esc(I18n::url('/eco/B20')) ?>">B20</a> to
-            <a href="<?= $baseEsc . $esc(I18n::url('/eco/B99')) ?>">B99</a><?php endif; ?>.
+            <a href="<?= $baseEsc . $esc('/eco/B20') ?>">B20</a> to
+            <a href="<?= $baseEsc . $esc('/eco/B99') ?>">B99</a><?php endif; ?>.
             <?= count($codes) ?> of the 500 codes have at least one named line<?= $empty
                 ? '; ' . $esc(implode(' and ', $empty)) . ' ' . (count($empty) === 1 ? 'has' : 'have') . ' none'
                 : '' ?>.
@@ -113,7 +113,7 @@ ob_start();
         <h2>How to find the ECO code of a game</h2>
         <p>
             Paste the game's moves or its whole PGN into the
-            <a href="<?= $baseEsc . $esc(I18n::url('/search')) ?>">opening identifier</a>, or play the
+            <a href="<?= $baseEsc . $esc('/search') ?>">opening identifier</a>, or play the
             first moves on its board. It names the longest named line the game follows, with its ECO
             code, and the move with which the game leaves the named lines.
         </p>
@@ -124,7 +124,7 @@ $body = ob_get_clean();
 $title = 'ECO Codes: Every Chess Opening Code from A00 to E99';
 $description = 'All 500 ECO codes from A00 to E99 with the openings filed under each — '
              . number_format($total) . ' named lines with moves, interactive boards and Lichess win rates.';
-$canonical = $siteUrl . $baseUrl . I18n::url('/eco');
+$canonical = $siteUrl . $baseUrl . '/eco';
 $jsonLd = [
     '@context' => 'https://schema.org',
     '@graph'   => [
@@ -133,12 +133,12 @@ $jsonLd = [
             'name'        => 'ECO codes A00–E99',
             'url'         => $canonical,
             'description' => $description,
-            'inLanguage'  => I18n::locale(),
+            'inLanguage'  => 'en',
         ],
         [
             '@type' => 'BreadcrumbList',
             'itemListElement' => [
-                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . '/'],
                 ['@type' => 'ListItem', 'position' => 2, 'name' => 'ECO codes', 'item' => $canonical],
             ],
         ],

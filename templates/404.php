@@ -32,7 +32,7 @@ ob_start();
                         ? htmlspecialchars(Opening::movesFrom((string) $s['pgn_moves'], max(0, (int) $s['move_count'] - 1)), ENT_QUOTES, 'UTF-8')
                         : Opening::movesLabel((int) $s['move_count']); ?>
                     <li>
-                        <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $s['slug']), ENT_QUOTES, 'UTF-8') ?>"
+                        <a href="<?= $baseEsc . htmlspecialchars('/openings/' . $s['slug'], ENT_QUOTES, 'UTF-8') ?>"
                            title="<?= htmlspecialchars($s['name'], ENT_QUOTES, 'UTF-8') ?>">
                             <span class="eco-tag"><?= htmlspecialchars($s['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                             <span class="child-list-name"><?= htmlspecialchars($s['name'], ENT_QUOTES, 'UTF-8') ?></span>
@@ -44,7 +44,7 @@ ob_start();
         </section>
     <?php endif; ?>
 
-    <form class="error-search" action="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>" method="get" role="search">
+    <form class="error-search" action="<?= $baseEsc . htmlspecialchars('/search', ENT_QUOTES, 'UTF-8') ?>" method="get" role="search">
         <?php
         $nameSearchId = 'error-search';
         $nameSearchLabel = 'Search for an opening';
@@ -58,9 +58,9 @@ ob_start();
     <section class="error-actions">
         <h2>Or go to</h2>
         <p>
-            <a class="board-cta" href="<?= $baseEsc . htmlspecialchars(I18n::url('/'), ENT_QUOTES, 'UTF-8') ?>">Home page</a>
-            <a class="board-cta error-action-secondary" href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings'), ENT_QUOTES, 'UTF-8') ?>">All openings A–Z</a>
-            <a class="board-cta error-action-secondary" href="<?= $baseEsc . htmlspecialchars(I18n::url('/random'), ENT_QUOTES, 'UTF-8') ?>" rel="nofollow">A random opening</a>
+            <a class="board-cta" href="<?= $baseEsc . htmlspecialchars('/', ENT_QUOTES, 'UTF-8') ?>">Home page</a>
+            <a class="board-cta error-action-secondary" href="<?= $baseEsc . htmlspecialchars('/openings', ENT_QUOTES, 'UTF-8') ?>">All openings A–Z</a>
+            <a class="board-cta error-action-secondary" href="<?= $baseEsc . htmlspecialchars('/random', ENT_QUOTES, 'UTF-8') ?>" rel="nofollow">A random opening</a>
         </p>
     </section>
 </article>

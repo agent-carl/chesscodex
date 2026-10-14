@@ -19,8 +19,7 @@ if (PHP_SAPI !== 'cli') {
     exit;
 }
 
-require __DIR__ . '/../lib/Autoload.php';
-require_once __DIR__ . '/../lib/db.php';
+require __DIR__ . '/../_composer_vendor/autoload.php';
 
 $dryRun = in_array('--dry-run', $argv, true);
 $force  = in_array('--force', $argv, true);

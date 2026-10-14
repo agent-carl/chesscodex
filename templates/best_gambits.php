@@ -7,7 +7,7 @@ $esc      = static fn ($s): string => htmlspecialchars((string) $s, ENT_QUOTES, 
 $baseEsc  = $esc($baseUrl);
 $minGames = Rankings::MIN_GAMES_AT_LEVEL['default'];
 $pct      = static fn (?float $x): string => $x === null ? '—' : number_format($x, 1) . '%';
-$lineUrl  = static fn (array $r): string => $baseEsc . $esc(I18n::url('/openings/' . $r['slug']));
+$lineUrl  = static fn (array $r): string => $baseEsc . $esc('/openings/' . $r['slug']);
 // First moves only: "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4…".
 $moves = static function (string $pgn): string {
     if (mb_strlen($pgn) <= 40) return $pgn;
@@ -28,10 +28,10 @@ ob_start();
                 <?php if ($path === $page): ?>
                     <strong aria-current="page"><?= $esc($label) ?></strong>
                 <?php else: ?>
-                    <a href="<?= $baseEsc . $esc(I18n::url('/' . $path)) ?>"><?= $esc($label) ?></a>
+                    <a href="<?= $baseEsc . $esc('/' . $path) ?>"><?= $esc($label) ?></a>
                 <?php endif; ?>
             <?php endforeach; ?>
-            <a href="<?= $baseEsc . $esc(I18n::url('/openings')) ?>">All openings A–Z</a>
+            <a href="<?= $baseEsc . $esc('/openings') ?>">All openings A–Z</a>
         </nav>
     </header>
 
@@ -96,17 +96,17 @@ ob_start();
         after the line's last move, in pawns from White's side.
     </p>
     <p class="ranking-method">
-        More: <a href="<?= $baseEsc . $esc(I18n::url('/gambits')) ?>#all-gambits">all chess gambits A–Z</a> ·
-        <a href="<?= $baseEsc . $esc(I18n::url('/gambits')) ?>#stockfish-vs-practice">gambits that fade as the players get stronger</a> ·
-        <a href="<?= $baseEsc . $esc(I18n::url('/best-openings-for-white/beginners')) ?>">best openings for White for beginners</a> ·
-        <a href="<?= $baseEsc . $esc(I18n::url('/best-openings-for-black/beginners')) ?>">for Black</a>
+        More: <a href="<?= $baseEsc . $esc('/gambits') ?>#all-gambits">all chess gambits A–Z</a> ·
+        <a href="<?= $baseEsc . $esc('/gambits') ?>#stockfish-vs-practice">gambits that fade as the players get stronger</a> ·
+        <a href="<?= $baseEsc . $esc('/best-openings-for-white/beginners') ?>">best openings for White for beginners</a> ·
+        <a href="<?= $baseEsc . $esc('/best-openings-for-black/beginners') ?>">for Black</a>
     </p>
 </article>
 <?php
 $body        = ob_get_clean();
 $title       = 'Best Chess Gambits for Beginners, Ranked by Lichess Results';
 $description = 'The gambits that score best for White and for Black among Lichess players rated under 1400, with their score at 2200+ and Stockfish\'s verdict.';
-$canonical   = $siteUrl . $baseUrl . I18n::url('/' . $page);
+$canonical   = $siteUrl . $baseUrl . '/' . $page;
 $noindex     = !$gambits['white'] && !$gambits['black'];
 $listed      = array_merge($gambits['white'], $gambits['black']);
 $jsonLd = [
@@ -117,7 +117,7 @@ $jsonLd = [
             'name'        => 'Best chess gambits for beginners',
             'url'         => $canonical,
             'description' => $description,
-            'inLanguage'  => I18n::locale(),
+            'inLanguage'  => 'en',
             'mainEntity'  => [
                 '@type'           => 'ItemList',
                 'numberOfItems'   => count($listed),
@@ -125,14 +125,14 @@ $jsonLd = [
                     '@type'    => 'ListItem',
                     'position' => $i + 1,
                     'name'     => $r['name'],
-                    'url'      => $siteUrl . $baseUrl . I18n::url('/openings/' . $r['slug']),
+                    'url'      => $siteUrl . $baseUrl . '/openings/' . $r['slug'],
                 ], array_keys($listed), $listed),
             ],
         ],
         [
             '@type' => 'BreadcrumbList',
             'itemListElement' => [
-                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . '/'],
                 ['@type' => 'ListItem', 'position' => 2, 'name' => 'Best chess gambits for beginners', 'item' => $canonical],
             ],
         ],

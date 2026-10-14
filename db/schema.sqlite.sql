@@ -1,7 +1,5 @@
 -- Caissa Codex — full schema for the SQLite backend (config.php → db.driver = 'sqlite').
--- Same tables and columns as the MySQL deployment, including the ones that
--- used to arrive via db/migrations/ (description, codex_submissions,
--- codex_view_log). Applied by tools/seed.php.
+-- Applied by tools/seed.php.
 --
 -- NOCASE on name/slug mirrors MySQL's case-insensitive utf8mb4_unicode_ci
 -- for = and ORDER BY; LIKE gets full MySQL semantics (accent-insensitive)
@@ -16,6 +14,7 @@ CREATE TABLE codex_openings (
     depth       INTEGER NOT NULL DEFAULT 0,
     fen         TEXT    NULL,
     pgn_moves   TEXT    NOT NULL,
+    uci         TEXT    NOT NULL DEFAULT '',  -- the moves in UCI: 'e2e4 c7c5 g1f3'
     pgn_canon   TEXT    NOT NULL DEFAULT '',
     move_count  INTEGER NOT NULL DEFAULT 0,
     popularity  INTEGER NOT NULL DEFAULT 0,
@@ -58,17 +57,3 @@ CREATE TABLE codex_submissions (
     review_notes TEXT    NULL
 );
 CREATE INDEX idx_codex_submissions_status ON codex_submissions (status, created_at);
-
--- opening_id = 0 for non-opening pages (home, search, …), so no foreign key.
-CREATE TABLE codex_view_log (
-    log_date    TEXT    NOT NULL,             -- 'Y-m-d'
-    page_type   TEXT    NOT NULL,
-    opening_id  INTEGER NOT NULL DEFAULT 0,
-    views       INTEGER NOT NULL DEFAULT 0,
-    PRIMARY KEY (log_date, page_type, opening_id)
-) WITHOUT ROWID;
-
-CREATE TABLE codex_migrations (
-    version    TEXT PRIMARY KEY,
-    applied_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);

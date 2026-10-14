@@ -1,9 +1,6 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/db.php';
-require_once __DIR__ . '/LichessExplorer.php';
-
 /**
  * Cache-aside layer over codex_stats_cache. Keyed by SHA-256 of the
  * canonical UCI play string ("e2e4,c7c5,g1f3,..."). The schema column is

@@ -10,7 +10,6 @@ $s       = $submission;
 // they are read, never published.
 $isReport = str_starts_with((string) $s['markdown'], Submissions::REPORT_MARK);
 
-require_once __DIR__ . '/../vendor/Parsedown.php';
 $pd = new Parsedown();
 $pd->setSafeMode(true); // submissions come from public users
 $renderedNew = $pd->text((string) $s['markdown']);

@@ -47,22 +47,17 @@ function fail(string $message): never
 /** @return array{int, array<mixed>} HTTP status and the decoded JSON body */
 function http_json(string $method, string $url, array $headers = [], ?string $body = null): array
 {
-    $ctx = stream_context_create(['http' => [
-        'method'        => $method,
-        'header'        => implode("\r\n", $headers),
-        'content'       => $body ?? '',
-        'timeout'       => 60,
-        'ignore_errors' => true,   // hand back error bodies instead of false
-    ]]);
-    $raw      = @file_get_contents($url, false, $ctx);
-    $response = function_exists('http_get_last_response_headers')
-        ? (http_get_last_response_headers() ?? [])
-        : ($http_response_header ?? []);
-    $status = 0;
-    foreach ($response as $h) {   // the last status line wins if there was a redirect
-        if (preg_match('#^HTTP/\S+\s+(\d{3})#', $h, $m)) $status = (int) $m[1];
-    }
-    if ($raw === false || $status === 0) fail("No answer from $url");
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_CUSTOMREQUEST  => $method,
+        CURLOPT_HTTPHEADER     => $headers,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_TIMEOUT        => 60,
+    ] + ($body === null ? [] : [CURLOPT_POSTFIELDS => $body]));
+    $raw    = curl_exec($ch);
+    $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if (!is_string($raw) || $status === 0) fail("No answer from $url");
     return [$status, json_decode($raw, true) ?: []];
 }
 

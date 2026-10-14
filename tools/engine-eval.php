@@ -21,8 +21,9 @@ if (PHP_SAPI !== 'cli') {
     http_response_code(404);
     exit;
 }
-require __DIR__ . '/../lib/Autoload.php';
-require_once __DIR__ . '/../lib/db.php';
+require __DIR__ . '/../_composer_vendor/autoload.php';
+
+use PChess\Chess\Chess;
 
 $opts    = getopt('', ['depth:', 'limit:', 'threads:', 'hash:', 'engine:', 'redo', 'shard:']);
 $depth   = (int) ($opts['depth'] ?? 30);
@@ -40,7 +41,7 @@ const PV_PLIES = 10;   // main line shown on the page
 
 EngineEval::ensureTable();
 $rows = chess_codex_db()->query(
-    'SELECT slug, fen, pgn_moves FROM codex_openings ORDER BY popularity DESC, id'
+    'SELECT slug, fen FROM codex_openings ORDER BY popularity DESC, id'
 )->fetchAll();
 
 $proc = proc_open([$engine], [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
@@ -76,7 +77,7 @@ $started = time();
 $todo = [];
 foreach ($rows as $k => $r) {
     if ($k % $shards !== $shard - 1) continue;
-    $fen = (string) ($r['fen'] ?: ChessEngine::fromPgn((string) $r['pgn_moves'])->fen());
+    $fen = (string) $r['fen'];
     if (!$redo && EngineEval::depthOf($fen) !== null) { $skipped++; continue; }
     $todo[] = ['slug' => (string) $r['slug'], 'fen' => $fen];
     if ($limit > 0 && count($todo) >= $limit) break;
@@ -101,12 +102,15 @@ foreach ($todo as $i => $t) {
     }
     // The engine scores for the side to move; the table keeps White's view.
     $sign = explode(' ', $t['fen'])[1] === 'b' ? -1 : 1;
-    $board = new ChessEngine($t['fen']);
+    $board = new Chess($t['fen']);
     $pvSan = [];
-    try {
-        foreach (array_slice($best['pv'], 0, PV_PLIES) as $uci) $pvSan[] = $board->applyUci($uci);
-    } catch (RuntimeException $e) {
-        echo "  {$t['slug']}: line cut short ({$e->getMessage()})\n";
+    foreach (array_slice($best['pv'], 0, PV_PLIES) as $uci) {
+        $move = $board->move(['from' => substr($uci, 0, 2), 'to' => substr($uci, 2, 2), 'promotion' => substr($uci, 4, 1) ?: null]);
+        if ($move === null) {
+            echo "  {$t['slug']}: line cut short at $uci\n";
+            break;
+        }
+        $pvSan[] = (string) $move->san;
     }
     if (!$pvSan) continue;
     // Several shards share one database: wait out another shard's write.

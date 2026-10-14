@@ -1,10 +1,6 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/db.php';
-require_once __DIR__ . '/ChessEngine.php';
-require_once __DIR__ . '/StatsCache.php';
-
 /**
  * Ranked lists for /gambits, /best-openings-for-white, /best-openings-for-black,
  * /popular-openings and /best-gambits-for-beginners, built from the cached
@@ -47,23 +43,18 @@ final class Rankings
     /**
      * Every opening with cached results — id, slug, name, eco, pgn_moves,
      * move_count, games, white, draws, black, updated (Y-m-d of the numbers)
-     * — most-played first. Replaying
-     * all 3,690 lines to find their cache keys takes ~0.3 s, so the list is
-     * kept for six hours.
+     * — most-played first. It looks up all 3,690 lines, so the list is kept
+     * for six hours.
      */
     public static function all(): array
     {
         return Cache::remember('rankings-results-v2', 21600, static function (): array {
             $rows = chess_codex_db()->query(
-                'SELECT id, slug, name, eco, pgn_moves, move_count FROM codex_openings'
+                'SELECT id, slug, name, eco, pgn_moves, uci, move_count FROM codex_openings'
             )->fetchAll();
             $out = [];
             foreach ($rows as $r) {
-                try {
-                    $s = StatsCache::cached(ChessEngine::fromPgn((string) $r['pgn_moves'])->uciHistory());
-                } catch (Throwable) {
-                    continue;
-                }
+                $s = StatsCache::cached(Opening::uci($r));
                 $games = $s ? $s['white'] + $s['draws'] + $s['black'] : 0;
                 if ($games === 0) continue;
                 $out[] = [
@@ -202,14 +193,8 @@ final class Rankings
             }
             usort($fading, static fn (array $x, array $y): int => [$y['low'] - $y['high'], $y['games']] <=> [$x['low'] - $x['high'], $x['games']]);
             // One line per opening family, so three Englund lines don't fill a list.
-            $onePerFamily = static function (array $rows): array {
-                $seen = [];
-                return array_values(array_filter($rows, static function (array $r) use (&$seen): bool {
-                    $f = Opening::family((string) $r['name']);
-                    return !isset($seen[$f]) && ($seen[$f] = true);
-                }));
-            };
-            return ['dubious' => array_slice($onePerFamily($dubious), 0, 8), 'fading' => array_slice($onePerFamily($fading), 0, 8)];
+            $family = static fn (array $r): string => Opening::family((string) $r['name']);
+            return ['dubious' => array_slice(self::firstPer($dubious, $family), 0, 8), 'fading' => array_slice(self::firstPer($fading, $family), 0, 8)];
         });
     }
 
@@ -249,19 +234,13 @@ final class Rankings
             }
             usort($out['firstMoves'], static fn (array $a, array $b): int => $b['last'] <=> $a['last']);
 
-            $onePerFamily = static function (array $rows): array {
-                $seen = [];
-                return array_values(array_filter($rows, static function (array $r) use (&$seen): bool {
-                    $f = Opening::family($r['name']);
-                    return !isset($seen[$f]) && ($seen[$f] = true);
-                }));
-            };
+            $family = static fn (array $r): string => Opening::family((string) $r['name']);
             $rising  = array_filter($lines, static fn (array $r): bool => $r['ratio'] >= 1.2 && $r['last'] >= self::TREND_MIN_SHARE);
             $falling = array_filter($lines, static fn (array $r): bool => $r['ratio'] <= 1 / 1.2 && $r['first'] >= self::TREND_MIN_SHARE);
             usort($rising, static fn (array $a, array $b): int => $b['ratio'] <=> $a['ratio']);
             usort($falling, static fn (array $a, array $b): int => $a['ratio'] <=> $b['ratio']);
-            $out['rising']  = array_slice($onePerFamily($rising), 0, self::TRENDS);
-            $out['falling'] = array_slice($onePerFamily($falling), 0, self::TRENDS);
+            $out['rising']  = array_slice(self::firstPer($rising, $family), 0, self::TRENDS);
+            $out['falling'] = array_slice(self::firstPer($falling, $family), 0, self::TRENDS);
 
             foreach ($lines as $r) {
                 $move = $r['last'] - $r['first'];
@@ -291,7 +270,7 @@ final class Rankings
                 $whiteToMove = $plies % 2 === 0;
                 if (Opening::distinguishingTail($o) !== ''
                     || Opening::nameSide((string) $o['name'], $plies) === ($whiteToMove ? 'white' : 'black')) continue;
-                $stats = StatsCache::cached(ChessEngine::fromPgn((string) $o['pgn_moves'])->uciHistory());
+                $stats = StatsCache::cached(Opening::uci($o));
                 $total = $stats ? $stats['white'] + $stats['black'] + $stats['draws'] : 0;
                 $main = $total > 0 ? Replies::main($stats['top_moves'] ?? [], $total, $whiteToMove) : [];
                 if ($main === []) continue;
@@ -342,11 +321,7 @@ final class Rankings
             }
             foreach ($out as &$rows) {
                 usort($rows, static fn (array $a, array $b): int => [$b['low'], $b['games']] <=> [$a['low'], $a['games']]);
-                $seen = [];
-                $rows = array_slice(array_values(array_filter($rows, static function (array $r) use (&$seen): bool {
-                    $k = self::gambitKey($r['name']);
-                    return !isset($seen[$k]) && ($seen[$k] = true);
-                })), 0, self::BEST_GAMBITS);
+                $rows = array_slice(self::firstPer($rows, static fn (array $r): string => self::gambitKey($r['name'])), 0, self::BEST_GAMBITS);
                 $evals = EngineEval::forOpenings(array_column($rows, 'id'));
                 foreach ($rows as &$r) $r['eval'] = $evals[$r['id']] ?? null;
                 unset($r);
@@ -411,5 +386,13 @@ final class Rankings
             $out[] = $r;
         }
         return $out;
+    }
+
+    /** The first row for each key, in order: one line per opening family, say. */
+    private static function firstPer(array $rows, callable $key): array
+    {
+        $first = [];
+        foreach ($rows as $r) $first[$key($r)] ??= $r;
+        return array_values($first);
     }
 }

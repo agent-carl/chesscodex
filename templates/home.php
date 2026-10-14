@@ -18,15 +18,15 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
     <p class="lede"><?= htmlspecialchars(t('home.hero.lede'), ENT_QUOTES, 'UTF-8') ?></p>
     <?php /* The name search, with suggestions from site.js; without JavaScript
              the form opens /search with the words filled in. */ ?>
-    <form class="hero-search" action="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>" method="get" role="search">
+    <form class="hero-search" action="<?= $baseEsc . htmlspecialchars('/search', ENT_QUOTES, 'UTF-8') ?>" method="get" role="search">
         <?php $nameSearchId = 'hero-search'; require __DIR__ . '/partials/name_search.php'; ?>
     </form>
     <p class="hero-meta"><?= htmlspecialchars(t('home.hero.meta', ['count' => $totalFmt]), ENT_QUOTES, 'UTF-8') ?></p>
     <p class="hero-actions">
-        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings'), ENT_QUOTES, 'UTF-8') ?>">Browse all openings A–Z →</a>
-        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>">Identify an opening from moves →</a>
-        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco'), ENT_QUOTES, 'UTF-8') ?>">Browse by ECO code →</a>
-        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars(I18n::url('/random'), ENT_QUOTES, 'UTF-8') ?>" rel="nofollow">A random opening →</a>
+        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/openings', ENT_QUOTES, 'UTF-8') ?>">Browse all openings A–Z →</a>
+        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/search', ENT_QUOTES, 'UTF-8') ?>">Identify an opening from moves →</a>
+        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/eco', ENT_QUOTES, 'UTF-8') ?>">Browse by ECO code →</a>
+        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/random', ENT_QUOTES, 'UTF-8') ?>" rel="nofollow">A random opening →</a>
     </p>
 </section>
 
@@ -48,7 +48,7 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
         <h2 class="section-label">Opening of the day</h2>
         <span class="home-featured-date"><?= date('F j, Y') ?></span>
     </header>
-    <a class="home-featured-card" href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $featured['slug']), ENT_QUOTES, 'UTF-8') ?>">
+    <a class="home-featured-card" href="<?= $baseEsc . htmlspecialchars('/openings/' . $featured['slug'], ENT_QUOTES, 'UTF-8') ?>">
         <img class="home-featured-diagram" src="<?= $baseEsc . htmlspecialchars(Opening::diagramPath((string) $featured['slug'], true), ENT_QUOTES, 'UTF-8') ?>"
              width="720" height="720" alt="Chess diagram: <?= htmlspecialchars($featured['name'], ENT_QUOTES, 'UTF-8') ?>" decoding="async">
         <span class="home-featured-body">
@@ -77,7 +77,7 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 <div class="group-grid">
 <?php foreach ($groups as $g): ?>
     <?php $href = $g['root_slug']
-        ? $baseUrl . I18n::url('/openings/' . $g['root_slug'])
+        ? $baseUrl . '/openings/' . $g['root_slug']
         : null; ?>
     <a class="group-card<?= $href ? '' : ' is-empty' ?>"
        <?php if ($href): ?>href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8') ?>"<?php endif ?>>
@@ -103,7 +103,7 @@ $renderStrip = static function (string $h2, string $lede, string $modifier, arra
                 [$kicker, $cardName] = $pos === false ? ['', (string) $p['name']]
                     : [substr((string) $p['name'], 0, $pos), substr((string) $p['name'], $pos + 2)]; ?>
                 <li>
-                    <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $p['slug']), ENT_QUOTES, 'UTF-8') ?>">
+                    <a href="<?= $baseEsc . htmlspecialchars('/openings/' . $p['slug'], ENT_QUOTES, 'UTF-8') ?>">
                         <span class="eco-tag"><?= htmlspecialchars($p['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                         <span class="home-popular-text">
                             <span class="home-popular-name"><?= htmlspecialchars($cardName, ENT_QUOTES, 'UTF-8') ?></span>
@@ -114,7 +114,7 @@ $renderStrip = static function (string $h2, string $lede, string $modifier, arra
                 </li>
             <?php endforeach; ?>
         </ul>
-        <p class="home-popular-more"><a href="<?= $baseEsc . htmlspecialchars(I18n::url($moreUrl), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($moreText, ENT_QUOTES, 'UTF-8') ?> →</a></p>
+        <p class="home-popular-more"><a href="<?= $baseEsc . htmlspecialchars($moreUrl, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($moreText, ENT_QUOTES, 'UTF-8') ?> →</a></p>
     </section>
 <?php };
 
@@ -149,7 +149,7 @@ $fmLink = static function (array $n, string $class, bool $withPct = false) use (
         $class === 'fm-link'   => ' <span class="fm-name is-same">' . $esc($n['name']) . '</span>',
         default                => '<span class="visually-hidden"> ' . $esc($n['name']) . '</span>',
     };
-    return '<a class="' . $class . '" href="' . $baseEsc . $esc(I18n::url('/openings/' . $n['slug'])) . '"'
+    return '<a class="' . $class . '" href="' . $baseEsc . $esc('/openings/' . $n['slug']) . '"'
         . ($n['label'] === '' && $class !== 'fm-link' ? ' title="' . $esc($n['name']) . '"' : '') . '>'
         . '<span class="fm-move"><span class="fm-no">' . $esc($n['no']) . '</span>' . $esc($n['move']) . '</span>'
         . $name . ($withPct ? ' <span class="fm-pct">' . $esc($fmPct($n['share'])) . '</span>' : '') . '</a>';
@@ -202,7 +202,7 @@ $fmBar = static fn (float $width, string $class = 'fm-bar'): string =>
     <?php endif; ?>
     <p class="first-moves-note">A first move's percentage is its share of all games; a reply's or a second move's, its share
         of the games that reach the move above it. Rated Lichess games between players rated 1600 to 2500.
-        <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/opening-trends'), ENT_QUOTES, 'UTF-8') ?>">Opening trends since <?= YearStats::FIRST_YEAR ?></a></p>
+        <a href="<?= $baseEsc . htmlspecialchars('/opening-trends', ENT_QUOTES, 'UTF-8') ?>">Opening trends since <?= YearStats::FIRST_YEAR ?></a></p>
 </section>
 <?php endif; ?>
 
@@ -214,7 +214,7 @@ $fmBar = static fn (float $width, string $class = 'fm-bar'): string =>
     <ul class="home-rankings-list">
         <?php foreach (Rankings::LABELS as $path => $label): ?>
             <li>
-                <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/' . $path), ENT_QUOTES, 'UTF-8') ?>">
+                <a href="<?= $baseEsc . htmlspecialchars('/' . $path, ENT_QUOTES, 'UTF-8') ?>">
                     <?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?> →
                 </a>
             </li>
@@ -226,7 +226,7 @@ $fmBar = static fn (float $width, string $class = 'fm-bar'): string =>
     <h2>How the openings are organized</h2>
     <p>
         Every opening here carries one of the
-        <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco'), ENT_QUOTES, 'UTF-8') ?>">ECO codes</a>, a system that files chess openings into
+        <a href="<?= $baseEsc . htmlspecialchars('/eco', ENT_QUOTES, 'UTF-8') ?>">ECO codes</a>, a system that files chess openings into
         five volumes: <strong>A</strong> — flank openings such as the English and the Réti, plus
         the Dutch and the Benoni; <strong>B</strong> — semi-open games such as the Sicilian, the
         Caro-Kann and the Pirc; <strong>C</strong> — open games after 1.e4 e5, plus the French
@@ -244,7 +244,7 @@ $fmBar = static fn (float $width, string $class = 'fm-bar'): string =>
     </p>
     <p>
         Know the moves but not the name?
-        <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/search'), ENT_QUOTES, 'UTF-8') ?>">Search by moves or by FEN</a>.
+        <a href="<?= $baseEsc . htmlspecialchars('/search', ENT_QUOTES, 'UTF-8') ?>">Search by moves or by FEN</a>.
         Want to practice? Every line can be drilled from memory, or played out against Stockfish at
         six strengths, right in your browser.
     </p>
@@ -253,7 +253,7 @@ $fmBar = static fn (float $width, string $class = 'fm-bar'): string =>
 $body = ob_get_clean();
 $title = t('home.title');
 $description = t('home.description', ['count' => $totalFmt]);
-$canonical = $siteUrl . $baseUrl . I18n::url('/');
+$canonical = $siteUrl . $baseUrl . '/';
 $publisherLd = [
     '@type' => 'Organization',
     'name'  => t('site.name'),
@@ -273,7 +273,7 @@ $jsonLd = [
             'alternateName' => ['ChessCodex.org'],
             'url'         => $canonical,
             'description' => $description,
-            'inLanguage'  => I18n::locale(),
+            'inLanguage'  => 'en',
             'publisher'   => $publisherLd,
             // No SearchAction: Google retired the sitelinks search box it fed.
         ],

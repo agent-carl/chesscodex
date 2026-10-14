@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/db.php';
-
 /**
  * How often a line is played year by year: the share of Lichess games (rated
  * blitz, rapid and classical, 1600+, the games behind a page's main numbers)
@@ -43,7 +41,6 @@ final class YearStats
      */
     public static function fetchAndStore(int $openingId, array $uciMoves, string $lastMonth = ''): string
     {
-        require_once __DIR__ . '/LichessExplorer.php';
         $history = LichessExplorer::fetchHistory($uciMoves)['history'] ?? [];
         $years = [];
         $last  = '';

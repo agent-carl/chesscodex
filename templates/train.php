@@ -20,10 +20,9 @@ $otherName = $island['color'] === 'white' ? 'Black' : 'White';
 // The most played lines that go on from this one, for the text below the board.
 $others = array_values(array_filter($lines, static fn (array $l): bool => $l['slug'] !== $o['slug'] && $l['name'] !== $o['name']));
 usort($others, static fn (array $a, array $b): int => (int) $b['popularity'] <=> (int) $a['popularity']);
-$seenNames = [];
-$others = array_slice(array_values(array_filter($others, static function (array $l) use (&$seenNames): bool {
-    return !isset($seenNames[$l['name']]) && ($seenNames[$l['name']] = true);
-})), 0, 8);
+$byName = [];   // each name once, its most played line
+foreach ($others as $l) $byName[$l['name']] ??= $l;
+$others = array_slice(array_values($byName), 0, 8);
 $lead = !empty($o['description']) ? Opening::leadSentence((string) $o['description']) : null;
 ob_start();
 ?>
@@ -32,9 +31,9 @@ ob_start();
         <span class="eco-tag"><?= $esc($o['eco']) ?></span>
         <h1><?= $esc($o['name']) ?> trainer</h1>
         <p class="parent-link">
-            <a href="<?= $baseEsc . $esc(I18n::url('/openings/' . $o['slug'])) ?>">← Back to the opening</a>
-            · <a href="<?= $baseEsc . $esc(I18n::url('/train')) ?>">All openings to practise</a>
-            · <a href="<?= $baseEsc . $esc(I18n::url('/repertoire')) ?>">My repertoire</a>
+            <a href="<?= $baseEsc . $esc('/openings/' . $o['slug']) ?>">← Back to the opening</a>
+            · <a href="<?= $baseEsc . $esc('/train') ?>">All openings to practise</a>
+            · <a href="<?= $baseEsc . $esc('/repertoire') ?>">My repertoire</a>
         </p>
     </header>
     <div class="play-grid">
@@ -80,14 +79,14 @@ ob_start();
         <p>
             "Drill all" adds the <?= number_format(count($lines) - 1) ?> named
             line<?= count($lines) === 2 ? '' : 's' ?> that continue it<?php if ($others): ?>, such as
-            <?= implode(', ', array_map(static fn (array $l): string => '<a href="' . $baseEsc . $esc(I18n::url('/openings/' . $l['slug'])) . '">'
+            <?= implode(', ', array_map(static fn (array $l): string => '<a href="' . $baseEsc . $esc('/openings/' . $l['slug']) . '">'
                 . $esc($l['name']) . '</a>', $others)) ?><?php endif; ?>.
         </p>
         <?php endif; ?>
         <p>
             Read about the line, its statistics on Lichess and Stockfish's evaluation on the
-            <a href="<?= $baseEsc . $esc(I18n::url('/openings/' . $o['slug'])) ?>"><?= $esc($o['name']) ?> page</a>,
-            or pick another opening in the <a href="<?= $baseEsc . $esc(I18n::url('/train')) ?>">opening trainer</a>.
+            <a href="<?= $baseEsc . $esc('/openings/' . $o['slug']) ?>"><?= $esc($o['name']) ?> page</a>,
+            or pick another opening in the <a href="<?= $baseEsc . $esc('/train') ?>">opening trainer</a>.
         </p>
     </section>
 </article>
@@ -104,7 +103,7 @@ foreach ([': Practice the Moves Online', ': Practice the Moves', ' – Practice'
 $description = 'Practice the ' . $o['name'] . ' (' . $o['eco'] . ') move by move: play ' . $sideName . '\'s moves from memory, '
              . (count($lines) > 1 ? number_format(count($lines)) . ' named lines, ' : '')
              . 'with spaced-repetition review. Free, no account.';
-$canonical = $siteUrl . $baseUrl . I18n::url('/train/' . $o['slug']);
+$canonical = $siteUrl . $baseUrl . '/train/' . $o['slug'];
 // Indexed for the described openings, the ones /train lists; the other
 // lines' trainers would be the same page 3,500 times over.
 $noindex = empty($o['description']);
@@ -119,13 +118,13 @@ $jsonLd = [
             'applicationCategory' => 'GameApplication',
             'operatingSystem'     => 'Any',
             'isAccessibleForFree' => true,
-            'inLanguage'          => I18n::locale(),
+            'inLanguage'          => 'en',
         ],
         [
             '@type' => 'BreadcrumbList',
             'itemListElement' => [
-                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
-                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Chess opening trainer', 'item' => $siteUrl . $baseUrl . I18n::url('/train')],
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . '/'],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Chess opening trainer', 'item' => $siteUrl . $baseUrl . '/train'],
                 ['@type' => 'ListItem', 'position' => 3, 'name' => $o['name'] . ' trainer', 'item' => $canonical],
             ],
         ],

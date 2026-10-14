@@ -1,9 +1,6 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/Opening.php';
-require_once __DIR__ . '/parser.php';
-
 /**
  * All HTTP route handlers as static methods. Each method either echoes its
  * own response (API/text endpoints) or sets up template + data and includes
@@ -120,7 +117,6 @@ final class Routes
     private static function buildSitemaps(): array
     {
         global $siteUrl, $baseUrl;
-        require_once __DIR__ . '/db.php';
         $base   = $siteUrl . $baseUrl;
         $escUrl = static fn (string $u): string => htmlspecialchars($u, ENT_QUOTES | ENT_XML1, 'UTF-8');
 
@@ -202,8 +198,6 @@ final class Routes
     public static function home(): void
     {
         global $baseUrl, $siteUrl;
-        require_once __DIR__ . '/Views.php';
-        Views::mark('home');
         $counts = Opening::countsByGroup();
         $groups = [
             ['letter' => 'A', 'label_key' => 'group.A'],
@@ -240,7 +234,7 @@ final class Routes
         global $baseUrl, $render404;
         $slug = Opening::randomSlug();
         if ($slug === null) $render404('No openings indexed yet.');
-        header('Location: ' . $baseUrl . I18n::url('/openings/' . $slug));
+        header('Location: ' . $baseUrl . '/openings/' . $slug);
         exit;
     }
 
@@ -252,7 +246,6 @@ final class Routes
     public static function openingsIndex(): void
     {
         global $baseUrl, $siteUrl;
-        Views::mark('index');
         $counts   = array_map('count', Opening::allAlphabetical());
         $total    = array_sum($counts);
         $families = Opening::familiesByLetter();
@@ -266,7 +259,6 @@ final class Routes
         $grouped = Opening::allAlphabetical();
         $letter  = strtoupper($letter);
         if (!isset($grouped[$letter])) $render404('No openings start with that letter.');
-        Views::mark('index');
         $rows   = $grouped[$letter];
         $counts = array_map('count', $grouped);
         require __DIR__ . '/../templates/openings_letter.php';
@@ -281,7 +273,7 @@ final class Routes
         $pgn = PgnTree::build(
             Opening::withContinuations($o),
             $o['name'] . ' — named lines',
-            $siteUrl . $baseUrl . I18n::url('/openings/' . $o['slug']),
+            $siteUrl . $baseUrl . '/openings/' . $o['slug'],
             ['ECO' => $o['eco'], 'Opening' => $o['name'], 'Annotator' => 'Caissa Codex (chesscodex.org)']
         );
         header('Content-Type: application/x-chess-pgn; charset=utf-8');
@@ -295,7 +287,6 @@ final class Routes
     public static function trainIndex(): void
     {
         global $baseUrl, $siteUrl;
-        Views::mark('train');
         $openings = Opening::described();
         require __DIR__ . '/../templates/train_index.php';
     }
@@ -306,7 +297,6 @@ final class Routes
         global $baseUrl, $siteUrl, $render404;
         $opening = Opening::findBySlug($slug);
         if ($opening === null) $render404('No opening matches that URL.');
-        Views::mark('train', (int) $opening['id']);
         $lines = array_slice(Opening::withContinuations($opening), 0, 300);
         require __DIR__ . '/../templates/train.php';
     }
@@ -315,7 +305,6 @@ final class Routes
     public static function repertoire(): void
     {
         global $baseUrl, $siteUrl;
-        Views::mark('repertoire');
         require __DIR__ . '/../templates/repertoire.php';
     }
 
@@ -323,7 +312,6 @@ final class Routes
     public static function rankingsIndex(): void
     {
         global $baseUrl, $siteUrl;
-        Views::mark('ranking');
         require __DIR__ . '/../templates/rankings_index.php';
     }
 
@@ -331,7 +319,6 @@ final class Routes
     public static function ranking(string $page, ?string $level = null): void
     {
         global $baseUrl, $siteUrl;
-        Views::mark('ranking');
         if ($page === 'best-gambits-for-beginners') {
             $gambits = Rankings::bestGambitsForBeginners();
             require __DIR__ . '/../templates/best_gambits.php';
@@ -357,7 +344,6 @@ final class Routes
     public static function ecoIndex(): void
     {
         global $baseUrl, $siteUrl;
-        Views::mark('eco');
         $codes = Opening::ecoCodes();
         require __DIR__ . '/../templates/eco_index.php';
     }
@@ -367,12 +353,11 @@ final class Routes
     {
         global $baseUrl, $siteUrl, $render404;
         if ($code !== strtoupper($code)) {           // /eco/b20 → /eco/B20
-            header('Location: ' . $baseUrl . I18n::url('/eco/' . strtoupper($code)), true, 301);
+            header('Location: ' . $baseUrl . '/eco/' . strtoupper($code), true, 301);
             exit;
         }
         $codes = Opening::ecoCodes();
         if (!isset($codes[$code])) $render404('No named lines under that ECO code.');
-        Views::mark('eco');
         $info  = $codes[$code];
         $lines = Opening::byEco($code);
         $keys  = array_keys($codes);
@@ -385,8 +370,6 @@ final class Routes
     public static function search(): void
     {
         global $baseUrl, $siteUrl;
-        require_once __DIR__ . '/Views.php';
-        Views::mark('search');
         require __DIR__ . '/../templates/search.php';
     }
 
@@ -395,7 +378,6 @@ final class Routes
         global $baseUrl, $siteUrl, $render404;
         $opening = Opening::findBySlug($slug);
         if ($opening === null) $render404('No opening matches that URL.');
-        Views::mark('opening', (int) $opening['id']);
         $parent      = $opening['parent_id'] ? Opening::findById((int) $opening['parent_id']) : null;
         $children    = Opening::children((int) $opening['id']);
         $ancestors   = Opening::ancestors((int) $opening['id']);
@@ -415,8 +397,6 @@ final class Routes
         global $baseUrl, $siteUrl, $render404;
         $opening = Opening::findBySlug($slug);
         if ($opening === null) $render404('No opening matches that URL.');
-        require_once __DIR__ . '/Views.php';
-        Views::mark('play', (int) $opening['id']);
         require __DIR__ . '/../templates/play.php';
     }
 }

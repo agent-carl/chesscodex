@@ -32,7 +32,6 @@ trait RoutesAdmin
     public static function adminLogout(): void
     {
         global $baseUrl;
-        require_once __DIR__ . '/Auth.php';
         if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST'
             && Auth::checkCsrf($_POST['csrf'] ?? null)) {
             Auth::logout();
@@ -56,15 +55,6 @@ trait RoutesAdmin
         ];
         $pending = Submissions::search($filters, 200);
         $counts  = Submissions::counts();
-        // Visit-stats widget. All queries are wrapped in try/catch inside
-        // Views, so a missing codex_view_log table just returns zeros until
-        // migration 006 has been run.
-        $statsToday   = Views::todayCount();
-        $statsWeek    = Views::lastNDays(7);
-        $statsMonth   = Views::lastNDays(30);
-        $statsChart   = Views::dailyChart(30);
-        $statsTop     = Views::topOpenings(30, 10);
-        $statsByType  = Views::byPageType(30);
         // Drain any one-shot flash message set by bulk actions.
         Auth::start();
         $flash = $_SESSION['codex_admin_flash'] ?? null;
@@ -75,8 +65,6 @@ trait RoutesAdmin
     public static function adminReview(string $id): void
     {
         global $baseUrl, $siteUrl, $render404;
-        require_once __DIR__ . '/Auth.php';
-        require_once __DIR__ . '/Submissions.php';
         Auth::requireLogin($baseUrl . '/admin/login', '/admin/review/' . $id);
 
         $submission = Submissions::findById((int) $id);
@@ -90,8 +78,6 @@ trait RoutesAdmin
     public static function adminAccept(string $id): void
     {
         global $baseUrl;
-        require_once __DIR__ . '/Auth.php';
-        require_once __DIR__ . '/Submissions.php';
         Auth::requireLogin($baseUrl . '/admin/login');
 
         if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST'
@@ -109,8 +95,6 @@ trait RoutesAdmin
     public static function adminReject(string $id): void
     {
         global $baseUrl;
-        require_once __DIR__ . '/Auth.php';
-        require_once __DIR__ . '/Submissions.php';
         Auth::requireLogin($baseUrl . '/admin/login');
 
         if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST'
@@ -134,7 +118,6 @@ trait RoutesAdmin
     public static function adminPreview(): void
     {
         global $baseUrl;
-        require_once __DIR__ . '/Auth.php';
         Auth::requireLogin($baseUrl . '/admin/login');
 
         header('Content-Type: text/html; charset=utf-8');
@@ -153,7 +136,6 @@ trait RoutesAdmin
         $md = (string) ($_POST['markdown'] ?? '');
         if ($md === '') { echo '<p class="admin-preview-empty"><em>Nothing to preview yet.</em></p>'; return; }
         if (mb_strlen($md) > 50000) { echo '<p>Too long.</p>'; return; }
-        require_once __DIR__ . '/../vendor/Parsedown.php';
         $pd = new Parsedown();
         $pd->setSafeMode(true);
         echo $pd->text($md);
@@ -169,8 +151,6 @@ trait RoutesAdmin
     public static function adminBulk(): void
     {
         global $baseUrl;
-        require_once __DIR__ . '/Auth.php';
-        require_once __DIR__ . '/Submissions.php';
         Auth::requireLogin($baseUrl . '/admin/login');
 
         if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST'

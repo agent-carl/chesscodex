@@ -2,7 +2,9 @@
 *.sh             text eol=lf
 
 # Generated files: keep them out of `git diff` / `git show` output (the
-# sources are diffed instead). The data snapshot is large and rarely useful.
+# sources are diffed instead).
 public/*.min.js         -diff
 public/*.min.css        -diff
-db/sitemap_cache.xml    -diff
+vendor/chess.min.js     -diff
+composer.lock           -diff
+package-lock.json       -diff

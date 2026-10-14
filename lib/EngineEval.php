@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/db.php';
-
 /**
  * Stockfish's evaluation of each opening's final position — score, best move
  * and main line — computed on the server by tools/engine-eval.php and kept in

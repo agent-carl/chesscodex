@@ -3,6 +3,17 @@
  * Variations, other lines from the same position, transpositions and the
  * whole sub-variation tree of an opening page.
  * Included by templates/opening.php, in its scope (all its variables).
+ *
+ * @var array      $o
+ * @var array|null $parent
+ * @var array      $children
+ * @var int        $descendantCount
+ * @var array      $trans            Opening::transpositions()
+ * @var int        $plies
+ * @var string     $baseUrl
+ * @var string     $baseEsc
+ * @var Closure(string, ?string): string $opening_short_name
+ * @var Closure(string, ?string): string $opening_crumb
  */
 ?>
     <?php
@@ -29,7 +40,7 @@
                 [$childLabel, $childMoves] = $variationLabel($c, (string) $o['name'], $plies);
             ?>
                 <li<?= ($needsToggle && $i >= $pageSize) ? ' class="is-overflow" hidden' : '' ?>>
-                    <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $c['slug']), ENT_QUOTES, 'UTF-8') ?>"
+                    <a href="<?= htmlspecialchars($baseUrl . '/openings/' . $c['slug'], ENT_QUOTES, 'UTF-8') ?>"
                        title="<?= htmlspecialchars($c['name'] . ' (' . $c['eco'] . ')', ENT_QUOTES, 'UTF-8') ?>">
                         <span class="eco-tag"><?= htmlspecialchars($c['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                         <span class="child-list-name"><?= htmlspecialchars($childLabel, ENT_QUOTES, 'UTF-8') ?></span>
@@ -55,7 +66,7 @@
         <h2>Other lines from the same position</h2>
         <p class="opening-related-lede">Instead of <?= htmlspecialchars($movesFromParent = Opening::movesFrom((string) $o['pgn_moves'], (int) $parent['move_count']), ENT_QUOTES, 'UTF-8') ?>,
             the position after
-            <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $parent['slug']), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) $parent['name'], ENT_QUOTES, 'UTF-8') ?></a>
+            <a href="<?= htmlspecialchars($baseUrl . '/openings/' . $parent['slug'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) $parent['name'], ENT_QUOTES, 'UTF-8') ?></a>
             also goes on to:</p>
         <ul class="child-list opening-related-list">
             <?php foreach ($siblings as $sib):
@@ -64,7 +75,7 @@
                 if (Opening::family((string) $sib['name']) !== Opening::family((string) $parent['name'])) $sibLabel = (string) $sib['name'];
             ?>
                 <li>
-                    <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $sib['slug']), ENT_QUOTES, 'UTF-8') ?>"
+                    <a href="<?= htmlspecialchars($baseUrl . '/openings/' . $sib['slug'], ENT_QUOTES, 'UTF-8') ?>"
                        title="<?= htmlspecialchars($sib['name'] . ' (' . $sib['eco'] . ')', ENT_QUOTES, 'UTF-8') ?>">
                         <span class="eco-tag"><?= htmlspecialchars($sib['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                         <span class="child-list-name"><?= htmlspecialchars($sibLabel, ENT_QUOTES, 'UTF-8') ?></span>
@@ -94,7 +105,7 @@
                     // The move is played from the "from" line's position.
                     $move = $moveAt($dir === 'from' ? (int) $t['move_count'] : $plies, (string) $san); ?>
                     <li>
-                        <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $t['slug']), ENT_QUOTES, 'UTF-8') ?>">
+                        <a href="<?= htmlspecialchars($baseUrl . '/openings/' . $t['slug'], ENT_QUOTES, 'UTF-8') ?>">
                             <span class="eco-tag"><?= htmlspecialchars((string) $t['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                             <span class="child-list-name"><?= htmlspecialchars((string) $t['name'], ENT_QUOTES, 'UTF-8') ?></span>
                             <span class="child-list-plies"><?= $dir === 'from' ? 'then ' : 'after ' ?><?= htmlspecialchars($move, ENT_QUOTES, 'UTF-8') ?></span>
@@ -111,7 +122,7 @@
     <section class="opening-subtree">
         <details<?= $subtreeLazy ? ' data-lazy="' . (int) $o['id'] . '"'
                      . ' data-api="' . $baseEsc . '/api/subtree/"'
-                     . ' data-href="' . $baseEsc . htmlspecialchars(I18n::url('/openings/'), ENT_QUOTES, 'UTF-8') . '"' : '' ?>
+                     . ' data-href="' . $baseEsc . htmlspecialchars('/openings/', ENT_QUOTES, 'UTF-8') . '"' : '' ?>
                  data-parent-depth="<?= (int) $o['depth'] ?>">
             <summary>
                 <span class="opening-subtree-icon" aria-hidden="true">&#9660;</span>
@@ -147,7 +158,7 @@
                         }
                     ?>
                         <li style="--depth-indent: <?= max(0, (int) $d['depth'] - (int) $o['depth'] - 1) ?>;">
-                            <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $d['slug']), ENT_QUOTES, 'UTF-8') ?>"
+                            <a href="<?= $baseEsc . htmlspecialchars('/openings/' . $d['slug'], ENT_QUOTES, 'UTF-8') ?>"
                                title="<?= htmlspecialchars($d['name'], ENT_QUOTES, 'UTF-8') ?>">
                                 <span class="eco-tag"><?= htmlspecialchars($d['eco'], ENT_QUOTES, 'UTF-8') ?></span>
                                 <span class="opening-subtree-name"><?= htmlspecialchars($display, ENT_QUOTES, 'UTF-8') ?></span>

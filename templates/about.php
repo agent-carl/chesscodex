@@ -135,7 +135,7 @@ ob_start();
 $body = ob_get_clean();
 $title = 'About Caissa Codex — a Free Chess Openings Encyclopedia';
 $description = 'About Caissa Codex — a free, ad-free encyclopedia of 3,690 named chess opening lines, built as a hobby project by a high school student in Norway.';
-$canonical = $siteUrl . $baseUrl . I18n::url('/about');
+$canonical = $siteUrl . $baseUrl . '/about';
 $jsonLd = [
     '@context' => 'https://schema.org',
     '@graph'   => [
@@ -144,12 +144,12 @@ $jsonLd = [
             'name'  => 'About Caissa Codex',
             'url'   => $canonical,
             'description' => $description,
-            'inLanguage'  => I18n::locale(),
+            'inLanguage'  => 'en',
         ],
         [
             '@type' => 'BreadcrumbList',
             'itemListElement' => [
-                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . '/'],
                 ['@type' => 'ListItem', 'position' => 2, 'name' => 'About',         'item' => $canonical],
             ],
         ],

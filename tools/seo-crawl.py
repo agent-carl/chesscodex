@@ -8,7 +8,6 @@ Checks status codes, <title> and meta description (empty, duplicate, length),
 canonical, robots, H1 count, JSON-LD validity and missing image alt text.
 Internal links between the sitemap pages (rel=nofollow left out) give each
 page its click depth from the home page and its number of linking pages.
-The User-Agent contains "bot", so Views::track() doesn't count these visits.
 Standard library only.
 """
 import argparse, collections, html, json, re, statistics, sys, time

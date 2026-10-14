@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/db.php';
-
 class Opening
 {
     /**
@@ -27,7 +25,7 @@ class Opening
     public static function findBySlug(string $slug): ?array
     {
         $stmt = chess_codex_db()->prepare(
-            'SELECT id, eco, name, slug, parent_id, depth, fen, pgn_moves, move_count, popularity, description
+            'SELECT id, eco, name, slug, parent_id, depth, fen, pgn_moves, uci, move_count, popularity, description
              FROM codex_openings WHERE slug = :slug LIMIT 1'
         );
         $stmt->execute(['slug' => $slug]);
@@ -77,13 +75,23 @@ class Opening
         return $pairs;
     }
 
-    /** The opening's move list ("1. e4 c5 2. Nf3"), or null for an unknown id. */
-    public static function movesById(int $id): ?string
+    /** The opening's moves in UCI (['e2e4', 'c7c5', 'g1f3']), or null for an unknown id. */
+    public static function uciById(int $id): ?array
     {
-        $stmt = chess_codex_db()->prepare('SELECT pgn_moves FROM codex_openings WHERE id = :id LIMIT 1');
+        $stmt = chess_codex_db()->prepare('SELECT uci FROM codex_openings WHERE id = :id LIMIT 1');
         $stmt->execute(['id' => $id]);
-        $moves = $stmt->fetchColumn();
-        return $moves === false ? null : (string) $moves;
+        $uci = $stmt->fetchColumn();
+        return $uci === false ? null : self::uci(['uci' => $uci]);
+    }
+
+    /**
+     * A row's moves in UCI as a list, from its uci column ("e2e4 c7c5 g1f3",
+     * written by tools/seed.php) — the key of its Lichess statistics.
+     */
+    public static function uci(array $row): array
+    {
+        $uci = trim((string) ($row['uci'] ?? ''));
+        return $uci === '' ? [] : explode(' ', $uci);
     }
 
     /**
@@ -243,7 +251,7 @@ class Opening
     public static function byEco(string $eco): array
     {
         $stmt = chess_codex_db()->prepare(
-            'SELECT id, eco, name, slug, pgn_moves, move_count, popularity FROM codex_openings
+            'SELECT id, eco, name, slug, pgn_moves, uci, move_count, popularity FROM codex_openings
              WHERE eco = :e ORDER BY move_count, name, id'
         );
         $stmt->execute(['e' => $eco]);
@@ -257,7 +265,6 @@ class Opening
      */
     public static function withContinuations(array $opening): array
     {
-        require_once __DIR__ . '/parser.php';
         $canon = chess_codex_canonicalize_pgn((string) $opening['pgn_moves']);
         $stmt = chess_codex_db()->prepare(
             "SELECT slug, name, eco, pgn_moves, popularity FROM codex_openings
@@ -278,7 +285,7 @@ class Opening
     public static function described(): array
     {
         return chess_codex_db()->query(
-            "SELECT id, slug, name, eco, fen, pgn_moves, move_count, popularity FROM codex_openings
+            "SELECT id, slug, name, eco, fen, pgn_moves, uci, move_count, popularity FROM codex_openings
              WHERE description IS NOT NULL AND description <> '' ORDER BY popularity DESC, move_count, id"
         )->fetchAll();
     }
@@ -286,7 +293,6 @@ class Opening
     /** How many lines withContinuations() gives for this line, itself included. */
     public static function continuationCount(array $opening): int
     {
-        require_once __DIR__ . '/parser.php';
         $canon = chess_codex_canonicalize_pgn((string) $opening['pgn_moves']);
         $stmt = chess_codex_db()->prepare(
             'SELECT COUNT(*) FROM codex_openings WHERE pgn_canon = :c OR (pgn_canon >= :lo AND pgn_canon < :hi)'

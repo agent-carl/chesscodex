@@ -7,7 +7,7 @@ $esc     = static fn ($s): string => htmlspecialchars((string) $s, ENT_QUOTES, '
 $baseEsc = $esc($baseUrl);
 $pct     = static fn (float $x): string => number_format($x, 1) . '%';
 // To the opening page's own "How to play against …" section.
-$answerUrl = static fn (array $r): string => $baseEsc . $esc(I18n::url('/openings/' . $r['slug'])) . '#opening-answers-title';
+$answerUrl = static fn (array $r): string => $baseEsc . $esc('/openings/' . $r['slug']) . '#opening-answers-title';
 $move      = static fn (array $r, string $san): string => '<code>' . $esc($r['moveNo'] . $san) . '</code>';
 $all       = array_merge($answers['black'], $answers['white']);
 $count     = count($all);
@@ -35,10 +35,10 @@ ob_start();
                 <?php if ($path === $page): ?>
                     <strong aria-current="page"><?= $esc($label) ?></strong>
                 <?php else: ?>
-                    <a href="<?= $baseEsc . $esc(I18n::url('/' . $path)) ?>"><?= $esc($label) ?></a>
+                    <a href="<?= $baseEsc . $esc('/' . $path) ?>"><?= $esc($label) ?></a>
                 <?php endif; ?>
             <?php endforeach; ?>
-            <a href="<?= $baseEsc . $esc(I18n::url('/openings')) ?>">All openings A–Z</a>
+            <a href="<?= $baseEsc . $esc('/openings') ?>">All openings A–Z</a>
         </nav>
     </header>
 
@@ -95,17 +95,17 @@ ob_start();
         Each opening's page shows its answers in full, and the table of every move played next.
     </p>
     <p class="ranking-method">
-        More: <a href="<?= $baseEsc . $esc(I18n::url('/train')) ?>">practise these openings in the trainer</a> ·
-        <a href="<?= $baseEsc . $esc(I18n::url('/best-openings-for-white')) ?>">best openings for White</a> ·
-        <a href="<?= $baseEsc . $esc(I18n::url('/best-openings-for-black')) ?>">for Black</a> ·
-        <a href="<?= $baseEsc . $esc(I18n::url('/gambits')) ?>">chess gambits</a>
+        More: <a href="<?= $baseEsc . $esc('/train') ?>">practise these openings in the trainer</a> ·
+        <a href="<?= $baseEsc . $esc('/best-openings-for-white') ?>">best openings for White</a> ·
+        <a href="<?= $baseEsc . $esc('/best-openings-for-black') ?>">for Black</a> ·
+        <a href="<?= $baseEsc . $esc('/gambits') ?>">chess gambits</a>
     </p>
 </article>
 <?php
 $body        = ob_get_clean();
 $title       = 'How to Play Against Popular Chess Openings: Best Answers';
 $description = 'The answer that scores best against each of ' . $count . ' popular chess openings in rated Lichess games, the most played one and Stockfish\'s first choice.';
-$canonical   = $siteUrl . $baseUrl . I18n::url('/' . $page);
+$canonical   = $siteUrl . $baseUrl . '/' . $page;
 $noindex     = $count === 0;
 $jsonLd = [
     '@context' => 'https://schema.org',
@@ -115,7 +115,7 @@ $jsonLd = [
             'name'        => 'How to play against popular openings',
             'url'         => $canonical,
             'description' => $description,
-            'inLanguage'  => I18n::locale(),
+            'inLanguage'  => 'en',
             'mainEntity'  => [
                 '@type'           => 'ItemList',
                 'numberOfItems'   => $count,
@@ -123,14 +123,14 @@ $jsonLd = [
                     '@type'    => 'ListItem',
                     'position' => $i + 1,
                     'name'     => $r['name'],
-                    'url'      => $siteUrl . $baseUrl . I18n::url('/openings/' . $r['slug']),
+                    'url'      => $siteUrl . $baseUrl . '/openings/' . $r['slug'],
                 ], array_keys($all), $all),
             ],
         ],
         [
             '@type' => 'BreadcrumbList',
             'itemListElement' => [
-                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . '/'],
                 ['@type' => 'ListItem', 'position' => 2, 'name' => 'How to play against popular openings', 'item' => $canonical],
             ],
         ],

@@ -1,12 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require __DIR__ . '/lib/Autoload.php';   // class-map autoloader: lib/<Class>.php
-// Pre-include I18n + Router + Routes — guaranteed-used on every request.
-// Anything else (Auth, Views, etc.) loads on first reference through the autoloader.
-require __DIR__ . '/lib/I18n.php';
-require __DIR__ . '/lib/Router.php';
-require __DIR__ . '/lib/Routes.php';
+require __DIR__ . '/_composer_vendor/autoload.php';   // Composer: lib/<Class>.php and the libraries
 
 $config  = require __DIR__ . '/config.php';
 $baseUrl = rtrim((string) ($config['base_url'] ?? ''), '/');
@@ -58,11 +53,7 @@ $rawPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
 if ($baseUrl !== '' && strpos($rawPath, $baseUrl) === 0) {
     $rawPath = substr($rawPath, strlen($baseUrl));
 }
-if ($rawPath === '' || $rawPath === false) $rawPath = '/';
-
-// I18n::detect is now a pass-through (English-only); keep the call so the
-// shape of the dispatch is unchanged if locales ever come back.
-[$locale, $path] = I18n::detect($rawPath);
+$path = ($rawPath === '' || $rawPath === false) ? '/' : $rawPath;
 
 $router = new Router();
 $router->add('/robots.txt',          [Routes::class, 'robots']);
@@ -72,7 +63,6 @@ $router->add('/random',              [Routes::class, 'random']);
 $router->add('/api/search',          [Routes::class, 'apiSearch']);
 $router->add('/api/stats',           [Routes::class, 'apiStats']);
 $router->add('/api/suggest',         [Routes::class, 'apiSuggest']);
-$router->add('/api/view',            [Routes::class, 'apiView']);
 $router->add('#^/api/subtree/(\d+)$#', [Routes::class, 'apiSubtree']);
 $router->add('/admin',               [Routes::class, 'adminDashboard']);
 $router->add('/admin/login',         [Routes::class, 'adminLogin']);

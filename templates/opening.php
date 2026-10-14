@@ -118,9 +118,7 @@ $isDeclined    = !$isGambit && stripos((string) $o['name'], 'Gambit') !== false;
 // show at once, and search engines see them at all (/api/ is closed to
 // crawlers). app.js fetches only when nothing is cached yet or the
 // numbers are over a week old — same markup as its renderStats().
-require_once __DIR__ . '/../lib/ChessEngine.php';
-require_once __DIR__ . '/../lib/StatsCache.php';
-$stats      = StatsCache::cached(ChessEngine::fromPgn((string) $o['pgn_moves'])->uciHistory());
+$stats      = StatsCache::cached(Opening::uci($o));
 $statsTotal = $stats ? $stats['white'] + $stats['black'] + $stats['draws'] : 0;
 $pct        = static fn (int $n, int $of): string => number_format($of > 0 ? $n * 100 / $of : 0, 1, '.', '');
 $barLabel   = static fn (string $w, string $d, string $b): string => "White $w% · Draw $d% · Black $b%";
@@ -146,11 +144,11 @@ foreach ($children as $c) {
     if ($short === (string) $o['name']) $short = (string) $c['eco'] !== (string) $o['eco'] ? (string) $c['eco'] : 'same name';
     $nextLines[$lastSan((string) $c['pgn_moves'])] ??= [
         'name' => $short,
-        'url'  => $baseUrl . I18n::url('/openings/' . $c['slug']),
+        'url'  => $baseUrl . '/openings/' . $c['slug'],
     ];
 }
 foreach ($trans['to'] as [$t, $san]) {
-    $nextLines[(string) $san] ??= ['name' => (string) $t['name'], 'url' => $baseUrl . I18n::url('/openings/' . $t['slug'])];
+    $nextLines[(string) $san] ??= ['name' => (string) $t['name'], 'url' => $baseUrl . '/openings/' . $t['slug']];
 }
 foreach ($nextLines as $san => $line) {
     if ($line['name'] === 'same name') unset($nextLines[$san]);
@@ -158,7 +156,7 @@ foreach ($nextLines as $san => $line) {
 
 $h    = static fn ($s): string => htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
 $link = static fn (array $r, ?string $text = null): string =>
-    '<a href="' . $h($baseUrl . I18n::url('/openings/' . $r['slug'])) . '">' . $h($text ?? $r['name']) . '</a>';
+    '<a href="' . $h($baseUrl . '/openings/' . $r['slug']) . '">' . $h($text ?? $r['name']) . '</a>';
 $kind = $isGambit ? 'a gambit' : ($isDeclined ? 'a declined gambit' : null);
 $overview = [$parent
     ? sprintf('<strong>%s</strong> (ECO %s, %s) is %s %s, reached after %s — %s.', $nameEsc, $ecoEsc, $h($ecoGroupLabel),
@@ -202,7 +200,7 @@ $island = [
     'name'        => $o['name'],
     'statsApiUrl' => $baseUrl . '/api/stats',
     'searchApiUrl' => $baseUrl . '/api/search',
-    'openingPathFmt' => $baseUrl . I18n::url('/openings/{slug}'),
+    'openingPathFmt' => $baseUrl . '/openings/{slug}',
     'plies'       => $plies,
     'nextLines'   => (object) $nextLines,
     'i18n'        => [
@@ -246,16 +244,16 @@ $island = [
     ?>
     <nav class="opening-breadcrumb" aria-label="Breadcrumb">
         <ol>
-            <li><a href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings'), ENT_QUOTES, 'UTF-8') ?>">Openings</a></li>
+            <li><a href="<?= $baseEsc . htmlspecialchars('/openings', ENT_QUOTES, 'UTF-8') ?>">Openings</a></li>
             <?php foreach ($crumbs as [$a, $label]): ?>
-                <li><a href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $a['slug']), ENT_QUOTES, 'UTF-8') ?>"
+                <li><a href="<?= $baseEsc . htmlspecialchars('/openings/' . $a['slug'], ENT_QUOTES, 'UTF-8') ?>"
                        title="<?= htmlspecialchars($a['name'] . ' (' . $a['eco'] . ')', ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></a></li>
             <?php endforeach; ?>
             <li aria-current="page"><?= htmlspecialchars($currentCrumb, ENT_QUOTES, 'UTF-8') ?></li>
         </ol>
     </nav>
     <header class="opening-header">
-        <a class="eco-tag" href="<?= $baseEsc . htmlspecialchars(I18n::url('/eco/' . $o['eco']), ENT_QUOTES, 'UTF-8') ?>"
+        <a class="eco-tag" href="<?= $baseEsc . htmlspecialchars('/eco/' . $o['eco'], ENT_QUOTES, 'UTF-8') ?>"
            title="All openings under ECO <?= htmlspecialchars($o['eco'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($o['eco'], ENT_QUOTES, 'UTF-8') ?></a>
         <h1><?= htmlspecialchars($o['name'], ENT_QUOTES, 'UTF-8') ?><?php if ($lineTail !== ''): ?>
             <?php /* Same-name lines: the moves that tell this one apart, as in the title. */ ?>
@@ -269,7 +267,7 @@ $island = [
     <?php
     // Share and export — no third-party JS, no tracking: copy buttons, the
     // device's own share sheet where the browser has one (app.js), the PGN.
-    $shareUrl  = $siteUrl . $baseUrl . I18n::url('/openings/' . $o['slug']);
+    $shareUrl  = $siteUrl . $baseUrl . '/openings/' . $o['slug'];
     $shareText = $o['name'] . ' (' . $o['eco'] . ') — Caissa Codex';
     // The side that makes the line's last move is the one choosing it.
     $ownSide   = $plies % 2 === 1 ? 'white' : 'black';
@@ -297,17 +295,17 @@ $island = [
             <div class="opening-actions">
                 <?php /* nofollow: the 3,690 play pages are noindex, no crawl needed; so are the
                          trainers, except those of the described lines (templates/train.php). */ ?>
-                <a class="board-cta" rel="nofollow" href="<?= htmlspecialchars($baseUrl . I18n::url('/play/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"
+                <a class="board-cta" rel="nofollow" href="<?= htmlspecialchars($baseUrl . '/play/' . $o['slug'], ENT_QUOTES, 'UTF-8') ?>"
                    data-prefetch="<?= $baseEsc ?>/vendor/stockfish.js?v=<?= substr((string) @hash_file('xxh3', __DIR__ . '/../vendor/stockfish.js'), 0, 8) ?> <?= $baseEsc ?>/vendor/stockfish.wasm"><?= htmlspecialchars(t('opening.board.cta'), ENT_QUOTES, 'UTF-8') ?></a>
                 <a class="board-cta board-cta-secondary"<?= empty($o['description']) ? ' rel="nofollow"' : '' ?>
-                   href="<?= htmlspecialchars($baseUrl . I18n::url('/train/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"
+                   href="<?= htmlspecialchars($baseUrl . '/train/' . $o['slug'], ENT_QUOTES, 'UTF-8') ?>"
                    title="Play this line's moves from memory, with review on a schedule">Practice the line</a>
                 <div class="repertoire-toggle"
                      data-slug="<?= htmlspecialchars((string) $o['slug'], ENT_QUOTES, 'UTF-8') ?>"
                      data-name="<?= htmlspecialchars((string) $o['name'], ENT_QUOTES, 'UTF-8') ?>"
                      data-eco="<?= htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8') ?>"
                      data-pgn="<?= htmlspecialchars(trim((string) $o['pgn_moves']), ENT_QUOTES, 'UTF-8') ?>">
-                    <a class="repertoire-toggle-label" rel="nofollow" href="<?= htmlspecialchars($baseUrl . I18n::url('/repertoire'), ENT_QUOTES, 'UTF-8') ?>">My repertoire:</a>
+                    <a class="repertoire-toggle-label" rel="nofollow" href="<?= htmlspecialchars($baseUrl . '/repertoire', ENT_QUOTES, 'UTF-8') ?>">My repertoire:</a>
                     <?php foreach (['white' => 'White', 'black' => 'Black'] as $side => $sideLabel): ?>
                         <button type="button" class="opening-tool-btn" data-repertoire-side="<?= $side ?>" aria-pressed="false"
                                 title="<?= $side === $ownSide
@@ -329,7 +327,7 @@ $island = [
                             <span aria-hidden="true">⎘</span> Copy FEN</button>
                         <button type="button" data-share-copy><span aria-hidden="true">⎘</span> Copy link</button>
                         <button type="button" data-share-native hidden><span aria-hidden="true">↗</span> Share…</button>
-                        <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $o['slug']) . '.pgn', ENT_QUOTES, 'UTF-8') ?>"
+                        <a href="<?= $baseEsc . htmlspecialchars('/openings/' . $o['slug'] . '.pgn', ENT_QUOTES, 'UTF-8') ?>"
                            download rel="nofollow" title="One PGN file, for a Lichess study or ChessBase">
                             <span aria-hidden="true">⤓</span> Download PGN
                             <small><?= $descendantCount > 0
@@ -371,7 +369,7 @@ $island = [
             isset($eval) && !empty($eval['pv']) ? (string) $eval['pv'][0] : null) ?></p>
         <p class="opening-answers-note"><small>Main answers: those played in at least 5% of these games. Score: <?= $whiteToMove ? 'White' : 'Black' ?>'s wins
             plus half the draws, in rated Lichess games between players rated 1600 to 2500.
-            <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/how-to-play-against'), ENT_QUOTES, 'UTF-8') ?>">How to play against other popular openings</a></small></p>
+            <a href="<?= $baseEsc . htmlspecialchars('/how-to-play-against', ENT_QUOTES, 'UTF-8') ?>">How to play against other popular openings</a></small></p>
     </section>
     <?php endif; ?>
 
@@ -392,7 +390,7 @@ $island = [
         <?= TrendChart::years($years, 'Line chart: share of games by year, ' . YearStats::FIRST_YEAR . ' to ' . $yearsLast . '. The numbers are in the table below.') ?>
         <p class="trend-caption">Share of rated Lichess games between players rated 1600 to 2500 (blitz, rapid and classical)
             that reach this position, by year<?= $yearsPartial ? '; ' . $yearsLast . ': January to ' . date('F', mktime(0, 0, 0, $years[$yearsLast]['months'], 1)) : '' ?>.
-            <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/opening-trends'), ENT_QUOTES, 'UTF-8') ?>">Which openings are rising and falling</a></p>
+            <a href="<?= $baseEsc . htmlspecialchars('/opening-trends', ENT_QUOTES, 'UTF-8') ?>">Which openings are rising and falling</a></p>
     </section>
     <?php endif; ?>
 
@@ -464,7 +462,6 @@ $island = [
     // public opening page into a Set-Cookie + uncacheable.
     $isAdmin = false;
     if (isset($_COOKIE['codex_admin'])) {
-        require_once __DIR__ . '/../lib/Auth.php';
         $isAdmin = Auth::isLoggedIn();
     }
     $editLink = $isAdmin
@@ -484,7 +481,6 @@ $island = [
         <p><?= $editLink ?></p>
         <?php endif; ?>
         <?php if (!empty($o['description'])):
-            require_once __DIR__ . '/../vendor/Parsedown.php';
             $pd = new Parsedown();
             $pd->setSafeMode(true);
             $renderedDesc = $pd->text((string) $o['description']);
@@ -559,7 +555,7 @@ $needsBoard = true;
 // (author, published time) than the default "website".
 $ogType = 'article';
 
-$canonical = $siteUrl . $baseUrl . I18n::url('/openings/' . $o['slug']);
+$canonical = $siteUrl . $baseUrl . '/openings/' . $o['slug'];
 
 // SEO description, in the order searchers scan it: name and ECO code, how
 // the line scores on Lichess (the one thing the title can't say), Stockfish's
@@ -616,15 +612,15 @@ if ($lead !== null && mb_strlen($lead) <= 160) {
 $ogImageUrl = $siteUrl . $baseUrl . '/og.php?slug=' . urlencode($o['slug']) . '&v=' . $ogVer;
 
 $breadcrumbs = [
-    ['name' => t('site.name'), 'url' => $siteUrl . $baseUrl . I18n::url('/')],
-    ['name' => 'ECO ' . $o['eco'], 'url' => $siteUrl . $baseUrl . I18n::url('/eco/' . $o['eco'])],
+    ['name' => t('site.name'), 'url' => $siteUrl . $baseUrl . '/'],
+    ['name' => 'ECO ' . $o['eco'], 'url' => $siteUrl . $baseUrl . '/eco/' . $o['eco']],
 ];
 if ($parent) {
-    $breadcrumbs[] = ['name' => $parent['name'], 'url' => $siteUrl . $baseUrl . I18n::url('/openings/' . $parent['slug'])];
+    $breadcrumbs[] = ['name' => $parent['name'], 'url' => $siteUrl . $baseUrl . '/openings/' . $parent['slug']];
 }
 $breadcrumbs[] = ['name' => $o['name'], 'url' => $canonical];
 
-$siteRootUrl  = $siteUrl . $baseUrl . I18n::url('/');
+$siteRootUrl  = $siteUrl . $baseUrl . '/';
 $publisherLd  = [
     '@type' => 'Organization',
     'name'  => t('site.name'),
@@ -651,7 +647,7 @@ $jsonLd = [
                 ['@type' => 'ImageObject', 'url' => $siteUrl . $diagramUrl, 'width' => 720, 'height' => 720],
                 ['@type' => 'ImageObject', 'url' => $ogImageUrl, 'width' => 1200, 'height' => 630],
             ],
-            'inLanguage'    => I18n::locale(),
+            'inLanguage'    => 'en',
             'articleSection'=> $ecoGroupLabel,
             'keywords'      => implode(', ', array_filter([
                 $o['name'],

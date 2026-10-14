@@ -83,7 +83,7 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
         ['1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 Be7 5. Bg5 O-O 6. e3 Nbd7', 'queens-gambit-declined-orthodox-defense', "Queen's Gambit Declined: Orthodox Defense", 'D60'],
         ['1. e4 c6 2. d4 d5 3. e5', 'caro-kann-defense-advance-variation', 'Caro-Kann Defense: Advance Variation', 'B12'],
     ];
-    $searchUrl = $baseUrl . I18n::url('/search');
+    $searchUrl = $baseUrl . '/search';
     ?>
     <section class="about-section search-about">
         <h2>What opening did I play?</h2>
@@ -117,7 +117,7 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
             <li>
                 <a href="<?= htmlspecialchars($searchUrl . '?moves=' . rawurlencode($moves), ENT_QUOTES, 'UTF-8') ?>"><code><?= htmlspecialchars($moves, ENT_QUOTES, 'UTF-8') ?></code></a>
                 →
-                <a href="<?= htmlspecialchars($baseUrl . I18n::url('/openings/' . $slug), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></a>
+                <a href="<?= htmlspecialchars($baseUrl . '/openings/' . $slug, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></a>
                 (<?= htmlspecialchars($eco, ENT_QUOTES, 'UTF-8') ?>)
             </li>
             <?php endforeach; ?>
@@ -128,7 +128,7 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 <script type="application/json" id="search-data">
 <?= htmlspecialchars(json_encode([
     'searchApiUrl'   => $baseUrl . '/api/search',
-    'openingPathFmt' => $baseUrl . I18n::url('/openings/{slug}'),
+    'openingPathFmt' => $baseUrl . '/openings/{slug}',
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), ENT_NOQUOTES, 'UTF-8') ?>
 </script>
 <script type="module" src="<?= $baseEsc ?>/public/search.min.js?v=<?= @filemtime(__DIR__ . '/../public/search.min.js') ?: 1 ?>"></script>
@@ -139,7 +139,7 @@ $title = t('search.title');
 $description = t('search.lede');
 // Indexable: it's the page for "which opening is this?" searches. Links with
 // ?moves=… all point their canonical here.
-$canonical = $siteUrl . $baseUrl . I18n::url('/search');
+$canonical = $siteUrl . $baseUrl . '/search';
 $jsonLd = [
     '@context' => 'https://schema.org',
     '@graph'   => [
@@ -151,12 +151,12 @@ $jsonLd = [
             'applicationCategory' => 'GameApplication',
             'operatingSystem'     => 'Any',
             'isAccessibleForFree' => true,
-            'inLanguage'          => I18n::locale(),
+            'inLanguage'          => 'en',
         ],
         [
             '@type' => 'BreadcrumbList',
             'itemListElement' => [
-                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . '/'],
                 ['@type' => 'ListItem', 'position' => 2, 'name' => t('search.h1'), 'item' => $canonical],
             ],
         ],

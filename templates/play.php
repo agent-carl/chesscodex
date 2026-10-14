@@ -15,7 +15,7 @@ $island = [
     // Versioned like every other asset: the file is served "immutable".
     'stockfishJsUrl'  => $baseUrl . '/vendor/stockfish.js?v=' . substr((string) @hash_file('xxh3', __DIR__ . '/../vendor/stockfish.js'), 0, 8),
     'stockfishWasmUrl' => $baseUrl . '/vendor/stockfish.wasm',
-    'openingUrl'      => $baseUrl . I18n::url('/openings/' . $o['slug']),
+    'openingUrl'      => $baseUrl . '/openings/' . $o['slug'],
     'i18n'            => [
         'thinking'  => t('play.engine.thinking'),
         'ready'     => t('play.engine.ready'),
@@ -38,7 +38,7 @@ $island = [
         <span class="eco-tag"><?= htmlspecialchars($o['eco'], ENT_QUOTES, 'UTF-8') ?></span>
         <h1><?= htmlspecialchars(t('play.h1', ['name' => $o['name']]), ENT_QUOTES, 'UTF-8') ?></h1>
         <p class="parent-link">
-            <a href="<?= $baseEsc . htmlspecialchars(I18n::url('/openings/' . $o['slug']), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars(t('play.back'), ENT_QUOTES, 'UTF-8') ?></a>
+            <a href="<?= $baseEsc . htmlspecialchars('/openings/' . $o['slug'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars(t('play.back'), ENT_QUOTES, 'UTF-8') ?></a>
         </p>
     </header>
 

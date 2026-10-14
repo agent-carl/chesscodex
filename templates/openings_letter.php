@@ -16,14 +16,14 @@ ob_start();
         <h1>Chess openings starting with <?= $esc($letter) ?></h1>
         <p class="lede">
             <?= number_format($n) ?> named lines<?= $firstName !== $lastName ? ', from ' . $esc($firstName) . ' to ' . $esc($lastName) : '' ?>.
-            Back to the <a href="<?= $baseEsc . $esc(I18n::url('/openings')) ?>">list of chess openings A–Z</a>.
+            Back to the <a href="<?= $baseEsc . $esc('/openings') ?>">list of chess openings A–Z</a>.
         </p>
         <nav class="openings-jump" aria-label="Other letters">
             <?php foreach ($counts as $l => $c): ?>
                 <?php if ($l === $letter): ?>
                     <strong aria-current="page"><?= $esc($l) ?> <span class="openings-jump-count"><?= $c ?></span></strong>
                 <?php else: ?>
-                    <a href="<?= $baseEsc . $esc(I18n::url('/openings/letter/' . strtolower((string) $l))) ?>">
+                    <a href="<?= $baseEsc . $esc('/openings/letter/' . strtolower((string) $l)) ?>">
                         <?= $esc($l) ?> <span class="openings-jump-count"><?= $c ?></span>
                     </a>
                 <?php endif; ?>
@@ -56,7 +56,7 @@ ob_start();
                 $label = $name === $family ? $family : ltrim(substr($name, strlen($family)), ':, ');
             ?>
                 <li>
-                    <a href="<?= $baseEsc . $esc(I18n::url('/openings/' . $row['slug'])) ?>" title="<?= $esc($name . ' (' . $row['eco'] . ')') ?>">
+                    <a href="<?= $baseEsc . $esc('/openings/' . $row['slug']) ?>" title="<?= $esc($name . ' (' . $row['eco'] . ')') ?>">
                         <span class="eco-tag"><?= $esc($row['eco']) ?></span>
                         <span class="openings-letter-name"><?= $esc($label) ?><?php if (($row['tail'] ?? '') !== ''): ?>
                             <span class="openings-letter-tail"><?= $esc(Opening::keepNumbers((string) $row['tail'])) ?></span><?php endif; ?></span>
@@ -74,7 +74,7 @@ $title = 'Chess Openings Starting with ' . $letter . ': ' . number_format($n) . 
 $description = 'All ' . number_format($n) . ' named chess openings and variations starting with ' . $letter
              . ($firstName !== $lastName ? ', from ' . $firstName . ' to ' . $lastName : '')
              . ' — moves, ECO codes and Lichess win rates.';
-$canonical = $siteUrl . $baseUrl . I18n::url('/openings/letter/' . strtolower($letter));
+$canonical = $siteUrl . $baseUrl . '/openings/letter/' . strtolower($letter);
 $jsonLd = [
     '@context' => 'https://schema.org',
     '@graph'   => [
@@ -83,13 +83,13 @@ $jsonLd = [
             'name'        => 'Chess openings starting with ' . $letter,
             'url'         => $canonical,
             'description' => $description,
-            'inLanguage'  => I18n::locale(),
+            'inLanguage'  => 'en',
         ],
         [
             '@type' => 'BreadcrumbList',
             'itemListElement' => [
-                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
-                ['@type' => 'ListItem', 'position' => 2, 'name' => 'List of chess openings', 'item' => $siteUrl . $baseUrl . I18n::url('/openings')],
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . '/'],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'List of chess openings', 'item' => $siteUrl . $baseUrl . '/openings'],
                 ['@type' => 'ListItem', 'position' => 3, 'name' => 'Starting with ' . $letter, 'item' => $canonical],
             ],
         ],

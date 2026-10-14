@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * The JSON and POST endpoints under /api/ — search, statistics, sub-variation
- * tree, repertoire PGN, view counter, suggestions. Part of Routes (a trait, so
+ * tree, repertoire PGN, suggestions. Part of Routes (a trait, so
  * the route table in index.php names them Routes::apiX like the pages).
  */
 trait RoutesApi
@@ -11,7 +11,6 @@ trait RoutesApi
 
     public static function apiSearch(): void
     {
-        require_once __DIR__ . '/RateLimit.php';
         if (!RateLimit::check('search', 60)) {
             http_response_code(429);
             header('Content-Type: application/json; charset=utf-8');
@@ -100,7 +99,6 @@ trait RoutesApi
 
     public static function apiStats(): void
     {
-        require_once __DIR__ . '/RateLimit.php';
         header('Content-Type: application/json; charset=utf-8');
         if (!RateLimit::check('stats', 30)) {
             http_response_code(429);
@@ -112,16 +110,14 @@ trait RoutesApi
         // opening's id and the moves come from the database. Accepting any
         // move list from the URL let anyone make the site query Lichess for
         // arbitrary positions, burning the API quota and PHP workers.
-        $id    = (int) ($_GET['id'] ?? 0);
-        $moves = $id > 0 ? Opening::movesById($id) : null;
-        if ($moves === null) {
+        $id  = (int) ($_GET['id'] ?? 0);
+        $uci = $id > 0 ? Opening::uciById($id) : null;
+        if ($uci === null) {
             http_response_code(400);
             echo json_encode(['error' => 'Unknown opening']);
             return;
         }
-        require_once __DIR__ . '/ChessEngine.php';
-        require_once __DIR__ . '/StatsCache.php';
-        $stats = StatsCache::getOrFetch(ChessEngine::fromPgn($moves)->uciHistory());
+        $stats = StatsCache::getOrFetch($uci);
 
         if (isset($stats['error'])) {
             http_response_code(503);
@@ -149,7 +145,7 @@ trait RoutesApi
         header('Content-Type: application/x-chess-pgn; charset=utf-8');
         header('Content-Disposition: attachment; filename="repertoire-' . strtolower($side) . '.pgn"');
         header('X-Robots-Tag: noindex');
-        echo PgnTree::build($lines, "My repertoire ($side)", $siteUrl . $baseUrl . I18n::url('/repertoire'),
+        echo PgnTree::build($lines, "My repertoire ($side)", $siteUrl . $baseUrl . '/repertoire',
             ['Annotator' => 'Caissa Codex (chesscodex.org)']);
     }
 
@@ -199,24 +195,8 @@ trait RoutesApi
     }
 
 
-    /** POST from public/site.js: one view of the page named in its <body>. */
-    public static function apiView(): void
-    {
-        require_once __DIR__ . '/RateLimit.php';
-        header('Cache-Control: no-store');
-        http_response_code(204);
-        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST' || !RateLimit::check('view', 120)) return;
-        $type = (string) ($_POST['t'] ?? '');
-        $id   = (int) ($_POST['id'] ?? 0);
-        if (!in_array($type, Views::PAGE_TYPES, true) || $id < 0 || $id > 1000000) return;
-        Views::track($type, $id > 0 ? $id : null);
-    }
-
     public static function apiSuggest(): void
     {
-        require_once __DIR__ . '/RateLimit.php';
-        require_once __DIR__ . '/Submissions.php';
-
         header('Content-Type: application/json; charset=utf-8');
         header('Cache-Control: no-store');
 

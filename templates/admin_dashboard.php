@@ -5,12 +5,6 @@
 /** @var array  $counts */
 /** @var array  $filters       Search filters from $_GET */
 /** @var string|null $flash */
-/** @var int    $statsToday */
-/** @var int    $statsWeek */
-/** @var int    $statsMonth */
-/** @var array  $statsChart   List of ['date' => 'YYYY-MM-DD', 'views' => int] */
-/** @var array  $statsTop     Top viewed openings */
-/** @var array  $statsByType  Map page_type => total views */
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 $csrf    = htmlspecialchars(Auth::csrfToken(), ENT_QUOTES, 'UTF-8');
 ob_start();
@@ -33,82 +27,7 @@ ob_start();
         <p class="admin-flash admin-flash-ok"><?= htmlspecialchars($flash, ENT_QUOTES, 'UTF-8') ?></p>
     <?php endif; ?>
 
-    <?php
-    // -------------------------------------------------------------------
-    // Visit stats panel — private, admin-only. Counts exclude bots and
-    // the admin's own sessions (cookie check in Views::shouldSkip).
-    // -------------------------------------------------------------------
-    $chartMax = 0;
-    foreach ($statsChart as $row) $chartMax = max($chartMax, (int) $row['views']);
-    ?>
-    <section class="admin-stats">
-        <header class="admin-stats-head">
-            <h2>Visit stats</h2>
-            <p class="admin-stats-note">Bots and your own visits are excluded. No IPs or sessions are stored.</p>
-        </header>
-
-        <div class="admin-stats-kpis">
-            <div class="admin-stats-kpi">
-                <div class="admin-stats-kpi-label">Today</div>
-                <div class="admin-stats-kpi-value"><?= number_format($statsToday) ?></div>
-            </div>
-            <div class="admin-stats-kpi">
-                <div class="admin-stats-kpi-label">Last 7 days</div>
-                <div class="admin-stats-kpi-value"><?= number_format($statsWeek) ?></div>
-            </div>
-            <div class="admin-stats-kpi">
-                <div class="admin-stats-kpi-label">Last 30 days</div>
-                <div class="admin-stats-kpi-value"><?= number_format($statsMonth) ?></div>
-            </div>
-        </div>
-
-        <h3 class="admin-stats-sub">Daily views (last 30 days)</h3>
-        <?php if ($chartMax === 0): ?>
-            <p class="admin-empty">No views recorded yet — give it a day for crawlers + real visitors to register.</p>
-        <?php else: ?>
-            <ol class="admin-stats-chart" aria-label="Daily views chart">
-                <?php foreach ($statsChart as $row):
-                    $h = $chartMax > 0 ? round($row['views'] * 100 / $chartMax) : 0;
-                ?>
-                    <li title="<?= htmlspecialchars($row['date'], ENT_QUOTES, 'UTF-8') ?>: <?= (int) $row['views'] ?> views">
-                        <div class="admin-stats-chart-track">
-                            <div class="admin-stats-chart-bar<?= $row['views'] > 0 ? '' : ' is-empty' ?>" style="height: <?= $h ?>%;">
-                                <span class="admin-stats-chart-value"><?= (int) $row['views'] ?: '' ?></span>
-                            </div>
-                        </div>
-                        <div class="admin-stats-chart-label"><?= htmlspecialchars(substr($row['date'], 5), ENT_QUOTES, 'UTF-8') ?></div>
-                    </li>
-                <?php endforeach; ?>
-            </ol>
-        <?php endif; ?>
-
-        <?php if (!empty($statsByType)): ?>
-            <h3 class="admin-stats-sub">By page type (last 30 days)</h3>
-            <ul class="admin-stats-types">
-                <?php foreach ($statsByType as $type => $views): ?>
-                    <li>
-                        <span class="admin-stats-type-name"><?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?></span>
-                        <span class="admin-stats-type-value"><?= number_format((int) $views) ?></span>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
-
-        <?php if (!empty($statsTop)): ?>
-            <h3 class="admin-stats-sub">Top viewed openings (last 30 days)</h3>
-            <ol class="admin-stats-top">
-                <?php foreach ($statsTop as $top): ?>
-                    <li>
-                        <span class="eco-tag"><?= htmlspecialchars($top['eco'], ENT_QUOTES, 'UTF-8') ?></span>
-                        <a href="<?= $baseEsc ?>/openings/<?= htmlspecialchars($top['slug'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener">
-                            <?= htmlspecialchars($top['name'], ENT_QUOTES, 'UTF-8') ?>
-                        </a>
-                        <span class="admin-stats-top-count"><?= number_format((int) $top['total']) ?> views</span>
-                    </li>
-                <?php endforeach; ?>
-            </ol>
-        <?php endif; ?>
-    </section>
+    <p>Visits: <a href="https://dash.cloudflare.com/?to=/:account/web-analytics" rel="noopener">Cloudflare Web Analytics</a>.</p>
 
     <h2>Submissions</h2>
     <form method="get" action="<?= $baseEsc ?>/admin" class="admin-filters">

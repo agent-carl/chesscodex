@@ -112,10 +112,10 @@ ob_start();
                 <?php if ($path === $page): ?>
                     <strong aria-current="page"><?= $esc($label) ?></strong>
                 <?php else: ?>
-                    <a href="<?= $baseEsc . $esc(I18n::url('/' . $path)) ?>"><?= $esc($label) ?></a>
+                    <a href="<?= $baseEsc . $esc('/' . $path) ?>"><?= $esc($label) ?></a>
                 <?php endif; ?>
             <?php endforeach; ?>
-            <a href="<?= $baseEsc . $esc(I18n::url('/openings')) ?>">All openings A–Z</a>
+            <a href="<?= $baseEsc . $esc('/openings') ?>">All openings A–Z</a>
         </nav>
         <?php if ($side !== null):
             $base = '/best-openings-for-' . $side; ?>
@@ -126,7 +126,7 @@ ob_start();
                     <?php if ($current): ?>
                         <strong aria-current="page"><?= $esc($label) ?></strong>
                     <?php else: ?>
-                        <a href="<?= $baseEsc . $esc(I18n::url($base . ($key !== '' ? '/' . $key : ''))) ?>"><?= $esc($label) ?></a>
+                        <a href="<?= $baseEsc . $esc($base . ($key !== '' ? '/' . $key : '')) ?>"><?= $esc($label) ?></a>
                     <?php endif; ?>
                 <?php endforeach; ?>
             </nav>
@@ -139,7 +139,7 @@ ob_start();
     <?php
     // Best-for pages: the answer to "what's the best opening for White?" in a
     // sentence, from the ranking below.
-    $answerLink = static fn (array $r): string => '<a href="' . $baseEsc . $esc(I18n::url('/openings/' . $r['slug'])) . '">'
+    $answerLink = static fn (array $r): string => '<a href="' . $baseEsc . $esc('/openings/' . $r['slug']) . '">'
         . $esc($r['name']) . '</a>';
     $scorePct = static fn (array $r): string => number_format($r['score'] * 100, 1) . '%';
     if ($side !== null && $rows):
@@ -182,7 +182,7 @@ ob_start();
                 <tr>
                     <td class="ranking-num"><?= $i + 1 ?></td>
                     <td class="ranking-name">
-                        <a href="<?= $baseEsc . $esc(I18n::url('/openings/' . $r['slug'])) ?>">
+                        <a href="<?= $baseEsc . $esc('/openings/' . $r['slug']) ?>">
                             <span class="eco-tag"><?= $esc($r['eco']) ?></span>
                             <span><?= $esc($r['name']) ?></span>
                         </a>
@@ -220,7 +220,7 @@ ob_start();
         <?php endif; ?>
         Each name appears once, as its most-played line.<?php if ($trendShares): ?>
         <?= $trendFrom ?>–<?= $trendTo ?>: the line's share of the games each year and how it changed —
-        <a href="<?= $baseEsc . $esc(I18n::url('/opening-trends')) ?>">the openings that rose and fell the most</a>.<?php endif; ?>
+        <a href="<?= $baseEsc . $esc('/opening-trends') ?>">the openings that rose and fell the most</a>.<?php endif; ?>
         <?php if ($page === 'gambits'): ?>
             A line counts as a gambit when its name has "Gambit" or "Countergambit" in it. Plain
             "… Gambit Declined" lines are left out, since nothing is sacrificed in them, but countergambits
@@ -255,7 +255,7 @@ ob_start();
         <ul>
             <?php foreach ($leaders as $key => [$label, $top]): ?>
             <li>
-                <a href="<?= $baseEsc . $esc(I18n::url('/' . $page . '/' . $key)) ?>"><?= $esc($label) ?></a>:
+                <a href="<?= $baseEsc . $esc('/' . $page . '/' . $key) ?>"><?= $esc($label) ?></a>:
                 <?= $answerLink($top) ?> — <?= $scorePct($top) ?>
             </li>
             <?php endforeach; ?>
@@ -266,7 +266,7 @@ ob_start();
     <?php
     // Gambits: where the engine and the results part ways (Rankings::gambitInsights).
     $insights = $insights ?? ['dubious' => [], 'fading' => []];
-    $lineLink = static fn (array $r): string => '<a href="' . $baseEsc . $esc(I18n::url('/openings/' . $r['slug'])) . '"><span class="eco-tag">'
+    $lineLink = static fn (array $r): string => '<a href="' . $baseEsc . $esc('/openings/' . $r['slug']) . '"><span class="eco-tag">'
         . $esc($r['eco']) . '</span> <span>' . $esc($r['name']) . '</span></a>';
     if ($insights['dubious'] || $insights['fading']): ?>
     <section class="gambits-numbers" id="stockfish-vs-practice">
@@ -345,7 +345,7 @@ ob_start();
                     $label = $name === $family ? $family : ltrim(substr($name, strlen($family)), ':, ');
                 ?>
                     <li>
-                        <a href="<?= $baseEsc . $esc(I18n::url('/openings/' . $g['slug'])) ?>" title="<?= $esc($name . ' (' . $g['eco'] . ')') ?>">
+                        <a href="<?= $baseEsc . $esc('/openings/' . $g['slug']) ?>" title="<?= $esc($name . ' (' . $g['eco'] . ')') ?>">
                             <span class="eco-tag"><?= $esc($g['eco']) ?></span>
                             <span class="openings-letter-name"><?= $esc($label) ?><?php if (($g['tail'] ?? '') !== ''): ?>
                                 <span class="openings-letter-tail"><?= $esc(Opening::keepNumbers((string) $g['tail'])) ?></span><?php endif; ?></span>
@@ -364,7 +364,7 @@ ob_start();
 $body        = ob_get_clean();
 $title       = $texts['title'];
 $description = $texts['desc'];
-$canonical   = $siteUrl . $baseUrl . I18n::url('/' . $page . ($level !== null ? '/' . $level : ''));
+$canonical   = $siteUrl . $baseUrl . '/' . $page . ($level !== null ? '/' . $level : '');
 // A level page stays out of the index until its numbers are in.
 $noindex     = $rows === [];
 $jsonLd = [
@@ -375,7 +375,7 @@ $jsonLd = [
             'name'        => $texts['h1'],
             'url'         => $canonical,
             'description' => $description,
-            'inLanguage'  => I18n::locale(),
+            'inLanguage'  => 'en',
             'mainEntity'  => [
                 '@type'           => 'ItemList',
                 'numberOfItems'   => count($rows),
@@ -383,14 +383,14 @@ $jsonLd = [
                     '@type'    => 'ListItem',
                     'position' => $i + 1,
                     'name'     => $r['name'],
-                    'url'      => $siteUrl . $baseUrl . I18n::url('/openings/' . $r['slug']),
+                    'url'      => $siteUrl . $baseUrl . '/openings/' . $r['slug'],
                 ], array_keys($rows), $rows),
             ],
         ],
         [
             '@type' => 'BreadcrumbList',
             'itemListElement' => [
-                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . '/'],
                 ['@type' => 'ListItem', 'position' => 2, 'name' => $texts['h1'],   'item' => $canonical],
             ],
         ],

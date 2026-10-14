@@ -1,20 +1,20 @@
 <?php
 /** @var string $title */
 /** @var string $baseUrl */
+/** @var string $siteUrl */
 /** @var string $body */
 /** @var string|null $description */
 /** @var string|null $canonical */
 /** @var bool|null $noindex */
 /** @var array|null $jsonLd */
 $title = $title ?? t('site.name');
-$baseUrl = $baseUrl ?? '';
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 $description = $description ?? t('home.description', ['count' => '3,690']);
 $canonical   = $canonical ?? null;
 $noindex     = !empty($noindex);
 $jsonLd      = $jsonLd ?? null;
 $ogType      = $ogType ?? 'website';   // templates may override to 'article'
-$locale      = I18n::locale();
+$locale      = 'en';
 
 // Search results show ~160 characters. Cut at a word boundary, counting
 // characters rather than bytes: a byte cut through a "·" or "ü" left invalid
@@ -36,9 +36,7 @@ $esc = static fn ($s) => htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
 // sent" (PHP-FPM flushes after 4 KB) and the link never appeared.
 $adminPending = null;
 if (isset($_COOKIE['codex_admin'])) {
-    require_once __DIR__ . '/../lib/Auth.php';
     if (Auth::isLoggedIn()) {
-        require_once __DIR__ . '/../lib/Submissions.php';
         $adminPending = (int) (Submissions::counts()['pending'] ?? 0);
     }
 }
@@ -47,7 +45,6 @@ if (isset($_COOKIE['codex_admin'])) {
 // served from its cache for up to a day if the server can't answer. Browsers
 // still check back every time (max-age=0). Admins, the admin area, errors
 // and anything but GET/HEAD send no such header, so they're never cached.
-// (Views are counted by the browser — see Views::mark() — so cached pages count.)
 $pagePath = (string) (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/');
 if (!headers_sent() && $adminPending === null
     && in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)
@@ -57,10 +54,10 @@ if (!headers_sent() && $adminPending === null
 }
 
 $projectRoot = realpath(__DIR__ . '/..');
-// Asset URL helper. Cache-bust uses a content hash (first 8 hex of SHA-1
-// over the first 64 KB) so versioned URLs only change when content actually
-// changes — better than mtime which flips on touch / git checkout / FTP
-// re-upload of unchanged files. Cached in-memory per request.
+// Asset URL helper. Cache-bust uses a content hash (the first 8 hex of the
+// file's md5) so versioned URLs only change when content actually changes —
+// better than mtime, which flips on touch, git checkout or an upload of
+// unchanged files. Cached in-memory per request.
 $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
     static $cache = [];
     if (isset($cache[$path])) return $cache[$path];
@@ -70,8 +67,8 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
         // Hash the whole file: hashing only the first 64 KB kept the version
         // unchanged for edits near the end of style.min.css (73 KB), so
         // Cloudflare and browsers kept serving the stale "immutable" copy.
-        // xxh3 is fast enough to run per request.
-        $hash = @hash_file('xxh3', $abs);
+        // md5, as tools/build.mjs versions the vendor imports in the modules.
+        $hash = @hash_file('md5', $abs);
         $ver  = $hash !== false ? substr($hash, 0, 8) : (string) @filemtime($abs);
     }
     return $cache[$path] = $baseEsc . htmlspecialchars($path, ENT_QUOTES, 'UTF-8') . '?v=' . $ver;
@@ -179,11 +176,11 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
 <?php /* has-board keeps the empty #board placeholder at its full square size
          until Chessground mounts (see ".opening-board:empty" in public/css/);
          without it the board popped in late and shifted the page. */ ?>
-<body<?= !empty($needsBoard) ? ' class="has-board"' : '' ?><?= Views::bodyAttributes() ?>>
+<body<?= !empty($needsBoard) ? ' class="has-board"' : '' ?>>
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <header class="site-header">
         <div class="site-header-inner">
-            <a class="brand" href="<?= $baseEsc . $esc(I18n::url('/')) ?>">
+            <a class="brand" href="<?= $baseEsc . $esc('/') ?>">
                 <span class="brand-mark" aria-hidden="true">&#9816;</span>
                 <span class="brand-name"><?= $esc(t('site.name')) ?></span>
             </a>
@@ -198,17 +195,17 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
                 $navPath === $route ? ' aria-current="page"' : '';
             ?>
             <nav class="site-nav">
-                <a href="<?= $baseEsc . $esc(I18n::url('/openings')) ?>"<?= $navAria('/openings') ?>>Openings</a>
-                <a href="<?= $baseEsc . $esc(I18n::url('/eco')) ?>" title="Openings by ECO code"<?= $navAria('/eco') ?>>ECO</a>
-                <a href="<?= $baseEsc . $esc(I18n::url('/rankings')) ?>"<?= $navAria('/rankings') ?>>Rankings</a>
-                <a href="<?= $baseEsc . $esc(I18n::url('/search')) ?>" title="Press / on any page to search"<?= $navAria('/search') ?>>
+                <a href="<?= $baseEsc . $esc('/openings') ?>"<?= $navAria('/openings') ?>>Openings</a>
+                <a href="<?= $baseEsc . $esc('/eco') ?>" title="Openings by ECO code"<?= $navAria('/eco') ?>>ECO</a>
+                <a href="<?= $baseEsc . $esc('/rankings') ?>"<?= $navAria('/rankings') ?>>Rankings</a>
+                <a href="<?= $baseEsc . $esc('/search') ?>" title="Press / on any page to search"<?= $navAria('/search') ?>>
                     <?= $esc(t('nav.search')) ?>
                     <kbd class="kbd-hint" aria-hidden="true">/</kbd>
                 </a>
-                <a class="nav-random" href="<?= $baseEsc . $esc(I18n::url('/random')) ?>" title="Jump to a random opening" rel="nofollow">
+                <a class="nav-random" href="<?= $baseEsc . $esc('/random') ?>" title="Jump to a random opening" rel="nofollow">
                     Random
                 </a>
-                <a href="<?= $baseEsc . $esc(I18n::url('/repertoire')) ?>" title="The lines you saved, to drill and download" rel="nofollow"<?= $navAria('/repertoire') ?>>Repertoire</a>
+                <a href="<?= $baseEsc . $esc('/repertoire') ?>" title="The lines you saved, to drill and download" rel="nofollow"<?= $navAria('/repertoire') ?>>Repertoire</a>
                 <?php if ($adminPending !== null): ?>
                 <a class="admin-link" href="<?= $baseEsc ?>/admin">
                     Admin
@@ -248,14 +245,14 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
         <?php if ($footerOpenings): ?>
         <nav class="footer-links" aria-label="Popular openings and rankings">
             <p><span class="footer-links-label">Popular openings:</span>
-                <?php foreach ($footerOpenings as $i => $fo): ?><?= $i > 0 ? ' · ' : '' ?><a href="<?= $baseEsc . $esc(I18n::url('/openings/' . $fo['slug'])) ?>"><?= $esc($fo['name']) ?></a><?php endforeach; ?>
+                <?php foreach ($footerOpenings as $i => $fo): ?><?= $i > 0 ? ' · ' : '' ?><a href="<?= $baseEsc . $esc('/openings/' . $fo['slug']) ?>"><?= $esc($fo['name']) ?></a><?php endforeach; ?>
             </p>
             <p><span class="footer-links-label">Browse:</span>
-                <a href="<?= $baseEsc . $esc(I18n::url('/openings')) ?>">All openings A–Z</a> ·
-                <a href="<?= $baseEsc . $esc(I18n::url('/eco')) ?>">ECO codes</a> ·
-                <?php foreach (Rankings::LABELS as $fPath => $fLabel): ?><a href="<?= $baseEsc . $esc(I18n::url('/' . $fPath)) ?>"><?= $esc($fLabel) ?></a> · <?php endforeach; ?>
-                <a href="<?= $baseEsc . $esc(I18n::url('/search')) ?>">Opening identifier</a> ·
-                <a href="<?= $baseEsc . $esc(I18n::url('/train')) ?>">Opening trainer</a>
+                <a href="<?= $baseEsc . $esc('/openings') ?>">All openings A–Z</a> ·
+                <a href="<?= $baseEsc . $esc('/eco') ?>">ECO codes</a> ·
+                <?php foreach (Rankings::LABELS as $fPath => $fLabel): ?><a href="<?= $baseEsc . $esc('/' . $fPath) ?>"><?= $esc($fLabel) ?></a> · <?php endforeach; ?>
+                <a href="<?= $baseEsc . $esc('/search') ?>">Opening identifier</a> ·
+                <a href="<?= $baseEsc . $esc('/train') ?>">Opening trainer</a>
             </p>
         </nav>
         <?php endif; ?>

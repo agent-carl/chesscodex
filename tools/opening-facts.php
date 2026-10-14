@@ -16,11 +16,7 @@ if (PHP_SAPI !== 'cli') {
     exit;
 }
 
-require __DIR__ . '/../lib/Autoload.php';
-require_once __DIR__ . '/../lib/db.php';
-require_once __DIR__ . '/../lib/ChessEngine.php';
-require_once __DIR__ . '/../lib/StatsCache.php';
-require_once __DIR__ . '/../lib/LevelStats.php';
+require __DIR__ . '/../_composer_vendor/autoload.php';
 
 $slugs = array_slice($argv, 1);
 if ($slugs === ['--described']) {
@@ -31,7 +27,7 @@ if (!$slugs) {
     exit(2);
 }
 
-$find = chess_codex_db()->prepare('SELECT id, eco, name, pgn_moves FROM codex_openings WHERE slug = :s');
+$find = chess_codex_db()->prepare('SELECT id, eco, name, pgn_moves, uci FROM codex_openings WHERE slug = :s');
 $line = static function (string $label, int $w, int $d, int $b): string {
     $t = max(1, $w + $d + $b);
     return sprintf("  %-13s %13s games  W %4.1f%%  D %4.1f%%  B %4.1f%%\n",
@@ -48,7 +44,7 @@ foreach ($slugs as $slug) {
         continue;
     }
     echo "$slug — {$o['eco']} {$o['name']}\n  moves: {$o['pgn_moves']}\n";
-    $all = StatsCache::cached(ChessEngine::fromPgn((string) $o['pgn_moves'])->uciHistory());
+    $all = StatsCache::cached(Opening::uci($o));
     echo $all
         ? $line('all Lichess', $all['white'], $all['draws'], $all['black'])
         : "  all Lichess   (not cached)\n";

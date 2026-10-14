@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 /**
  * Pre-warm the Lichess Opening Explorer cache for openings that don't yet
- * have a cached entry. Iterates rows of codex_openings, computes the UCI
- * play sequence via ChessEngine (which is already populated), then asks
- * StatsCache to fetch — populating codex_stats_cache as a side effect.
+ * have a cached entry. Iterates rows of codex_openings and asks StatsCache
+ * to fetch each line's moves (its uci column) — populating codex_stats_cache
+ * as a side effect.
  *
  * Usage (the token may also go in a POST body, which keeps it out of the
  * access log: curl -d token=… "http://127.0.0.1:8081/prewarm.php?n=60"):
@@ -21,13 +21,11 @@ declare(strict_types=1);
  * from `offset`. Skips any whose stats are already cached (cheap check).
  * A pause of ~3 s per fetch keeps under Lichess's rate limit (~8 fetches/run).
  *
- * Run multiple times until "no new entries needed" appears. Or set up a
- * cron via OVH panel to hit this URL daily.
+ * Run multiple times until "no new entries needed" appears; the server's
+ * prewarm-all.sh does that.
  */
 
-require __DIR__ . '/lib/db.php';
-require __DIR__ . '/lib/ChessEngine.php';
-require_once __DIR__ . '/lib/StatsCache.php';
+require __DIR__ . '/_composer_vendor/autoload.php';
 
 $config = require __DIR__ . '/config.php';
 
@@ -79,7 +77,7 @@ emit("total openings: $total");
 
 // Shortest lines first: the main openings people search for (Sicilian,
 // Ruy Lopez, Queen's Gambit…) get their statistics before deep sidelines.
-$stmt = $pdo->prepare("SELECT id, slug, pgn_moves FROM codex_openings ORDER BY move_count, id LIMIT :n OFFSET :o");
+$stmt = $pdo->prepare("SELECT id, slug, uci FROM codex_openings ORDER BY move_count, id LIMIT :n OFFSET :o");
 $stmt->bindValue(':n', $n, PDO::PARAM_INT);
 $stmt->bindValue(':o', $offset, PDO::PARAM_INT);
 $stmt->execute();
@@ -105,8 +103,7 @@ foreach ($rows as $row) {
     }
 
     try {
-        $engine = ChessEngine::fromPgn((string) $row['pgn_moves']);
-        $uci = $engine->uciHistory();
+        $uci = Opening::uci($row);
         if (count($uci) === 0) { $skipped++; continue; }
 
         $key = StatsCache::keyFor($uci);

@@ -16,11 +16,10 @@ declare(strict_types=1);
  * Cloudflare and social sites fetch the new card instead of the one they
  * keep for 30 days.
  *
- * Requires PHP GD with PNG + TTF support. OVH shared hosting ships both.
+ * Requires PHP GD with PNG + TTF support.
  */
 
-require __DIR__ . '/lib/db.php';
-require __DIR__ . '/lib/ChessEngine.php';
+require __DIR__ . '/_composer_vendor/autoload.php';
 
 header('Content-Type: image/png');
 header('Cache-Control: public, max-age=2592000, immutable');
@@ -78,18 +77,14 @@ $slug = $validatedSlug;
 $row = null;
 if ($slug !== '') {
     $stmt = chess_codex_db()->prepare(
-        "SELECT eco, name, fen, pgn_moves FROM codex_openings WHERE slug = :s LIMIT 1"
+        "SELECT eco, name, fen, uci FROM codex_openings WHERE slug = :s LIMIT 1"
     );
     $stmt->execute(['s' => $slug]);
     $row = $stmt->fetch() ?: null;
 }
 $fen = $row ? (string) $row['fen'] : 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-try {
-    $history  = $row ? ChessEngine::fromPgn((string) $row['pgn_moves'])->uciHistory() : [];
-    $lastMove = $history ? (string) end($history) : null;
-} catch (Throwable) {
-    $lastMove = null;
-}
+$history  = $row ? Opening::uci($row) : [];
+$lastMove = $history ? (string) end($history) : null;
 $pieceFont = og_piece_font();
 
 if ($diagram) {
@@ -237,7 +232,7 @@ function self_first_existing_font(): ?string
     $resolved = true;
 
     $candidates = [
-        // Common Linux/OVH paths
+        // Common Linux paths
         '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
         '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
         '/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf',

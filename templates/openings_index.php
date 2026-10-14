@@ -6,7 +6,7 @@
 /** @var string $siteUrl */
 $esc     = static fn ($s): string => htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
 $baseEsc = $esc($baseUrl);
-$letterUrl = static fn (string $l): string => $baseEsc . $esc(I18n::url('/openings/letter/' . strtolower($l)));
+$letterUrl = static fn (string $l): string => $baseEsc . $esc('/openings/letter/' . strtolower($l));
 $familyCount = array_sum(array_map('count', $families));
 ob_start();
 ?>
@@ -16,10 +16,10 @@ ob_start();
         <p class="lede">
             All <?= $familyCount ?> chess openings, with the <?= number_format($total) ?> named lines filed under them.
             Pick an opening, or open a letter for every named line. Or use
-            <a href="<?= $baseEsc . $esc(I18n::url('/search')) ?>">search</a>
+            <a href="<?= $baseEsc . $esc('/search') ?>">search</a>
             if you know the moves, browse by
-            <a href="<?= $baseEsc . $esc(I18n::url('/eco')) ?>">ECO code</a>, or see the
-            <a href="<?= $baseEsc . $esc(I18n::url('/rankings')) ?>">rankings from Lichess games</a>.
+            <a href="<?= $baseEsc . $esc('/eco') ?>">ECO code</a>, or see the
+            <a href="<?= $baseEsc . $esc('/rankings') ?>">rankings from Lichess games</a>.
         </p>
         <nav class="openings-jump" aria-label="Every named line, by letter">
             <?php foreach ($counts as $letter => $n): ?>
@@ -39,7 +39,7 @@ ob_start();
             <ul class="openings-letter-list">
                 <?php foreach ($list as $f): ?>
                     <li>
-                        <a href="<?= $baseEsc . $esc(I18n::url('/openings/' . $f['slug'])) ?>">
+                        <a href="<?= $baseEsc . $esc('/openings/' . $f['slug']) ?>">
                             <span class="eco-tag"><?= $esc($f['eco']) ?></span>
                             <span class="openings-letter-name"><?= $esc($f['name']) ?></span>
                             <span class="openings-letter-plies"><?= $f['lines'] === 1 ? '1 line' : $f['lines'] . ' lines' ?></span>
@@ -55,7 +55,7 @@ $body = ob_get_clean();
 $title = 'List of Chess Openings A–Z: ' . $familyCount . ' Openings, ' . number_format($total) . ' Named Lines';
 $description = 'All ' . $familyCount . ' chess openings from A to Z, with the ' . number_format($total)
              . ' named variations filed under them — each with its moves, ECO code and Lichess win rates.';
-$canonical = $siteUrl . $baseUrl . I18n::url('/openings');
+$canonical = $siteUrl . $baseUrl . '/openings';
 $jsonLd = [
     '@context' => 'https://schema.org',
     '@graph'   => [
@@ -64,12 +64,12 @@ $jsonLd = [
             'name'        => 'List of chess openings A–Z',
             'url'         => $canonical,
             'description' => $description,
-            'inLanguage'  => I18n::locale(),
+            'inLanguage'  => 'en',
         ],
         [
             '@type' => 'BreadcrumbList',
             'itemListElement' => [
-                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . I18n::url('/')],
+                ['@type' => 'ListItem', 'position' => 1, 'name' => t('site.name'), 'item' => $siteUrl . $baseUrl . '/'],
                 ['@type' => 'ListItem', 'position' => 2, 'name' => 'List of chess openings A–Z', 'item' => $canonical],
             ],
         ],

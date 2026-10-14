@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/RateLimit.php';
-
 /**
  * Session-based admin auth + CSRF for the description-review admin panel.
  *

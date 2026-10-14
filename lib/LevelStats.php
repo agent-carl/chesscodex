@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/db.php';
-
 /**
  * How an opening scores at each playing level — four Lichess rating bands and
  * the masters database — plus a few master games, fetched slowly by
@@ -144,7 +142,6 @@ final class LevelStats
     /** Asks Lichess for one line at one level (waiting for the shared lock) and stores the answer. */
     public static function fetchAndStore(int $openingId, array $uciMoves, string $level): void
     {
-        require_once __DIR__ . '/LichessExplorer.php';
         $ratings = self::LEVELS[$level]['ratings'];
         $data = $ratings === null
             ? LichessExplorer::fetchMasters($uciMoves, self::TOP_GAMES, true)

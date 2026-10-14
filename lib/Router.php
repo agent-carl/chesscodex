@@ -10,8 +10,8 @@ final class Router
 {
     /** @var array<int, array{pattern:string, handler:callable}> */
     private array $routes = [];
-    /** @var callable */
-    private $notFound;
+    /** @var callable|null */
+    private $notFound = null;
 
     public function add(string $pattern, callable $handler): void
     {

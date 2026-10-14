@@ -17,10 +17,7 @@ if (PHP_SAPI !== 'cli') {
     http_response_code(404);
     exit;
 }
-require __DIR__ . '/../lib/Autoload.php';
-require_once __DIR__ . '/../lib/db.php';
-require_once __DIR__ . '/../lib/ChessEngine.php';
-require_once __DIR__ . '/../lib/LichessExplorer.php';
+require __DIR__ . '/../_composer_vendor/autoload.php';
 
 $opts   = getopt('', ['limit:', 'max-age:']);
 $limit  = (int) ($opts['limit'] ?? 1500);
@@ -53,7 +50,7 @@ echo date('H:i'), "  every game: history through $lastMonth\n";
 sleep(3);
 
 $stmt = chess_codex_db()->prepare(
-    'SELECT id, slug, pgn_moves FROM codex_openings ORDER BY popularity DESC, id LIMIT :n'
+    'SELECT id, slug, uci FROM codex_openings ORDER BY popularity DESC, id LIMIT :n'
 );
 $stmt->bindValue('n', $limit, PDO::PARAM_INT);
 $stmt->execute();
@@ -66,7 +63,7 @@ foreach ($lines as $i => $line) {
     if ($at !== null && time() - strtotime($at) < $maxAge) {
         $skipped++;
     } else {
-        $uci = ChessEngine::fromPgn((string) $line['pgn_moves'])->uciHistory();
+        $uci = Opening::uci($line);
         $ok  = $attempt(static fn (): string => YearStats::fetchAndStore((int) $line['id'], $uci, $lastMonth), (string) $line['slug']);
         $ok === false ? $failed++ : $done++;
         sleep(3);

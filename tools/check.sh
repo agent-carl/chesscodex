@@ -1,46 +1,34 @@
 #!/usr/bin/env bash
-# One command before a commit or deploy, with short output: PHP syntax, the
-# unit tests, minified assets rebuilt from their sources, JavaScript syntax.
-# Prints one line per step (details only on failure); exits non-zero on failure.
+# One command before a commit or deploy, with short output: PHPStan (which
+# also catches PHP syntax errors), the PHPUnit tests, and the minified assets
+# rebuilt by esbuild. One line per step, details only on failure; exits
+# non-zero on failure. Needs the packages: `composer install` and `npm ci`.
 #
 #   bash tools/check.sh
 set -uo pipefail
 cd "$(dirname "$0")/.."
 fail=0
 
-# 1. PHP syntax — everything except vendor/ and the local test copy.
-n=0
-while IFS= read -r f; do
-    n=$((n + 1))
-    out=$(php -l "$f" 2>&1) || { echo "$out"; fail=1; }
-done < <(find . -name '*.php' -not -path './vendor/*' -not -path './.dev/*' -not -path './.git/*')
-echo "php -l: $n files"
-
-# 2. Unit tests.
-out=$(php tests/run.php 2>&1)
-if printf '%s\n' "$out" | grep -q '^failed: 0$'; then
-    echo "tests: $(printf '%s\n' "$out" | grep '^passed:')"
+# 1. Static analysis (phpstan.neon).
+if out=$(_composer_vendor/bin/phpstan analyse --memory-limit=1G --no-progress --error-format=raw 2>&1); then
+    echo "phpstan: no errors"
 else
-    printf '%s\n' "$out" | tail -n 20
+    printf '%s\n' "$out" | grep -E 'identifier=|^\?:|rror' | head -n 20
+    fail=1
+fi
+
+# 2. Unit tests (phpunit.xml.dist).
+if out=$(_composer_vendor/bin/phpunit --colors=never 2>&1); then
+    echo "phpunit: $(printf '%s\n' "$out" | grep -o 'OK ([^)]*)')"
+else
+    printf '%s\n' "$out" | tail -n 30
     fail=1
 fi
 
 # 3. Minified assets: rebuild, then report which ones changed (commit those too).
-php tools/minify.php > /dev/null || fail=1
-changed=$(git status --porcelain -- 'public/*.min.js' 'public/*.min.css' | awk '{print $2}' | tr '\n' ' ')
-echo "minify: ${changed:-all up to date}"
-
-# 4. JavaScript syntax (sources and minified files).
-if command -v node > /dev/null; then
-    n=0
-    for f in public/*.js; do
-        n=$((n + 1))
-        out=$(node --check "$f" 2>&1) || { echo "$f: $out" | head -n 5; fail=1; }
-    done
-    echo "node --check: $n files"
-else
-    echo "node --check: skipped (node not installed)"
-fi
+npm run --silent build > /dev/null || fail=1
+changed=$(git status --porcelain -- 'public/*.min.js' 'public/*.min.css' vendor/chess.min.js | awk '{print $2}' | tr '\n' ' ')
+echo "build: ${changed:-all up to date}"
 
 [ "$fail" -eq 0 ] && echo "OK" || echo "FAILED"
 exit "$fail"
