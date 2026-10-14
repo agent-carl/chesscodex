@@ -2,7 +2,7 @@ config.php
 .DS_Store
 *.log
 
-# SQLite database and local backup copies (deploy/pull-backup.sh)
+# SQLite database and local backup copies pulled from the server
 db/*.sqlite
 db/*.sqlite-*
 backups/

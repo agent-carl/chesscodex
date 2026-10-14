@@ -4,8 +4,8 @@ declare(strict_types=1);
 /**
  * PDO connection to the SQLite database: one file (config.php → db.path,
  * db/chesscodex.sqlite by default). The site ran on MySQL on its first host;
- * since the move to the Raspberry Pi it is SQLite only, which saves running a
- * database server in 1 GB of RAM.
+ * now it is SQLite only, which saves running a database server on a small
+ * machine.
  */
 function chess_codex_db(): PDO
 {
@@ -32,7 +32,7 @@ function chess_codex_sqlite_connect(string $path): PDO
         : new PDO('sqlite:' . $path, null, null, $options);
 
     $pdo->exec('PRAGMA busy_timeout = 5000');   // wait for a concurrent writer instead of failing
-    $pdo->exec('PRAGMA synchronous = NORMAL');  // safe with WAL; far fewer fsyncs on the SD card
+    $pdo->exec('PRAGMA synchronous = NORMAL');  // safe with WAL; far fewer fsyncs
     $pdo->exec('PRAGMA foreign_keys = ON');
 
     // MySQL's utf8mb4_unicode_ci makes LIKE case- AND accent-insensitive

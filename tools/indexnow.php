@@ -66,7 +66,7 @@ $keyLocation = SITE . "/$key.txt";
 
 [$status, $body] = indexnow_http($keyLocation);
 if ($status !== 200 || trim($body) !== $key) {
-    fwrite(STDERR, "$keyLocation answers $status without the key — deploy first (bash deploy/deploy.sh).\n");
+    fwrite(STDERR, "$keyLocation answers $status without the key — deploy the site first.\n");
     exit(1);
 }
 

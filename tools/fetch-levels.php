@@ -9,7 +9,7 @@ declare(strict_types=1);
  *
  *   php tools/fetch-levels.php [--limit 500] [--max-age 30]
  *
- * On the Pi (the Lichess token is in its config.php):
+ * On the server (the Lichess token is in its config.php):
  *   nohup php tools/fetch-levels.php > ~/fetch-levels.log 2>&1 &
  */
 if (PHP_SAPI !== 'cli') {

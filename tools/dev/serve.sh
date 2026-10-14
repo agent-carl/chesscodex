@@ -7,7 +7,7 @@
 #
 #   bash tools/dev/serve.sh              copy the code, start the server
 #   bash tools/dev/serve.sh --sync       only re-copy the code (server keeps running)
-#   bash tools/dev/serve.sh --fresh-db   pull the newest DB backup from the Pi first
+#   bash tools/dev/serve.sh --fresh-db   pull the newest DB backup from the server first
 #
 # Needs PHP 8.3+ with pdo_sqlite (loaded with -d when it isn't on by default).
 set -euo pipefail
@@ -17,8 +17,12 @@ DEV=.dev/site
 PORT=${PORT:-8099}
 MODE=${1:-}
 
+# Backups come from the server config's pull-backup.sh: $CHESSCODEX_OPS, by
+# default ../pi-home/chesscodex next to this checkout.
+OPS=${CHESSCODEX_OPS:-../pi-home/chesscodex}
 if [ "$MODE" = "--fresh-db" ] || ! ls backups/chesscodex-*.sqlite.gz >/dev/null 2>&1; then
-    bash deploy/pull-backup.sh
+    [ -f "$OPS/pull-backup.sh" ] || { echo "No DB backup in backups/, and no $OPS/pull-backup.sh to fetch one"; exit 1; }
+    CHESSCODEX_REPO="$PWD" bash "$OPS/pull-backup.sh"
     rm -f "$DEV/db/chesscodex.sqlite"
 fi
 

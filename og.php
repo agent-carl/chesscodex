@@ -148,7 +148,7 @@ if ($row) {
 $padL = 80;
 // Text stays left of the board, 40 px clear of it.
 $maxW = (int) $boardLeft - 40 - $padL;
-// TrueType when the host has a font (DejaVu on the Pi, Arial on Windows),
+// TrueType when the host has a font (DejaVu on the server, Arial on Windows),
 // else GD's built-in bitmap fonts, scaled up pixel by pixel.
 $ttf = self_first_existing_font();
 
@@ -255,12 +255,12 @@ function self_first_existing_font(): ?string
 }
 
 /**
- * A font with DejaVu's chess glyphs (U+2654–265F), as on the Pi. Not Segoe
+ * A font with DejaVu's chess glyphs (U+2654–265F), as on the server. Not Segoe
  * UI Symbol: its solid pawn has a hollow body and reads as a white one.
  */
 function og_piece_font(): ?string
 {
-    // DejaVu on the Pi; Segoe UI Symbol for the local copy on Windows.
+    // DejaVu on the server; Segoe UI Symbol for the local copy on Windows.
     foreach (['/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
               '/usr/share/fonts/dejavu/DejaVuSans.ttf', 'C:/Windows/Fonts/seguisym.ttf'] as $f) {
         if (@is_file($f)) return $f;

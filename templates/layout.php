@@ -44,7 +44,7 @@ if (isset($_COOKIE['codex_admin'])) {
 }
 
 // Pages anonymous visitors see may be kept by Cloudflare for 10 minutes, and
-// served from its cache for up to a day if the Pi can't answer. Browsers
+// served from its cache for up to a day if the server can't answer. Browsers
 // still check back every time (max-age=0). Admins, the admin area, errors
 // and anything but GET/HEAD send no such header, so they're never cached.
 // (Views are counted by the browser — see Views::mark() — so cached pages count.)

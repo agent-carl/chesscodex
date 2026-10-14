@@ -10,7 +10,7 @@ declare(strict_types=1);
  *
  *   php tools/backfill-popularity.php
  *
- * Run on the Pi after warming the stats cache (deploy/prewarm-all.sh calls it
+ * Run on the server after warming the stats cache (the prewarm job calls it
  * when it finishes).
  */
 

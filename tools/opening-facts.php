@@ -4,7 +4,7 @@ declare(strict_types=1);
 /**
  * Prints the numbers a description may quote, straight from the database:
  * ECO, moves, all Lichess games and the results by rating band and among
- * masters. No Lichess requests. Use it (on the Pi, where the stats are
+ * masters. No Lichess requests. Use it (on the server, where the stats are
  * freshest) when writing or checking db/descriptions/*.md.
  *
  *   php tools/opening-facts.php <slug> [<slug> …]

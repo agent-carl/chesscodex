@@ -5,7 +5,7 @@ require_once __DIR__ . '/db.php';
 
 /**
  * Stockfish's evaluation of each opening's final position — score, best move
- * and main line — computed on the Pi by tools/engine-eval.php and kept in
+ * and main line — computed on the server by tools/engine-eval.php and kept in
  * codex_engine_eval, keyed by FEN. Pages only read the table.
  *
  * Scores are from White's side: +0.35 means White is a third of a pawn up.

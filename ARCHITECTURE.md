@@ -8,8 +8,8 @@ without breaking something subtle.
 
 ```
 Browser → Cloudflare (edge cache, 10 min for anonymous pages)
-        → Cloudflare Tunnel (cloudflared on the Pi)
-        → nginx 127.0.0.1:8081 (deploy/nginx/: static files, headers, CSP)
+        → Cloudflare Tunnel to the server
+        → nginx (static files, security headers, CSP)
         → PHP-FPM → index.php
                       │
                       ├─ lib/Autoload.php   class map: lib/<Class>.php
@@ -94,8 +94,8 @@ cached on disk.
 
 ## Database schema
 
-One SQLite file, `db/chesscodex.sqlite` (WAL mode, `synchronous=NORMAL` for
-the SD card), 6 MB. `db/schema.sqlite.sql` creates it and `tools/seed.php`
+One SQLite file, `db/chesscodex.sqlite` (WAL mode, `synchronous=NORMAL`),
+6 MB. `db/schema.sqlite.sql` creates it and `tools/seed.php`
 fills it from `db/*.tsv`. `lib/db.php` registers a PHP `LIKE` with MySQL's
 semantics (case- and accent-insensitive) — the site ran on MySQL on its first
 host — so name searches match "grunfeld" to "Grünfeld". Hot prefix lookups
@@ -119,7 +119,7 @@ codex_migrations             ← migration tracker (db/migrations/sqlite/, none 
 ```
 
 Pages never call Lichess: statistics come from the tables above, filled by
-slow sequential CLI jobs on the Pi (the stats prewarm, fetch-levels, fetch-years).
+slow sequential CLI jobs on the server (the stats prewarm, fetch-levels, fetch-years).
 
 ## Caching layers
 
@@ -128,7 +128,7 @@ slow sequential CLI jobs on the Pi (the stats prewarm, fetch-levels, fetch-years
 | Cloudflare edge | HTML of anonymous pages | 10 min (`s-maxage=600`), stale up to a day on errors | Expires; purge in the Cloudflare dashboard |
 | Static files | browser + Cloudflare | 30 days, `immutable` | New `?v=<hash>` URL when the file changes |
 | Disk JSON cache | `db/cache/*.json` | 1–6 h | Expires; `Cache::forget($key)` |
-| Lichess stats | `codex_stats_cache` | refreshed by the prewarm on the Pi | `prewarm-all.sh` |
+| Lichess stats | `codex_stats_cache` | refreshed by the stats prewarm on the server | `prewarm.php` |
 | OG cards / diagrams | `db/og_cache/*.png`, `*.webp` | 30 days, and whenever og.php changes | Delete the file |
 | Sitemap | `db/sitemap_cache.xml` | until deleted | Delete it after adding URLs |
 | Service worker | the visitor's browser | per `CACHE_VERSION` | Versioned assets cache-first, pages network-first, `/api/*` and `/admin` never |
@@ -184,7 +184,7 @@ loads strings from `lib/lang/en.php`).
 | Threat | Mitigation |
 |---|---|
 | XSS in descriptions | `Parsedown::setSafeMode(true)` — raw HTML stripped, `javascript:` URLs neutered |
-| XSS generally | Every output escaped; CSP without inline scripts (deploy/nginx/chesscodex-headers.conf) |
+| XSS generally | Every output escaped; CSP without inline scripts, sent by nginx |
 | CSRF on admin actions | per-session token, `Auth::checkCsrf()` |
 | Admin area | Cloudflare Access in front, bcrypt login with `RateLimit::check('admin_login', 5)` |
 | SQL injection | PDO prepared statements only |
@@ -196,7 +196,7 @@ loads strings from `lib/lang/en.php`).
 
 ## When something breaks
 
-- **500 on every URL** — `/var/log/nginx/chesscodex.error.log` and PHP-FPM's log on the Pi; usually a syntax error in a deploy (`bash tools/check.sh` catches those first).
+- **500 on every URL** — the web server's and PHP-FPM's error logs; usually a syntax error in a deploy (`bash tools/check.sh` catches those first).
 - **Stats panel says "Statistics unavailable"** — nothing cached for that line yet, or the prewarm hit Lichess limits. See `db/log/`.
 - **Stale page after a deploy** — Cloudflare keeps HTML up to 10 minutes; add `?anything` to see the live page.
 - **Diagram or share card looks old** — delete its file in `db/og_cache/`.
@@ -205,4 +205,3 @@ loads strings from `lib/lang/en.php`).
 
 - Unit tests cover the classes (`tests/run.php`); `tests/smoke.php [BASE]` checks every route over HTTP. No template tests.
 - CSS is 16 files layered in cascade order; overridden declarations were removed on 2026-09-27, but many selectors are still set in several files.
-- Backups: nightly SQLite backup on the Pi to Cloudflare R2 (deploy/chesscodex-backup, systemd timer).

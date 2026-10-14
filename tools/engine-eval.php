@@ -12,9 +12,9 @@ declare(strict_types=1);
  * --shard I/N takes every N-th position starting at I (1..N), so N copies can
  * run side by side on a many-core machine: one engine per position scales far
  * better than many threads on one position. The results can then be copied
- * to the Pi's database.
+ * to the server's database.
  *
- * On the Pi, at the lowest CPU priority so the site always comes first:
+ * On the server, at the lowest CPU priority so the site always comes first:
  *   nohup chrt -i 0 php tools/engine-eval.php --engine ~/bin/stockfish > ~/engine-eval.log 2>&1 < /dev/null &
  */
 if (PHP_SAPI !== 'cli') {

@@ -36,8 +36,8 @@ php tools/seed.php                       # creates db/chesscodex.sqlite from db/
 php -S 127.0.0.1:8099 -t . tools/dev/router.php
 ```
 
-Open <http://127.0.0.1:8099>. `tools/dev/router.php` stands in for the nginx
-rules, so the same security headers and Content Security Policy apply locally.
+Open <http://127.0.0.1:8099>. `tools/dev/router.php` stands in for the web
+server's rules (blocked paths, PHP entry points, the service worker's scope).
 
 Game statistics come from the Lichess Opening Explorer, which needs a personal
 API token (`lichess_token` in `config.php`, no scopes). Without one the pages
@@ -59,8 +59,8 @@ bash tools/check.sh      # PHP lint, unit tests, minified files, JS syntax
 ## How it's built
 
 PHP 8.4, SQLite and plain JavaScript: no framework, no Composer packages, no
-npm and no bundler. In production it runs on a Raspberry Pi 5 (nginx, PHP-FPM)
-behind a Cloudflare Tunnel; the server configuration is in `deploy/`.
+npm and no bundler. In production it runs under nginx and PHP-FPM on a small
+home server, with Cloudflare in front.
 
 | Path | What |
 |---|---|

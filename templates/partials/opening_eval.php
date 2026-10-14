@@ -1,7 +1,7 @@
 <?php
 /**
  * Stockfish's evaluation of the line's final position (EngineEval, computed
- * on the Pi by tools/engine-eval.php), at the end of the Lichess statistics
+ * on the server by tools/engine-eval.php), at the end of the Lichess statistics
  * column. Nothing until the position has been evaluated.
  * Included by templates/partials/opening_stats.php, in the page's scope.
  */

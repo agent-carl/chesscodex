@@ -10,7 +10,7 @@ declare(strict_types=1);
  *
  *   php tools/fetch-years.php [--limit 1500] [--max-age 30]
  *
- * On the Pi (the Lichess token is in its config.php):
+ * On the server (the Lichess token is in its config.php):
  *   nohup php tools/fetch-years.php > ~/fetch-years.log 2>&1 < /dev/null &
  */
 if (PHP_SAPI !== 'cli') {
