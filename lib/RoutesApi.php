@@ -11,12 +11,6 @@ trait RoutesApi
 
     public static function apiSearch(): void
     {
-        if (!RateLimit::check('search', 60)) {
-            http_response_code(429);
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(['error' => 'Rate limit exceeded. Try again in a minute.']);
-            return;
-        }
         header('Content-Type: application/json; charset=utf-8');
         header('Cache-Control: no-store');
 
@@ -100,12 +94,6 @@ trait RoutesApi
     public static function apiStats(): void
     {
         header('Content-Type: application/json; charset=utf-8');
-        if (!RateLimit::check('stats', 30)) {
-            http_response_code(429);
-            echo json_encode(['error' => 'Rate limit exceeded.']);
-            return;
-        }
-
         // Stats exist only for openings in the database: the page sends the
         // opening's id and the moves come from the database. Accepting any
         // move list from the URL let anyone make the site query Lichess for
@@ -203,13 +191,6 @@ trait RoutesApi
         if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'POST only']);
-            return;
-        }
-
-        // Per-IP throttle: 3 submissions per minute.
-        if (!RateLimit::check('suggest', 3)) {
-            http_response_code(429);
-            echo json_encode(['error' => 'Slow down — too many submissions.']);
             return;
         }
 

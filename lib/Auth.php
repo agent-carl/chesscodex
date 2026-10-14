@@ -16,7 +16,6 @@ final class Auth
 {
     private const SESSION_KEY  = 'codex_admin_user';
     private const CSRF_KEY     = 'codex_csrf';
-    private const LOGIN_BUCKET = 'admin_login';
 
     public static function start(): void
     {
@@ -46,17 +45,11 @@ final class Auth
     }
 
     /**
-     * Verify credentials and start an authenticated session.
-     * Rate-limited to 5 attempts per minute per IP — repeated bad attempts
-     * return false without even checking the password.
+     * Verify credentials and start an authenticated session. nginx allows
+     * 5 login attempts a minute per visitor (limit_req).
      */
     public static function attemptLogin(string $username, string $password): bool
     {
-        if (!RateLimit::check(self::LOGIN_BUCKET, 5)) {
-            Logger::warn('admin.login.rate_limited', ['user' => $username]);
-            return false;
-        }
-
         $config = require __DIR__ . '/../config.php';
         $admin = $config['admin'] ?? null;
         if (!is_array($admin)

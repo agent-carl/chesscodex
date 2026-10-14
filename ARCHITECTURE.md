@@ -186,12 +186,12 @@ Site is English-only; `t()` (`lib/strings.php`) looks up the UI strings in
 | XSS in descriptions | `Parsedown::setSafeMode(true)` — raw HTML stripped, `javascript:` URLs neutered |
 | XSS generally | Every output escaped; CSP without inline scripts, sent by nginx |
 | CSRF on admin actions | per-session token, `Auth::checkCsrf()` |
-| Admin area | Cloudflare Access in front, bcrypt login with `RateLimit::check('admin_login', 5)` |
+| Admin area | Cloudflare Access in front, bcrypt login, 5 attempts a minute per visitor (nginx `limit_req`) |
 | SQL injection | PDO prepared statements only |
 | Clickjacking | `X-Frame-Options: SAMEORIGIN` + `frame-ancestors 'self'` |
 | Private files | nginx denies `db/`, `lib/`, `tools/`, `config.php`, dotfiles, `*.md|sql|tsv` |
 | Vendor tampering | SRI on the chessground CSS; versioned asset URLs |
-| Abuse of /api/* | per-IP limits (3–60 per minute); the real IP comes from `CF-Connecting-IP` (nginx `real_ip`) |
+| Abuse of /api/* | nginx `limit_req` per visitor (3–60 per minute, 429 beyond); the real IP comes from `CF-Connecting-IP` (nginx `real_ip`) |
 | og.php flooding | slugs checked against the DB before anything is cached |
 
 ## When something breaks

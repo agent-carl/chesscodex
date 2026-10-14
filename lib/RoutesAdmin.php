@@ -24,7 +24,7 @@ trait RoutesAdmin
                 header('Location: ' . $baseUrl . $intended);
                 exit;
             }
-            $error = 'Invalid credentials, or rate-limited after repeated failures.';
+            $error = 'Invalid credentials.';
         }
         require __DIR__ . '/../templates/admin_login.php';
     }
