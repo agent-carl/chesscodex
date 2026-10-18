@@ -53,7 +53,7 @@
                 var a = document.createElement('a');
                 a.href = searchPath + '?moves=' + encodeURIComponent(q);
                 a.className = 'search-by-name-moves';
-                a.textContent = 'Identify the opening after ' + q + ' →';
+                a.textContent = 'Identify the opening after ' + q + '';
                 li.appendChild(a);
                 list.appendChild(li);
             }

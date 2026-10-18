@@ -34,7 +34,7 @@ ob_start();
     <?php foreach ($families as $letter => $list): ?>
         <section class="openings-letter" id="letter-<?= $esc($letter) ?>">
             <h2><?= $esc($letter) ?>
-                <a class="openings-letter-count" href="<?= $letterUrl((string) $letter) ?>"><?= $counts[$letter] === 1 ? 'its 1 line' : 'all ' . $counts[$letter] . ' lines' ?> →</a>
+                <a class="openings-letter-count" href="<?= $letterUrl((string) $letter) ?>"><?= $counts[$letter] === 1 ? 'its 1 line' : 'all ' . $counts[$letter] . ' lines' ?></a>
             </h2>
             <ul class="openings-letter-list">
                 <?php foreach ($list as $f): ?>

@@ -211,9 +211,7 @@ button[aria-disabled="true"] {
     text-align: left;
     color: var(--muted);
     font-weight: 600;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-size: 0.85rem;
     padding: 0.4rem 0.6rem;
     border-bottom: 1px solid var(--border);
 }
@@ -241,7 +239,7 @@ button[aria-disabled="true"] {
 /* --- 13. Tree-path summary preview — tighten typography ------------------- */
 .opening-tree-summary { gap: var(--space-2); }
 .opening-tree-summary-preview {
-    font-family: var(--font-mono);
+    font-family: var(--font-moves);
     font-size: 0.85rem;
 }
 
@@ -299,12 +297,6 @@ button[aria-disabled="true"] {
 }
 @media (prefers-reduced-motion: reduce) {
     .search-by-name-results { animation: none; }
-}
-
-/* --- 19. Dark mode contrast: ECO tag was a little washed out -------------- */
-[data-theme="dark"] .eco-tag {
-    background: rgba(110, 163, 212, 0.18);
-    color: var(--accent);
 }
 
 /* --- 20. Better focus ring inside cards/links — use box-shadow not outline

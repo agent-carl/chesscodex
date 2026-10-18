@@ -15,4 +15,4 @@
 
 /* /how-to-play-against: one answer per cell, move and score together. */
 .answers-move { white-space: nowrap; }
-.answers-move code { font-family: var(--font-mono); font-size: .85rem; color: var(--fg-soft); }
+.answers-move code { font-family: var(--font-moves); font-size: .85rem; color: var(--fg-soft); }

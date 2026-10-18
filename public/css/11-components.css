@@ -37,8 +37,6 @@
 .error-suggestions h2 {
     font-size: 1rem;
     text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
     color: var(--muted);
     font-weight: 600;
     margin-bottom: var(--space-3);
@@ -50,8 +48,6 @@
 }
 .error-actions h2 {
     font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
     color: var(--muted);
     font-weight: 600;
     margin-bottom: var(--space-3);

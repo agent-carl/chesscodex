@@ -76,10 +76,8 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
 .identify-side h3 {
     margin: 0 0 var(--space-2);
     font-family: var(--font-body);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
     color: var(--muted);
 }
 .search-result {
@@ -91,7 +89,7 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
 .search-result .search-empty { font-style: normal; }
 .search-played {
     margin: var(--space-2) 0 0;
-    font-family: var(--font-mono);
+    font-family: var(--font-moves);
     font-size: 0.85rem;
     color: var(--fg-soft);
     line-height: 1.5;
@@ -330,7 +328,7 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
     padding: 0.05rem 0.4rem;
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
+    font-family: var(--font-num);
     font-weight: 600;
     text-align: center;
     font-variant-numeric: tabular-nums;
@@ -339,6 +337,6 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
 .engine-eval-num[data-lean="black"] { background: #2b2b2b; color: #f4f1ea; }
 .engine-eval-practice { margin-top: var(--space-2) !important; }
 .engine-eval-line { margin-top: var(--space-2) !important; }
-.engine-eval-pv { font-family: var(--font-mono); font-size: 0.9rem; }
+.engine-eval-pv { font-family: var(--font-moves); font-size: 0.9rem; }
 .engine-eval-src { margin-top: var(--space-2) !important; color: var(--muted); }
 .opening-stats .engine-eval { max-width: none; margin-top: var(--space-5); }

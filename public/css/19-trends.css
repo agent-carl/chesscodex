@@ -248,11 +248,11 @@
 .trends-moves {
     display: block;
     margin-top: 0.15rem;
-    font-family: var(--font-mono);
+    font-family: var(--font-moves);
     font-size: 0.78rem;
     color: var(--muted);
 }
-.trends-page .ranking-answer code { font-family: var(--font-mono); font-size: 0.85em; color: var(--fg-soft); }
+.trends-page .ranking-answer code { font-family: var(--font-moves); font-size: 0.85em; color: var(--fg-soft); }
 .trends-table .trends-spark { width: 7.5rem; text-align: right; }
 @media (max-width: 760px) {
     .trends-featured { grid-template-columns: minmax(0, 1fr); }

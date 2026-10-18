@@ -4,6 +4,8 @@
     "build": "node tools/build.mjs"
   },
   "devDependencies": {
+    "@fontsource-variable/source-sans-3": "^5.3.1",
+    "@fontsource-variable/source-serif-4": "^5.3.1",
     "esbuild": "0.28.2"
   }
 }

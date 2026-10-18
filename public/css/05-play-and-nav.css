@@ -39,8 +39,6 @@
 .play-sidebar h2 {
     margin-top: 0;
     font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
     color: var(--muted);
     font-family: var(--font-body);
     font-weight: 500;
@@ -62,7 +60,6 @@
     padding: var(--space-2) var(--space-3);
     background: var(--bg-subtle);
     border-radius: var(--radius);
-    border-left: 3px solid var(--accent);
     font-size: 0.9rem;
     color: var(--fg-soft);
     transition: background 0.3s;
@@ -74,7 +71,7 @@
 }
 .play-current-level-elo {
     color: var(--muted);
-    font-family: var(--font-mono);
+    font-family: var(--font-num);
     font-size: 0.85em;
     margin-left: 0.5em;
 }
@@ -128,7 +125,7 @@
     hyphens: manual;
 }
 .play-difficulty .diff-elo {
-    font-family: var(--font-mono);
+    font-family: var(--font-num);
     font-size: 0.7rem;
     opacity: 0.8;
 }
@@ -143,7 +140,7 @@
 
 .play-eval {
     margin: var(--space-2) 0 0;
-    font-family: var(--font-mono);
+    font-family: var(--font-num);
     font-size: 0.9rem;
     color: var(--fg-soft);
 }

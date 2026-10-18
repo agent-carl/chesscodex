@@ -13,9 +13,7 @@
 }
 .description-toc-title {
     margin: 0 0 var(--space-2);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    font-size: 0.85rem;
     color: var(--muted);
     font-weight: 600;
 }
@@ -118,9 +116,7 @@
 .recent-strip[hidden] { display: none; }
 .recent-strip-label {
     color: var(--muted);
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-size: 0.85rem;
     flex-shrink: 0;
 }
 .recent-strip-list {
@@ -175,8 +171,6 @@
 .home-recent-head h2 {
     margin: 0;
     font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
     color: var(--muted);
     font-weight: 600;
 }
@@ -273,11 +267,9 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     color: var(--muted);
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
 .admin-filters input,
 .admin-filters select {
@@ -316,7 +308,7 @@
     padding: 0 0.3rem;
     background: var(--bg-subtle);
     border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
+    font-family: var(--font-num);
     font-size: 0.78rem;
     color: var(--muted);
 }
@@ -339,7 +331,7 @@
     border-bottom: 1px solid var(--border);
 }
 .eco-lines th { color: var(--muted); font-weight: 500; font-size: 0.85rem; }
-.eco-lines code { font-family: var(--font-mono); font-size: 0.85rem; color: var(--fg-soft); }
+.eco-lines code { font-family: var(--font-moves); font-size: 0.85rem; color: var(--fg-soft); }
 .eco-lines td:last-child { color: var(--muted); white-space: nowrap; }
 .eco-lines .eco-games { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .eco-nav {
@@ -352,7 +344,7 @@
     .eco-lines th:last-child,
     .eco-lines td:last-child { display: none; }
 }
-a.eco-tag:hover { background: var(--accent); color: var(--bg-elevated); }
+a.eco-tag:hover { color: var(--accent-hover); text-decoration: underline; }
 /* /eco: what ECO codes are, below the list. */
 .eco-about { max-width: 75ch; }
 .eco-about h2 { margin-top: var(--space-6); }

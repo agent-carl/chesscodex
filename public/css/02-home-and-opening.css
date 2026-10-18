@@ -20,7 +20,7 @@
 .hero-meta {
     color: var(--muted);
     font-size: 0.9rem;
-    font-family: var(--font-mono);
+    font-family: var(--font-num);
 }
 
 .group-grid {
@@ -55,7 +55,7 @@
 .group-count {
     color: var(--muted);
     font-size: 0.85rem;
-    font-family: var(--font-mono);
+    font-family: var(--font-num);
 }
 
 /* =============================================================================
@@ -105,14 +105,13 @@
 .board-cta:hover { text-decoration: none; }
 .board-hint { color: var(--muted); font-size: 0.85rem; }
 
+/* ECO code as plain small text, the way a book prints it beside a name. */
 .eco-tag {
     display: inline-block;
-    background: var(--accent-soft);
-    color: var(--accent);
-    padding: 0.1rem 0.4rem;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
+    color: var(--muted);
+    font-family: var(--font-num);
     font-size: 0.85rem;
+    font-weight: 600;
 }
 
 .opening-moves h2 { margin-top: 0; }
@@ -123,7 +122,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-1) var(--space-2);
-    font-family: var(--font-mono);
+    font-family: var(--font-moves);
     font-size: 0.95rem;
 }
 /* Chess move numbering: increment on odd children (white plies) only,
@@ -150,7 +149,7 @@
     border-radius: var(--radius-sm);
     cursor: pointer;
     font: inherit;
-    font-family: var(--font-mono);
+    font-family: var(--font-moves);
     /* Kill the 300 ms tap-delay on iOS Safari + Android Chrome and
        suppress the grey flash on tap. */
     touch-action: manipulation;

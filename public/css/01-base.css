@@ -6,8 +6,14 @@
 
 :root {
     /* Typography */
-    --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --font-display: ui-serif, "Iowan Old Style", "Source Serif Pro", "Apple Garamond", Georgia, "Times New Roman", serif;
+    /* Source Serif 4 and Source Sans 3 come from 00-fonts.css. Moves are set in
+       the serif, as opening books print them; counts and percentages in the
+       sans with tabular figures (set on body), so columns line up. Monospace
+       is only for FEN/PGN fields and key hints. */
+    --font-body: "Source Sans 3 Variable", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --font-display: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
+    --font-moves: var(--font-display);
+    --font-num: var(--font-body);
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
     /* Light theme palette (paper-cream + sea blue) */
@@ -31,9 +37,9 @@
     --stats-b:       #2f2f2f;
 
     /* Geometry */
-    --radius-sm: 3px;
-    --radius:    6px;
-    --radius-lg: 10px;
+    --radius-sm: 2px;
+    --radius:    3px;
+    --radius-lg: 4px;
 
     /* Spacing scale (8-base) */
     --space-1: 0.25rem;
@@ -45,8 +51,8 @@
     --space-8: 3rem;
 
     /* Elevation */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-    --shadow:    0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06);
+    --shadow-sm: none;
+    --shadow:    0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 [data-theme="dark"] {
@@ -68,8 +74,8 @@
     --stats-d:       #6e6759;
     --stats-b:       #0c0c0c;
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow:    0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.35);
+    --shadow-sm: none;
+    --shadow:    0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* =============================================================================
@@ -86,6 +92,7 @@ html, body {
     font-family: var(--font-body);
     font-size: 16px;
     line-height: 1.55;
+    font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }

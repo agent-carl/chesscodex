@@ -19,20 +19,17 @@
     border: 0;
 }
 
-/* One style for the small uppercase section labels. */
+/* One style for the small section labels. */
 .section-label,
 .home-recent-head .section-label {
     margin: 0;
     font-family: var(--font-body);
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
     color: var(--muted);
 }
 
 /* ECO tags stay visible on the light background. */
-.eco-tag { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent); }
 
 /* --- Win/draw/loss bars: an outline, so the white part shows on the light
        theme and the black part on the dark one. -------------------------- */
@@ -92,13 +89,13 @@ html .cg-wrap coords.squares { text-transform: none; }
 .home-featured-card { display: flex; }
 .home-featured-title { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-2); }
 .home-featured-name { margin-left: 0; }
-.home-featured-moves { font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); background: none; padding: 0; }
+.home-featured-moves { font-family: var(--font-moves); font-size: 0.85rem; color: var(--muted); background: none; padding: 0; }
 .home-featured-snippet { margin: 0; }
 
 .home-popular-gambits .home-popular-head h2 { color: inherit; }
 .home-popular-gambits .home-popular-list a { border-color: var(--border); }
 .home-popular-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
-.home-popular-moves { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.home-popular-moves { font-family: var(--font-moves); font-size: 0.78rem; color: var(--muted); }
 
 .home-rankings-list {
     list-style: none;
@@ -199,7 +196,7 @@ html .cg-wrap coords.squares { text-transform: none; }
 .move-list.move-list-paired { gap: 0.3rem 0.9rem; }
 .move-list.move-list-paired li:nth-child(n)::before { content: none; }
 .move-list-paired li { display: inline-flex; align-items: center; gap: 0.05rem; }
-.move-no { margin-right: 0.15rem; color: var(--muted); font-family: var(--font-mono); font-size: 0.85em; }
+.move-no { margin-right: 0.15rem; color: var(--muted); font-family: var(--font-moves); font-size: 0.85em; }
 
 .opening-actions {
     display: flex;
@@ -329,7 +326,7 @@ html .cg-wrap coords.squares { text-transform: none; }
     border: 1px solid transparent;
     border-radius: var(--radius-sm);
     color: var(--accent);
-    font-family: var(--font-mono);
+    font-family: var(--font-moves);
     font-size: 0.9rem;
     white-space: nowrap;
     cursor: pointer;
@@ -351,7 +348,7 @@ html .cg-wrap coords.squares { text-transform: none; }
 
 /* --- Variations and other lines: whole names, the move that leads there - */
 .child-list-name { white-space: normal; overflow: visible; text-overflow: clip; }
-.child-list-plies { font-family: var(--font-mono); font-size: 0.75rem; }
+.child-list-plies { font-family: var(--font-num); font-size: 0.75rem; }
 .child-list.opening-related-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 
 /* --- Recently viewed, now at the end of an opening page ---------------- */
@@ -383,7 +380,7 @@ html .cg-wrap coords.squares { text-transform: none; }
 .eco-code-list a { align-items: flex-start; }
 .eco-code-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
 .eco-code-meta { color: var(--muted); font-size: 0.78rem; }
-.eco-code-meta code { padding: 0; background: none; color: var(--fg-soft); font-family: var(--font-mono); font-size: 0.95em; }
+.eco-code-meta code { padding: 0; background: none; color: var(--fg-soft); font-family: var(--font-num); font-size: 0.95em; }
 
 /* --- Rankings --------------------------------------------------------- */
 .rankings-cards {

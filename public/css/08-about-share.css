@@ -33,9 +33,7 @@
     margin-bottom: var(--space-2);
 }
 .home-featured-tag {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    font-size: 0.85rem;
     color: var(--accent);
     font-weight: 600;
 }
@@ -44,7 +42,6 @@
     padding: var(--space-4) var(--space-5);
     background: var(--bg-elevated);
     border: 1px solid var(--border);
-    border-left: 4px solid var(--accent);
     border-radius: var(--radius);
     color: var(--fg);
     text-decoration: none;

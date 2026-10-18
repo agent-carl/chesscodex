@@ -23,10 +23,10 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
     </form>
     <p class="hero-meta"><?= htmlspecialchars(t('home.hero.meta', ['count' => $totalFmt]), ENT_QUOTES, 'UTF-8') ?></p>
     <p class="hero-actions">
-        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/openings', ENT_QUOTES, 'UTF-8') ?>">Browse all openings A–Z →</a>
-        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/search', ENT_QUOTES, 'UTF-8') ?>">Identify an opening from moves →</a>
-        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/eco', ENT_QUOTES, 'UTF-8') ?>">Browse by ECO code →</a>
-        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/random', ENT_QUOTES, 'UTF-8') ?>" rel="nofollow">A random opening →</a>
+        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/openings', ENT_QUOTES, 'UTF-8') ?>">Browse all openings A–Z</a>
+        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/search', ENT_QUOTES, 'UTF-8') ?>">Identify an opening from moves</a>
+        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/eco', ENT_QUOTES, 'UTF-8') ?>">Browse by ECO code</a>
+        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/random', ENT_QUOTES, 'UTF-8') ?>" rel="nofollow">A random opening</a>
     </p>
 </section>
 
@@ -68,7 +68,7 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
         ?>
             <span class="home-featured-snippet"><?= htmlspecialchars($snippet, ENT_QUOTES, 'UTF-8') ?></span>
         <?php endif; ?>
-        <span class="home-featured-cta">Study this opening →</span>
+        <span class="home-featured-cta">Study this opening</span>
         </span>
     </a>
 </section>
@@ -114,7 +114,7 @@ $renderStrip = static function (string $h2, string $lede, string $modifier, arra
                 </li>
             <?php endforeach; ?>
         </ul>
-        <p class="home-popular-more"><a href="<?= $baseEsc . htmlspecialchars($moreUrl, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($moreText, ENT_QUOTES, 'UTF-8') ?> →</a></p>
+        <p class="home-popular-more"><a href="<?= $baseEsc . htmlspecialchars($moreUrl, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($moreText, ENT_QUOTES, 'UTF-8') ?></a></p>
     </section>
 <?php };
 
@@ -215,7 +215,7 @@ $fmBar = static fn (float $width, string $class = 'fm-bar'): string =>
         <?php foreach (Rankings::LABELS as $path => $label): ?>
             <li>
                 <a href="<?= $baseEsc . htmlspecialchars('/' . $path, ENT_QUOTES, 'UTF-8') ?>">
-                    <?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?> →
+                    <?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>
                 </a>
             </li>
         <?php endforeach; ?>

@@ -1,6 +1,7 @@
 // The minified files the pages load, built with esbuild:
 //   public/<name>.min.js   from public/<name>.js
 //   public/style.min.css   from public/css/NN-*.css in file-name order (the order is the cascade)
+//   public/fonts/*.woff2   the web fonts 00-fonts.css imports, names hashed (cached as immutable)
 //   vendor/chess.min.js    from vendor/chess.js, its licence header kept
 //
 //   npm run build
@@ -62,6 +63,8 @@ await build({
     outfile: `${pub}/style.min.css`,
     bundle: true,
     minify: true,
+    loader: { '.woff2': 'file' },
+    assetNames: 'fonts/[name]-[hash]',
 });
 
 console.log(`built ${modules.length + scripts.length} scripts, chess.min.js and style.min.css (${css.length} files)`);

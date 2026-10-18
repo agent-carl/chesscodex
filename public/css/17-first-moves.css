@@ -24,7 +24,7 @@
 
 /* A move: the number muted, the move itself in bold. */
 .fm-move {
-    font-family: var(--font-mono);
+    font-family: var(--font-moves);
     font-size: 0.85em;
     font-weight: 600;
     color: var(--fg);
@@ -134,10 +134,8 @@
 .first-moves-other h3 {
     margin: 0 0 var(--space-2);
     font-family: var(--font-body);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
     color: var(--muted);
 }
 .first-moves-other .fm-chips { justify-content: center; }

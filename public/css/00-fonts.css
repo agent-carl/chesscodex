@@ -1,0 +1,8 @@
+/* Source Serif 4 (headings, prose, move notation) and Source Sans 3 (interface,
+   tables), self-hosted from the @fontsource-variable packages: the build copies
+   the .woff2 files into public/fonts/, and each subset loads only when a page
+   uses its characters. */
+@import "@fontsource-variable/source-serif-4/wght.css";
+@import "@fontsource-variable/source-serif-4/wght-italic.css";
+@import "@fontsource-variable/source-sans-3/wght.css";
+@import "@fontsource-variable/source-sans-3/wght-italic.css";

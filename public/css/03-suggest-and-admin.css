@@ -140,9 +140,7 @@
 .admin-table th {
     color: var(--muted);
     font-weight: 500;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    font-size: 0.85rem;
 }
 .admin-table tbody tr:hover { background: var(--bg-subtle); }
 .admin-preview {
@@ -257,7 +255,7 @@
     line-height: 1.55;
 }
 .description-body li strong {
-    font-family: var(--font-mono);
+    font-family: var(--font-moves);
     font-weight: 500;
     color: var(--accent);
 }

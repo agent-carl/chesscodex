@@ -22,7 +22,7 @@
 .opening-overview-body a { color: var(--accent); }
 .opening-overview-body a:hover { color: var(--accent-hover); text-decoration: underline; }
 .opening-overview-moves {
-    font-family: var(--font-mono);
+    font-family: var(--font-moves);
     background: var(--bg-elevated);
     padding: 0.1rem 0.4rem;
     border-radius: var(--radius-sm);
@@ -42,9 +42,7 @@
     flex-direction: column;
 }
 .opening-facts dt {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-size: 0.85rem;
     color: var(--muted);
     font-weight: 600;
     margin: 0 0 0.1rem;
@@ -85,11 +83,9 @@
 .opening-related-lede a { color: var(--accent); }
 
 /* "This overview is auto-generated" notice at the bottom of the Overview
-   section. Sits below the Quick Facts grid, with a soft accent rule on the
-   left to distinguish it from the factual content above. */
+   section, below the Quick Facts grid. */
 .opening-overview-notice {
     margin: var(--space-4) 0 0;
-    border-left: 3px solid var(--accent);
     align-items: flex-start;
     gap: var(--space-3);
     line-height: 1.55;
@@ -134,8 +130,6 @@
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--fg-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
     display: flex;
     align-items: baseline;
     gap: var(--space-3);
@@ -171,8 +165,6 @@
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--fg-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
 #admin-edit-preview { padding: var(--space-3); overflow-y: auto; max-height: calc(100% - 3rem); }
 .admin-preview-empty { color: var(--muted); }

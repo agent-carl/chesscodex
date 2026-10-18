@@ -14,7 +14,7 @@ ob_start();
         <?php foreach (Rankings::LABELS as $path => $label):
             $side = preg_match('/^best-openings-for-(white|black)$/', $path, $m) ? $m[1] : null; ?>
             <li class="rankings-card">
-                <a class="rankings-card-title" href="<?= $baseEsc . $esc('/' . $path) ?>"><?= $esc($label) ?> →</a>
+                <a class="rankings-card-title" href="<?= $baseEsc . $esc('/' . $path) ?>"><?= $esc($label) ?></a>
                 <p><?= $esc(Rankings::BLURBS[$path]) ?></p>
                 <?php if ($side): ?>
                     <p class="rankings-card-levels"><span>By level:</span>
