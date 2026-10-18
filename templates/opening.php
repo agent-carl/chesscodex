@@ -288,7 +288,12 @@ $island = [
 
         <aside class="opening-side">
             <h2><?= htmlspecialchars(t('opening.moves'), ENT_QUOTES, 'UTF-8') ?></h2>
-            <ol id="move-list" class="move-list move-list-paired" aria-label="<?= htmlspecialchars(t('opening.moves'), ENT_QUOTES, 'UTF-8') ?>"></ol>
+            <?php /* The same list app.js builds (and rebuilds), so the line's moves are in the HTML. */ ?>
+            <ol id="move-list" class="move-list move-list-paired" aria-label="<?= htmlspecialchars(t('opening.moves'), ENT_QUOTES, 'UTF-8') ?>">
+                <?php foreach (array_chunk(array_values(array_filter($sans, 'strlen')), 2) as $k => $pairSans): ?>
+                <li><span class="move-no"><?= $k + 1 ?>.</span><?php foreach ($pairSans as $j => $san): ?><button type="button" data-idx="<?= 2 * $k + $j + 1 ?>"><?= htmlspecialchars($san, ENT_QUOTES, 'UTF-8') ?></button><?php endforeach; ?></li>
+                <?php endforeach; ?>
+            </ol>
 
             <div class="opening-actions">
                 <?php /* nofollow: the 3,690 play pages are noindex, no crawl needed; so are the
