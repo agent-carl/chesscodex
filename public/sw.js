@@ -90,7 +90,7 @@ self.addEventListener('fetch', (event) => {
     // Static assets. A versioned URL (?v=<hash>) never changes, so a cached
     // copy is served without asking the network; the rest are
     // stale-while-revalidate. Both capped in size.
-    // og.php diagrams carry ?v= too (the hash of og.php), so they are static.
+    // og.php diagrams carry ?v= too (Opening::OG_VERSION), so they are static.
     if (STATIC_PATTERN.test(url.pathname) || url.pathname === '/og.php') {
         event.respondWith((async () => {
             const cache  = await caches.open(CACHE_VERSION + '-static');

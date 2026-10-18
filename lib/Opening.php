@@ -12,14 +12,16 @@ class Opening
     public const FEW_GAMES = 100;
 
     /**
-     * The position diagram og.php draws (720×720 PNG), path from the site
-     * root; ?v= is og.php's hash, so a changed drawing gets a new URL.
+     * ?v= of every og.php URL (share cards and diagrams). Search engines and
+     * social sites know the images by these URLs, so raise it only when the
+     * drawing itself changes, not for every edit of og.php.
      */
+    public const OG_VERSION = '2fbed566';
+
+    /** The position diagram og.php draws (720×720 PNG), path from the site root. */
     public static function diagramPath(string $slug, bool $webp = false): string
     {
-        static $ver = null;
-        $ver ??= substr((string) @hash_file('xxh3', __DIR__ . '/../og.php'), 0, 8);
-        return '/og.php?slug=' . urlencode($slug) . '&kind=diagram' . ($webp ? '&format=webp' : '') . '&v=' . $ver;
+        return '/og.php?slug=' . urlencode($slug) . '&kind=diagram' . ($webp ? '&format=webp' : '') . '&v=' . self::OG_VERSION;
     }
 
     public static function findBySlug(string $slug): ?array

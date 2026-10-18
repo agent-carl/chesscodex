@@ -104,8 +104,6 @@ $siblingCount  = count($siblings);
 $nameEsc       = htmlspecialchars((string) $o['name'], ENT_QUOTES, 'UTF-8');
 $ecoEsc        = htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8');
 $movesEsc      = '<code class="opening-overview-moves">' . htmlspecialchars($movesPretty, ENT_QUOTES, 'UTF-8') . '</code>';
-// og.php draws the share card and the diagram; ?v= changes when it does.
-$ogVer         = substr((string) @hash_file('xxh3', __DIR__ . '/../og.php'), 0, 8);
 $diagramUrl    = $baseUrl . Opening::diagramPath((string) $o['slug'], true);   // WebP, as shown on the page
 // "5…a6": the move that reaches the position.
 $sans          = preg_split('/\s+/', trim((string) preg_replace('/\d+\.+\s*/', ' ', $movesPretty))) ?: [];
@@ -608,8 +606,8 @@ if ($lead !== null && mb_strlen($lead) <= 160) {
 }
 
 // OG image absolute URL for the JSON-LD `image`: the same URL as og:image in
-// layout.php, including its ?v= (hash of og.php).
-$ogImageUrl = $siteUrl . $baseUrl . '/og.php?slug=' . urlencode($o['slug']) . '&v=' . $ogVer;
+// layout.php, including its ?v=.
+$ogImageUrl = $siteUrl . $baseUrl . '/og.php?slug=' . urlencode($o['slug']) . '&v=' . Opening::OG_VERSION;
 
 $breadcrumbs = [
     ['name' => t('site.name'), 'url' => $siteUrl . $baseUrl . '/'],
