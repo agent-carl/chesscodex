@@ -1,0 +1,163 @@
+/* About, error and suggest-a-description pages. */
+
+/* About page */
+.about-page { max-width: 720px; }
+.about-page h1 { margin-bottom: var(--space-2); }
+.about-header .lede { color: var(--muted); margin: 0 0 var(--space-5); font-size: 1.05rem; }
+.about-version { color: var(--muted); font-size: 0.85rem; }
+
+/* Error page */
+.error-page {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: var(--space-5);
+}
+.error-page-icon {
+    font-size: 4.5rem;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.6;
+    margin-bottom: var(--space-3);
+}
+.error-page h1 { font-size: 1.85rem; margin-bottom: var(--space-3); }
+.error-page .lede { color: var(--muted); margin: 0 auto var(--space-5); font-size: 1rem; }
+.error-page code {
+    background: var(--bg-subtle);
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.92em;
+    color: var(--fg);
+}
+.error-suggestions { margin: var(--space-6) 0; text-align: left; }
+.error-suggestions h2 {
+    font-size: 1rem;
+    text-align: center;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+.error-actions {
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+}
+.error-actions h2 {
+    font-size: 1rem;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+.error-actions p {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+}
+.error-action-secondary {
+    background: var(--bg-elevated) !important;
+    color: var(--fg) !important;
+    border: 1px solid var(--border) !important;
+}
+.error-action-secondary:hover {
+    border-color: var(--accent) !important;
+    background: var(--accent-soft) !important;
+    color: var(--accent) !important;
+}
+.error-search { max-width: 480px; margin: var(--space-5) auto 0; }
+
+/* Suggest form */
+.suggest-form {
+    margin-top: var(--space-5);
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-4);
+}
+.suggest-form summary {
+    font-size: 0.95rem;
+    user-select: none;
+    cursor: pointer;
+    color: var(--accent);
+    padding: var(--space-2) 0;
+    list-style: none;
+}
+.suggest-form summary:hover { text-decoration: underline; }
+.suggest-form-body {
+    margin-top: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.suggest-hint { color: var(--muted); font-size: 0.9rem; margin: 0 0 var(--space-3); }
+.suggest-hint code {
+    background: var(--bg-subtle);
+    padding: 0.05rem 0.3rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.9em;
+}
+#suggest-form label {
+    display: block;
+    margin-bottom: var(--space-3);
+    color: var(--fg-soft);
+    font-size: 0.9rem;
+}
+#suggest-form input[type="text"],
+#suggest-form input[type="email"],
+#suggest-form textarea {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+}
+#suggest-form textarea { resize: vertical; }
+#suggest-form input:focus,
+#suggest-form textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.suggest-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.suggest-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0;
+}
+#suggest-form button {
+    padding: var(--space-2) var(--space-4);
+    background: var(--accent);
+    color: var(--bg-elevated);
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 500;
+    cursor: pointer;
+}
+#suggest-form button:hover { background: var(--accent-hover); }
+#suggest-form button:disabled { opacity: 0.6; cursor: progress; }
+.suggest-form summary::-webkit-details-marker { display: none; }
+.suggest-form summary::before { content: '+ '; color: var(--accent); margin-right: 0.1rem; }
+.suggest-form[open] summary::before { content: '− '; }
+#suggest-form .suggest-kind {
+    border: 0;
+    margin: 0 0 var(--space-3);
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+#suggest-form .suggest-kind legend {
+    padding: 0;
+    margin-bottom: 0.35rem;
+    color: var(--fg);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+#suggest-form .suggest-kind label {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0;
+}
+@media (max-width: 600px) {
+    .suggest-row { grid-template-columns: 1fr; }
+}

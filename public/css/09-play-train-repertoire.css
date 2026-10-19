@@ -1,0 +1,245 @@
+/* Play, train and repertoire. */
+
+/* Play */
+.play-header { margin-bottom: var(--space-5); }
+.play-header h1 { font-size: 1.6rem; }
+.play-header .parent-link a { color: var(--muted); }
+.play-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
+.play-board-wrap { display: flex; flex-direction: column; gap: var(--space-3); }
+.play-board-wrap .board-controls { flex-wrap: wrap; }
+.play-board-wrap button {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    transition: border-color 0.1s, background 0.1s;
+}
+.play-board-wrap button:hover { border-color: var(--accent); background: var(--accent-soft); }
+.play-sidebar > section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+.play-sidebar h2 {
+    margin-top: 0;
+    font-size: 0.95rem;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-weight: 500;
+}
+.play-engine-state { color: var(--muted); margin: 0; font-size: 0.95rem; }
+.play-engine-state[data-state="thinking"] { color: var(--accent); }
+.play-engine-state[data-state="error"] { color: var(--danger); }
+/* Always-visible level indicator. A background pulse on change shows that
+   something happened. */
+.play-current-level {
+    margin: var(--space-3) 0 var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-subtle);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    color: var(--fg-soft);
+    transition: background 0.3s;
+}
+.play-current-level strong { color: var(--accent); font-weight: 600; margin: 0 0.25em; }
+.play-current-level-elo {
+    color: var(--muted);
+    font-family: var(--font-num);
+    font-size: 0.85em;
+    margin-left: 0.5em;
+}
+.play-current-level.is-changed { animation: level-flash 0.9s ease-in-out; }
+.play-difficulty {
+    margin-top: var(--space-2);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+}
+.play-difficulty button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: var(--space-2) 4px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--fg-soft);
+    transition: border-color 0.12s, background 0.12s, color 0.12s, transform 0.08s;
+    min-height: 50px;
+}
+.play-difficulty button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+.play-difficulty button:active { transform: scale(0.96); }
+.play-difficulty button.is-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-elevated);
+    box-shadow: 0 2px 6px rgba(42, 93, 143, 0.25);
+}
+.play-difficulty button.is-active:hover {
+    color: var(--bg-elevated);
+    background: var(--accent-hover);
+}
+.play-difficulty .diff-name {
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.1;
+    text-align: center;
+    /* Allow soft hyphens to break "Inter­mediate" on narrow buttons. */
+    hyphens: manual;
+}
+.play-difficulty .diff-elo { font-family: var(--font-num); font-size: 0.7rem; opacity: 0.8; }
+.play-difficulty-desc {
+    margin: var(--space-2) 0 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-style: italic;
+    min-height: 1.2em; /* prevent layout jump when text changes */
+}
+.play-eval {
+    margin: var(--space-2) 0 0;
+    font-family: var(--font-num);
+    font-size: 0.9rem;
+    color: var(--fg-soft);
+}
+.play-turn { margin: 0; color: var(--fg-soft); }
+.play-result {
+    margin: var(--space-2) 0 0;
+    padding: var(--space-2) var(--space-3);
+    background: var(--accent-soft);
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+    font-weight: 500;
+}
+#play-moves {
+    max-height: 14rem;
+    overflow-y: auto;
+    margin-top: var(--space-2);
+    gap: 0.2rem 0.8rem;
+}
+.play-color-pick {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin: 0 0 var(--space-3);
+}
+.play-color-pick-label { color: var(--muted); font-size: 0.85rem; margin-right: 0.2rem; }
+.play-color-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg-soft);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+}
+.play-color-btn:hover,
+.play-export button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.play-color-btn.is-active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.play-color-piece { font-size: 1.1em; line-height: 1; }
+.play-grid .opening-board { max-width: 520px; }
+#play-moves li::before,
+#play-moves li:nth-child(odd)::before {
+    content: none;
+}
+#play-moves li { display: inline-flex; gap: 0.35rem; align-items: baseline; }
+#play-moves .move-book { color: var(--muted); }
+.play-eval-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: var(--space-2) 0 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.play-export {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin: var(--space-3) 0 0;
+    font-size: 0.88rem;
+}
+.play-export button {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    font-size: 0.85rem;
+}
+/* As .theme-toggle: the focus ring keeps :focus-visible's small radius. */
+.play-color-btn:focus-visible { border-radius: var(--radius-sm); }
+@keyframes level-flash {
+    0%   { background: var(--bg-subtle); }
+    35%  { background: var(--accent-soft); }
+    100% { background: var(--bg-subtle); }
+}
+@media (max-width: 540px) {
+    .play-color-pick { justify-content: center; }
+    .play-color-btn { flex: 1; justify-content: center; }
+    .play-difficulty { grid-template-columns: repeat(2, 1fr); gap: 0.4rem; }
+    .play-difficulty button { padding: 0.45rem 0.5rem; font-size: 0.85rem; }
+    /* Less verbose difficulty buttons on a narrow screen: the Elo numbers stay,
+       the "often blunders" text goes. */
+    .play-difficulty-desc { font-size: 0.82rem; }
+    .play-board-wrap .board-controls { display: grid; grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 900px) {
+    .play-grid,
+    .identify-grid {
+        grid-template-columns: minmax(0, 520px) minmax(300px, 1fr);
+        gap: var(--space-6);
+        align-items: start;
+    }
+}
+
+/* Train */
+.train-status { font-weight: 600; min-height: 1.5em; }
+.train-progress,
+.train-due,
+.train-help {
+    color: var(--muted);
+    font-size: .9rem;
+}
+.train-scope {
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
+    font-size: .9rem;
+    margin: var(--space-3) 0;
+}
+
+/* Repertoire */
+.repertoire-side { margin-top: var(--space-5); }
+.repertoire-list li { display: flex; align-items: center; gap: var(--space-2); }
+.repertoire-list li a { flex: 1; }
+.repertoire-remove {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    font-size: .8rem;
+    padding: 2px 8px;
+}
+.repertoire-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.repertoire-empty p { margin: 0 0 var(--space-2); }
+.repertoire-start { color: var(--muted); font-size: 0.92rem; }
