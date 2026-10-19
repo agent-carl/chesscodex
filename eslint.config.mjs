@@ -5,7 +5,7 @@ import globals from 'globals';
 const modules = ['app', 'play', 'search', 'train', 'repertoire'].map((n) => `public/${n}.js`);
 
 export default [
-  { ignores: ['**/*.min.js', 'vendor/**', '_composer_vendor/**', 'node_modules/**', '.dev/**', 'tools/**'] },
+  { ignores: ['**/*.min.js', 'vendor/**', '_composer_vendor/**', 'node_modules/**', '.dev/**', '.claude/**', 'docs/**', 'backups/**', 'tools/**'] },
   js.configs.recommended,
   {
     files: ['public/**/*.js'],

@@ -30,8 +30,7 @@ fi
 if out=$(npx --no-install eslint . 2>&1); then
     echo "eslint: no problems"
 else
-    printf '%s
-' "$out" | tail -n 30
+    printf '%s\n' "$out" | tail -n 30
     fail=1
 fi
 
