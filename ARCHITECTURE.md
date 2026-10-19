@@ -201,4 +201,4 @@ Site is English-only; `t()` (`lib/strings.php`) looks up the UI strings in
 ## Deferred / known-but-not-fixed
 
 - PHPUnit tests cover the classes; `tests/SmokeTest.php` (`--testsuite smoke`, `SMOKE_BASE=…`) checks every kind of page over HTTP. No template tests.
-- CSS is 21 files layered in cascade order; overridden declarations were removed on 2026-09-27, but many selectors are still set in several files.
+- CSS is 13 files in `public/css/`, grouped by area and joined in file-name order (the order is the cascade): fonts, tokens and base, layout, shared components, then one file per page area (home, opening, ECO and index, rankings and trends, search, play, about/error/suggest, admin), print last. A page file may override a component; nothing earlier overrides a later page file.

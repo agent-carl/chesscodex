@@ -1,0 +1,57 @@
+/* Print styles. */
+@media print {
+    a { color: #000; text-decoration: underline; }
+    h1,
+    h2,
+    h3 {
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+    .container { padding: 0; max-width: none; }
+    body { background: #fff; color: #000; }
+    .site-header,
+    .site-footer,
+    .opening-share,
+    .board-controls,
+    .suggest-form,
+    .admin-link {
+        display: none !important;
+    }
+    .back-to-top { display: none !important; }
+    .toast-region { display: none !important; }
+    [data-tip]::after { display: none; }
+    .home-popular,
+    .opening-overview,
+    .opening-stats,
+    .opening-description,
+    .opening-related,
+    .stats-moves {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    .home-recent { display: none; }
+    .opening-breadcrumb,
+    .opening-actions,
+    .recent-strip {
+        display: none !important;
+    }
+    .opening-tools { display: none !important; }
+    .opening-board { margin: 0 auto; }
+    .description-body { font-size: 11pt; }
+    .description-toc { display: none; }
+}
+/* Print-only banner with the page's URL, so a printed copy points back to its
+   source. */
+.print-only { display: none; }
+@media print {
+    .print-only { display: block; }
+    .print-canonical {
+        position: fixed;
+        top: 0.4cm;
+        right: 0.4cm;
+        font-size: 9pt;
+        color: #666;
+        font-family: ui-monospace, monospace;
+        margin: 0;
+    }
+}

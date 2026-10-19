@@ -1,0 +1,228 @@
+/* Design tokens, reset, typography, links, focus, utilities. */
+
+/* Tokens */
+:root {
+    /* Typography */
+    /* Source Serif 4 and Source Sans 3 come from 00-fonts.css. Moves are set in
+       the serif, as opening books print them; counts and percentages in the
+       sans with tabular figures (set on body), so columns line up. Monospace
+       is only for FEN/PGN fields and key hints. */
+    --font-body: "Source Sans 3 Variable", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --font-display: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
+    --font-moves: var(--font-display);
+    --font-num: var(--font-body);
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    /* Light theme palette: neutral paper, ink, ink blue. The board colours
+       (stats bars) are the only warm tones. */
+    --bg: #f8f8f6;
+    --bg-elevated: #ffffff;
+    --bg-subtle: #efefeb;
+    --fg: #1a1a1a;
+    --fg-soft: #3a3a3a;
+    --muted: #6b6b6b;
+    --border: #dcdcd6;
+    --border-strong: #c3c3bb;
+    --accent: #2a5d8f;
+    --accent-soft: #e8eef6;
+    --accent-hover: #1d4773;
+    --danger: #b03030;
+    /* Stats bars (light) */
+    --stats-w: #efe4cd;
+    --stats-w-edge: #c8bfa9;
+    --stats-d: #8c8377;
+    --stats-b: #2f2f2f;
+    /* Geometry: radius follows hierarchy. Controls (buttons, inputs) are
+       rounded, small marks less so; the board and page sections have none. */
+    --radius-sm: 3px;
+    --radius: 6px;
+    --radius-lg: 8px;
+    /* Spacing scale (8-base) */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-8: 3rem;
+    /* Elevation */
+    --shadow-sm: none;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    /* Ease-out for hover and press: more natural than the default ease. */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Win/draw/loss bars have an outline, so the white part shows on the light
+       theme and the black part on the dark one. */
+    --stats-outline: #b3a88f;
+}
+[data-theme="dark"] {
+    --bg: #16181d;
+    --bg-elevated: #1f2228;
+    --bg-subtle: #1a1d22;
+    --fg: #e8e6e1;
+    --fg-soft: #c8c5be;
+    --muted: #9a978e;
+    --border: #2c3038;
+    --border-strong: #3a3f48;
+    --accent: #6ea3d4;
+    --accent-soft: #1e2a38;
+    --accent-hover: #95bce0;
+    --danger: #e08585;
+    --stats-w: #c9bfa9;
+    --stats-w-edge: #9a917e;
+    --stats-d: #6e6759;
+    --stats-b: #0c0c0c;
+    --shadow-sm: none;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --stats-outline: #5c6370;
+}
+
+/* Reset and page background */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+/* Smooth scrolling for in-page anchors; off with reduced motion. */
+html { scroll-behavior: smooth; }
+/* Set the initial background on <html> from the theme attribute the inline
+   script in <head> sets; otherwise slow networks flash white before the dark
+   styles load. */
+html[data-theme="dark"] { background: #16181d; }
+html[data-theme="light"] { background: #f8f8f6; }
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        /* 0s, not 0.01ms: transition-property defaults to `all`, so any
+           non-zero duration turns every style change into a transition and
+           a size read right after it (chessground on resize) gets the old
+           size — pieces end up bunched in one corner of the board. */
+        transition-duration: 0s !important;
+        scroll-behavior: auto !important;
+    }
+    html { scroll-behavior: auto; }
+}
+
+/* Links */
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); text-decoration: underline; }
+/* Links inside running text are underlined, so they don't rely on colour alone
+   (Lighthouse "links rely on color"). Styled links opt out via a class. */
+p a:not([class]),
+.description-body li a:not([class]) {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+/* Focus */
+/* Keyboard focus: a visible ring on tab navigation, none on mouse click. */
+:focus { outline: none; }
+/* An accent ring on every element focused from the keyboard. */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+/* Inputs draw their own ring via box-shadow; hide the global outline so the
+   two don't double up. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline-color: transparent;
+}
+
+/* Headings */
+h1,
+h2,
+h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--fg);
+    letter-spacing: -0.005em;
+    margin: 0 0 var(--space-3);
+}
+h1 { font-size: 1.75rem; line-height: 1.2; }
+h2 { font-size: 1.2rem; line-height: 1.3; margin-top: var(--space-6); }
+h3 { font-size: 1.05rem; line-height: 1.35; }
+@media (max-width: 480px) {
+    h1 { font-size: 1.5rem; }
+}
+
+/* Buttons */
+button { font: inherit; color: inherit; cursor: pointer; }
+button:disabled,
+button[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+/* Disclosure widgets */
+details > summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+details[open] > :not(summary) { animation: codex-detail-in .18s var(--ease-out); }
+details > summary { cursor: pointer; }
+details > summary > * { pointer-events: none; }
+details > summary input,
+details > summary textarea,
+details > summary button {
+    pointer-events: auto;
+}
+@keyframes codex-detail-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    details[open] > :not(summary) { animation: none; }
+}
+
+/* Text selection */
+::selection { background: var(--accent-soft); color: var(--accent); text-shadow: none; }
+[data-theme="dark"] ::selection { background: var(--accent-soft); color: var(--accent); }
+
+/* Utilities */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius);
+    z-index: 1000;
+    font-weight: 600;
+}
+.skip-link:focus { left: var(--space-3); top: var(--space-3); }
+/* [hidden] always wins: several components set display:flex or grid, which
+   would show them anyway (the empty repertoire's buttons did). */
+[hidden] { display: none !important; }
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
