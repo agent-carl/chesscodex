@@ -33,23 +33,6 @@ final class Submissions
         return (int) chess_codex_db()->lastInsertId();
     }
 
-    /** @return array<int, array<string, mixed>> */
-    public static function findByStatus(string $status, int $limit = 100): array
-    {
-        $stmt = chess_codex_db()->prepare(
-            "SELECT s.*, o.name AS opening_name, o.slug AS opening_slug, o.eco
-             FROM codex_submissions s
-             JOIN codex_openings o ON o.id = s.opening_id
-             WHERE s.status = :st
-             ORDER BY s.created_at DESC
-             LIMIT :lim"
-        );
-        $stmt->bindValue(':st', $status, PDO::PARAM_STR);
-        $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
-    }
-
     /**
      * Filterable submissions search for the admin dashboard.
      * $filters keys (all optional): status, opening_q (LIKE on name/slug),

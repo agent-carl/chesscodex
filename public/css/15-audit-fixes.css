@@ -96,9 +96,6 @@ html .cg-wrap coords.squares { text-transform: none; }
 .search-header .name-search { max-width: 560px; margin: var(--space-4) auto 0; }
 .search-header .name-search-label { text-align: center; }
 .search-paste { margin-top: var(--space-5); }
-.search-paste-title { margin: 0 0 var(--space-2); font-family: var(--font-body); font-size: 1rem; font-weight: 600; }
-.search-grid { margin-top: var(--space-5); }
-.search-grid + .search-fen { margin-top: var(--space-5); }
 
 /* --- Opening page: breadcrumb and header ------------------------------ */
 .opening-breadcrumb ol {
@@ -257,8 +254,7 @@ html .cg-wrap coords.squares { text-transform: none; }
 }
 
 /* --- Opening page: overview ------------------------------------------- */
-.opening-diagram img { box-shadow: 0 0 0 1px var(--border-strong); }
-[data-theme="dark"] .opening-diagram img { filter: brightness(0.9); }
+
 .opening-overview-notice { display: block; }
 .opening-overview-notice .suggest-form { margin: 0; padding: 0; border: 0; }
 #suggest-form .suggest-kind { border: 0; margin: 0 0 var(--space-3); padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
@@ -269,7 +265,7 @@ html .cg-wrap coords.squares { text-transform: none; }
     .opening-overview { display: flex; flex-direction: column; }
     .opening-overview h2 { order: 0; }
     .opening-overview-body { order: 1; }
-    .opening-diagram { order: 2; float: none; width: 180px; margin: 0 auto var(--space-3); }
+
     .opening-overview-notice { order: 3; }
 }
 

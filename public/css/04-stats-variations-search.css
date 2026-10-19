@@ -137,25 +137,6 @@
 .search-fen summary:hover { background: var(--accent-soft); }
 .search-fen[open] summary { border-bottom: 1px solid var(--border); }
 
-.search-fen-icon {
-    font-family: var(--font-display);
-    font-size: 1.4rem;
-    color: var(--accent);
-    line-height: 1;
-}
-.search-fen-label { flex: 1; }
-.search-fen-chevron {
-    color: var(--muted);
-    font-size: 1.2rem;
-    transition: transform 0.2s;
-}
-.search-fen[open] .search-fen-chevron {
-    transform: rotate(90deg);
-    color: var(--accent);
-}
-
-.search-fen-body { padding: var(--space-4); }
-
 .search-fen-hint {
     color: var(--muted);
     margin: 0 0 var(--space-3);
@@ -218,37 +199,10 @@
 .search-about { text-align: left; }
 .search-examples code { font-size: 0.85rem; }
 
-.search-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-5);
-}
-@media (min-width: 900px) {
-    .search-grid {
-        grid-template-columns: minmax(0, 1fr) 320px;
-        align-items: start;
-    }
-}
-
 .search-board-wrap {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-}
-
-.search-sidebar > section {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: var(--space-4);
-    margin-bottom: var(--space-4);
-}
-.search-sidebar h2 {
-    margin-top: 0;
-    font-size: 0.95rem;
-    color: var(--muted);
-    font-family: var(--font-body);
-    font-weight: 500;
 }
 
 .search-empty {

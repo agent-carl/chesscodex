@@ -9,20 +9,16 @@
 /* The static diagram in the overview: a small figure for readers, and the
    image Google Images and result thumbnails can use. */
 .opening-overview { display: flow-root; }
-.opening-diagram { float: right; width: 180px; margin: 0 0 var(--space-3) var(--space-4); }
-.opening-diagram img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
-.opening-diagram figcaption { margin-top: var(--space-1); color: var(--muted); font-size: .8rem; text-align: center; }
-@media (max-width: 540px) { .opening-diagram { width: 128px; } }
 
 /* By rating: the four Lichess bands and the masters database, and master games. */
 .opening-levels { margin-top: var(--space-6); }
-.level-pcts, .master-games-meta { margin-left: var(--space-2); color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; }
+.master-games-meta { margin-left: var(--space-2); color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; }
 .master-games { padding-left: 1.2em; }
 .ranking-levels > span:first-child { color: var(--muted); }
 
 /* Trainer (/train/<slug>) and repertoire (/repertoire). */
 .board-cta-secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
-.board-repertoire-link { font-size: .9rem; }
+
 .train-status { font-weight: 600; min-height: 1.5em; }
 .train-progress, .train-due, .train-help { color: var(--muted); font-size: .9rem; }
 .train-scope { display: flex; gap: var(--space-2); align-items: flex-start; font-size: .9rem; margin: var(--space-3) 0; }

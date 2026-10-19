@@ -78,22 +78,6 @@
 }
 
 /* =============================================================================
-   "Game resumed" badge — small hint shown via JS when localStorage restored
-   an in-progress game so the user understands why the board isn't at the
-   opening's starting position.
-   ========================================================================== */
-.play-resume-hint {
-    display: inline-block;
-    margin-top: var(--space-2);
-    padding: 0.25rem 0.6rem;
-    background: var(--accent-soft);
-    color: var(--accent);
-    border-radius: var(--radius-sm);
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-/* =============================================================================
    Recently viewed — strip on opening page header (horizontal compact),
    plus full section on homepage ("Pick up where you left off").
    Populated entirely by client-side JS from localStorage.
@@ -114,11 +98,7 @@
 /* display:flex above would otherwise override the [hidden] attribute that
    app.js clears only when there is history to show. */
 .recent-strip[hidden] { display: none; }
-.recent-strip-label {
-    color: var(--muted);
-    font-size: 0.85rem;
-    flex-shrink: 0;
-}
+
 .recent-strip-list {
     list-style: none;
     margin: 0;
@@ -151,9 +131,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 10rem;
-}
-@media (max-width: 540px) {
-    .recent-strip-label { display: none; }   /* save room — pills are self-explanatory */
 }
 
 /* --- 2. Homepage "Pick up where you left off" — between hero and groups */
@@ -299,19 +276,6 @@
     font-size: 0.88rem;
 }
 .admin-filters button:hover { background: var(--accent-hover); }
-
-/* =============================================================================
-   Site footer — version pill (faint, doesn't dominate the copyright row)
-   ========================================================================== */
-.footer-version {
-    display: inline-block;
-    padding: 0 0.3rem;
-    background: var(--bg-subtle);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-num);
-    font-size: 0.78rem;
-    color: var(--muted);
-}
 
 /* ==========================================================================
    ECO code pages (/eco/B20): the named lines filed under one code.

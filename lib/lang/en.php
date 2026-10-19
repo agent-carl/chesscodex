@@ -22,7 +22,6 @@ return [
     'home.description'         => 'Explore {count} chess openings and variations, from the Sicilian to rare gambits: moves on an interactive board, ECO codes and Lichess win rates. Free, no ads.',
 
     // Opening page
-    'opening.parent'           => 'Parent:',
     'opening.moves'            => 'Moves',
     'opening.board.reset'      => 'Start',
     'opening.board.cta'        => 'Play it vs Stockfish',
@@ -53,7 +52,6 @@ return [
     'search.match'             => 'Match',
     'search.empty'             => 'Play the moves on the board, or paste them below.',
     'search.continuations'     => 'Possible continuations',
-    'search.played'            => 'Played',
 
     // Play page
     'play.title'               => 'Play {name} · Caissa Codex',

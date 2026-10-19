@@ -42,7 +42,6 @@ select:focus-visible { outline-color: transparent; }
 .openings-jump a,
 #board-reset,
 .board-cta,
-.opening-share-btn,
 .play-color-btn { transition: border-color .15s, background .15s, color .15s, transform .15s; }
 
 /* --- 4. Board controls — align Reset + Play CTA + Hint on one row ---------
@@ -218,8 +217,6 @@ select:focus-visible { outline-color: transparent; }
 .opening-subtree h2,
 .openings-letter h2 { margin-top: var(--space-4); }
 
-/* --- 13. Selection highlight matches the accent system -------------------- */
-
 /* --- 14. Skip link for keyboard / screen reader users --------------------- */
 .skip-link {
     position: absolute;
@@ -255,9 +252,12 @@ select:focus-visible { outline-color: transparent; }
 
 /* --- 18. Print styles — strip nav, board controls, share buttons --------- */
 @media print {
-    .site-header, .site-footer, .opening-share, .board-controls,
-    .suggest-form, .opening-tree-details,
-    .admin-link { display: none !important; }
+    .site-header,
+.site-footer,
+.opening-share,
+.board-controls,
+.suggest-form,
+.admin-link { display: none !important; }
     .container { padding: 0; max-width: none; }
     a { color: #000; text-decoration: underline; }
     body { background: #fff; color: #000; }

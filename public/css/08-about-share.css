@@ -29,30 +29,6 @@
     margin-top: var(--space-3);
     font-size: 0.85rem;
 }
-.opening-share-label { color: var(--muted); margin-right: 0.2rem; }
-.opening-share-btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.7rem;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--fg-soft);
-    font: inherit;
-    font-size: 0.85rem;
-    cursor: pointer;
-    text-decoration: none;
-}
-.opening-share-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    text-decoration: none;
-}
-.opening-share-btn.is-copied {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-    color: var(--accent);
-}
 
 /* =============================================================================
    Play page: explicit colour picker (separate from the Flip button)

@@ -161,15 +161,6 @@ html { scroll-behavior: smooth; }
     opacity: 0.5;
     cursor: wait;
 }
-.opening-tool-btn.is-copied {
-    background: var(--accent-soft);
-    border-color: var(--accent);
-    color: var(--accent);
-}
-.opening-tool-btn-summary {
-    list-style: none;
-}
-.opening-tool-btn-summary::-webkit-details-marker { display: none; }
 
 /* =============================================================================
    Back-to-top floating button — bottom-right, slides in on scroll
@@ -254,10 +245,7 @@ html { scroll-behavior: smooth; }
     opacity: 1;
     transform: translateY(0);
 }
-.toast-error {
-    background: var(--danger);
-    color: #fff;
-}
+
 [data-theme="dark"] .toast {
     background: var(--bg-elevated);
     color: var(--fg);
@@ -389,26 +377,6 @@ details > summary > * { pointer-events: none; }  /* clicks pass to summary */
 details > summary input,
 details > summary textarea,
 details > summary button { pointer-events: auto; }
-
-/* =============================================================================
-   Move-list keyboard hint — small line under the move buttons on opening
-   page. Just a hint, not interactive itself. Uses the existing .kbd-hint
-   chip style for the arrow keys.
-   ========================================================================== */
-.move-list-hint {
-    color: var(--muted);
-    font-size: 0.8rem;
-    margin: var(--space-3) 0 0;
-    line-height: 1.5;
-}
-.move-list-hint .kbd-hint {
-    display: inline-flex;
-    margin: 0 0.1rem;
-}
-/* Don't show the arrow-key hint on mobile — there are no physical arrow keys. */
-@media (max-width: 768px) {
-    .move-list-hint { display: none; }
-}
 
 /* =============================================================================
    Visited link styling — refine: on chips inside .child-list and

@@ -216,13 +216,6 @@ button[aria-disabled="true"] {
 }
 .suggest-form[open] summary::before { content: '− '; }
 
-/* --- 13. Tree-path summary preview — tighten typography ------------------- */
-.opening-tree-summary { gap: var(--space-2); }
-.opening-tree-summary-preview {
-    font-family: var(--font-moves);
-    font-size: 0.85rem;
-}
-
 /* --- 14. Print: avoid bad page-breaks ------------------------------------- */
 @media print {
     .home-popular,
@@ -230,8 +223,7 @@ button[aria-disabled="true"] {
 .opening-stats,
 .opening-description,
 .opening-related,
-.stats-moves,
-.opening-tree-list {
+.stats-moves {
         break-inside: avoid;
         page-break-inside: avoid;
     }
@@ -279,7 +271,6 @@ button[aria-disabled="true"] {
    when the card has rounded corners so the ring follows the curve. */
 .child-list a:focus-visible,
 .openings-letter-list a:focus-visible,
-.opening-share-btn:focus-visible,
 .play-color-btn:focus-visible,
 .children-toggle:focus-visible,
 #board-reset:focus-visible,

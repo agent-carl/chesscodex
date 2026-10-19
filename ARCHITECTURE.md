@@ -7,10 +7,9 @@ without breaking something subtle.
 ## Request lifecycle
 
 ```
-Browser → Cloudflare (edge cache, 10 min for anonymous pages)
-        → Cloudflare Tunnel to the server
-        → nginx (static files, security headers, CSP)
-        → PHP-FPM → index.php
+Browser → CDN edge cache (10 min for anonymous pages)
+        → the web server (static files, security headers, CSP)
+        → PHP → index.php
                       │
                       ├─ _composer_vendor/autoload.php   lib/<Class>.php + the libraries
                       ├─ lib/Router.php, lib/Routes.php
@@ -35,16 +34,16 @@ built from `public/css/NN-*.css` in file-name order), chessground CSS and a
 modulepreload of the board modules only when `$needsBoard` is set, and the
 `Cache-Control: public, s-maxage=600` header for anonymous GETs.
 
-Assets carry `?v=<md5 of the file>` (`$asset()` in the layout); nginx serves
-`*.js|css|wasm|png|…` as `immutable` for 30 days. esbuild (`tools/build.mjs`,
+Assets carry `?v=<md5 of the file>` (`$asset()` in the layout), so the web server can
+serve `*.js|css|wasm|png|…` as `immutable` for 30 days. esbuild (`tools/build.mjs`,
 `npm run build`) writes the `.min` files and gives the imports of vendor
 modules in them the same `?v=`, so a page loads chess.js / chessground once and
 a changed vendor file gets a new URL.
 
 PHP classes are loaded by Composer's autoloader (`lib/<Class>.php`, with
 `lib/db.php`, `lib/parser.php` and `lib/strings.php` always included); the PHP
-libraries (Parsedown, p-chess/chess) come from `composer.lock`, and deploy
-sends them without the development tools.
+libraries (Parsedown, p-chess/chess) come from `composer.lock`, and the server
+gets them without the development tools.
 
 ## Data flow for /openings/<slug>
 
@@ -126,12 +125,12 @@ slow sequential CLI jobs on the server (the stats prewarm, fetch-levels, fetch-y
 
 | Cache | Where | TTL | Invalidation |
 |---|---|---|---|
-| Cloudflare edge | HTML of anonymous pages | 10 min (`s-maxage=600`), stale up to a day on errors | Expires; purge in the Cloudflare dashboard |
-| Static files | browser + Cloudflare | 30 days, `immutable` | New `?v=<hash>` URL when the file changes |
+| CDN edge | HTML of anonymous pages | 10 min (`s-maxage=600`), stale up to a day on errors | Expires; purge at the CDN |
+| Static files | browser + CDN | 30 days, `immutable` | New `?v=<hash>` URL when the file changes |
 | Disk JSON cache | `db/cache/*.json` | 1–6 h | Expires; `Cache::forget($key)` |
 | Lichess stats | `codex_stats_cache` | refreshed by the stats prewarm on the server | `prewarm.php` |
 | OG cards / diagrams | `db/og_cache/*.png`, `*.webp` | 30 days, and whenever og.php changes | Delete the file |
-| Sitemap | `db/cache/sitemap/` | 24 h, and after a deploy of `lib/Routes.php` | Delete the folder after adding descriptions |
+| Sitemap | `db/cache/sitemap/` | 24 h, and after an update of `lib/Routes.php` | Delete the folder after adding descriptions |
 | Service worker | the visitor's browser | per `CACHE_VERSION` | Versioned assets cache-first, pages network-first, `/api/*` and `/admin` never |
 
 ## Identity / auth
@@ -146,7 +145,7 @@ Single admin user, stored in `config.php`:
 ```
 
 Login flow:
-- `Auth::attemptLogin($u, $p)` — bcrypt verify + rate-limit + Logger
+- `Auth::attemptLogin($u, $p)` — bcrypt verify + Logger
 - On success: `session_regenerate_id(true)`, set `codex_admin_user`, set `codex_csrf`.
 - All mutating admin endpoints check `Auth::checkCsrf($_POST['csrf'])`.
 
@@ -157,8 +156,8 @@ aren't logged in.
 
 ## Routing conventions
 
-nginx sends everything that isn't a file to `index.php`; the route table is
-at the top of it.
+The web server sends everything that isn't a file to `index.php`; the route
+table is at the top of it.
 
 ```
 /                                   home
@@ -172,7 +171,7 @@ at the top of it.
 /api/search      name / moves / fen lookups (JSON)
 /api/stats       Lichess numbers for an opening (from the cache)
 /api/subtree/<id>, /api/pgn, /api/suggest (POST)
-/admin/…         behind Cloudflare Access and the admin login
+/admin/…         behind the admin login
 /robots.txt, /sitemap.xml, /og.php?slug=…[&kind=diagram[&format=webp]]
 ```
 
@@ -184,24 +183,22 @@ Site is English-only; `t()` (`lib/strings.php`) looks up the UI strings in
 | Threat | Mitigation |
 |---|---|
 | XSS in descriptions | `Parsedown::setSafeMode(true)` — raw HTML stripped, `javascript:` URLs neutered |
-| XSS generally | Every output escaped; CSP without inline scripts, sent by nginx |
+| XSS generally | Every output escaped; no inline scripts, so the CSP can forbid them |
 | CSRF on admin actions | per-session token, `Auth::checkCsrf()` |
-| Admin area | Cloudflare Access in front, bcrypt login, 5 attempts a minute per visitor (nginx `limit_req`) |
+| Admin area | bcrypt login, session regenerated on login, never cached |
 | SQL injection | PDO prepared statements only |
-| Clickjacking | `X-Frame-Options: SAMEORIGIN` + `frame-ancestors 'self'` |
-| Private files | nginx denies `db/`, `lib/`, `tools/`, `config.php`, dotfiles, `*.md|sql|tsv` |
+| Private files | `config.php` is git-ignored; the web server denies the code, data and tool folders |
 | Vendor tampering | SRI on the chessground CSS; versioned asset URLs |
-| Abuse of /api/* | nginx `limit_req` per visitor (3–60 per minute, 429 beyond); the real IP comes from `CF-Connecting-IP` (nginx `real_ip`) |
 | og.php flooding | slugs checked against the DB before anything is cached |
 
 ## When something breaks
 
-- **500 on every URL** — the web server's and PHP-FPM's error logs; usually a syntax error in a deploy (`bash tools/check.sh` catches those first).
+- **500 on every URL** — usually a syntax error; `bash tools/check.sh` catches those before a commit.
 - **Stats panel says "Statistics unavailable"** — nothing cached for that line yet, or the prewarm hit Lichess limits. See `db/log/`.
-- **Stale page after a deploy** — Cloudflare keeps HTML up to 10 minutes; add `?anything` to see the live page.
+- **Stale page after a release** — the CDN keeps HTML up to 10 minutes; add `?anything` to see the live page.
 - **Diagram or share card looks old** — delete its file in `db/og_cache/`.
 
 ## Deferred / known-but-not-fixed
 
 - PHPUnit tests cover the classes; `tests/SmokeTest.php` (`--testsuite smoke`, `SMOKE_BASE=…`) checks every kind of page over HTTP. No template tests.
-- CSS is 19 files layered in cascade order; overridden declarations were removed on 2026-09-27, but many selectors are still set in several files.
+- CSS is 21 files layered in cascade order; overridden declarations were removed on 2026-09-27, but many selectors are still set in several files.

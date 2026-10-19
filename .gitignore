@@ -19,6 +19,3 @@ node_modules/
 
 # Local test copy of the site (tools/dev/serve.sh)
 .dev/
-
-# Staging folder of the deploy script
-.deploy/
