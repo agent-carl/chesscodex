@@ -31,7 +31,7 @@ Needs PHP 8.3+ with `pdo_sqlite` (on Windows, add
 [Composer](https://getcomposer.org).
 
 ```bash
-git clone https://github.com/agent-carl/chesscodex.git && cd chesscodex
+git clone https://github.com/ifrutella/chesscodex.git && cd chesscodex
 composer install                         # the PHP libraries and test tools
 cp config.example.php config.php         # then read the comments in it
 php tools/seed.php                       # creates db/chesscodex.sqlite from db/*.tsv

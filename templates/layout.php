@@ -260,7 +260,7 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
             <li><a href="<?= $baseEsc ?>/about">About</a></li>
             <li><!--email_off--><a href="mailto:info@chesscodex.org">Contact</a><!--/email_off--></li>
             <li class="footer-credit">© 2026 Ivan Petrov</li>
-            <li><a href="https://github.com/agent-carl/chesscodex" rel="noopener">Source code</a> (AGPL-3.0)</li>
+            <li><a href="https://github.com/ifrutella/chesscodex" rel="noopener">Source code</a> (AGPL-3.0)</li>
             <li class="footer-credit">Powered by <a href="https://stockfishchess.org/" rel="noopener">Stockfish</a> (GPL-3.0),
                 <a href="https://github.com/lichess-org/chessground" rel="noopener">chessground</a> (GPL-3.0) and
                 <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD-2)</li>

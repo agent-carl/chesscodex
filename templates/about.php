@@ -70,7 +70,7 @@ ob_start();
             Vanilla PHP 8.4, SQLite, plain JavaScript (ES modules). No framework, no build
             step, no bundler — minified by a tiny in-repo PHP script. Self-hosted on a
             Raspberry Pi 5 at home, served through Cloudflare. The source code is on
-            <a href="https://github.com/agent-carl/chesscodex" rel="noopener">GitHub</a>
+            <a href="https://github.com/ifrutella/chesscodex" rel="noopener">GitHub</a>
             under the AGPL-3.0.
         </p>
         <p>
