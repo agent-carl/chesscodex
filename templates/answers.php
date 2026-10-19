@@ -95,9 +95,9 @@ ob_start();
         Each opening's page shows its answers in full, and the table of every move played next.
     </p>
     <p class="ranking-method">
-        More: <a href="<?= $baseEsc . $esc('/train') ?>">practise these openings in the trainer</a> ·
-        <a href="<?= $baseEsc . $esc('/best-openings-for-white') ?>">best openings for White</a> ·
-        <a href="<?= $baseEsc . $esc('/best-openings-for-black') ?>">for Black</a> ·
+        See also <a href="<?= $baseEsc . $esc('/train') ?>">the trainer for these openings</a>,
+        <a href="<?= $baseEsc . $esc('/best-openings-for-white') ?>">best openings for White</a>,
+        <a href="<?= $baseEsc . $esc('/best-openings-for-black') ?>">for Black</a> and
         <a href="<?= $baseEsc . $esc('/gambits') ?>">chess gambits</a>
     </p>
 </article>

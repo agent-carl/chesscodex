@@ -177,7 +177,7 @@ ob_start();
             <tbody>
             <?php foreach ($rows as $i => $r):
                 [$w, $d, $b] = [$pct($r['white'], $r['games']), $pct($r['draws'], $r['games']), $pct($r['black'], $r['games'])];
-                $label = sprintf('White %.1f%% · Draw %.1f%% · Black %.1f%%', $w, $d, $b);
+                $label = sprintf('White %.1f%%, Draw %.1f%%, Black %.1f%%', $w, $d, $b);
             ?>
                 <tr>
                     <td class="ranking-num"><?= $i + 1 ?></td>

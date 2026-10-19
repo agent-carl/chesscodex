@@ -96,9 +96,9 @@ ob_start();
         after the line's last move, in pawns from White's side.
     </p>
     <p class="ranking-method">
-        More: <a href="<?= $baseEsc . $esc('/gambits') ?>#all-gambits">all chess gambits A–Z</a> ·
-        <a href="<?= $baseEsc . $esc('/gambits') ?>#stockfish-vs-practice">gambits that fade as the players get stronger</a> ·
-        <a href="<?= $baseEsc . $esc('/best-openings-for-white/beginners') ?>">best openings for White for beginners</a> ·
+        See also <a href="<?= $baseEsc . $esc('/gambits') ?>#all-gambits">all chess gambits A–Z</a>,
+        <a href="<?= $baseEsc . $esc('/gambits') ?>#stockfish-vs-practice">gambits that fade as the players get stronger</a>,
+        <a href="<?= $baseEsc . $esc('/best-openings-for-white/beginners') ?>">best openings for White for beginners</a> and
         <a href="<?= $baseEsc . $esc('/best-openings-for-black/beginners') ?>">for Black</a>
     </p>
 </article>

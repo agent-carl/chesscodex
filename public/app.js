@@ -672,7 +672,7 @@ function renderStats(rootEl, data) {
     bar.hidden = false;
 
     const totals = rootEl.querySelector('.stats-totals');
-    totals.textContent = `${total.toLocaleString('en-US')} games · White ${wPct.toFixed(1)}% / Draw ${dPct.toFixed(1)}% / Black ${bPct.toFixed(1)}%`;
+    totals.textContent = `${total.toLocaleString('en-US')} games: White ${wPct.toFixed(1)}% / Draw ${dPct.toFixed(1)}% / Black ${bPct.toFixed(1)}%`;
     totals.hidden = false;
 
     const tbody = rootEl.querySelector('.stats-moves tbody');
@@ -735,7 +735,7 @@ function renderStats(rootEl, data) {
 
 // Text alternative for a white/draw/black bar (same wording as the PHP side).
 function barLabel(w, d, b) {
-    return `White ${w.toFixed(1)}% · Draw ${d.toFixed(1)}% · Black ${b.toFixed(1)}%`;
+    return `White ${w.toFixed(1)}%, Draw ${d.toFixed(1)}%, Black ${b.toFixed(1)}%`;
 }
 
 // 209,140,943 → "209.1M" (same thresholds as Rankings::compact in PHP).

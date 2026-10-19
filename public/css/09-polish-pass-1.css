@@ -37,10 +37,7 @@ select:focus-visible { outline-color: transparent; }
 /* --- 3. Consistent transitions ---------------------------------------------
    Bump every 100 ms transition up to 150 ms so hover state changes feel
    intentional rather than blink-fast. Tactile sweet spot per design lit. */
-.group-card,
 .child-list a,
-.home-popular-list a,
-.home-featured-card,
 .openings-letter-list a,
 .openings-jump a,
 #board-reset,
@@ -159,9 +156,7 @@ select:focus-visible { outline-color: transparent; }
 /* --- 8. Container — shrink padding on phones so content uses full width --- */
 @media (max-width: 540px) {
     .container { padding: var(--space-4) var(--space-3) var(--space-5); }
-    .hero { padding: var(--space-4) 0 var(--space-3); }
-    .hero h1 { line-height: 1.18; }
-    .hero .lede { font-size: 0.95rem; }
+
 }
 
 /* --- 9. Buttons in suggest / admin — same min-height ---------------------
@@ -188,8 +183,7 @@ select:focus-visible { outline-color: transparent; }
 .openings-letter-list a .eco-tag,
 .opening-related-list a .eco-tag,
 .opening-subtree-list a .eco-tag,
-.search-by-name-results a .eco-tag,
-.home-popular-list a .eco-tag {
+.search-by-name-results a .eco-tag {
     flex-shrink: 0;
 }
 

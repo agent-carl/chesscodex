@@ -16,15 +16,16 @@
     --font-num: var(--font-body);
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
-    /* Light theme palette (paper-cream + sea blue) */
-    --bg:            #faf7f0;
+    /* Light theme palette: neutral paper, ink, ink blue. The board colours
+       (stats bars) are the only warm tones. */
+    --bg:            #f8f8f6;
     --bg-elevated:   #ffffff;
-    --bg-subtle:     #f1ecdf;
+    --bg-subtle:     #efefeb;
     --fg:            #1a1a1a;
     --fg-soft:       #3a3a3a;
     --muted:         #6b6b6b;
-    --border:        #e6e0d4;
-    --border-strong: #c8bfa9;
+    --border:        #dcdcd6;
+    --border-strong: #c3c3bb;
     --accent:        #2a5d8f;
     --accent-soft:   #e8eef6;
     --accent-hover:  #1d4773;
@@ -36,10 +37,11 @@
     --stats-d:       #8c8377;
     --stats-b:       #2f2f2f;
 
-    /* Geometry */
-    --radius-sm: 2px;
-    --radius:    3px;
-    --radius-lg: 4px;
+    /* Geometry: radius follows hierarchy. Controls (buttons, inputs) are
+       rounded, small marks less so; the board and page sections have none. */
+    --radius-sm: 3px;
+    --radius:    6px;
+    --radius-lg: 8px;
 
     /* Spacing scale (8-base) */
     --space-1: 0.25rem;
@@ -211,3 +213,16 @@ button {
     font-size: 0.85rem;
 }
 
+
+/* Footer credits: a wrapping row of items, spaced instead of dot-separated. */
+.footer-meta {
+    list-style: none;
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.2rem var(--space-4);
+    font-size: 0.85rem;
+    color: var(--muted);
+}

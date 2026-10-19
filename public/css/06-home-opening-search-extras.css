@@ -1,51 +1,15 @@
 /* =============================================================================
    Home page — quick-action links + popular openings strip
    ========================================================================== */
-.hero-actions {
-    display: flex;
-    justify-content: center;
-    margin-top: var(--space-3);
-    flex-wrap: wrap;
-}
-.hero-action-link {
-    color: var(--accent);
-    font-weight: 500;
-    border-bottom: 1px dashed var(--border-strong);
-}
-.hero-action-link:hover { color: var(--accent-hover); border-bottom-color: var(--accent); }
 
 .home-popular {
     margin-top: var(--space-6);
     padding-top: var(--space-5);
     border-top: 1px solid var(--border);
 }
-.home-popular-head { text-align: center; margin-bottom: var(--space-5); }
+.home-popular-head { margin-bottom: var(--space-4); }
 .home-popular-head h2 { margin: 0 0 var(--space-2); }
 .home-popular-lede { color: var(--muted); margin: 0; }
-.home-popular-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: var(--space-3);
-}
-.home-popular-list li { margin: 0; }
-.home-popular-list a {
-    display: flex;
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--fg);
-    text-decoration: none;
-}
-.home-popular-list a:hover {
-    border-color: var(--accent);
-}
-.home-popular-name { flex: 1; font-weight: 500; }
-.home-popular-plies { color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
 
 /* =============================================================================
    /openings — alphabetical index
@@ -465,10 +429,6 @@
 .home-popular + .home-popular {
     margin-top: var(--space-6);
     padding-top: var(--space-5);
-}
-.home-popular-gambits .home-popular-list a:hover {
-    border-color: var(--accent);
-    background: var(--accent-soft);
 }
 
 /* Keyboard-highlighted row in the name autocomplete dropdown. Matches hover

@@ -34,26 +34,26 @@ ob_start();
         <h2>Where the data comes from</h2>
         <ul>
             <li>
-                <strong>Opening list (3,690 lines)</strong> — from the
+                <strong>Opening list (3,690 lines)</strong>: from the
                 <a href="https://github.com/lichess-org/chess-openings" rel="noopener">Lichess
                 chess-openings</a> dataset, public domain. ECO codes, PGN move sequences,
                 canonical names.
             </li>
             <li>
-                <strong>Game statistics</strong> — fetched on demand from the
+                <strong>Game statistics</strong>: fetched on demand from the
                 <a href="https://lichess.org/api#tag/Opening-Explorer" rel="noopener">Lichess
                 Opening Explorer API</a> and cached server-side. Win rates, popular replies,
                 everything you see in the "Statistics from Lichess" panel.
             </li>
             <li>
-                <strong>Play vs the engine</strong> — uses
+                <strong>Play vs the engine</strong>: uses
                 <a href="https://github.com/lichess-org/stockfish.wasm" rel="noopener">Stockfish.wasm</a>
                 running entirely in your browser, including the evaluation shown while you
                 play. Nothing is sent to a server for this; the engine is loaded once and runs
                 locally.
             </li>
             <li>
-                <strong>Editorial descriptions</strong> — the descriptions of the most
+                <strong>Editorial descriptions</strong>: the descriptions of the most
                 popular openings were written with the help of an AI assistant, based on
                 standard opening theory and the Lichess numbers shown on each page; if you
                 spot a mistake, the "Suggest an improvement or report a mistake" form under

@@ -37,9 +37,9 @@
                 <span class="stats-bar-d" style="width:<?= $dPct ?>%"></span>
                 <span class="stats-bar-b" style="width:<?= $bPct ?>%"></span>
             </div>
-            <p class="stats-totals"<?= $statsTotal > 0 ? '' : ' hidden' ?>><?php if ($statsTotal > 0): ?><?= number_format($statsTotal) ?> games · White <?= $wPct ?>% / Draw <?= $dPct ?>% / Black <?= $bPct ?>%<?php endif; ?></p>
+            <p class="stats-totals"<?= $statsTotal > 0 ? '' : ' hidden' ?>><?php if ($statsTotal > 0): ?><?= number_format($statsTotal) ?> games: White <?= $wPct ?>% / Draw <?= $dPct ?>% / Black <?= $bPct ?>%<?php endif; ?></p>
             <table class="stats-moves"<?= $statsTotal > 0 && $statsRows ? '' : ' hidden' ?>>
-                <caption class="stats-moves-caption">The moves played next — click one to see it on the board.</caption>
+                <caption class="stats-moves-caption">The moves played next. Click one to see it on the board.</caption>
                 <thead>
                     <tr><th>Next move</th><th>Games</th><th><span class="th-long">White / Draw / Black</span><span class="th-short">W / D / B</span></th></tr>
                 </thead>

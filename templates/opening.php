@@ -119,7 +119,7 @@ $isDeclined    = !$isGambit && stripos((string) $o['name'], 'Gambit') !== false;
 $stats      = StatsCache::cached(Opening::uci($o));
 $statsTotal = $stats ? $stats['white'] + $stats['black'] + $stats['draws'] : 0;
 $pct        = static fn (int $n, int $of): string => number_format($of > 0 ? $n * 100 / $of : 0, 1, '.', '');
-$barLabel   = static fn (string $w, string $d, string $b): string => "White $w% · Draw $d% · Black $b%";
+$barLabel   = static fn (string $w, string $d, string $b): string => "White $w%, Draw $d%, Black $b%";
 [$wPct, $dPct, $bPct] = [$pct($stats['white'] ?? 0, $statsTotal), $pct($stats['draws'] ?? 0, $statsTotal), $pct($stats['black'] ?? 0, $statsTotal)];
 $statsRows  = [];
 foreach ($stats['top_moves'] ?? [] as $m) {
@@ -411,7 +411,7 @@ $island = [
                         <label><input type="radio" name="kind" value="description" checked>
                             <?= empty($o['description']) ? 'A description of this line' : 'A better description' ?></label>
                         <label><input type="radio" name="kind" value="report">
-                            A mistake on this page — moves, name, statistics…</label>
+                            A mistake on this page (moves, name, statistics…)</label>
                     </fieldset>
                     <p class="suggest-hint" data-kind-hint="description">
                         Markdown supported (headings <code>###</code>, <strong>bold</strong>, lists, links).

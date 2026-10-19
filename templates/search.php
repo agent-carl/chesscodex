@@ -116,7 +116,7 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
             <?php foreach ($examples as [$moves, $slug, $name, $eco]): ?>
             <li>
                 <a href="<?= htmlspecialchars($searchUrl . '?moves=' . rawurlencode($moves), ENT_QUOTES, 'UTF-8') ?>"><code><?= htmlspecialchars($moves, ENT_QUOTES, 'UTF-8') ?></code></a>
-                →
+                is the
                 <a href="<?= htmlspecialchars($baseUrl . '/openings/' . $slug, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></a>
                 (<?= htmlspecialchars($eco, ENT_QUOTES, 'UTF-8') ?>)
             </li>

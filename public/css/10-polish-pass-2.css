@@ -24,9 +24,6 @@
 }
 
 /* --- 3. Card hover — unify across every "card" component ------------------ */
-.group-card,
-.home-popular-list a,
-.home-featured-card,
 .child-list a,
 .openings-letter-list a {
     transition:
@@ -36,12 +33,7 @@
         background  .15s,
         color       .15s;
 }
-.group-card:hover,
-.home-popular-list a:hover,
-.home-featured-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
-}
+
 .child-list a:hover,
 .openings-letter-list a:hover {
     transform: translateY(-1px);
@@ -165,18 +157,6 @@ button[aria-disabled="true"] {
     font-size: 0.9rem;
 }
 
-/* --- 8. Hero — slightly softer h1 size on desktop, tighter on phone ------- */
-.hero h1 { font-size: 2.2rem; letter-spacing: -0.01em; }
-@media (max-width: 768px) {
-    .hero h1 { font-size: 1.85rem; }
-}
-
-/* --- 9. Group cards — left-align numeric meta with the letter -------------
-   .group-letter was big and centered; on cards where the count text is short
-   the layout felt unbalanced. Add a touch of vertical rhythm. */
-.group-card { gap: var(--space-2); }
-.group-letter { margin-bottom: 0.1rem; }
-
 /* --- 10. Code in descriptions — softer background, padding ---------------- */
 .description-body code {
     background: var(--bg-subtle);
@@ -245,17 +225,13 @@ button[aria-disabled="true"] {
 
 /* --- 14. Print: avoid bad page-breaks ------------------------------------- */
 @media print {
-    .home-featured,
     .home-popular,
-    .group-grid,
-    .opening-overview,
-    .opening-stats,
-    .opening-description,
-    .opening-related,
-    .group-card,
-    .stats-moves,
-    .opening-tree-list,
-    .home-popular-list li {
+.opening-overview,
+.opening-stats,
+.opening-description,
+.opening-related,
+.stats-moves,
+.opening-tree-list {
         break-inside: avoid;
         page-break-inside: avoid;
     }
@@ -301,9 +277,6 @@ button[aria-disabled="true"] {
 
 /* --- 20. Better focus ring inside cards/links — use box-shadow not outline
    when the card has rounded corners so the ring follows the curve. */
-.group-card:focus-visible,
-.home-popular-list a:focus-visible,
-.home-featured-card:focus-visible,
 .child-list a:focus-visible,
 .openings-letter-list a:focus-visible,
 .opening-share-btn:focus-visible,

@@ -17,8 +17,7 @@ return [
     // Home page
     'home.title'               => 'Chess Openings Explorer — Moves & Win Rates | Caissa Codex',
     'home.hero.h1'             => 'The Chess Openings Encyclopedia',
-    'home.hero.lede'           => 'A free, ad-free reference of named chess openings and variations: moves on an interactive board, ECO codes, and win rates from millions of Lichess games.',
-    'home.hero.meta'           => '{count} named lines · ECO codes A00–E99',
+    'home.hero.lede'           => '{count} named chess openings and variations, filed by ECO code from A00 to E99, each with its moves on an interactive board and win rates from millions of Lichess games. Free, with no ads.',
     'home.card.openings'       => '{count} lines',
     'home.description'         => 'Explore {count} chess openings and variations, from the Sicilian to rare gambits: moves on an interactive board, ECO codes and Lichess win rates. Free, no ads.',
 
@@ -32,7 +31,7 @@ return [
     'opening.stats.loading'    => 'Loading…',
     'opening.stats.no_games'   => 'No games found in Lichess for this exact position.',
     'opening.stats.failed'     => 'Statistics could not be loaded.',
-    'opening.stats.attribution'=> 'Rated Lichess games between players rated 1600 to 2500, from the Lichess opening explorer · updated',
+    'opening.stats.attribution'=> 'Rated Lichess games between players rated 1600 to 2500, from the Lichess opening explorer, updated',
     'opening.description.title'=> 'Description',
     'opening.variations'       => 'Variations ({count})',
     'opening.variations.show'  => 'Show all {count} variations',

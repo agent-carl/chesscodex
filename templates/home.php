@@ -13,21 +13,30 @@ foreach ($groups as $g) $total += (int) $g['count'];
 $totalFmt = number_format($total);
 $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 ?>
-<section class="hero">
-    <h1><?= htmlspecialchars(t('home.hero.h1'), ENT_QUOTES, 'UTF-8') ?></h1>
-    <p class="lede"><?= htmlspecialchars(t('home.hero.lede'), ENT_QUOTES, 'UTF-8') ?></p>
-    <?php /* The name search, with suggestions from site.js; without JavaScript
-             the form opens /search with the words filled in. */ ?>
-    <form class="hero-search" action="<?= $baseEsc . htmlspecialchars('/search', ENT_QUOTES, 'UTF-8') ?>" method="get" role="search">
-        <?php $nameSearchId = 'hero-search'; require __DIR__ . '/partials/name_search.php'; ?>
-    </form>
-    <p class="hero-meta"><?= htmlspecialchars(t('home.hero.meta', ['count' => $totalFmt]), ENT_QUOTES, 'UTF-8') ?></p>
-    <p class="hero-actions">
-        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/openings', ENT_QUOTES, 'UTF-8') ?>">Browse all openings A–Z</a>
-        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/search', ENT_QUOTES, 'UTF-8') ?>">Identify an opening from moves</a>
-        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/eco', ENT_QUOTES, 'UTF-8') ?>">Browse by ECO code</a>
-        <a class="hero-action-link" href="<?= $baseEsc . htmlspecialchars('/random', ENT_QUOTES, 'UTF-8') ?>" rel="nofollow">A random opening</a>
-    </p>
+<?php /* The masthead opens with the job (find a line by name, moves or code)
+         and the most characteristic thing in the subject: a position on the
+         board, today's opening. */ ?>
+<section class="masthead">
+    <div class="masthead-text">
+        <h1><?= htmlspecialchars(t('home.hero.h1'), ENT_QUOTES, 'UTF-8') ?></h1>
+        <p class="masthead-lede"><?= htmlspecialchars(t('home.hero.lede', ['count' => $totalFmt]), ENT_QUOTES, 'UTF-8') ?></p>
+        <?php /* The name search, with suggestions from site.js; without JavaScript
+                 the form opens /search with the words filled in. */ ?>
+        <form class="masthead-search" action="<?= $baseEsc . htmlspecialchars('/search', ENT_QUOTES, 'UTF-8') ?>" method="get" role="search">
+            <?php $nameSearchId = 'hero-search'; require __DIR__ . '/partials/name_search.php'; ?>
+        </form>
+    </div>
+    <?php if ($featured): ?>
+    <a class="masthead-board" href="<?= $baseEsc . htmlspecialchars('/openings/' . $featured['slug'], ENT_QUOTES, 'UTF-8') ?>">
+        <img src="<?= $baseEsc . htmlspecialchars(Opening::diagramPath((string) $featured['slug'], true), ENT_QUOTES, 'UTF-8') ?>"
+             width="720" height="720" alt="Chess diagram: <?= htmlspecialchars($featured['name'], ENT_QUOTES, 'UTF-8') ?>" decoding="async">
+        <span class="masthead-board-caption">
+            <span class="masthead-board-label">Opening of the day, <?= date('F j') ?></span>
+            <span class="masthead-board-name"><?= htmlspecialchars($featured['name'], ENT_QUOTES, 'UTF-8') ?> <span class="eco-tag"><?= htmlspecialchars($featured['eco'], ENT_QUOTES, 'UTF-8') ?></span></span>
+            <span class="masthead-board-moves"><?= htmlspecialchars(Opening::keepNumbers(trim((string) ($featured['pgn_moves'] ?? ''))), ENT_QUOTES, 'UTF-8') ?></span>
+        </span>
+    </a>
+    <?php endif; ?>
 </section>
 
 <!-- Recently viewed openings — JS-populated. Hidden when empty so the
@@ -42,51 +51,24 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 <?php /* Not deferred: fills the section before the content below is painted. */ ?>
 <script src="<?= $baseEsc ?>/public/home.min.js?v=<?= @filemtime(__DIR__ . '/../public/home.min.js') ?: 1 ?>" data-base="<?= $baseEsc ?>"></script>
 
-<?php if ($featured): ?>
-<section class="home-featured">
-    <header class="home-featured-head">
-        <h2 class="section-label">Opening of the day</h2>
-        <span class="home-featured-date"><?= date('F j, Y') ?></span>
-    </header>
-    <a class="home-featured-card" href="<?= $baseEsc . htmlspecialchars('/openings/' . $featured['slug'], ENT_QUOTES, 'UTF-8') ?>">
-        <img class="home-featured-diagram" src="<?= $baseEsc . htmlspecialchars(Opening::diagramPath((string) $featured['slug'], true), ENT_QUOTES, 'UTF-8') ?>"
-             width="720" height="720" alt="Chess diagram: <?= htmlspecialchars($featured['name'], ENT_QUOTES, 'UTF-8') ?>" decoding="async">
-        <span class="home-featured-body">
-        <span class="home-featured-title">
-            <span class="eco-tag"><?= htmlspecialchars($featured['eco'], ENT_QUOTES, 'UTF-8') ?></span>
-            <span class="home-featured-name"><?= htmlspecialchars($featured['name'], ENT_QUOTES, 'UTF-8') ?></span>
-        </span>
-        <code class="home-featured-moves"><?= htmlspecialchars(Opening::keepNumbers(trim((string) ($featured['pgn_moves'] ?? ''))), ENT_QUOTES, 'UTF-8') ?></code>
-        <?php if (!empty($featured['description'])):
-            // Snippet: first ~200 chars of the description's first paragraph,
-            // as plain text — the description is Markdown, so drop link
-            // targets ("[x](/y)" → "x"), emphasis, code ticks and headings.
-            $snippet = preg_split('/\n\s*\n/', trim(strip_tags((string) $featured['description'])))[0];
-            $snippet = preg_replace(['/!?\[([^\]]*)\]\([^)]*\)/', '/(\*\*|__|\*|`)/', '/^#+\s*/m'], ['$1', '', ''], $snippet);
-            $snippet = preg_replace('/\s+/', ' ', $snippet);
-            if (mb_strlen($snippet) > 200) $snippet = rtrim(mb_substr($snippet, 0, 200), ' .,;:-') . '…';
-        ?>
-            <span class="home-featured-snippet"><?= htmlspecialchars($snippet, ENT_QUOTES, 'UTF-8') ?></span>
-        <?php endif; ?>
-        <span class="home-featured-cta">Study this opening</span>
-        </span>
-    </a>
+<?php /* The ECO classification as the five volumes it was printed in: each
+         spine's height is its share of the lines, standing on one shelf. */
+$maxGroup = max(array_map(static fn (array $g): int => (int) $g['count'], $groups) ?: [1]); ?>
+<section class="shelf" aria-labelledby="shelf-title">
+    <h2 id="shelf-title">The five ECO volumes</h2>
+    <ol class="shelf-list">
+    <?php foreach ($groups as $g):
+        $href = $g['root_slug'] ? $baseUrl . '/openings/' . $g['root_slug'] : null; ?>
+        <li style="--size: <?= round((int) $g['count'] / max(1, $maxGroup), 3) ?>">
+            <<?= $href ? 'a href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '"' : 'span' ?> class="shelf-volume">
+                <span class="shelf-letter"><?= htmlspecialchars($g['letter'], ENT_QUOTES, 'UTF-8') ?></span>
+                <span class="shelf-label"><?= htmlspecialchars($g['label'], ENT_QUOTES, 'UTF-8') ?></span>
+                <span class="shelf-count"><?= htmlspecialchars(t('home.card.openings', ['count' => number_format((int) $g['count'])]), ENT_QUOTES, 'UTF-8') ?></span>
+            </<?= $href ? 'a' : 'span' ?>>
+        </li>
+    <?php endforeach; ?>
+    </ol>
 </section>
-<?php endif; ?>
-
-<div class="group-grid">
-<?php foreach ($groups as $g): ?>
-    <?php $href = $g['root_slug']
-        ? $baseUrl . '/openings/' . $g['root_slug']
-        : null; ?>
-    <a class="group-card<?= $href ? '' : ' is-empty' ?>"
-       <?php if ($href): ?>href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8') ?>"<?php endif ?>>
-        <span class="group-letter"><?= htmlspecialchars($g['letter'], ENT_QUOTES, 'UTF-8') ?></span>
-        <span class="group-label"><?= htmlspecialchars($g['label'], ENT_QUOTES, 'UTF-8') ?></span>
-        <span class="group-count"><?= htmlspecialchars(t('home.card.openings', ['count' => number_format((int) $g['count'])]), ENT_QUOTES, 'UTF-8') ?></span>
-    </a>
-<?php endforeach; ?>
-</div>
 
 <?php
 // Helper — same DOM/CSS for "famous openings" and "famous gambits" strips.
@@ -97,19 +79,17 @@ $renderStrip = static function (string $h2, string $lede, string $modifier, arra
             <h2><?= htmlspecialchars($h2, ENT_QUOTES, 'UTF-8') ?></h2>
             <p class="home-popular-lede"><?= htmlspecialchars($lede, ENT_QUOTES, 'UTF-8') ?></p>
         </header>
-        <ul class="home-popular-list">
+        <ul class="index-list">
             <?php foreach ($rows as $p):
                 $pos = strpos((string) $p['name'], ': ');
-                [$kicker, $cardName] = $pos === false ? ['', (string) $p['name']]
-                    : [substr((string) $p['name'], 0, $pos), substr((string) $p['name'], $pos + 2)]; ?>
+                [$family, $rest] = $pos === false ? ['', (string) $p['name']]
+                    : [substr((string) $p['name'], 0, $pos + 1), substr((string) $p['name'], $pos + 2)]; ?>
                 <li>
                     <a href="<?= $baseEsc . htmlspecialchars('/openings/' . $p['slug'], ENT_QUOTES, 'UTF-8') ?>">
                         <span class="eco-tag"><?= htmlspecialchars($p['eco'], ENT_QUOTES, 'UTF-8') ?></span>
-                        <span class="home-popular-text">
-                            <span class="home-popular-name"><?= htmlspecialchars($cardName, ENT_QUOTES, 'UTF-8') ?></span>
-                            <?php if ($kicker !== ''): ?><span class="home-popular-kicker"><?= htmlspecialchars($kicker, ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
-                            <span class="home-popular-moves"><?= htmlspecialchars(Opening::keepNumbers(Opening::movesFrom((string) $p['pgn_moves'], 0)), ENT_QUOTES, 'UTF-8') ?></span>
-                        </span>
+                        <span class="index-name"><?php if ($family !== ''): ?><span class="index-family"><?= htmlspecialchars($family, ENT_QUOTES, 'UTF-8') ?></span> <?php endif; ?><?= htmlspecialchars($rest, ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="index-leader" aria-hidden="true"></span>
+                        <span class="index-moves"><?= htmlspecialchars(Opening::keepNumbers(Opening::movesFrom((string) $p['pgn_moves'], 0)), ENT_QUOTES, 'UTF-8') ?></span>
                     </a>
                 </li>
             <?php endforeach; ?>
@@ -120,7 +100,7 @@ $renderStrip = static function (string $h2, string $lede, string $modifier, arra
 
 $renderStrip(
     'Famous openings',
-    'The lines you have probably heard of — start here if you do not know where to look.',
+    'The lines you have probably heard of. Start here if you do not know where to look.',
     'home-popular-classic',
     $popular,
     '/popular-openings',
@@ -211,7 +191,7 @@ $fmBar = static fn (float $width, string $class = 'fm-bar'): string =>
         <h2>Rankings from Lichess games</h2>
         <p class="home-popular-lede">Which openings score best for each side, which are played most and which more than ten years ago, and the most-played gambits.</p>
     </header>
-    <ul class="home-rankings-list">
+    <ul class="index-list index-list-plain">
         <?php foreach (Rankings::LABELS as $path => $label): ?>
             <li>
                 <a href="<?= $baseEsc . htmlspecialchars('/' . $path, ENT_QUOTES, 'UTF-8') ?>">
@@ -227,11 +207,11 @@ $fmBar = static fn (float $width, string $class = 'fm-bar'): string =>
     <p>
         Every opening here carries one of the
         <a href="<?= $baseEsc . htmlspecialchars('/eco', ENT_QUOTES, 'UTF-8') ?>">ECO codes</a>, a system that files chess openings into
-        five volumes: <strong>A</strong> — flank openings such as the English and the Réti, plus
-        the Dutch and the Benoni; <strong>B</strong> — semi-open games such as the Sicilian, the
-        Caro-Kann and the Pirc; <strong>C</strong> — open games after 1.e4 e5, plus the French
-        Defense; <strong>D</strong> — closed and semi-closed games after 1.d4 d5, such as the
-        Queen's Gambit, plus the Grünfeld; <strong>E</strong> — Indian defenses such as the
+        five volumes: <strong>A</strong>, flank openings such as the English and the Réti, plus
+        the Dutch and the Benoni; <strong>B</strong>, semi-open games such as the Sicilian, the
+        Caro-Kann and the Pirc; <strong>C</strong>, open games after 1.e4 e5, plus the French
+        Defense; <strong>D</strong>, closed and semi-closed games after 1.d4 d5, such as the
+        Queen's Gambit, plus the Grünfeld; <strong>E</strong>, Indian defenses such as the
         Catalan, the Nimzo-Indian and the King's Indian.
     </p>
     <p>

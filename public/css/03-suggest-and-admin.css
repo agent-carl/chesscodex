@@ -124,7 +124,6 @@
 }
 .admin-logout button:hover { border-color: var(--accent); color: var(--accent); }
 
-
 .admin-table {
     width: 100%;
     border-collapse: collapse;

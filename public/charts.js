@@ -26,7 +26,7 @@
             var value = document.createElement('strong');
             value.textContent = row.cells[1].textContent;
             var when = document.createElement('span');
-            when.textContent = row.cells[0].textContent + ' · ' + row.cells[2].textContent + ' games';
+            when.textContent = row.cells[0].textContent + ': ' + row.cells[2].textContent + ' games';
             tip.replaceChildren(value, when);
             tip.hidden = false;
             // Over the year, kept inside the chart at both ends.

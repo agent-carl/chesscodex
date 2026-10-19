@@ -29,8 +29,6 @@
     color: var(--muted);
 }
 
-/* ECO tags stay visible on the light background. */
-
 /* --- Win/draw/loss bars: an outline, so the white part shows on the light
        theme and the black part on the dark one. -------------------------- */
 :root { --stats-outline: #b3a88f; }
@@ -82,56 +80,16 @@ html .cg-wrap coords.squares { text-transform: none; }
 .search-by-name-empty { font-style: normal; }
 
 /* --- Home ------------------------------------------------------------- */
-.hero-search { max-width: 560px; margin: var(--space-4) auto var(--space-3); }
-.hero-actions { gap: var(--space-2) var(--space-5); font-size: 0.92rem; }
+
 .home-intro p { max-width: 72ch; }
 
-.home-featured-card { display: flex; }
-.home-featured-title { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-2); }
-.home-featured-name { margin-left: 0; }
-.home-featured-moves { font-family: var(--font-moves); font-size: 0.85rem; color: var(--muted); background: none; padding: 0; }
-.home-featured-snippet { margin: 0; }
-
 .home-popular-gambits .home-popular-head h2 { color: inherit; }
-.home-popular-gambits .home-popular-list a { border-color: var(--border); }
-.home-popular-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
-.home-popular-moves { font-family: var(--font-moves); font-size: 0.78rem; color: var(--muted); }
 
-.home-rankings-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--space-3);
-}
-.home-rankings-list li { margin: 0; }
-.home-rankings-list a {
-    display: block;
-    height: 100%;
-    box-sizing: border-box;
-    padding: var(--space-3) var(--space-4);
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--fg);
-    font-weight: 500;
-    text-decoration: none;
-}
-.home-rankings-list a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
-@media (max-width: 800px) {
-    .home-rankings-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
 @media (max-width: 600px) {
-    .group-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
-    .group-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
-    .group-card { padding: var(--space-3); }
-    .group-letter { font-size: 1.8rem; }
+
     .home-popular { margin-top: var(--space-5); padding-top: var(--space-4); }
     .home-popular-head { margin-bottom: var(--space-3); }
-    .home-popular-list { gap: var(--space-2); }
-    .home-popular-list a { padding: var(--space-2) var(--space-3); }
-    .home-featured-card { padding: var(--space-3) var(--space-4); }
+
 }
 
 /* --- Search page ------------------------------------------------------ */

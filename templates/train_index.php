@@ -47,8 +47,8 @@ ob_start();
                             <span class="eco-tag"><?= $esc($o['eco']) ?></span>
                             <span class="eco-code-text">
                                 <span class="openings-letter-name"><?= $esc($o['name']) ?></span>
-                                <span class="eco-code-meta"><code><?= $esc(Opening::keepNumbers($moves(trim((string) $o['pgn_moves'])))) ?></code>
-                                    · <?= $n === 1 ? '1 line' : number_format(min($n, 300)) . ' lines' ?></span>
+                                <span class="eco-code-meta"><code><?= $esc(Opening::keepNumbers($moves(trim((string) $o['pgn_moves'])))) ?></code>,
+                                    <?= $n === 1 ? '1 line' : number_format(min($n, 300)) . ' lines' ?></span>
                             </span>
                         </a>
                     </li>

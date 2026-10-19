@@ -145,33 +145,9 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
 }
 .search-about { margin-top: var(--space-8); }
 
-/* --- Home: opening of the day with its position ------------------------ */
-.home-featured-card { flex-direction: row; align-items: center; gap: var(--space-5); }
-.home-featured-diagram {
-    flex-shrink: 0;
-    width: 132px;
-    height: auto;
-    border-radius: var(--radius-sm);
-    box-shadow: 0 0 0 1px var(--border-strong);
-}
-.home-featured-body { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); min-width: 0; }
-@media (max-width: 480px) {
-    .home-featured-card { gap: var(--space-3); }
-    .home-featured-diagram { width: 96px; }
-}
-
 /* --- Home: opening and gambit cards, even in every row ------------------ */
-.home-popular-list { align-items: stretch; grid-auto-rows: 1fr; }
-.home-popular-list li { display: flex; }
-.home-popular-list a { flex: 1; align-items: flex-start; }
-.home-popular-list a .eco-tag { margin-top: 0.15rem; }
-.home-popular-kicker { color: var(--muted); font-size: 0.78rem; line-height: 1.2; }
-.home-popular-more { margin: var(--space-3) 0 0; text-align: center; font-size: 0.92rem; }
-/* On a phone: the first six of each, the rest one tap away. */
-@media (max-width: 600px) {
-    .home-popular-classic .home-popular-list li:nth-child(n+7),
-    .home-popular-gambits .home-popular-list li:nth-child(n+7) { display: none; }
-}
+
+.home-popular-more { margin: var(--space-3) 0 0; font-size: 0.92rem; }
 
 /* The "How the openings are organized" text: a centered column, not a
    block hanging off the left edge. */
@@ -245,21 +221,6 @@ html .cg-wrap coords { font-size: 11px; opacity: 1; }
 /* --- Variation cards: every card in a row as tall as the tallest -------- */
 .child-list li:not([hidden]) { display: flex; }
 .child-list li > a { flex: 1; min-width: 0; }
-
-/* --- Home: ECO volume counts on one line; cards only evened out in columns */
-.group-count { margin-top: auto; }
-@media (max-width: 600px) {
-    .home-popular-list { grid-auto-rows: auto; }
-}
-
-/* --- Home, phone: the diagram beside the title, the text under both ------ */
-@media (max-width: 480px) {
-    .home-featured-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); grid-template-rows: auto 1fr; gap: var(--space-2) var(--space-3); align-items: start; }
-    .home-featured-body { display: contents; }
-    .home-featured-diagram { grid-row: span 2; }
-    .home-featured-snippet,
-    .home-featured-cta { grid-column: 1 / -1; }
-}
 
 /* --- Play and practice, phone: four buttons in two even rows ------------- */
 @media (max-width: 540px) {

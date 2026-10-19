@@ -24,6 +24,6 @@ if ($eval):
                 <?php if ($practice !== null): ?><p class="engine-eval-practice"><?= htmlspecialchars($practice, ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                 <p class="engine-eval-line">Best play: <span class="engine-eval-pv"><?= htmlspecialchars(EngineEval::lineText((string) $o['fen'], $eval['pv']), ENT_QUOTES, 'UTF-8') ?></span></p>
                 <p class="engine-eval-src"><small><?= htmlspecialchars($eval['engine'], ENT_QUOTES, 'UTF-8') ?>, depth <?= (int) $eval['depth'] ?>,
-                    after the line's last move · scores are in pawns, from White's side</small></p>
+                    after the line's last move. Scores are in pawns, from White's side.</small></p>
             </section>
 <?php endif; ?>

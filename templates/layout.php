@@ -244,27 +244,27 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
         <?php if ($footerOpenings): ?>
         <nav class="footer-links" aria-label="Popular openings and rankings">
             <p><span class="footer-links-label">Popular openings:</span>
-                <?php foreach ($footerOpenings as $i => $fo): ?><?= $i > 0 ? ' · ' : '' ?><a href="<?= $baseEsc . $esc('/openings/' . $fo['slug']) ?>"><?= $esc($fo['name']) ?></a><?php endforeach; ?>
+                <?php foreach ($footerOpenings as $i => $fo): ?><?= $i > 0 ? ', ' : '' ?><a href="<?= $baseEsc . $esc('/openings/' . $fo['slug']) ?>"><?= $esc($fo['name']) ?></a><?php endforeach; ?>
             </p>
             <p><span class="footer-links-label">Browse:</span>
-                <a href="<?= $baseEsc . $esc('/openings') ?>">All openings A–Z</a> ·
-                <a href="<?= $baseEsc . $esc('/eco') ?>">ECO codes</a> ·
-                <?php foreach (Rankings::LABELS as $fPath => $fLabel): ?><a href="<?= $baseEsc . $esc('/' . $fPath) ?>"><?= $esc($fLabel) ?></a> · <?php endforeach; ?>
-                <a href="<?= $baseEsc . $esc('/search') ?>">Opening identifier</a> ·
+                <a href="<?= $baseEsc . $esc('/openings') ?>">All openings A–Z</a>,
+                <a href="<?= $baseEsc . $esc('/eco') ?>">ECO codes</a>,
+                <?php foreach (Rankings::LABELS as $fPath => $fLabel): ?><a href="<?= $baseEsc . $esc('/' . $fPath) ?>"><?= $esc($fLabel) ?></a>, <?php endforeach; ?>
+                <a href="<?= $baseEsc . $esc('/search') ?>">Opening identifier</a>,
                 <a href="<?= $baseEsc . $esc('/train') ?>">Opening trainer</a>
             </p>
         </nav>
         <?php endif; ?>
         <small><?= t('footer.data') ?></small><br>
-        <small style="color:var(--muted)">
-            <a href="<?= $baseEsc ?>/about">About</a> ·
-            <!--email_off--><a href="mailto:info@chesscodex.org">Contact</a><!--/email_off--> ·
-            <span class="footer-credit">© 2026 Ivan Petrov</span> ·
-            <a href="https://github.com/agent-carl/chesscodex" rel="noopener">Source code</a> (AGPL-3.0) ·
-            Powered by <span class="footer-credit"><a href="https://stockfishchess.org/" rel="noopener">Stockfish</a> (GPL-3.0)</span> ·
-            <span class="footer-credit"><a href="https://github.com/lichess-org/chessground" rel="noopener">chessground</a> (GPL-3.0)</span> ·
-            <span class="footer-credit"><a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD-2)</span>
-        </small>
+        <ul class="footer-meta">
+            <li><a href="<?= $baseEsc ?>/about">About</a></li>
+            <li><!--email_off--><a href="mailto:info@chesscodex.org">Contact</a><!--/email_off--></li>
+            <li class="footer-credit">© 2026 Ivan Petrov</li>
+            <li><a href="https://github.com/agent-carl/chesscodex" rel="noopener">Source code</a> (AGPL-3.0)</li>
+            <li class="footer-credit">Powered by <a href="https://stockfishchess.org/" rel="noopener">Stockfish</a> (GPL-3.0),
+                <a href="https://github.com/lichess-org/chessground" rel="noopener">chessground</a> (GPL-3.0) and
+                <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD-2)</li>
+        </ul>
     </footer>
 </body>
 </html>

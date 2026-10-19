@@ -96,14 +96,6 @@
    ========================================================================== */
 
 /* =============================================================================
-   Polished hover on home featured card — subtler scale instead of pop-out
-   ========================================================================== */
-.home-featured-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(42, 93, 143, 0.15);
-}
-
-/* =============================================================================
    Subtler scroll behavior — smooth scroll for in-page anchor navigation
    (Tree path links, suggestion form anchor, etc). Respects reduce-motion.
    ========================================================================== */
@@ -283,13 +275,11 @@ html { scroll-behavior: smooth; }
    ========================================================================== */
 .child-list a:visited .child-list-name,
 .openings-letter-list a:visited .openings-letter-name,
-.home-popular-list a:visited .home-popular-name,
 .opening-related-list a:visited .child-list-name {
     color: var(--muted);
 }
 .child-list a:visited::after,
-.openings-letter-list a:visited::after,
-.home-popular-list a:visited::after {
+.openings-letter-list a:visited::after {
     content: ' ✓';
     color: var(--accent);
     opacity: 0.6;
@@ -461,5 +451,5 @@ body:not(.has-board) .opening-board:empty { display: none; }
    slow networks the page flashes WHITE before the dark stylesheet loads.
    ========================================================================== */
 html[data-theme="dark"]  { background: #16181d; }
-html[data-theme="light"] { background: #faf7f0; }
+html[data-theme="light"] { background: #f8f8f6; }
 

@@ -22,10 +22,10 @@ ob_start();
 ?>
 <article class="openings-index">
     <header class="openings-index-header">
-        <h1>ECO codes · A00–E99</h1>
+        <h1>ECO codes A00 to E99</h1>
         <p class="lede">
             The ECO system files every chess opening under one of 500 codes in five volumes.
-            Here are all of them with the <?= number_format($total) ?> named lines behind them —
+            Here are all of them with the <?= number_format($total) ?> named lines behind them,
             or browse the <a href="<?= $baseEsc . $esc('/openings') ?>">openings A–Z</a>.
             <a href="#what-are-eco-codes">What ECO codes are</a> is explained below the list.
         </p>
@@ -40,7 +40,7 @@ ob_start();
 
     <?php foreach (['A', 'B', 'C', 'D', 'E'] as $vol): ?>
         <section class="openings-letter" id="volume-<?= $vol ?>">
-            <h2><?= $vol ?> · <?= $esc(t('group.' . $vol)) ?>
+            <h2><?= $vol ?>: <?= $esc(t('group.' . $vol)) ?>
                 <span class="openings-letter-count"><?= $vol ?>00–<?= $vol ?>99</span>
             </h2>
             <ul class="openings-letter-list eco-code-list">
@@ -55,7 +55,7 @@ ob_start();
                             <span class="eco-tag"><?= $code ?></span>
                             <span class="eco-code-text">
                                 <span class="openings-letter-name"><?= $esc($c['label']) ?></span>
-                                <span class="eco-code-meta"><code><?= $esc(Opening::keepNumbers((string) ($c['moves'] ?? ''))) ?></code> · <?= $c['count'] === 1 ? '1 line' : $c['count'] . ' lines' ?></span>
+                                <span class="eco-code-meta"><code><?= $esc(Opening::keepNumbers((string) ($c['moves'] ?? ''))) ?></code>, <?= $c['count'] === 1 ? '1 line' : $c['count'] . ' lines' ?></span>
                             </span>
                         </a>
                         <?php else: ?>
@@ -86,16 +86,17 @@ ob_start();
         </p>
         <h2>What the five volumes cover</h2>
         <ul>
-            <li><strong>A · Flank openings</strong> — the English, the Réti, Bird's Opening, the Dutch,
+            <li><strong>A, flank openings:</strong> the English, the Réti, Bird's Opening, the Dutch,
                 the Benoni, the Benko Gambit, the Old Indian and irregular first moves.</li>
-            <li><strong>B · Semi-open games other than the French</strong> — the Sicilian, the
+            <li><strong>B, semi-open games other than the French:</strong> the Sicilian, the
                 Caro-Kann, the Pirc, the Modern, Alekhine's Defense and the Scandinavian.</li>
-            <li><strong>C · Open games and the French</strong> — the Ruy Lopez, the Italian Game, the
+            <li><strong>C, open games and the French:</strong> the Ruy Lopez, the Italian Game, the
                 Scotch, the Four Knights, Petrov's Defense, the Philidor, the Vienna, the King's Gambit
                 and the French Defense.</li>
-            <li><strong>D · Closed and semi-closed games</strong> — the Queen's Gambit, accepted and
+            <li><strong>D, closed and semi-closed games:</strong> the Queen's Gambit, accepted and
                 declined, the Slav, other Queen's Pawn games and the Grünfeld.</li>
-            <li><strong>E · Indian defenses</strong> other than the Grünfeld and the Old Indian — the
+            <li><strong>E, Indian defenses</strong> other than the Grünfeld and the Old Indian:
+                the
                 Nimzo-Indian, the Queen's Indian, the King's Indian, the Bogo-Indian and the Catalan.</li>
         </ul>
         <h2>ECO codes on this site</h2>

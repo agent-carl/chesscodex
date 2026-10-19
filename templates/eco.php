@@ -42,7 +42,7 @@ ob_start();
 
     <section class="about-section">
         <p>
-            ECO <?= $code ?> is part of volume <?= $vol ?> — <?= $esc(t('group.' . $vol)) ?>.
+            ECO <?= $code ?> is part of volume <?= $vol ?>, <?= $esc(t('group.' . $vol)) ?>.
             The Lichess chess-openings dataset files <?= $n === 1 ? 'one named line' : $n . ' named lines' ?>
             under it<?= $families > 1 ? ', from ' . $families . ' different openings' : '' ?>.
             <?= $n === 1 ? 'It is' : 'The shortest is' ?>
@@ -87,10 +87,10 @@ ob_start();
 
     <nav class="eco-nav" aria-label="Neighbouring ECO codes">
         <?php if ($prevCode): ?>
-            <a href="<?= $baseEsc . $esc('/eco/' . $prevCode) ?>">← ECO <?= $prevCode ?></a>
+            <a href="<?= $baseEsc . $esc('/eco/' . $prevCode) ?>">Previous: ECO <?= $prevCode ?></a>
         <?php else: ?><span></span><?php endif; ?>
         <?php if ($nextCode): ?>
-            <a href="<?= $baseEsc . $esc('/eco/' . $nextCode) ?>">ECO <?= $nextCode ?> →</a>
+            <a href="<?= $baseEsc . $esc('/eco/' . $nextCode) ?>">Next: ECO <?= $nextCode ?></a>
         <?php endif; ?>
     </nav>
 </article>

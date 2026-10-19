@@ -51,12 +51,12 @@
                     $result = match ($g['winner']) { 'white' => '1–0', 'black' => '0–1', default => '½–½' }; ?>
                     <li><a href="https://lichess.org/<?= rawurlencode((string) $g['id']) ?>" target="_blank" rel="noopener nofollow">
                         <?= htmlspecialchars($player((string) $g['white']), ENT_QUOTES, 'UTF-8') ?> – <?= htmlspecialchars($player((string) $g['black']), ENT_QUOTES, 'UTF-8') ?></a>
-                        <span class="master-games-meta"><?= $g['year'] > 0 ? (int) $g['year'] . ' · ' : '' ?><?= $result ?></span></li>
+                        <span class="master-games-meta"><?= $result ?><?= $g['year'] > 0 ? ', ' . (int) $g['year'] : '' ?></span></li>
                 <?php endforeach; ?>
             </ul>
         <?php endif; ?>
         <p class="stats-attribution"><small>Rated blitz, rapid and classical Lichess games by rating band, and
-            over-the-board games of players rated 2200+ from the Lichess masters database ·
+            over-the-board games of players rated 2200+ from the Lichess masters database,
             updated <?= htmlspecialchars($updated((string) max(array_column($levels, 'fetched_at'))), ENT_QUOTES, 'UTF-8') ?></small></p>
     </section>
     <?php endif; ?>

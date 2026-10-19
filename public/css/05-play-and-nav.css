@@ -168,7 +168,7 @@
 
 @media (max-width: 480px) {
     .container { padding: var(--space-4) var(--space-3) var(--space-6); }
-    .group-letter { font-size: 2rem; }
+
     h1 { font-size: 1.5rem; }
 }
 

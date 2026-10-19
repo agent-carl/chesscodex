@@ -101,9 +101,9 @@ ob_start();
         </p>
     <?php endif; ?>
     <p class="ranking-method">
-        More: <a href="<?= $baseEsc . $esc('/popular-openings') ?>">the most popular openings</a> ·
-        <a href="<?= $baseEsc . $esc('/best-openings-for-white') ?>">best openings for White</a> ·
-        <a href="<?= $baseEsc . $esc('/best-openings-for-black') ?>">for Black</a> ·
+        See also <a href="<?= $baseEsc . $esc('/popular-openings') ?>">the most popular openings</a>,
+        <a href="<?= $baseEsc . $esc('/best-openings-for-white') ?>">best openings for White</a>,
+        <a href="<?= $baseEsc . $esc('/best-openings-for-black') ?>">for Black</a> and
         <a href="<?= $baseEsc . $esc('/gambits') ?>">chess gambits</a>
     </p>
 </article>

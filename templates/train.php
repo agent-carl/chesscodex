@@ -31,9 +31,9 @@ ob_start();
         <span class="eco-tag"><?= $esc($o['eco']) ?></span>
         <h1><?= $esc($o['name']) ?> trainer</h1>
         <p class="parent-link">
-            <a href="<?= $baseEsc . $esc('/openings/' . $o['slug']) ?>">← Back to the opening</a>
-            · <a href="<?= $baseEsc . $esc('/train') ?>">All openings to practise</a>
-            · <a href="<?= $baseEsc . $esc('/repertoire') ?>">My repertoire</a>
+            <a href="<?= $baseEsc . $esc('/openings/' . $o['slug']) ?>">Back to the opening</a>,
+            <a href="<?= $baseEsc . $esc('/train') ?>">all openings to practise</a> or
+            <a href="<?= $baseEsc . $esc('/repertoire') ?>">my repertoire</a>
         </p>
     </header>
     <div class="play-grid">
