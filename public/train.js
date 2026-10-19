@@ -12,8 +12,8 @@ if (node) {
     const cfg = JSON.parse(node.textContent);
     const $ = (id) => document.getElementById(id);
     const store = {
-        get(key) { try { return JSON.parse(localStorage.getItem(key)) || {}; } catch (e) { return {}; } },
-        set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* private mode */ } },
+        get(key) { try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; } },
+        set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* private mode */ } },
     };
 
     const params = new URLSearchParams(location.search);

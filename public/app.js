@@ -17,10 +17,10 @@ const RecentHistory = (function () {
             if (!raw) return [];
             const data = JSON.parse(raw);
             return Array.isArray(data) ? data.filter((x) => x && x.slug) : [];
-        } catch (e) { return []; }
+        } catch { return []; }
     }
     function save(list) {
-        try { localStorage.setItem(KEY, JSON.stringify(list.slice(0, MAX))); } catch (e) {}
+        try { localStorage.setItem(KEY, JSON.stringify(list.slice(0, MAX))); } catch {}
     }
     function record(slug, name, eco) {
         if (!slug) return;
@@ -135,7 +135,7 @@ async function copyToClipboard(text) {
         try {
             await navigator.clipboard.writeText(text);
             return;
-        } catch (e) {
+        } catch {
             // Denied (an embedded browser, a page without focus): try the old way.
         }
     }
@@ -161,7 +161,7 @@ async function copyToClipboard(text) {
         try {
             await copyToClipboard(url);
             Toast.show('Link copied');
-        } catch (e) {
+        } catch {
             Toast.show('Copy failed — your browser blocked clipboard access', 'error');
         }
     });
@@ -174,7 +174,7 @@ async function copyToClipboard(text) {
     const box = document.querySelector('.repertoire-toggle');
     if (!box) return;
     const KEY = 'codex-repertoire';
-    const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
+    const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
     const { slug, name, eco, pgn } = box.dataset;
     box.querySelectorAll('[data-repertoire-side]').forEach((btn) => {
         const side = btn.dataset.repertoireSide;
@@ -192,7 +192,7 @@ async function copyToClipboard(text) {
             try {
                 localStorage.setItem(KEY, JSON.stringify(rep));
                 Toast.show((has() ? 'Added to your ' : 'Removed from your ') + sideName + ' repertoire');
-            } catch (e) {
+            } catch {
                 Toast.show('Your browser blocked local storage', 'error');
             }
             label();
@@ -302,7 +302,7 @@ async function copyToClipboard(text) {
                 status.textContent = (data && data.error) || 'Something went wrong.';
                 status.dataset.state = 'error';
             }
-        } catch (err) {
+        } catch {
             status.textContent = 'Network error — please try again.';
             status.dataset.state = 'error';
         } finally {
@@ -532,14 +532,14 @@ if (!dataNode) {
         try {
             const saved = localStorage.getItem(FLIP_KEY);
             if (saved === 'black') orientation = 'black';
-        } catch (e) {}
+        } catch {}
         if (orientation === 'black') {
             board.set({ orientation: 'black' });
         }
         flipBtn.addEventListener('click', () => {
             orientation = orientation === 'white' ? 'black' : 'white';
             board.set({ orientation: orientation });
-            try { localStorage.setItem(FLIP_KEY, orientation); } catch (e) {}
+            try { localStorage.setItem(FLIP_KEY, orientation); } catch {}
         });
     })();
 
@@ -573,7 +573,7 @@ if (!dataNode) {
             try {
                 await copyToClipboard(text);
                 Toast.show(label + ' copied');
-            } catch (e) {
+            } catch {
                 Toast.show('Copy failed', 'error');
             }
         }

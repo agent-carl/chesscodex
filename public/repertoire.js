@@ -6,8 +6,8 @@ const root = document.getElementById('repertoire');
 if (root) {
     const base = root.dataset.base || '';
     const KEY = 'codex-repertoire';
-    const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
-    const write = (rep) => { try { localStorage.setItem(KEY, JSON.stringify(rep)); } catch (e) { /* private mode */ } };
+    const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
+    const write = (rep) => { try { localStorage.setItem(KEY, JSON.stringify(rep)); } catch { /* private mode */ } };
 
     function render() {
         const rep = read();

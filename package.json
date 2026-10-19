@@ -4,8 +4,11 @@
     "build": "node tools/build.mjs"
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
     "@fontsource-variable/source-sans-3": "^5.3.1",
     "@fontsource-variable/source-serif-4": "^5.3.1",
-    "esbuild": "0.28.2"
+    "esbuild": "0.28.2",
+    "eslint": "10.12.0",
+    "globals": "17.13.0"
   }
 }

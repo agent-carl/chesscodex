@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # One command before a commit or deploy, with short output: PHPStan (which
-# also catches PHP syntax errors), the PHPUnit tests, and the minified assets
-# rebuilt by esbuild. One line per step, details only on failure; exits
-# non-zero on failure. Needs the packages: `composer install` and `npm ci`.
+# also catches PHP syntax errors), the PHPUnit tests, ESLint on the JavaScript,
+# and the minified assets rebuilt by esbuild. One line per step, details only
+# on failure; exits non-zero on failure. Needs the packages: `composer install`
+# and `npm ci`.
 #
 #   bash tools/check.sh
 set -uo pipefail
@@ -25,7 +26,16 @@ else
     fail=1
 fi
 
-# 3. Minified assets: rebuild, then report which ones changed (commit those too).
+# 3. JavaScript lint (eslint.config.mjs): public/*.js, not the minified output.
+if out=$(npx --no-install eslint . 2>&1); then
+    echo "eslint: no problems"
+else
+    printf '%s
+' "$out" | tail -n 30
+    fail=1
+fi
+
+# 4. Minified assets: rebuild, then report which ones changed (commit those too).
 npm run --silent build > /dev/null || fail=1
 changed=$(git status --porcelain -- 'public/*.min.js' 'public/*.min.css' vendor/chess.min.js | awk '{print $2}' | tr '\n' ' ')
 echo "build: ${changed:-all up to date}"

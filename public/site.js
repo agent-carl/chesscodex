@@ -8,26 +8,26 @@
  * the identifier on /search and a name goes to its first suggestion.
  */
 (function () {
-    var script = document.currentScript;
-    var base = (script && script.dataset.base) || '';
-    var apiUrl = base + '/api/search';
-    var openingPath = base + '/openings/';
-    var searchPath = base + '/search';
+    const script = document.currentScript;
+    const base = (script && script.dataset.base) || '';
+    const apiUrl = base + '/api/search';
+    const openingPath = base + '/openings/';
+    const searchPath = base + '/search';
 
     // SAN moves, optionally numbered: the whole query has to be made of them.
-    var MOVE = '(?:\\d+\\.+\\s*)?(?:O-O(?:-O)?|0-0(?:-0)?|[KQRBNkqrn]?[a-h]?[1-8]?x?[a-h][1-8](?:=[QRBNqrbn])?)[+#]?';
-    var MOVES_RE = new RegExp('^\\s*' + MOVE + '(?:\\s+' + MOVE + ')*\\s*$');
-    var looksLikeMoves = function (q) { return /\d|^[a-h][1-8]\b/.test(q) && MOVES_RE.test(q); };
+    const MOVE = '(?:\\d+\\.+\\s*)?(?:O-O(?:-O)?|0-0(?:-0)?|[KQRBNkqrn]?[a-h]?[1-8]?x?[a-h][1-8](?:=[QRBNqrbn])?)[+#]?';
+    const MOVES_RE = new RegExp('^\\s*' + MOVE + '(?:\\s+' + MOVE + ')*\\s*$');
+    const looksLikeMoves = function (q) { return /\d|^[a-h][1-8]\b/.test(q) && MOVES_RE.test(q); };
 
-    var movesLabel = function (plies) { var n = Math.ceil(plies / 2); return n === 1 ? '1 move' : n + ' moves'; };
+    const movesLabel = function (plies) { const n = Math.ceil(plies / 2); return n === 1 ? '1 move' : n + ' moves'; };
 
     function setUp(input) {
-        var list = document.getElementById(input.dataset.nameSearch);
+        const list = document.getElementById(input.dataset.nameSearch);
         if (!list) return;
-        var timer = null;
-        var ctrl = null;
-        var cursor = -1;
-        var lastQuery = '';
+        let timer = null;
+        let ctrl = null;
+        let cursor = -1;
+        let lastQuery = '';
 
         function close() {
             list.hidden = true;
@@ -48,9 +48,9 @@
             list.innerHTML = '';
             cursor = -1;
             if (looksLikeMoves(q)) {
-                var li = document.createElement('li');
+                const li = document.createElement('li');
                 li.setAttribute('role', 'option');
-                var a = document.createElement('a');
+                const a = document.createElement('a');
                 a.href = searchPath + '?moves=' + encodeURIComponent(q);
                 a.className = 'search-by-name-moves';
                 a.textContent = 'Identify the opening after ' + q + '';
@@ -58,17 +58,17 @@
                 list.appendChild(li);
             }
             matches.forEach(function (m) {
-                var li = document.createElement('li');
+                const li = document.createElement('li');
                 li.setAttribute('role', 'option');
-                var a = document.createElement('a');
+                const a = document.createElement('a');
                 a.href = openingPath + encodeURIComponent(m.slug);
-                var tag = document.createElement('span');
+                const tag = document.createElement('span');
                 tag.className = 'eco-tag';
                 tag.textContent = m.eco;
-                var name = document.createElement('span');
+                const name = document.createElement('span');
                 name.className = 'search-by-name-result-name';
                 name.textContent = m.name;
-                var plies = document.createElement('span');
+                const plies = document.createElement('span');
                 plies.className = 'search-by-name-result-plies';
                 plies.textContent = movesLabel(m.plies);
                 a.appendChild(tag);
@@ -78,7 +78,7 @@
                 list.appendChild(li);
             });
             if (!list.children.length) {
-                var empty = document.createElement('li');
+                const empty = document.createElement('li');
                 empty.className = 'search-by-name-empty';
                 empty.textContent = 'No openings match that name. Try fewer words, or paste the moves.';
                 list.appendChild(empty);
@@ -103,7 +103,7 @@
         }
 
         function move(delta) {
-            var items = list.querySelectorAll('li[role="option"]');
+            const items = list.querySelectorAll('li[role="option"]');
             if (!items.length) return;
             cursor = (cursor + delta + items.length) % items.length;
             items.forEach(function (li, i) {
@@ -114,7 +114,7 @@
         }
 
         input.addEventListener('input', function () {
-            var q = input.value.trim();
+            const q = input.value.trim();
             clearTimeout(timer);
             if (q.length < 2) { clear(); return; }
             timer = setTimeout(function () { lookup(q); }, 150);
@@ -128,9 +128,9 @@
             if (e.key === 'ArrowDown') { e.preventDefault(); open(); move(1); return; }
             if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); return; }
             if (e.key !== 'Enter') return;
-            var q = input.value.trim();
+            const q = input.value.trim();
             if (q === '') return;
-            var target = list.querySelector('li.is-active a');
+            let target = list.querySelector('li.is-active a');
             if (!target && looksLikeMoves(q)) {
                 e.preventDefault();
                 location.href = searchPath + '?moves=' + encodeURIComponent(q);
@@ -148,7 +148,7 @@
         });
 
         // /search?q=… (the home page form without JavaScript, or a link).
-        var preset = new URLSearchParams(location.search).get('q');
+        const preset = new URLSearchParams(location.search).get('q');
         if (preset && !input.form) {
             input.value = preset;
             lookup(preset.trim());
@@ -157,13 +157,13 @@
         }
     }
 
-    var inputs = document.querySelectorAll('input[data-name-search]');
+    const inputs = document.querySelectorAll('input[data-name-search]');
     inputs.forEach(setUp);
 
     // "/" or Ctrl/Cmd+K: focus the page's search field, or open /search.
     // "/" is ignored while typing in a field; Ctrl/Cmd+K always works.
     function focusSearch() {
-        var input = inputs[0];
+        const input = inputs[0];
         if (input) {
             input.focus();
             input.select();
@@ -172,8 +172,8 @@
         }
     }
     document.addEventListener('keydown', function (e) {
-        var t = e.target;
-        var typing = t && t.matches && t.matches('input, textarea, select, [contenteditable]');
+        const t = e.target;
+        const typing = t && t.matches && t.matches('input, textarea, select, [contenteditable]');
         if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
             e.preventDefault();
             focusSearch();

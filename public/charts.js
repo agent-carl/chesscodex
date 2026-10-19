@@ -6,33 +6,33 @@
  */
 (function () {
     document.querySelectorAll('.trend').forEach(function (chart) {
-        var plot = chart.querySelector('.trend-plot');
-        var tip = chart.querySelector('.trend-tip');
-        var cross = chart.querySelector('.trend-cross');
-        var dot = chart.querySelector('.trend-dot.is-hover');
-        var rows = chart.querySelectorAll('tbody tr');
+        const plot = chart.querySelector('.trend-plot');
+        const tip = chart.querySelector('.trend-tip');
+        const cross = chart.querySelector('.trend-cross');
+        const dot = chart.querySelector('.trend-dot.is-hover');
+        const rows = chart.querySelectorAll('tbody tr');
         if (!plot || !tip || !cross || !dot || rows.length < 2) return;
-        var current = -1;
+        let current = -1;
 
         function show(i) {
             current = Math.max(0, Math.min(rows.length - 1, i));
-            var row = rows[current];
-            var x = parseFloat(row.dataset.x);
-            var y = parseFloat(row.dataset.y);
+            const row = rows[current];
+            const x = parseFloat(row.dataset.x);
+            const y = parseFloat(row.dataset.y);
             cross.style.left = dot.style.left = x + '%';
             dot.style.bottom = y + '%';
             cross.hidden = dot.hidden = false;
 
-            var value = document.createElement('strong');
+            const value = document.createElement('strong');
             value.textContent = row.cells[1].textContent;
-            var when = document.createElement('span');
+            const when = document.createElement('span');
             when.textContent = row.cells[0].textContent + ': ' + row.cells[2].textContent + ' games';
             tip.replaceChildren(value, when);
             tip.hidden = false;
             // Over the year, kept inside the chart at both ends.
-            var left = plot.offsetLeft + plot.offsetWidth * x / 100;
-            var half = tip.offsetWidth / 2;
-            var max = chart.querySelector('.trend-frame').clientWidth - tip.offsetWidth;
+            const left = plot.offsetLeft + plot.offsetWidth * x / 100;
+            const half = tip.offsetWidth / 2;
+            const max = chart.querySelector('.trend-frame').clientWidth - tip.offsetWidth;
             tip.style.left = Math.max(0, Math.min(max, left - half)) + 'px';
         }
 
@@ -41,7 +41,7 @@
         }
 
         function nearest(e) {
-            var box = plot.getBoundingClientRect();
+            const box = plot.getBoundingClientRect();
             return Math.round((e.clientX - box.left) / box.width * (rows.length - 1));
         }
 
@@ -52,9 +52,9 @@
         plot.addEventListener('blur', hide);
         plot.addEventListener('keydown', function (e) {
             // The first arrow press (no year shown yet) starts at the last year.
-            var step = current < 0 ? 0 : 1;
-            var at = current < 0 ? rows.length - 1 : current;
-            var to = { ArrowLeft: at - step, ArrowRight: at + step, Home: 0, End: rows.length - 1 }[e.key];
+            const step = current < 0 ? 0 : 1;
+            const at = current < 0 ? rows.length - 1 : current;
+            const to = { ArrowLeft: at - step, ArrowRight: at + step, Home: 0, End: rows.length - 1 }[e.key];
             if (to !== undefined) {
                 show(to);
                 e.preventDefault();

@@ -119,7 +119,7 @@ self.addEventListener('fetch', (event) => {
                 await trim(cache, MAX_HTML);
             }
             return fresh;
-        } catch (e) {
+        } catch {
             const cached = await caches.match(req);
             return cached || offlinePage();
         }

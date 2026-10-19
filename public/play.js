@@ -37,9 +37,9 @@ if (dataNode) {
                 novice: noviceMode ? 1 : 0,
                 ts:    Date.now(),
             }));
-        } catch (e) { /* quota / privacy mode — silent failure is fine */ }
+        } catch { /* quota / privacy mode — silent failure is fine */ }
     }
-    function clearGame() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} }
+    function clearGame() { try { localStorage.removeItem(SAVE_KEY); } catch {} }
     function loadGame() {
         try {
             const raw = localStorage.getItem(SAVE_KEY);
@@ -50,7 +50,7 @@ if (dataNode) {
             // to re-open something you started a month ago.
             if (data.ts && Date.now() - data.ts > 30 * 86400 * 1000) return null;
             return data;
-        } catch (e) { return null; }
+        } catch { return null; }
     }
     const savedGame = loadGame();
     if (savedGame) {
@@ -93,7 +93,7 @@ if (dataNode) {
                 noviceMode = nv === 1;
             }
         }
-    } catch (e) {}
+    } catch {}
 
     function createEngine() {
         const w = new Worker(cfg.stockfishJsUrl + '#stockfish.wasm');
@@ -278,11 +278,11 @@ if (dataNode) {
 
     const evalToggle = document.getElementById('play-show-eval');
     let showEval = false;
-    try { showEval = localStorage.getItem('codex-show-eval') === '1'; } catch (e) {}
+    try { showEval = localStorage.getItem('codex-show-eval') === '1'; } catch {}
     evalToggle.checked = showEval;
     evalToggle.addEventListener('change', () => {
         showEval = evalToggle.checked;
-        try { localStorage.setItem('codex-show-eval', showEval ? '1' : '0'); } catch (e) {}
+        try { localStorage.setItem('codex-show-eval', showEval ? '1' : '0'); } catch {}
         evalEl.hidden = !showEval || evalEl.textContent === '';
     });
 
@@ -322,11 +322,11 @@ if (dataNode) {
     document.getElementById('play-copy-pgn').addEventListener('click', async (e) => {
         const btn = e.currentTarget;
         const text = gamePgn(openingSans.concat(chess.history()));
-        let ok = false;
+        let ok;
         try {
             await navigator.clipboard.writeText(text);
             ok = true;
-        } catch (err) {
+        } catch {
             // Denied (an embedded browser, a page without focus): try the old way.
             const ta = document.createElement('textarea');
             ta.value = text;
@@ -519,7 +519,7 @@ if (dataNode) {
         try {
             localStorage.setItem('codex-engine-level',
                 skillLevel + ':' + moveTimeMs + ':' + (noviceMode ? '1' : '0'));
-        } catch (_) {}
+        } catch {}
         syncLevelUi();
         flashIndicator();
         // If engine is mid-think, restart with new strength so the change

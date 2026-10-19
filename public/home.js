@@ -19,7 +19,7 @@
         try {
             const data = JSON.parse(localStorage.getItem(KEY) || '[]');
             return Array.isArray(data) ? data.filter((x) => x && x.slug) : [];
-        } catch (e) { return []; }
+        } catch { return []; }
     }
 
     function render() {
@@ -46,7 +46,7 @@
 
     render();
     if (clearBtn) clearBtn.addEventListener('click', () => {
-        try { localStorage.removeItem(KEY); } catch (e) {}
+        try { localStorage.removeItem(KEY); } catch {}
         render();
     });
 })();

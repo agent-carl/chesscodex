@@ -52,7 +52,7 @@
             ul.hidden = false;
             ul.setAttribute('aria-busy', 'false');
             if (status) status.hidden = true;
-        } catch (e) {
+        } catch {
             loaded = false; // allow retry on next open
             if (statusText) statusText.textContent = 'Could not load sub-variations. Try again.';
             if (status) status.dataset.state = 'error';
@@ -95,14 +95,14 @@
 // focuses the "Play vs Stockfish" CTA, or touches it). Saves ~560 KB of
 // background traffic for the 90 % of visitors who only read.
 (function () {
-    var cta = document.querySelector('.board-cta[data-prefetch]');
+    const cta = document.querySelector('.board-cta[data-prefetch]');
     if (!cta) return;
-    var loaded = false;
+    let loaded = false;
     function preload() {
         if (loaded) return;
         loaded = true;
         cta.dataset.prefetch.split(' ').forEach(function (href) {
-            var l = document.createElement('link');
+            const l = document.createElement('link');
             l.rel = 'prefetch';
             l.href = href;
             if (href.endsWith('.wasm')) { l.as = 'fetch'; l.crossOrigin = 'anonymous'; }

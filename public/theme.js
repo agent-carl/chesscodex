@@ -5,39 +5,39 @@
  * can forbid inline scripts.
  */
 (function () {
-    var root = document.documentElement;
-    var saved = null;
-    try { saved = localStorage.getItem('codex-theme'); } catch (e) {}
-    var systemDark = matchMedia('(prefers-color-scheme: dark)');
-    var system = function () { return systemDark.matches ? 'dark' : 'light'; };
+    const root = document.documentElement;
+    let saved = null;
+    try { saved = localStorage.getItem('codex-theme'); } catch {}
+    const systemDark = matchMedia('(prefers-color-scheme: dark)');
+    const system = function () { return systemDark.matches ? 'dark' : 'light'; };
     root.dataset.theme = saved || system();
     // Following the system (nothing saved): switch along with it.
     systemDark.addEventListener('change', function () {
-        var now = null;
-        try { now = localStorage.getItem('codex-theme'); } catch (e) {}
+        let now = null;
+        try { now = localStorage.getItem('codex-theme'); } catch {}
         if (!now) root.dataset.theme = system();
     });
 
-    var base = (document.currentScript && document.currentScript.dataset.base) || '';
+    const base = (document.currentScript && document.currentScript.dataset.base) || '';
 
     document.addEventListener('DOMContentLoaded', function () {
-        var btn = document.getElementById('theme-toggle');
+        const btn = document.getElementById('theme-toggle');
         if (!btn) return;
         function syncPressed() {
-            var dark = root.dataset.theme === 'dark';
+            const dark = root.dataset.theme === 'dark';
             btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
             btn.setAttribute('aria-label', dark ? btn.dataset.labelLight : btn.dataset.labelDark);
         }
         syncPressed();
         btn.addEventListener('click', function () {
-            var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+            const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
             root.dataset.theme = next;
             // Picking the system's own theme means "follow the system" again,
             // so a later change of the system setting is followed.
             try {
                 if (next === system()) localStorage.removeItem('codex-theme');
                 else localStorage.setItem('codex-theme', next);
-            } catch (e) {}
+            } catch {}
             syncPressed();
         });
     });

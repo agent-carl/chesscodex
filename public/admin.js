@@ -60,7 +60,7 @@
             if (turn !== inflight) return; // user kept typing
             if (!res.ok) { out.innerHTML = '<p><em>Preview failed: HTTP ' + res.status + '</em></p>'; return; }
             out.innerHTML = await res.text();
-        } catch (e) {
+        } catch {
             if (turn === inflight) out.innerHTML = '<p><em>Preview unavailable (network).</em></p>';
         }
     }
