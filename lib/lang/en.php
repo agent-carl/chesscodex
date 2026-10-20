@@ -16,10 +16,10 @@ return [
 
     // Home page
     'home.title'               => 'Chess Openings Explorer — Moves & Win Rates | Caissa Codex',
-    'home.hero.h1'             => 'The Chess Openings Encyclopedia',
+    'home.hero.h1'             => 'Chess openings explorer',
     'home.hero.lede'           => '{count} named chess openings and variations, filed by ECO code from A00 to E99, each with its moves on an interactive board and win rates from millions of Lichess games. Free, with no ads.',
     'home.card.openings'       => '{count} lines',
-    'home.description'         => 'Explore {count} chess openings and variations, from the Sicilian to rare gambits: moves on an interactive board, ECO codes and Lichess win rates. Free, no ads.',
+    'home.description'         => 'Chess openings explorer: {count} openings and variations, from the Sicilian to rare gambits, with moves, ECO codes and Lichess win rates, free and without ads.',
 
     // Opening page
     'opening.moves'            => 'Moves',

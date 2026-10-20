@@ -25,6 +25,20 @@ $baseEsc  = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
         <form class="masthead-search" action="<?= $baseEsc . htmlspecialchars('/search', ENT_QUOTES, 'UTF-8') ?>" method="get" role="search">
             <?php $nameSearchId = 'hero-search'; require __DIR__ . '/partials/name_search.php'; ?>
         </form>
+        <?php /* Ways in besides the search, right under it (a directory's
+                 "search, then categories"), in the words people search with. */ ?>
+        <nav class="masthead-browse" aria-label="Browse openings">
+            <?php foreach ([
+                ['/openings', 'List of chess openings A–Z', $totalFmt . ' named lines'],
+                ['/eco', 'ECO codes', 'A00 to E99'],
+                ['/popular-openings', 'Most popular openings', 'top 100 on Lichess'],
+            ] as [$href, $label, $note]): ?>
+            <a href="<?= $baseEsc . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') ?>">
+                <span class="masthead-browse-label"><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></span>
+                <span class="masthead-browse-note"><?= htmlspecialchars($note, ENT_QUOTES, 'UTF-8') ?></span>
+            </a>
+            <?php endforeach; ?>
+        </nav>
     </div>
     <?php if ($featured): ?>
     <a class="masthead-board" href="<?= $baseEsc . htmlspecialchars('/openings/' . $featured['slug'], ENT_QUOTES, 'UTF-8') ?>">

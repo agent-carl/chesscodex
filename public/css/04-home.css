@@ -24,6 +24,37 @@
     margin: 0 0 var(--space-5);
 }
 .masthead-search { max-width: 34rem; }
+/* Browse row under the search: a contents line, ruled above, one entry per way in. */
+.masthead-browse {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    margin-top: var(--space-5);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border);
+    max-width: 40rem;
+}
+.masthead-browse a {
+    display: grid;
+    gap: 0.1rem;
+    min-height: 44px;
+    align-content: center;
+    color: var(--fg);
+    text-decoration: none;
+}
+.masthead-browse-label {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+.masthead-browse-note { font-size: 0.85rem; color: var(--muted); }
+.masthead-browse a:hover .masthead-browse-label {
+    color: var(--accent-hover);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.masthead-browse a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .masthead-board { display: block; color: var(--fg); text-decoration: none; }
 .masthead-board img {
     display: block;
@@ -49,6 +80,8 @@
         padding-top: var(--space-5);
     }
     .masthead h1 { font-size: 2rem; }
+    .masthead-browse { display: grid; gap: 0; padding-top: 0; }
+    .masthead-browse a { padding: var(--space-2) 0; border-bottom: 1px solid var(--border); }
     .masthead-board {
         display: grid;
         grid-template-columns: 112px minmax(0, 1fr);
