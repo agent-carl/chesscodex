@@ -28,6 +28,16 @@ final class SeoTest extends TestCase
         $this->assertSame(null, Opening::titleAlias('Sicilian Defense'));
     }
 
+    #[TestDox('indexedLine: described or among the most played, else only the lines in db/indexed-rest.tsv')]
+    public function testIndexedLineDescribedOrAmongTheMostPlayed(): void
+    {
+        $this->assertSame(true,  Opening::indexedLine(true, 3000, 'any-line'), 'described');
+        $this->assertSame(true,  Opening::indexedLine(false, Opening::INDEXED_LINES, 'any-line'));
+        $this->assertSame(false, Opening::indexedLine(false, Opening::INDEXED_LINES + 1, 'any-line'));
+        $this->assertSame(true,  Opening::indexedLine(false, 3000, 'slav-defense-exchange-variation-boor-attack'), 'kept in the list');
+        $this->assertSame(false, Opening::indexedLine(false, 3000, 'slug'), 'the header row is not a line');
+    }
+
     #[TestDox('article: "the" before a name, none before a person\'s possessive')]
     public function testArticleTheBeforeANameNoneBefore(): void
     {

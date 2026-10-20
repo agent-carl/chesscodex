@@ -104,7 +104,9 @@ $rootMoves = trim((string) $root['pgn_moves']);
 // its shortest line's moves aren't where the others start.
 $mixed = str_contains((string) $info['label'], '&');
 if (!$mixed && mb_strlen($title . ' (' . $rootMoves . ')') <= 58) $title .= ' (' . $rootMoves . ')';
-if ($n > 1) $title .= mb_strlen($title . ' — ' . $n . ' Lines with Moves') <= 70 ? ' — ' . $n . ' Lines with Moves' : ' — ' . $n . ' Lines';
+if ($n > 1 && mb_strlen($title . ' — ' . $n . ' Lines') <= 70) {
+    $title .= mb_strlen($title . ' — ' . $n . ' Lines with Moves') <= 70 ? ' — ' . $n . ' Lines with Moves' : ' — ' . $n . ' Lines';
+}
 $description = 'ECO ' . $code . ' (' . $info['label'] . '): '
              . ($n === 1 ? 'one named line, ' . $rootMoves : ($mixed ? $n . ' named lines of several openings' : $n . ' named lines starting ' . $rootMoves))
              . ', each with its moves, an interactive board and Lichess win rates.';

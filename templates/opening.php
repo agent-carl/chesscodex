@@ -85,6 +85,9 @@ if ($lineTail === '') {
         if (mb_strlen($choice) <= 60) { $title = $choice; break; }
     }
 }
+// Search results cut a title near 60 characters: a long name keeps its words
+// and loses the ECO code (still in the heading and the description).
+if (mb_strlen($title) > 70) $title = str_replace(' (' . $o['eco'] . ')', '', $title);
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 
 // ----------------------------------------------------------------------
@@ -559,6 +562,7 @@ $needsBoard = true;
 $ogType = 'article';
 
 $canonical = $siteUrl . $baseUrl . '/openings/' . $o['slug'];
+$noindex   = !Opening::indexedLine(!empty($o['description']), Opening::lineRank($o), (string) $o['slug']);
 
 // SEO description, in the order searchers scan it: name and ECO code, how
 // the line scores on Lichess (the one thing the title can't say), Stockfish's
