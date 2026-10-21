@@ -13,7 +13,7 @@ In the original game White answered the sacrifice badly and Black won with a fam
 
 ### A beginner's trap
 
-After 5.Nxf7 Bxf2+ 6.Kxf2 Nxe4+ 7.Ke3 Qh4, taking the rook with 8.Nxh8 is a common beginner's mistake: mate in four follows with 8...Qf4+ 9.Ke2 Qf2+ 10.Kd3 Nb4+ 11.Kxe4 Qf4 mate.
+After 5.Nxf7 Bxf2+ 6.Kxf2 Nxe4+ 7.Ke3 Qh4, taking the rook with 8.Nxh8 is a common beginner's mistake: mate in four follows with 8...Qf4+ 9.Ke2 Qf2+ 10.Kd3 Nb4+ 11.Kxe4 Qf4#.
 
 ### The numbers
 
