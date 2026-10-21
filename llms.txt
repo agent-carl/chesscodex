@@ -2,7 +2,7 @@
 
 > A free, ad-free encyclopedia of the 3,690 named chess openings and variations in the Lichess chess-openings dataset (public domain), at https://chesscodex.org. Every line has its own page with the moves on an interactive board, its ECO code, where it sits in the opening tree, and how it scores in rated Lichess games — overall, by rating band and in master games.
 
-The statistics come from the Lichess opening explorer and masters database, cached on the server and refreshed regularly. The most popular openings and lines (141 so far) have written descriptions; other pages get an overview generated from that data. Built and run as a hobby project by a high school student in Norway; the source code is at https://github.com/ifrutella/chesscodex (AGPL-3.0).
+The statistics come from the Lichess opening explorer and masters database, cached on the server and refreshed regularly. The most popular openings and lines (191 so far) have written descriptions; other pages get an overview generated from that data. Built and run as a hobby project by a high school student in Norway; the source code is at https://github.com/ifrutella/chesscodex (AGPL-3.0).
 
 ## Main pages
 
@@ -10,6 +10,10 @@ The statistics come from the Lichess opening explorer and masters database, cach
 - [ECO codes A00–E99](https://chesscodex.org/eco): the 500 ECO codes with the lines filed under each
 - [Chess opening identifier](https://chesscodex.org/search): name an opening from its moves, a PGN, a FEN position or part of its name
 - [Chess opening rankings](https://chesscodex.org/rankings): best openings for White and for Black (also by rating band), most popular openings, all chess gambits A–Z with the most played ranked, and the gambits that score best for players rated under 1400
+- [Most popular chess openings](https://chesscodex.org/popular-openings): the 100 most-played named lines, from 1.e4 down
+- [Chess gambits](https://chesscodex.org/gambits): every gambit and countergambit A–Z, and the 100 most played with how often each side wins
+- [Best chess gambits for beginners](https://chesscodex.org/best-gambits-for-beginners): the gambits that score best for White and for Black among players rated under 1400, and how they do at 2200 and up
+- [How to play against popular openings](https://chesscodex.org/how-to-play-against): the answer that scores best against each of the described openings, the most played one and Stockfish's choice
 - [Chess opening trends](https://chesscodex.org/opening-trends): the openings played more and less than in 2016, by their share of Lichess games each year; every popular line's page has its own year-by-year chart
 - [Chess opening trainer](https://chesscodex.org/train): practise the moves of an opening from memory, with the replies played for you and spaced-repetition review; every line's page has its own trainer
 - [About](https://chesscodex.org/about): who made it, where the data comes from, privacy
