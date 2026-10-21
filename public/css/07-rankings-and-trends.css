@@ -115,6 +115,9 @@
         margin: var(--space-2) 0 var(--space-3);
         padding-bottom: 2px;
         scrollbar-width: none;
+        /* The row scrolls sideways: fade its right edge so the cut-off chip reads as "more". */
+        -webkit-mask-image: linear-gradient(to right, #000 85%, transparent);
+        mask-image: linear-gradient(to right, #000 85%, transparent);
     }
     .ranking-nav::-webkit-scrollbar { display: none; }
     .ranking-nav > * { flex-shrink: 0; white-space: nowrap; }
@@ -257,7 +260,7 @@
     position: absolute;
     right: 0.5rem;
     transform: translateY(50%);
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     line-height: 1;
     color: var(--muted);
     font-variant-numeric: tabular-nums;

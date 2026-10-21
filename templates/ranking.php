@@ -12,21 +12,21 @@ $side    = match ($page) {
     'best-openings-for-black' => 'black',
     default                   => null,
 };
-// The leader by the last part of its name: " — the Fried Liver Attack leads with 57.2%".
+// The leader by the last part of its name: ". The Fried Liver Attack leads with 57.2%".
 $leader = isset($first['score'])
-    ? ' — the ' . preg_replace('/^.*[:,]\s*/', '', (string) $first['name']) . ' leads with ' . number_format($first['score'] * 100, 1) . '%'
+    ? '. The ' . preg_replace('/^.*[:,]\s*/', '', (string) $first['name']) . ' leads with ' . number_format($first['score'] * 100, 1) . '%'
     : '';
 $texts = [
     'best-openings-for-white' => [
         'title' => 'Best Chess Openings for White, Ranked by Lichess Results',
         'h1'    => 'Best chess openings for White',
-        'lede'  => 'Lines where White makes the last move — positions White can steer the game into — ranked by White\'s score: wins plus half the draws. Only lines played in at least a million games are ranked.',
+        'lede'  => 'Lines where White makes the last move, so White can steer the game into them, ranked by White\'s score: wins plus half the draws. Only lines played in at least a million games are ranked.',
         'desc'  => 'The 50 openings that score best for White in Lichess games, among lines played over a million times' . $leader . '.',
     ],
     'best-openings-for-black' => [
         'title' => 'Best Chess Openings for Black, Ranked by Lichess Results',
         'h1'    => 'Best chess openings for Black',
-        'lede'  => 'Lines where Black makes the last move — the defenses and replies Black can choose — ranked by Black\'s score: wins plus half the draws. Only lines played in at least a million games are ranked.',
+        'lede'  => 'Lines where Black makes the last move, the defenses and replies Black can choose, ranked by Black\'s score: wins plus half the draws. Only lines played in at least a million games are ranked.',
         'desc'  => 'The 50 openings that score best for Black in Lichess games, among lines played over a million times' . $leader . '.',
     ],
     'popular-openings' => [
@@ -34,13 +34,13 @@ $texts = [
         'h1'    => 'Most popular chess openings',
         'lede'  => 'Named lines ranked by the number of rated Lichess games that reached them.',
         'desc'  => 'The 100 most-played chess openings and variations in rated Lichess games'
-                 . ($first ? ' — ' . $first['name'] . ' leads with ' . Rankings::compact($first['games']) . ' games' : '')
-                 . ' — with White, draw and Black percentages for each.',
+                 . ', with White, draw and Black percentages for each.'
+                 . ($first ? ' ' . $first['name'] . ' leads with ' . Rankings::compact($first['games']) . ' games.' : ''),
     ],
     'gambits' => [
         'title' => 'List of All Chess Gambits (' . number_format(count($allGambits ?? [])) . ') with Moves & Win Rates',
         'h1'    => 'Chess gambits',
-        'lede'  => 'Every named line that offers or accepts a gambit — ' . number_format(count($allGambits ?? [])) . ' in all — with its moves and how often each side wins on Lichess.',
+        'lede'  => 'All ' . number_format(count($allGambits ?? [])) . ' named lines that offer or accept a gambit, with their moves and how often each side wins on Lichess.',
         'desc'  => 'List of all ' . number_format(count($allGambits ?? [])) . ' chess gambits and countergambits A–Z with their moves and ECO codes, and the 100 most played with how often White and Black win.',
     ],
 ][$page];
@@ -64,7 +64,7 @@ if ($side !== null && $level !== null) {
     $texts = [
         'title' => "Best Chess Openings for $Side $titleFor",
         'h1'    => "Best chess openings for $Side $for",
-        'lede'  => "Lines where $Side makes the last move, ranked by $Side's score — wins plus half the draws — in $pool. "
+        'lede'  => "Lines where $Side makes the last move, ranked by $Side's score (wins plus half the draws) in $pool. "
                  . 'Among the ' . number_format(LevelStats::lineCount()) . ' most-played lines, those reached in at least '
                  . number_format(Rankings::MIN_GAMES_AT_LEVEL[$level] ?? Rankings::MIN_GAMES_AT_LEVEL['default'])
                  . ' games at this level.',
@@ -134,7 +134,7 @@ ob_start();
     </header>
 
     <?php if (!$rows): ?>
-        <p class="ranking-method">The numbers for this level are still being collected from Lichess — check back in a few hours.</p>
+        <p class="ranking-method">The numbers for this level are still being collected from Lichess. Check back in a few hours.</p>
     <?php endif; ?>
     <?php
     // Best-for pages: the answer to "what's the best opening for White?" in a
@@ -212,14 +212,14 @@ ob_start();
         from the Lichess opening explorer as cached by this site; a line's numbers are refreshed once
         they are a week old.
         <?php elseif ($level === 'masters'): ?>
-        Numbers: the Lichess masters database — over-the-board games between players rated 2200 and up —
+        Numbers: the Lichess masters database of over-the-board games between players rated 2200 and up,
         fetched for the <?= number_format(LevelStats::lineCount()) ?> most-played lines and refreshed monthly.
         <?php else: ?>
         Numbers: rated blitz, rapid and classical games on Lichess between players <?= $esc($levelWord[$level][1]) ?>,
         fetched for the <?= number_format(LevelStats::lineCount()) ?> most-played lines and refreshed monthly.
         <?php endif; ?>
         Each name appears once, as its most-played line.<?php if ($trendShares): ?>
-        <?= $trendFrom ?>–<?= $trendTo ?>: the line's share of the games each year and how it changed —
+        <?= $trendFrom ?>–<?= $trendTo ?>: the line's share of the games each year and how it changed. See also
         <a href="<?= $baseEsc . $esc('/opening-trends') ?>">the openings that rose and fell the most</a>.<?php endif; ?>
         <?php if ($page === 'gambits'): ?>
             A line counts as a gambit when its name has "Gambit" or "Countergambit" in it. Plain
@@ -227,11 +227,11 @@ ob_start();
             played against a gambit, such as the Falkbeer or the Albin, are included.
             <?php if ($evals): ?>
             The Stockfish column is the engine's evaluation after the line's last move, in pawns from White's
-            side — set it against the results to see which gambits do better in practice than on the engine.
+            side. Compare it with the results to see which gambits do better in practice than on the engine.
             <?php endif; ?>
         <?php endif; ?>
         <?php if ($side): ?>
-            At this level, sharp lines in which a natural-looking reply goes wrong score highest — a
+            At this level, sharp lines in which a natural-looking reply goes wrong score highest. A
             high score says how a line does in practice, not that it is objectively best.
         <?php endif; ?>
     </p>
@@ -250,13 +250,13 @@ ob_start();
         <h2 class="ranking-heading">Best openings for <?= ucfirst($side) ?> by rating</h2>
         <p>
             What scores best changes with the players' strength. The leader at each level, among the
-            <?= number_format(LevelStats::lineCount()) ?> most-played lines — each level has its own ranking:
+            <?= number_format(LevelStats::lineCount()) ?> most-played lines (each level has its own ranking):
         </p>
         <ul>
             <?php foreach ($leaders as $key => [$label, $top]): ?>
             <li>
                 <a href="<?= $baseEsc . $esc('/' . $page . '/' . $key) ?>"><?= $esc($label) ?></a>:
-                <?= $answerLink($top) ?> — <?= $scorePct($top) ?>
+                <?= $answerLink($top) ?>, <?= $scorePct($top) ?>
             </li>
             <?php endforeach; ?>
         </ul>

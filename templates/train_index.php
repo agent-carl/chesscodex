@@ -27,7 +27,7 @@ ob_start();
         <p class="lede">
             Pick an opening and play your side's moves from memory: the trainer answers with the other
             side's moves, shows the right move after two wrong tries and brings every line back for
-            review on a schedule. Free, no account — your progress stays in this browser.
+            review on a schedule. It's free and needs no account; your progress is saved in this browser.
         </p>
         <nav class="openings-jump" aria-label="Jump to side">
             <?php foreach ($sideTitle as $side => $label): ?>
@@ -62,8 +62,8 @@ ob_start();
         <p>
             Each opening comes with the named lines that continue it, from the Lichess chess-openings
             dataset. You start with the opening's own moves; tick "Drill all" to go through its lines too,
-            those due for review first. Play the moves for your side — the side that chooses the line,
-            or the other one with "Play the other side" — and the trainer plays the replies.
+            those due for review first. Play the moves for your side (the side that chooses the line,
+            or the other one with "Play the other side"), and the trainer plays the replies.
         </p>
         <p>
             Two wrong tries show the move. A line you play without a mistake comes back after 1, 3, 7, 16

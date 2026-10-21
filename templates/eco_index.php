@@ -80,7 +80,7 @@ ob_start();
         </p>
         <p>
             Instead of the traditional opening names, the encyclopaedia uses codes: a letter from A to E
-            for each of the five volumes, followed by a number from 00 to 99 — 500 codes in all. Other
+            for each of the five volumes, followed by a number from 00 to 99, 500 codes in all. Other
             chess publications and websites took up the system, and "ECO" is often used as shorthand for
             the codes themselves. "ECO code" is a registered trademark of Chess Informant.
         </p>
@@ -123,7 +123,7 @@ ob_start();
 <?php
 $body = ob_get_clean();
 $title = 'ECO Codes: Every Chess Opening Code from A00 to E99';
-$description = 'All 500 ECO codes from A00 to E99 with the openings filed under each — '
+$description = 'All 500 ECO codes from A00 to E99 with the openings filed under each: '
              . number_format($total) . ' named lines with moves, interactive boards and Lichess win rates.';
 $canonical = $siteUrl . $baseUrl . '/eco';
 $jsonLd = [

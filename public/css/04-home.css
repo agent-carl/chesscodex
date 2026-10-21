@@ -139,7 +139,7 @@ a.shelf-volume:focus-visible { outline: 2px solid var(--accent); outline-offset:
     }
     .shelf-letter { font-size: 1.7rem; }
     .shelf-label { font-size: 0.78rem; font-weight: 500; }
-    .shelf-count { font-size: 0.72rem; }
+    .shelf-count { font-size: 0.75rem; }
 }
 
 /* Index lists */

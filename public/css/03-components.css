@@ -365,7 +365,7 @@ a.eco-tag:hover { color: var(--accent-hover); text-decoration: underline; }
     text-decoration: none;
     background: var(--accent-hover);
     border-color: var(--accent-hover);
-    color: #fff;
+    color: var(--bg-elevated);
 }
 .board-hint { color: var(--muted); font-size: 0.85rem; }
 /* Dark theme: chessground's brown squares are made for light pages, so soften
@@ -420,7 +420,7 @@ a.eco-tag:hover { color: var(--accent-hover); text-decoration: underline; }
 .board-cta {
     text-decoration: none;
     background: var(--accent);
-    color: #fff;
+    color: var(--bg-elevated);
     border-color: var(--accent);
 }
 #board-flip {
@@ -454,7 +454,7 @@ a.eco-tag:hover { color: var(--accent-hover); text-decoration: underline; }
     background-size: 25% 25%;
 }
 /* "html" outweighs vendor/chessground.base.css, which loads after this file. */
-html .cg-wrap coords { font-weight: 600; font-size: 11px; opacity: 1; }
+html .cg-wrap coords { font-weight: 600; font-size: 12px; opacity: 1; }
 html .cg-wrap coords.files { left: 0; text-transform: none; text-align: right; }
 html .cg-wrap coords.files coord { padding-right: 3px; }
 html .cg-wrap coords.squares { text-transform: none; }
@@ -726,7 +726,7 @@ html .cg-wrap coords.squares { text-transform: none; }
     height: 2.75rem;
     padding: 0;
     background: var(--accent);
-    color: #fff;
+    color: var(--bg-elevated);
     border: 0;
     border-radius: 50%;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18), 0 2px 4px rgba(42, 93, 143, 0.25);
@@ -833,4 +833,14 @@ html .cg-wrap coords.squares { text-transform: none; }
 @media (max-width: 540px) {
     /* Tap-to-show tooltips on a phone would block clicks, so they are hidden. */
     [data-tip]::after { display: none; }
+}
+
+/* Touch screens: the main controls at least 44 px tall, a size a finger hits
+   reliably (the move list keeps its own, denser sizing). */
+@media (pointer: coarse) {
+    html #board-reset, html #board-flip, html .board-step,
+    html #play-new, html #play-undo, html #play-flip, html #play-resign,
+    html #search-undo, html #search-reset,
+    html .opening-actions .board-cta, html .opening-tool-btn, html .opening-more summary,
+    html .identify-paste button, html .identify-fen button { min-height: 44px; }
 }

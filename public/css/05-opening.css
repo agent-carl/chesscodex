@@ -29,6 +29,16 @@
 .opening-header { margin-bottom: var(--space-4); }
 .opening-aka { margin: var(--space-1) 0 0; color: var(--muted); font-size: 0.95rem; }
 .opening-aka strong { color: var(--fg-soft); font-weight: 600; }
+/* The description's first sentence, so the written guide is visible above the board. */
+.opening-lead {
+    margin: var(--space-3) 0 0;
+    max-width: 65ch;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    line-height: 1.55;
+    color: var(--fg-soft);
+}
+.opening-lead a { font-family: var(--font-body); font-size: 0.9rem; white-space: nowrap; }
 @media (max-width: 540px) {
     .opening-header h1 { font-size: 1.4rem; }
 }

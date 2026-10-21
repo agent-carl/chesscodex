@@ -160,7 +160,7 @@ $link = static fn (array $r, ?string $text = null): string =>
     '<a href="' . $h($baseUrl . '/openings/' . $r['slug']) . '">' . $h($text ?? $r['name']) . '</a>';
 $kind = $isGambit ? 'a gambit' : ($isDeclined ? 'a declined gambit' : null);
 $overview = [$parent
-    ? sprintf('<strong>%s</strong> (ECO %s, %s) is %s %s, reached after %s — %s.', $nameEsc, $ecoEsc, $h($ecoGroupLabel),
+    ? sprintf('<strong>%s</strong> (ECO %s, %s) is %s %s, reached after %s (%s).', $nameEsc, $ecoEsc, $h($ecoGroupLabel),
         $kind ?? 'a variation', ($kind ? 'in ' : 'of ') . Opening::article((string) $parent['name']) . $link($parent),
         $movesEsc, Opening::movesLabel($plies))
     : sprintf('<strong>%s</strong> (ECO %s, %s) is %s that starts %s.', $nameEsc, $ecoEsc, $h($ecoGroupLabel), $kind ?? 'a chess opening', $movesEsc)];
@@ -263,6 +263,10 @@ $island = [
             <p class="opening-aka">Also known as <?= implode(' or ', array_map(
                 static fn (string $a): string => '<strong>' . htmlspecialchars($a, ENT_QUOTES, 'UTF-8') . '</strong>', $aliases)) ?></p>
         <?php endif; ?>
+        <?php if (!empty($o['description']) && ($lead = Opening::leadSentence((string) $o['description'])) !== null): ?>
+            <p class="opening-lead"><?= htmlspecialchars($lead, ENT_QUOTES, 'UTF-8') ?>
+                <a href="#description">Read the guide</a></p>
+        <?php endif; ?>
     </header>
 
     <?php
@@ -353,54 +357,6 @@ $island = [
     </div>
 
     <?php
-    // How the side to move answers the line, from the same Lichess numbers:
-    // the reply that scores best, the most played one and the lowest of the
-    // main ones (Replies), headed the way people search: "How to play against
-    // the London System". Where that would be wrong — a line that shares its
-    // name, or one whose name is the side to move's own (King's Indian
-    // Defense, after 3. Nc3) — it names the last move instead.
-    $whiteToMove = $plies % 2 === 0;
-    $mainReplies = $statsTotal > 0 ? Replies::main($stats['top_moves'] ?? [], $statsTotal, $whiteToMove) : [];
-    if ($mainReplies):
-        $answersTitle = $lineTail === '' && Opening::nameSide((string) $o['name'], $plies) !== ($whiteToMove ? 'white' : 'black')
-            ? 'How to play against ' . Opening::article((string) $o['name']) . $o['name']
-            : 'How to answer ' . $lastMoveText;
-        $lineOf = static fn (string $san): ?array => isset($nextLines[$san]) && !preg_match('/^[A-E]\d\d$/', $nextLines[$san]['name'])
-            ? [$nextLines[$san]['name'], $nextLines[$san]['url']]
-            : null;
-    ?>
-    <section class="opening-answers" aria-labelledby="opening-answers-title">
-        <h2 id="opening-answers-title"><?= htmlspecialchars($answersTitle, ENT_QUOTES, 'UTF-8') ?></h2>
-        <p><?= Replies::html($mainReplies, $whiteToMove, (intdiv($plies, 2) + 1) . ($whiteToMove ? '. ' : '…'), $lineOf,
-            isset($eval) && !empty($eval['pv']) ? (string) $eval['pv'][0] : null) ?></p>
-        <p class="opening-answers-note"><small>Main answers: those played in at least 5% of these games. Score: <?= $whiteToMove ? 'White' : 'Black' ?>'s wins
-            plus half the draws, in rated Lichess games between players rated 1600 to 2500.
-            <a href="<?= $baseEsc . htmlspecialchars('/how-to-play-against', ENT_QUOTES, 'UTF-8') ?>">How to play against other popular openings</a></small></p>
-    </section>
-    <?php endif; ?>
-
-    <?php
-    // How often the line is played year by year: its share of the games, from
-    // the explorer's history (YearStats, fetched for the most-played lines).
-    // A line that shares its name is "this line", as in the answers above.
-    $years = YearStats::forOpening((int) $o['id']);
-    $yearsSentence = $years ? YearStats::sentence($years,
-        $lineTail === '' ? ucfirst(Opening::article((string) $o['name']) . $o['name']) : 'This line') : null;
-    if ($yearsSentence !== null):
-        $yearsLast = max(array_keys($years));
-        $yearsPartial = $years[$yearsLast]['months'] < 12;
-    ?>
-    <section class="opening-years" aria-labelledby="opening-years-title">
-        <h2 id="opening-years-title">Popularity by year</h2>
-        <p><?= htmlspecialchars($yearsSentence, ENT_QUOTES, 'UTF-8') ?></p>
-        <?= TrendChart::years($years, 'Line chart: share of games by year, ' . YearStats::FIRST_YEAR . ' to ' . $yearsLast . '. The numbers are in the table below.') ?>
-        <p class="trend-caption">Share of rated Lichess games between players rated 1600 to 2500 (blitz, rapid and classical)
-            that reach this position, by year<?= $yearsPartial ? '; ' . $yearsLast . ': January to ' . date('F', mktime(0, 0, 0, $years[$yearsLast]['months'], 1)) : '' ?>.
-            <a href="<?= $baseEsc . htmlspecialchars('/opening-trends', ENT_QUOTES, 'UTF-8') ?>">Which openings are rising and falling</a></p>
-    </section>
-    <?php endif; ?>
-
-    <?php
     // One form for both: a description of the line, or a mistake on the page.
     // Reports reach the admin queue marked (Submissions::REPORT_MARK) and are
     // never published. Shown in the Overview when there is no description yet.
@@ -475,7 +431,7 @@ $island = [
           . (empty($o['description']) ? 'Write description →' : 'Edit description →') . '</a>'
         : '';
     ?>
-    <section class="opening-description">
+    <section class="opening-description" id="description">
         <?php /* No "Description" heading without a description: an empty
                  section on every page reads as thin content. */ ?>
         <?php if (!empty($o['description'])): ?>
@@ -536,6 +492,55 @@ $island = [
 
         <?php if (!empty($o['description'])) $renderSuggest(); ?>
     </section>
+
+    <?php
+    // How the side to move answers the line, from the same Lichess numbers:
+    // the reply that scores best, the most played one and the lowest of the
+    // main ones (Replies), headed the way people search: "How to play against
+    // the London System". Where that would be wrong — a line that shares its
+    // name, or one whose name is the side to move's own (King's Indian
+    // Defense, after 3. Nc3) — it names the last move instead.
+    $whiteToMove = $plies % 2 === 0;
+    $mainReplies = $statsTotal > 0 ? Replies::main($stats['top_moves'] ?? [], $statsTotal, $whiteToMove) : [];
+    if ($mainReplies):
+        $answersTitle = $lineTail === '' && Opening::nameSide((string) $o['name'], $plies) !== ($whiteToMove ? 'white' : 'black')
+            ? 'How to play against ' . Opening::article((string) $o['name']) . $o['name']
+            : 'How to answer ' . $lastMoveText;
+        $lineOf = static fn (string $san): ?array => isset($nextLines[$san]) && !preg_match('/^[A-E]\d\d$/', $nextLines[$san]['name'])
+            ? [$nextLines[$san]['name'], $nextLines[$san]['url']]
+            : null;
+    ?>
+    <section class="opening-answers" aria-labelledby="opening-answers-title">
+        <h2 id="opening-answers-title"><?= htmlspecialchars($answersTitle, ENT_QUOTES, 'UTF-8') ?></h2>
+        <p><?= Replies::html($mainReplies, $whiteToMove, (intdiv($plies, 2) + 1) . ($whiteToMove ? '. ' : '…'), $lineOf,
+            isset($eval) && !empty($eval['pv']) ? (string) $eval['pv'][0] : null) ?></p>
+        <p class="opening-answers-note"><small>Main answers: those played in at least 5% of these games. Score: <?= $whiteToMove ? 'White' : 'Black' ?>'s wins
+            plus half the draws, in rated Lichess games between players rated 1600 to 2500.
+            <a href="<?= $baseEsc . htmlspecialchars('/how-to-play-against', ENT_QUOTES, 'UTF-8') ?>">How to play against other popular openings</a></small></p>
+    </section>
+    <?php endif; ?>
+
+    <?php
+    // How often the line is played year by year: its share of the games, from
+    // the explorer's history (YearStats, fetched for the most-played lines).
+    // A line that shares its name is "this line", as in the answers above.
+    $years = YearStats::forOpening((int) $o['id']);
+    $yearsSentence = $years ? YearStats::sentence($years,
+        $lineTail === '' ? ucfirst(Opening::article((string) $o['name']) . $o['name']) : 'This line') : null;
+    if ($yearsSentence !== null):
+        $yearsLast = max(array_keys($years));
+        $yearsPartial = $years[$yearsLast]['months'] < 12;
+    ?>
+    <section class="opening-years" aria-labelledby="opening-years-title">
+        <h2 id="opening-years-title">Popularity by year</h2>
+        <p><?= htmlspecialchars($yearsSentence, ENT_QUOTES, 'UTF-8') ?></p>
+        <?= TrendChart::years($years, 'Line chart: share of games by year, ' . YearStats::FIRST_YEAR . ' to ' . $yearsLast . '. The numbers are in the table below.') ?>
+        <p class="trend-caption">Share of rated Lichess games between players rated 1600 to 2500 (blitz, rapid and classical)
+            that reach this position, by year<?= $yearsPartial ? '; ' . $yearsLast . ': January to ' . date('F', mktime(0, 0, 0, $years[$yearsLast]['months'], 1)) : '' ?>.
+            <a href="<?= $baseEsc . htmlspecialchars('/opening-trends', ENT_QUOTES, 'UTF-8') ?>">Which openings are rising and falling</a></p>
+    </section>
+    <?php endif; ?>
+
 
     <?php require __DIR__ . '/partials/opening_lines.php'; ?>
 </article>

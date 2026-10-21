@@ -68,7 +68,7 @@ final class Routes
     private const TEMPLATE_CHANGED = [
         'pages'    => '2026-10-13',   // home: first moves with their shares; /opening-trends in the nav
         'eco'      => '2026-10-08',   // specific ECO labels, the /eco explainer
-        'openings' => '2026-10-09',   // "How to play against …", titles of same-name lines
+        'openings' => '2026-10-21',   // the description's lead under the title, the description above the answers
     ];
 
     /** /sitemap.xml — the index of the parts. */

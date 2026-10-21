@@ -206,7 +206,7 @@ details > summary button {
     top: 0;
     padding: 0.5rem 1rem;
     background: var(--accent);
-    color: #fff;
+    color: var(--bg-elevated);
     border-radius: var(--radius);
     z-index: 1000;
     font-weight: 600;

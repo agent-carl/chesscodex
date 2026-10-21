@@ -20,8 +20,8 @@ ob_start();
 <article class="ranking-page">
     <header>
         <h1>Best chess gambits for beginners</h1>
-        <p class="lede">Gambits ranked by how well they score for the side that plays them — wins plus half the
-            draws — in rated Lichess games between players rated under 1400. Among the lines reached in at least
+        <p class="lede">Gambits ranked by how well they score for the side that plays them (wins plus half the
+            draws) in rated Lichess games between players rated under 1400. Among the lines reached in at least
             <?= number_format($minGames) ?> such games; each gambit appears once, as its best-scoring line.</p>
         <nav class="ranking-nav" aria-label="Other rankings">
             <?php foreach (Rankings::LABELS as $path => $label): ?>
@@ -36,7 +36,7 @@ ob_start();
     </header>
 
     <?php if (!$gambits['white'] && !$gambits['black']): ?>
-        <p class="ranking-method">The numbers for this level are still being collected from Lichess — check back in a few hours.</p>
+        <p class="ranking-method">The numbers for this level are still being collected from Lichess. Check back in a few hours.</p>
     <?php else: ?>
         <p class="ranking-answer">
             <?php foreach (['white', 'black'] as $i => $side): $top = $gambits[$side][0] ?? null; if (!$top) continue; ?>

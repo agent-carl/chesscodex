@@ -234,7 +234,7 @@ $fmBar = static fn (float $width, string $class = 'fm-bar'): string =>
         the 500 ECO codes. Each
         opening page shows the moves on an interactive board, where the line sits in the opening
         tree, its sub-variations, and how it scores in Lichess games between players rated 1600 to
-        2500 — so you can see how an opening actually does, not just how it starts.
+        2500, so you can see how an opening actually does, not just how it starts.
     </p>
     <p>
         Know the moves but not the name?

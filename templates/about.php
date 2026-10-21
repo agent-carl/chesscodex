@@ -7,7 +7,7 @@ ob_start();
 <article class="about-page">
     <header class="about-header">
         <h1>About Caissa Codex</h1>
-        <p class="lede">A free, open encyclopedia of every named chess opening — built as a side project, no ads, no signup.</p>
+        <p class="lede">A free, open encyclopedia of every named chess opening, built as a side project. It has no ads and needs no sign-up.</p>
     </header>
 
     <section class="about-section">
@@ -16,15 +16,15 @@ ob_start();
             I'm a high school student in Norway. I built Caissa Codex in my spare time because
             I wanted a single reference that combined what I liked from Lichess's opening explorer
             (live statistics) and an encyclopedia-style site (one page per named opening with
-            interactive board, theory, and analysis) — without ads, paywalls, or accounts in
+            interactive board, theory, and analysis), without ads, paywalls or accounts in
             the way.
         </p>
         <p>
-            The name comes from Caissa, the goddess of chess, and a codex — a handwritten
+            The name comes from Caissa, the goddess of chess, and a codex, a handwritten
             book. The site lives at chesscodex.org.
         </p>
         <p>
-            It's a hobby project. I'm still learning. If something feels rough — it probably
+            It's a hobby project. I'm still learning. If something feels rough, it probably
             is. Feedback is welcome via the <strong>Write a description or report a mistake</strong> form on
             any opening page.
         </p>
@@ -40,10 +40,10 @@ ob_start();
                 canonical names.
             </li>
             <li>
-                <strong>Game statistics</strong>: fetched on demand from the
+                <strong>Game statistics</strong>: from the
                 <a href="https://lichess.org/api#tag/Opening-Explorer" rel="noopener">Lichess
-                Opening Explorer API</a> and cached server-side. Win rates, popular replies,
-                everything you see in the "Statistics from Lichess" panel.
+                Opening Explorer API</a>, fetched and stored by the server: the win rates, popular replies
+                and everything else in the "Statistics from Lichess" panel.
             </li>
             <li>
                 <strong>Play vs the engine</strong>: uses
@@ -53,9 +53,9 @@ ob_start();
                 locally.
             </li>
             <li>
-                <strong>Editorial descriptions</strong>: the descriptions of the most
-                popular openings were written with the help of an AI assistant, based on
-                standard opening theory and the Lichess numbers shown on each page; if you
+                <strong>Editorial descriptions</strong>: the opening descriptions were written
+                with the help of an AI assistant, from published sources on each opening and
+                the Lichess numbers shown on its page, and checked against those sources. If you
                 spot a mistake, the "Suggest an improvement or report a mistake" form under
                 the description reaches me. Descriptions sent through that form are read
                 before anything is published. Pages without a description fall back to a
@@ -67,8 +67,8 @@ ob_start();
     <section class="about-section">
         <h2>How it's built</h2>
         <p>
-            Vanilla PHP 8.4, SQLite, plain JavaScript (ES modules). No framework, no build
-            step, no bundler — minified by a tiny in-repo PHP script. Self-hosted on a
+            PHP 8.4 and SQLite with no framework, and plain JavaScript (ES modules) minified
+            with esbuild. Self-hosted on a
             Raspberry Pi 5 at home, served through Cloudflare. The source code is on
             <a href="https://github.com/ifrutella/chesscodex" rel="noopener">GitHub</a>
             under the AGPL-3.0.
@@ -80,7 +80,8 @@ ob_start();
             (the board UI),
             <a href="https://github.com/lichess-org/stockfish.wasm" rel="noopener">Stockfish.wasm</a>
             (the engine for /play),
-            <a href="https://github.com/erusev/parsedown" rel="noopener">Parsedown</a> (Markdown rendering).
+            <a href="https://github.com/erusev/parsedown" rel="noopener">Parsedown</a> (Markdown rendering),
+            <a href="https://github.com/p-chess/chess" rel="noopener">p-chess/chess</a> (moves on the server).
         </p>
     </section>
 
@@ -90,13 +91,11 @@ ob_start();
             No ad trackers and no cookies for analytics. The only third-party script is
             Cloudflare Web Analytics, which counts page views without cookies or
             fingerprinting. The site stores
-            a single cookie only if you log in as admin (that's not you). Visit counts in
-            the admin dashboard are aggregate-only — no IP addresses, no sessions, no
-            fingerprint. Bots and the admin's own visits are excluded from those counts.
+            a single cookie only if you log in as admin (that's not you).
         </p>
         <p>
-            If you suggest a description, the site stores what you send — the text, plus
-            your name and email address if you give them (the email is never published) —
+            If you suggest a description, the site stores what you send (the text, and your
+            name and email address if you give them; the email is never published)
             together with your IP address, which is used only to fight spam. Like any web
             server, it also keeps access logs (IP address, page, time and browser) for about
             two weeks. The database is backed up every night to private cloud storage
@@ -107,7 +106,7 @@ ob_start();
             theme are kept in your browser's local storage and never leave your device.
         <p>
             Apart from the nightly backup, the only outbound requests the site makes are to <code>lichess.org</code> for
-            opening statistics, and only server-side — your browser never talks to Lichess
+            opening statistics, and only from the server: your browser never talks to Lichess
             directly, unless you open a line in Lichess yourself.
         </p>
     </section>
@@ -134,7 +133,7 @@ ob_start();
 <?php
 $body = ob_get_clean();
 $title = 'About Caissa Codex — a Free Chess Openings Encyclopedia';
-$description = 'About Caissa Codex — a free, ad-free encyclopedia of 3,690 named chess opening lines, built as a hobby project by a high school student in Norway.';
+$description = 'About Caissa Codex: a free, ad-free encyclopedia of 3,690 named chess opening lines, built as a hobby project by a high school student in Norway.';
 $canonical = $siteUrl . $baseUrl . '/about';
 $jsonLd = [
     '@context' => 'https://schema.org',

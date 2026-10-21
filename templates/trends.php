@@ -49,7 +49,7 @@ ob_start();
     </header>
 
     <?php if (!$ready): ?>
-        <p class="ranking-method">The numbers are still being collected from Lichess — check back in a few hours.</p>
+        <p class="ranking-method">The numbers are still being collected from Lichess. Check back in a few hours.</p>
     <?php else:
         $g = $trends['gained'];
         $l = $trends['lost'];

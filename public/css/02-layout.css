@@ -111,7 +111,7 @@ body > .container { flex: 1 0 auto; width: 100%; }
     border-radius: var(--radius-sm);
     color: var(--muted);
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 500;
     line-height: 1.4;
 }

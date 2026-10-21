@@ -28,7 +28,7 @@ ob_start();
     <header>
         <h1>How to play against popular openings</h1>
         <p class="lede">For <?= $count ?> popular openings described on this site: the answer that scores best for
-            the side to move — wins plus half the draws — in rated Lichess games between players rated 1600 to 2500,
+            the side to move (wins plus half the draws) in rated Lichess games between players rated 1600 to 2500,
             the answer played most often, and Stockfish's first choice.</p>
         <nav class="ranking-nav" aria-label="Other rankings">
             <?php foreach (Rankings::LABELS as $path => $label): ?>
@@ -43,7 +43,7 @@ ob_start();
     </header>
 
     <?php if ($count === 0): ?>
-        <p class="ranking-method">The numbers are still being collected from Lichess — check back in a few hours.</p>
+        <p class="ranking-method">The numbers are still being collected from Lichess. Check back in a few hours.</p>
     <?php else: ?>
         <p class="ranking-answer">
             Against <?= count($differs) ?> of the <?= $count ?> openings, another answer scores at least a point more

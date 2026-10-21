@@ -54,7 +54,7 @@ ob_start();
 $body = ob_get_clean();
 $title = 'List of Chess Openings A–Z: ' . $familyCount . ' Openings, ' . number_format($total) . ' Named Lines';
 $description = 'All ' . $familyCount . ' chess openings from A to Z, with the ' . number_format($total)
-             . ' named variations filed under them — each with its moves, ECO code and Lichess win rates.';
+             . ' named variations filed under them, each with its moves, ECO code and Lichess win rates.';
 $canonical = $siteUrl . $baseUrl . '/openings';
 $jsonLd = [
     '@context' => 'https://schema.org',
