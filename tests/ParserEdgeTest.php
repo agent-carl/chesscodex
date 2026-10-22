@@ -24,11 +24,7 @@ final class ParserEdgeTest extends TestCase
     #[TestDox('slugify: a capital letter with a diacritic is folded like its lowercase form')]
     public function testSlugifyCapitalDiacritics(): void
     {
-        $got = [chess_codex_slugify('Ó Hanlon'), chess_codex_slugify('Ørsted Opening')];
-        if ($got !== ['o-hanlon', 'orsted-opening']) {
-            $this->markTestIncomplete('bug: lib/parser.php:20 runs strtr() with the lowercase-only CHESS_CODEX_TRANSLIT before mb_strtolower(), so "Ó Hanlon" slugs to "' . $got[0] . '" and "Ørsted Opening" to "' . $got[1] . '"');
-        }
-        $this->assertSame(['o-hanlon', 'orsted-opening'], $got);
+        $this->assertSame(['o-hanlon', 'orsted-opening'], [chess_codex_slugify('Ó Hanlon'), chess_codex_slugify('Ørsted Opening')]);
     }
 
     #[TestDox('canonicalize_pgn: black-move numbers "5...", glued numbers, check and mate marks, extra spaces')]

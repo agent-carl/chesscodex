@@ -18,11 +18,11 @@ const CHESS_CODEX_TRANSLIT = [
 
 function chess_codex_slugify(string $name): string
 {
-    $s = strtr($name, CHESS_CODEX_TRANSLIT);
+    // Lowercase first: CHESS_CODEX_TRANSLIT lists lowercase letters only.
+    $s = strtr(mb_strtolower($name, 'UTF-8'), CHESS_CODEX_TRANSLIT);
     // Drop apostrophes (ASCII + curly) so "Anderssen's Opening" → "anderssens-opening"
     // rather than "anderssen-s-opening". Done before the non-alnum replacement.
     $s = str_replace(["'", "\u{2019}", "\u{2018}", '`'], '', $s);
-    $s = mb_strtolower($s, 'UTF-8');
     $s = (string) preg_replace('/[^a-z0-9]+/u', '-', $s);
     return trim($s, '-');
 }
