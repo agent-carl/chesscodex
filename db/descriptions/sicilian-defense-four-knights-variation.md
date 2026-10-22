@@ -7,7 +7,7 @@ The variation can serve as a route into the main line of the Sveshnikov, reached
 ### Main lines
 
 - 6.Ndb5 is the main move. Besides 6...d6, heading for the Sveshnikov, Black's main alternative is 6...Bb4. Then 7.a3 Bxc3+ 8.Nxc3 d5 9.exd5 exd5 gives a position where Black has given up the bishop pair but has active pieces and the chance of ...d5-d4.
-- [6...Bc5](/openings/sicilian-defense-four-knights-variation-cobra-variation), the Cobra Variation, has the main line 7.Bf4 O-O 8.Bc7 Qe7 9.Bd6 Bxd6 10.Qxd6, often followed by the retreat 10...Qe8 or by a queen trade.
+- [6...Bc5](/openings/sicilian-defense-four-knights-variation-cobra-variation), the Cobra Variation, has the main line 7.Bf4 O-O 8.Bc7 Qe7 9.Bd6 Bxd6 10.Qxd6, often followed by the retreat 10...Qe8.
 - [6.Nxc6](/openings/sicilian-defense-four-knights-variation-exchange-variation) bxc6 7.e5 Nd5 8.Ne4 is an option this move order gives White, so White is not obliged to enter the Sveshnikov. It has become more popular over time but is still less popular than 6.Ndb5.
 
 ### The numbers
