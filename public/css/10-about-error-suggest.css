@@ -55,15 +55,15 @@
     justify-content: center;
     gap: var(--space-2);
 }
-.error-action-secondary {
-    background: var(--bg-elevated) !important;
-    color: var(--fg) !important;
-    border: 1px solid var(--border) !important;
+.board-cta.error-action-secondary {
+    background: var(--bg-elevated);
+    color: var(--fg);
+    border: 1px solid var(--border);
 }
-.error-action-secondary:hover {
-    border-color: var(--accent) !important;
-    background: var(--accent-soft) !important;
-    color: var(--accent) !important;
+.board-cta.error-action-secondary:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
 }
 .error-search { max-width: 480px; margin: var(--space-5) auto 0; }
 
