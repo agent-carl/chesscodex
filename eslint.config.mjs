@@ -20,6 +20,7 @@ export default [
       'prefer-const': 'error',
     },
   },
+  { files: ['tests/js/**/*.mjs'], languageOptions: { ecmaVersion: 'latest', sourceType: 'module', globals: { ...globals.node } } },
   { files: modules, languageOptions: { sourceType: 'module' } },
   { files: ['public/sw.js'], languageOptions: { globals: { ...globals.serviceworker } } },
 ];

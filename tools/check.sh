@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # One command before a commit or deploy, with short output: PHPStan (which
-# also catches PHP syntax errors), the PHPUnit tests, ESLint on the JavaScript,
-# and the minified assets rebuilt by esbuild. One line per step, details only
-# on failure; exits non-zero on failure. Needs the packages: `composer install`
+# also catches PHP syntax errors), the PHPUnit tests, the JavaScript tests,
+# ESLint on the JavaScript, and the minified assets rebuilt by esbuild. One line
+# per step, details only on failure; exits non-zero on failure. Needs the packages: `composer install`
 # and `npm ci`.
 #
 #   bash tools/check.sh
@@ -20,13 +20,21 @@ fi
 
 # 2. Unit tests (phpunit.xml.dist).
 if out=$(_composer_vendor/bin/phpunit --colors=never 2>&1); then
-    echo "phpunit: $(printf '%s\n' "$out" | grep -o 'OK ([^)]*)')"
+    echo "phpunit: $(printf '%s\n' "$out" | grep -E '^(OK|Tests:)' | tr '\n' ' ')"
 else
     printf '%s\n' "$out" | tail -n 30
     fail=1
 fi
 
-# 3. JavaScript lint (eslint.config.mjs): public/*.js, not the minified output.
+# 3. JavaScript tests (tests/js, node:test): helpers of public/*.js.
+if out=$(npm run --silent test:js 2>&1); then
+    echo "js tests: $(printf '%s\n' "$out" | grep -E ' pass [0-9]+$' | grep -o '[0-9]*$') passed"
+else
+    printf '%s\n' "$out" | tail -n 30
+    fail=1
+fi
+
+# 4. JavaScript lint (eslint.config.mjs): public/*.js, not the minified output.
 if out=$(npx --no-install eslint . 2>&1); then
     echo "eslint: no problems"
 else
@@ -34,7 +42,7 @@ else
     fail=1
 fi
 
-# 4. Minified assets: rebuild, then report which ones changed (commit those too).
+# 5. Minified assets: rebuild, then report which ones changed (commit those too).
 npm run --silent build > /dev/null || fail=1
 changed=$(git status --porcelain -- 'public/*.min.js' 'public/*.min.css' vendor/chess.min.js | awk '{print $2}' | tr '\n' ' ')
 echo "build: ${changed:-all up to date}"

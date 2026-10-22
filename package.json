@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "build": "node tools/build.mjs"
+    "build": "node tools/build.mjs",
+    "test:js": "node --test \"tests/js/*.test.mjs\""
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
