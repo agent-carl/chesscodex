@@ -2,7 +2,7 @@ The Open System of the [Tarrasch Variation](/openings/french-defense-tarrasch-va
 
 ### After 4.exd5 exd5
 
-This recapture was a staple of many games between Anatoly Karpov and Viktor Korchnoi, including seven games in their 1974 Candidates match. It usually leaves Black with an isolated queen's pawn. The [main line](/openings/french-defense-tarrasch-variation-open-system-main-line) continues 5.Ngf3 Nc6 6.Bb5 Bd6 7.O-O Nge7 8.dxc5 Bxc5 9.Nb3 Bb6. If White can neutralise the activity of Black's pieces in the middlegame, White will have a slight advantage in the ending. White can also play 5.Bb5+ Bd7 6.Qe2+ Be7 7.dxc5, trading bishops and making it harder for Black to regain the pawn.
+This recapture was a staple of many games between Anatoly Karpov and Viktor Korchnoi, including seven games in their 1974 Candidates match. It usually leaves Black with an isolated queen's pawn. The [main line](/openings/french-defense-tarrasch-variation-open-system-main-line) continues 5.Ngf3 Nc6 6.Bb5 Bd6 7.O-O Ne7 8.dxc5 Bxc5 9.Nb3 Bb6. If White can neutralise the activity of Black's pieces in the middlegame, White will have a slight advantage in the ending. White can also play 5.Bb5+ Bd7 6.Qe2+ Be7 7.dxc5, trading bishops and making it harder for Black to regain the pawn.
 
 ### After 4.exd5 Qxd5
 
