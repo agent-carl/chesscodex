@@ -102,6 +102,8 @@ html { scroll-behavior: smooth; }
    styles load. */
 html[data-theme="dark"] { background: #16181d; }
 html[data-theme="light"] { background: #f8f8f6; }
+/* !important is kept below on purpose: this reset has to beat every component's
+   own animation and transition, whatever its specificity. */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -168,6 +170,8 @@ h3 { font-size: 1.05rem; line-height: 1.35; }
 button { font: inherit; color: inherit; cursor: pointer; }
 button:disabled,
 button[aria-disabled="true"] {
+    /* !important on cursor and transform: a disabled button never looks
+       clickable, whatever component rule or :hover lift it carries. */
     opacity: 0.5;
     cursor: not-allowed !important;
     transform: none !important;
@@ -215,6 +219,7 @@ details > summary button {
 /* [hidden] always wins: several components set display:flex or grid, which
    would show them anyway (the empty repertoire's buttons did). */
 [hidden] { display: none !important; }
+/* !important: a utility, it must beat a component's position (relative, ...). */
 .visually-hidden {
     position: absolute !important;
     width: 1px;

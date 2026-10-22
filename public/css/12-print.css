@@ -13,12 +13,13 @@
     .site-footer,
     .opening-share,
     .board-controls,
+    .play-board-wrap .board-controls,
     .suggest-form,
     .admin-link {
-        display: none !important;
+        display: none;
     }
-    .back-to-top { display: none !important; }
-    .toast-region { display: none !important; }
+    .back-to-top { display: none; }
+    .toast-region { display: none; }
     [data-tip]::after { display: none; }
     .home-popular,
     .opening-overview,
@@ -33,9 +34,9 @@
     .opening-breadcrumb,
     .opening-actions,
     .recent-strip {
-        display: none !important;
+        display: none;
     }
-    .opening-tools { display: none !important; }
+    .opening-tools { display: none; }
     .opening-board { margin: 0 auto; }
     .description-body { font-size: 11pt; }
     .description-toc { display: none; }

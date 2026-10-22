@@ -182,7 +182,6 @@
 .gambits-filter input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .gambits-filter-count { color: var(--muted); font-size: .9rem; font-variant-numeric: tabular-nums; }
 .gambits-filter-empty { color: var(--muted); }
-.gambits-all [hidden] { display: none !important; }
 .gambits-up {
     margin-left: auto;
     font-size: .8rem;

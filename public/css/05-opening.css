@@ -473,10 +473,10 @@ body:not(.has-board) .opening-board:empty { display: none; }
 }
 .engine-eval-num[data-lean="white"] { background: #f4f1ea; color: #1b1b1b; }
 .engine-eval-num[data-lean="black"] { background: #2b2b2b; color: #f4f1ea; }
-.engine-eval-practice { margin-top: var(--space-2) !important; }
-.engine-eval-line { margin-top: var(--space-2) !important; }
+.engine-eval .engine-eval-practice { margin-top: var(--space-2); }
+.engine-eval .engine-eval-line { margin-top: var(--space-2); }
 .engine-eval-pv { font-family: var(--font-moves); font-size: 0.9rem; }
-.engine-eval-src { margin-top: var(--space-2) !important; color: var(--muted); }
+.engine-eval .engine-eval-src { margin-top: var(--space-2); color: var(--muted); }
 
 /* Overview */
 .opening-overview {
