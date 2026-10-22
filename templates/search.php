@@ -129,7 +129,7 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 <?= htmlspecialchars(json_encode([
     'searchApiUrl'   => $baseUrl . '/api/search',
     'openingPathFmt' => $baseUrl . '/openings/{slug}',
-], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), ENT_NOQUOTES, 'UTF-8') ?>
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR), ENT_NOQUOTES, 'UTF-8') ?>
 </script>
 <script type="module" src="<?= $baseEsc ?>/public/search.min.js?v=<?= @filemtime(__DIR__ . '/../public/search.min.js') ?: 1 ?>"></script>
 <?php

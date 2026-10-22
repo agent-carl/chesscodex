@@ -187,8 +187,8 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
             // Compute current path once for aria-current marking. Strip query +
             // base prefix to match the routes in index.php.
             $navPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
-            if ($baseUrl !== '' && strpos($navPath, $baseUrl) === 0) {
-                $navPath = substr($navPath, strlen($baseUrl)) ?: '/';
+            if ($baseUrl !== '' && strpos((string) $navPath, $baseUrl) === 0) {
+                $navPath = substr((string) $navPath, strlen($baseUrl)) ?: '/';
             }
             $navAria = static fn (string $route): string =>
                 $navPath === $route ? ' aria-current="page"' : '';

@@ -23,7 +23,7 @@ function chess_codex_slugify(string $name): string
     // rather than "anderssen-s-opening". Done before the non-alnum replacement.
     $s = str_replace(["'", "\u{2019}", "\u{2018}", '`'], '', $s);
     $s = mb_strtolower($s, 'UTF-8');
-    $s = preg_replace('/[^a-z0-9]+/u', '-', $s);
+    $s = (string) preg_replace('/[^a-z0-9]+/u', '-', $s);
     return trim($s, '-');
 }
 
@@ -34,9 +34,9 @@ function chess_codex_slugify(string $name): string
  */
 function chess_codex_canonicalize_pgn(string $pgn): string
 {
-    $s = preg_replace('/\d+\.(\.\.)?/', ' ', $pgn);
-    $s = preg_replace('/[!?+#]+/', '', $s);
-    $s = preg_replace('/\s+/', ' ', $s);
+    $s = (string) preg_replace('/\d+\.(\.\.)?/', ' ', $pgn);
+    $s = (string) preg_replace('/[!?+#]+/', '', $s);
+    $s = (string) preg_replace('/\s+/', ' ', $s);
     return trim($s);
 }
 
@@ -56,8 +56,9 @@ function chess_codex_count_plies(string $pgn): int
  *
  * O(n^2) per group — fine for ~800 rows per group, well under 1s.
  *
- * @param array<int|string, array<string, mixed>> $rows
- * @return array<int|string, int|string|null>
+ * @template K of int|string
+ * @param array<K, array<string, mixed>> $rows
+ * @return array<K, K|null>
  */
 function chess_codex_resolve_parents(array $rows): array
 {

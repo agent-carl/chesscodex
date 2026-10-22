@@ -247,7 +247,7 @@ ob_start();
     }
     if ($leaders): ?>
     <section class="ranking-by-level">
-        <h2 class="ranking-heading">Best openings for <?= ucfirst($side) ?> by rating</h2>
+        <h2 class="ranking-heading">Best openings for <?= ucfirst((string) $side) ?> by rating</h2>
         <p>
             What scores best changes with the players' strength. The leader at each level, among the
             <?= number_format(LevelStats::lineCount()) ?> most-played lines (each level has its own ranking):

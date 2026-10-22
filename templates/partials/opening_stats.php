@@ -6,7 +6,7 @@
  *
  * @var array<string, mixed> $o
  * @var int        $plies       the line's length in plies
- * @var array<string, mixed>|null $stats       cached Lichess numbers
+ * @var array{white: int, black: int, draws: int, top_moves: list<array<string, mixed>>, cached_at: mixed, fresh: bool}|null $stats       cached Lichess numbers
  * @var int        $statsTotal  games in them
  * @var list<array{0: string, 1: int, 2: string, 3: string, 4: string}> $statsRows   the next moves
  * @var string     $wPct
@@ -57,7 +57,7 @@
                     </tr>
                 <?php endforeach; ?></tbody>
             </table>
-            <p class="stats-attribution"<?= $statsTotal > 0 ? '' : ' hidden' ?>><small><?= htmlspecialchars(t('opening.stats.attribution'), ENT_QUOTES, 'UTF-8') ?> <span class="stats-cached-at"><?= $statsTotal > 0 ? htmlspecialchars($updated((string) $stats['cached_at']), ENT_QUOTES, 'UTF-8') : '' ?></span></small></p>
+            <p class="stats-attribution"<?= $statsTotal > 0 ? '' : ' hidden' ?>><small><?= htmlspecialchars(t('opening.stats.attribution'), ENT_QUOTES, 'UTF-8') ?> <span class="stats-cached-at"><?= $stats !== null && $statsTotal > 0 ? htmlspecialchars($updated((string) $stats['cached_at']), ENT_QUOTES, 'UTF-8') : '' ?></span></small></p>
             <?php /* Stockfish's evaluation closes this column, so "By rating" sits right under the board. */ ?>
             <?php require __DIR__ . '/opening_eval.php'; ?>
         </section>

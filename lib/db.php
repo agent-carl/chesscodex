@@ -40,7 +40,7 @@ function chess_codex_sqlite_connect(string $path): PDO
     // character — the search code relies on both. SQLite's built-in LIKE
     // does neither, so swap in a PHP implementation with MySQL semantics.
     $deterministic = class_exists('Pdo\Sqlite') ? \Pdo\Sqlite::DETERMINISTIC : PDO::SQLITE_DETERMINISTIC;
-    $register = method_exists($pdo, 'createFunction') ? 'createFunction' : 'sqliteCreateFunction';
+    $register = method_exists($pdo::class, 'createFunction') ? 'createFunction' : 'sqliteCreateFunction';
     $pdo->$register('like', 'chess_codex_sqlite_like', -1, $deterministic);
 
     return $pdo;

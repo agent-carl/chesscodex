@@ -72,7 +72,7 @@ final class StatsCache
      * is cached. Lets the opening page print the numbers into its HTML.
      *
      * @param list<string> $uciMoves
-     * @return array<string, mixed>|null
+     * @return array{white: int, black: int, draws: int, top_moves: list<array<string, mixed>>, cached_at: mixed, fresh: bool}|null
      */
     public static function cached(array $uciMoves): ?array
     {
@@ -163,7 +163,7 @@ final class StatsCache
      * Shape a DB row for the JSON response.
      *
      * @param array<string, mixed> $row
-     * @return array<string, mixed>
+     * @return array{white: int, black: int, draws: int, top_moves: list<array<string, mixed>>, cached_at: mixed}
      */
     private static function shape(array $row): array
     {

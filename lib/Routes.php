@@ -270,7 +270,7 @@ final class Routes
     {
         global $siteUrl, $baseUrl, $render404;
         $o = Opening::findBySlug($slug);
-        if ($o === null) $render404('No opening by that name.');
+        if ($o === null) { $render404('No opening by that name.'); return; }
         $pgn = PgnTree::build(
             Opening::withContinuations($o),
             $o['name'] . ' — named lines',
@@ -297,7 +297,7 @@ final class Routes
     {
         global $baseUrl, $siteUrl, $render404;
         $opening = Opening::findBySlug($slug);
-        if ($opening === null) $render404('No opening matches that URL.');
+        if ($opening === null) { $render404('No opening matches that URL.'); return; }
         $lines = array_slice(Opening::withContinuations($opening), 0, 300);
         require __DIR__ . '/../templates/train.php';
     }
@@ -378,7 +378,7 @@ final class Routes
     {
         global $baseUrl, $siteUrl, $render404;
         $opening = Opening::findBySlug($slug);
-        if ($opening === null) $render404('No opening matches that URL.');
+        if ($opening === null) { $render404('No opening matches that URL.'); return; }
         $parent      = $opening['parent_id'] ? Opening::findById((int) $opening['parent_id']) : null;
         $children    = Opening::children((int) $opening['id']);
         $ancestors   = Opening::ancestors((int) $opening['id']);

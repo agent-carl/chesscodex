@@ -289,7 +289,7 @@ final class Rankings
                     || Opening::nameSide((string) $o['name'], $plies) === ($whiteToMove ? 'white' : 'black')) continue;
                 $stats = StatsCache::cached(Opening::uci($o));
                 $total = $stats ? $stats['white'] + $stats['black'] + $stats['draws'] : 0;
-                $main = $total > 0 ? Replies::main($stats['top_moves'] ?? [], $total, $whiteToMove) : [];
+                $main = $total > 0 ? Replies::main($stats['top_moves'], $total, $whiteToMove) : [];
                 if ($main === []) continue;
                 [$most, $best] = Replies::picks($main);
                 $eval = EngineEval::forFen((string) $o['fen']);

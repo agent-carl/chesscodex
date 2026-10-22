@@ -101,6 +101,7 @@ usort($order, static fn (int $a, int $b): int =>
     [$rows[$a]['move_count'], $rows[$a]['eco'], $rows[$a]['pgn_moves']]
     <=> [$rows[$b]['move_count'], $rows[$b]['eco'], $rows[$b]['pgn_moves']]);
 $usedSlugs = [];
+$slugs = [];
 foreach ($order as $rowId) {
     $base = chess_codex_slugify($rows[$rowId]['name']);
     $slug = $base;
@@ -108,7 +109,7 @@ foreach ($order as $rowId) {
         $slug = "$base-$n";
     }
     $usedSlugs[$slug] = true;
-    $rows[$rowId]['slug'] = $slug;
+    $slugs[$rowId] = $slug;
 }
 
 $parents = chess_codex_resolve_parents($rows);
@@ -128,7 +129,7 @@ foreach ($rows as $rowId => $r) {
         'id'    => $rowId,
         'eco'   => $r['eco'],
         'name'  => $r['name'],
-        'slug'  => $r['slug'],
+        'slug'  => $slugs[$rowId],
         'depth' => $depth($rowId),
         'fen'   => $r['fen'],
         'pgn'   => $r['pgn_moves'],

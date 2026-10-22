@@ -36,7 +36,7 @@ $render404 = static function (string $reason = '') use ($baseUrl, $siteUrl) {
     $title = t('error.404.title');
     $suggestions  = [];
     $failedSlug   = '';
-    $rawPath404   = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '';
+    $rawPath404   = (string) (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '');
     if (preg_match('#/openings/([^/]+)/?$#', $rawPath404, $m404)) {
         $failedSlug = (string) $m404[1];
         try {
@@ -50,8 +50,8 @@ $render404 = static function (string $reason = '') use ($baseUrl, $siteUrl) {
 
 // Strip query string and base prefix from REQUEST_URI to get the route path.
 $rawPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
-if ($baseUrl !== '' && strpos($rawPath, $baseUrl) === 0) {
-    $rawPath = substr($rawPath, strlen($baseUrl));
+if ($baseUrl !== '' && strpos((string) $rawPath, $baseUrl) === 0) {
+    $rawPath = substr((string) $rawPath, strlen($baseUrl));
 }
 $path = ($rawPath === '' || $rawPath === false) ? '/' : $rawPath;
 

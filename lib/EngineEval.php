@@ -90,7 +90,7 @@ final class EngineEval
      * Null otherwise.
      *
      * @param array{cp: int|null, mate: int|null} $e
-     * @param array<string, int> $stats
+     * @param array{white: int, draws: int, black: int} $stats
      */
     public static function practice(array $e, array $stats): ?string
     {
@@ -149,7 +149,7 @@ final class EngineEval
     public static function verdict(array $e): string
     {
         if ($e['mate'] !== null) return ($e['mate'] > 0 ? 'White' : 'Black') . ' mates in ' . abs($e['mate']);
-        $v = abs($e['cp']) / 100;
+        $v = abs((int) $e['cp']) / 100;
         $side = $e['cp'] > 0 ? 'White' : 'Black';
         return match (true) {
             $v < 0.3 => 'The position is about equal',

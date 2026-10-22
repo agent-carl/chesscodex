@@ -154,7 +154,7 @@ if ($eco !== '') {
         $b     = imagettfbbox(26, 0, $ttf, $eco) ?: array_fill(0, 8, 0);
         $codeW = $b[2] - $b[0];
         $tagW  = max(120, $codeW + 44);
-        imagefilledrectangle($im, $padL, $tagTop, $padL + $tagW, $tagTop + $tagH, $accent);
+        imagefilledrectangle($im, $padL, $tagTop, (int) ($padL + $tagW), $tagTop + $tagH, $accent);
         imagettftext($im, 26, 0,
             (int) ($padL + ($tagW - $codeW) / 2 - $b[0]),
             (int) ($tagTop + ($tagH - ($b[1] - $b[5])) / 2 - $b[5]),
@@ -185,7 +185,7 @@ if ($ttf !== null) {
         if (count($lines) <= $maxLines && max([0, ...array_map($measure, $lines)]) <= $maxW) break;
     }
     foreach (og_fit_lines($lines, $maxLines, $maxW, $measure, '…') as $i => $line) {
-        imagettftext($im, $size, 0, $padL, $titleTop + $ascent + $i * $step, $fg, $ttf, $line);
+        imagettftext($im, $size, 0, $padL, (int) ($titleTop + $ascent + $i * $step), $fg, $ttf, $line);
     }
 } else {
     // Built-in font 5 (9×15 px) at 3×, or 2× for long titles.
@@ -388,7 +388,7 @@ function og_fit_lines(array $lines, int $maxLines, int $maxW, callable $measure,
 function og_pixel_text(GdImage $im, string $s, int $font, int $scale, int $x, int $y, int $fg, int $bg): void
 {
     $w   = max(1, imagefontwidth($font) * strlen($s));
-    $h   = imagefontheight($font);
+    $h   = max(1, imagefontheight($font));
     $tmp = imagecreatetruecolor($w, $h);
     imagefilledrectangle($tmp, 0, 0, $w, $h, $bg);
     imagestring($tmp, $font, 0, 0, $s, $fg);

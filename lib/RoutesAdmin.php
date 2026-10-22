@@ -68,7 +68,7 @@ trait RoutesAdmin
         Auth::requireLogin($baseUrl . '/admin/login', '/admin/review/' . $id);
 
         $submission = Submissions::findById((int) $id);
-        if (!$submission) $render404('No such submission.');
+        if (!$submission) { $render404('No such submission.'); return; }
         // Pre-load the current opening so the review template can render a
         // side-by-side diff against the existing description.
         $opening = Opening::findBySlug((string) $submission['opening_slug']);
@@ -200,7 +200,7 @@ trait RoutesAdmin
         Auth::requireLogin($baseUrl . '/admin/login', '/admin/edit/' . $slug);
 
         $opening = Opening::findBySlug($slug);
-        if ($opening === null) $render404('No opening matches that URL.');
+        if ($opening === null) { $render404('No opening matches that URL.'); return; }
 
         $saved = false;
         $error = null;

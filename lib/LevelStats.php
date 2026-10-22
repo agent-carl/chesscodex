@@ -68,7 +68,11 @@ final class LevelStats
                 'fetched_at' => (string) $r['fetched_at'],
             ];
         }
-        return array_intersect_key(array_replace(self::LEVELS, $byLevel), $byLevel);
+        $ordered = [];   // LEVELS order first, any other level after it
+        foreach (array_keys(self::LEVELS) as $key) {
+            if (isset($byLevel[$key])) $ordered[$key] = $byLevel[$key];
+        }
+        return $ordered + $byLevel;
     }
 
     /**

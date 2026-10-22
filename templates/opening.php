@@ -459,7 +459,7 @@ $island = [
                     $level = strtolower($m[1]);
                     $text  = trim(strip_tags($m[2]));
                     if ($text === '') return $m[0];
-                    $slug  = strtolower(preg_replace('/[^a-z0-9]+/i', '-', $text));
+                    $slug  = strtolower((string) preg_replace('/[^a-z0-9]+/i', '-', $text));
                     $slug  = trim($slug, '-');
                     if ($slug === '') $slug = 'section';
                     $base  = $slug; $n = 1;
@@ -536,7 +536,7 @@ $island = [
         <p><?= htmlspecialchars($yearsSentence, ENT_QUOTES, 'UTF-8') ?></p>
         <?= TrendChart::years($years, 'Line chart: share of games by year, ' . YearStats::FIRST_YEAR . ' to ' . $yearsLast . '. The numbers are in the table below.') ?>
         <p class="trend-caption">Share of rated Lichess games between players rated 1600 to 2500 (blitz, rapid and classical)
-            that reach this position, by year<?= $yearsPartial ? '; ' . $yearsLast . ': January to ' . date('F', mktime(0, 0, 0, $years[$yearsLast]['months'], 1)) : '' ?>.
+            that reach this position, by year<?= $yearsPartial ? '; ' . $yearsLast . ': January to ' . date('F', (int) mktime(0, 0, 0, $years[$yearsLast]['months'], 1)) : '' ?>.
             <a href="<?= $baseEsc . htmlspecialchars('/opening-trends', ENT_QUOTES, 'UTF-8') ?>">Which openings are rising and falling</a></p>
     </section>
     <?php endif; ?>
@@ -556,7 +556,7 @@ $island = [
 <?php endif; ?>
 
 <script type="application/json" id="opening-data">
-<?= htmlspecialchars(json_encode($island, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), ENT_NOQUOTES, 'UTF-8') ?>
+<?= htmlspecialchars(json_encode($island, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR), ENT_NOQUOTES, 'UTF-8') ?>
 </script>
 <script type="module" src="<?= $baseEsc ?>/public/app.min.js?v=<?= @filemtime(__DIR__ . '/../public/app.min.js') ?: 1 ?>"></script>
 <?php

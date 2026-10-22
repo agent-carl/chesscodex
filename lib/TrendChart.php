@@ -23,8 +23,9 @@ final class TrendChart
         $esc  = static fn ($s): string => htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
         $list = array_keys($years);
         $n    = count($list);
-        if ($n < 2) return '';
-        [$top, $ticks] = self::scale(max(array_column($years, 'share')));
+        $shares = array_column($years, 'share');
+        if (count($shares) < 2) return '';
+        [$top, $ticks] = self::scale(max($shares));
 
         $x = $y = [];
         foreach ($list as $i => $year) {
@@ -93,7 +94,7 @@ final class TrendChart
         $h .= '<thead><tr><th scope="col">Year</th><th scope="col">Share of games</th><th scope="col">Games</th></tr></thead><tbody>';
         foreach ($list as $yr) {
             $months = $years[$yr]['months'];
-            $when   = $months < 12 ? $yr . ' (Jan' . ($months > 1 ? '–' . date('M', mktime(0, 0, 0, $months, 1)) : '') . ')' : (string) $yr;
+            $when   = $months < 12 ? $yr . ' (Jan' . ($months > 1 ? '–' . date('M', (int) mktime(0, 0, 0, $months, 1)) : '') . ')' : (string) $yr;
             $h .= '<tr data-x="' . $x[$yr] . '" data-y="' . $y[$yr] . '"><th scope="row">' . $esc($when) . '</th>'
                 . '<td>' . $esc(YearStats::percent($years[$yr]['share'])) . '</td>'
                 . '<td>' . $esc(number_format($years[$yr]['games'])) . '</td></tr>';

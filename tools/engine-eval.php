@@ -30,9 +30,9 @@ $depth   = (int) ($opts['depth'] ?? 30);
 $limit   = (int) ($opts['limit'] ?? 0);
 $threads = (int) ($opts['threads'] ?? 4);
 $hash    = (int) ($opts['hash'] ?? 64);
-$engine  = (string) ($opts['engine'] ?? 'stockfish');
+$engine  = is_string($opts['engine'] ?? null) ? $opts['engine'] : 'stockfish';
 $redo    = isset($opts['redo']);
-[$shard, $shards] = array_map('intval', explode('/', (string) ($opts['shard'] ?? '1/1')) + [1 => 1]);
+[$shard, $shards] = array_map('intval', explode('/', is_string($opts['shard'] ?? null) ? $opts['shard'] : '1/1') + [1 => 1]);
 if ($shards < 1 || $shard < 1 || $shard > $shards) {
     fwrite(STDERR, "--shard must be I/N with 1 <= I <= N\n");
     exit(1);
@@ -133,7 +133,7 @@ foreach ($todo as $i => $t) {
         $per  = (time() - $started) / $done;
         $left = (int) round($per * (count($todo) - $i - 1) / 3600);
         printf("%s  %d/%d  %.0f s each, ~%d h left  (last: %s %s)\n", date('H:i'), $i + 1, count($todo),
-            $per, $left, $t['slug'], EngineEval::scoreText(EngineEval::forFen($t['fen'])));
+            $per, $left, $t['slug'], EngineEval::scoreText(EngineEval::forFen($t['fen']) ?? throw new RuntimeException('Evaluation not saved: ' . $t['slug'])));
     }
 }
 $send('quit');

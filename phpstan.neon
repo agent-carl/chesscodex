@@ -1,5 +1,5 @@
 parameters:
-    level: 6
+    level: 8
     paths:
         - lib
         - templates
@@ -9,3 +9,17 @@ parameters:
         - og.php
         - prewarm.php
         - config.example.php
+
+services:
+    -
+        class: PdoStatementReturnType
+        tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+    -
+        class: PdoFetchAllReturnType
+        tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+    -
+        class: ImageColorAllocateReturnType
+        tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+    -
+        class: CacheRememberReturnType
+        tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]

@@ -425,7 +425,7 @@ class Opening
     /** "Sicilian Defense: Najdorf Variation" → "Sicilian Defense". */
     public static function family(string $name): string
     {
-        return trim(preg_split('/[:,]/', $name, 2)[0]);
+        return trim(preg_split('/[:,]/', $name, 2)[0] ?? '');
     }
 
     /**
@@ -444,7 +444,7 @@ class Opening
             if ($fh) {
                 fgetcsv($fh, null, "\t", '"', '');   // header
                 while (($row = fgetcsv($fh, null, "\t", '"', '')) !== false) {
-                    if (count($row) >= 2 && $row[0] !== '') $map[$row[0]][] = trim($row[1]);
+                    if (count($row) >= 2 && $row[0] !== '') $map[$row[0]][] = trim((string) $row[1]);
                 }
                 fclose($fh);
             }
@@ -687,7 +687,7 @@ class Opening
         // Keyed by the list itself, so an edit to it shows at once.
         $cached = Cache::remember('popular_' . substr(md5(serialize(self::FAMOUS_OPENINGS)), 0, 8), 21600,
             static fn (): array => self::resolveCuratedNames(self::FAMOUS_OPENINGS, 50));
-        return array_slice($cached, 0, $limit);
+        return array_values(array_slice($cached, 0, $limit));
     }
 
     /**
@@ -702,7 +702,7 @@ class Opening
     {
         $cached = Cache::remember('gambits_' . substr(md5(serialize(self::FAMOUS_GAMBITS)), 0, 8), 21600,
             static fn (): array => self::resolveCuratedNames(self::FAMOUS_GAMBITS, 50));
-        return array_slice($cached, 0, $limit);
+        return array_values(array_slice($cached, 0, $limit));
     }
 
     /**
@@ -1401,7 +1401,7 @@ class Opening
      * the family's own line — its shortest, when several share the name — or
      * to its shortest line when none has the bare name.
      *
-     * @return array<string, array<string, array{name: string, slug: string, eco: string, lines: int}>>
+     * @return array<string, array<string, array{name: string, lines: int, root: bool, plies: int, slug?: mixed, eco?: mixed}>>
      */
     public static function familiesByLetter(): array
     {

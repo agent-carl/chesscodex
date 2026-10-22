@@ -57,7 +57,7 @@ $logDir = __DIR__ . '/db/log';
 if (is_dir($logDir)) {
     $cutoff = time() - 30 * 86400;
     $rotated = 0;
-    foreach ((array) @glob($logDir . '/*.log') as $f) {
+    foreach (@glob($logDir . '/*.log') ?: [] as $f) {
         if (is_file($f) && @filemtime($f) < $cutoff) {
             if (@unlink($f)) $rotated++;
         }

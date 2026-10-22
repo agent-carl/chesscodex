@@ -6,14 +6,14 @@
  * Included by templates/partials/opening_stats.php, in the page's scope.
  *
  * @var array<string, mixed> $o         the opening
- * @var array<string, mixed>|null $stats     its cached Lichess numbers
+ * @var array{white: int, black: int, draws: int, top_moves: list<array<string, mixed>>, cached_at: mixed, fresh: bool}|null $stats     its cached Lichess numbers
  * @var int        $statsTotal  games in them
  */
 $eval = EngineEval::forFen((string) ($o['fen'] ?? ''));
 if ($eval):
     $score = EngineEval::scoreText($eval);
     $lean  = $eval['mate'] !== null ? $eval['mate'] : ($eval['cp'] >= 30 ? 1 : ($eval['cp'] <= -30 ? -1 : 0));
-    $practice = $statsTotal > 0 ? EngineEval::practice($eval, $stats) : null;
+    $practice = $stats !== null && $statsTotal > 0 ? EngineEval::practice($eval, $stats) : null;
     ?>
             <section class="engine-eval" aria-labelledby="engine-eval-title">
                 <h2 id="engine-eval-title" class="engine-eval-title">Engine evaluation</h2>

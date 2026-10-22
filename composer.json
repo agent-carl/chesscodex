@@ -22,6 +22,9 @@
             "lib/strings.php"
         ]
     },
+    "autoload-dev": {
+        "classmap": ["tools/phpstan/"]
+    },
     "config": {
         "vendor-dir": "_composer_vendor",
         "platform": {
