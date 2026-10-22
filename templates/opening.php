@@ -8,211 +8,54 @@
 /** @var int   $descendantCount  Total descendants — populated even when $descendants is empty. */
 /** @var string $baseUrl */
 /** @var string $siteUrl */
+/** @var array<string, mixed> $page  OpeningPage::build(): what the page prints, by the names below */
 ob_start();
 
-/**
- * Lichess names nested variations like "<Parent>: <Suffix>" or
- * "<Parent>, <Suffix>". For breadcrumbs / subtree lists we only want to show
- * the suffix — repeating the parent's name on every level is unreadable.
- *
- * Falls back to the full name when there's no obvious prefix to strip
- * (defensive: the data isn't perfectly consistent).
- */
-$opening_short_name = static function (string $name, ?string $parentName): string {
-    if ($parentName === null || $parentName === '') return $name;
-    foreach ([': ', ', '] as $sep) {
-        $prefix = $parentName . $sep;
-        if (strncmp($name, $prefix, strlen($prefix)) === 0) {
-            return substr($name, strlen($prefix));
-        }
-    }
-    return $name;
-};
-
-/**
- * A breadcrumb name, after the one before it: the part that name already
- * said goes ("…: Modern Variations" → "Modern Variations", "…, Main Line" →
- * "Main Line"), and so does the opening's own name when both belong to it
- * ("Sicilian Defense: Najdorf Variation" after "Sicilian Defense: Modern
- * Variations, Main Line" → "Najdorf Variation").
- */
-$opening_crumb = static function (string $name, ?string $prevName) use ($opening_short_name): string {
-    $short = $opening_short_name($name, $prevName);
-    if ($short !== $name || $prevName === null) return $short;
-    $family = Opening::family($name);
-    if (str_starts_with($name, $family . ': ') && $family === Opening::family($prevName)) {
-        return substr($name, strlen($family) + 2);
-    }
-    return $name;
-};
-
-$o = $opening;
-// Lines that share a name get their final moves appended, so each page has
-// its own <title> instead of up to 14 identical ones — all but the name's
-// main line, which keeps the plain name (Opening::distinguishingTail).
-$lineTail = Opening::distinguishingTail($o);
-$title = $o['name'] . ' (' . $o['eco'] . ')' . ($lineTail !== '' ? ' – ' . $lineTail : '');
-// Titles also say what the page is and offers, in the words people search
-// with, as far as 60 characters allow: the first of these that fits.
-// "Italian Game (C50) – Chess Opening Moves & Win Rates", "Queen's Gambit
-// Declined (D30): Chess Moves & Win Rates", "Sicilian Defense: Najdorf
-// Variation (B90): Moves & Win Rates".
-// Other names it goes by (Opening::aliases). One with words the name lacks
-// goes into the title, where it fits: "Ruy Lopez (C60) – Spanish Opening:
-// Moves & Win Rates" also answers "spanish opening".
-// The main line of a shared name shows its moves first while they are
-// short, as people search them ("1 e4 d6" finds the Pirc): "Pirc Defense
-// (B00): 1. e4 d6 – Ufimtsev Defense", "French Defense (C00): 1. e4 e6 –
-// Chess Moves & Win Rates".
-$aliases = Opening::aliases((string) $o['name']);
-if ($lineTail === '') {
-    $titleAlias = Opening::titleAlias((string) $o['name']);
-    $choices    = [];
-    if ((int) $o['move_count'] <= 4 && Opening::nameCount((string) $o['name']) > 1) {
-        $withMoves = $title . ': ' . trim((string) $o['pgn_moves']);
-        if ($titleAlias !== null) $choices[] = $withMoves . ' – ' . $titleAlias;
-        $choices[] = $withMoves . ' – Chess Moves & Win Rates';
-        $choices[] = $withMoves . ' – Moves & Win Rates';
-    }
-    if ($titleAlias !== null) {
-        $choices[] = $title . ' – ' . $titleAlias . ': Moves & Win Rates';
-        $choices[] = $title . ' – ' . $titleAlias;
-    }
-    if (stripos((string) $o['name'], 'Opening') === false) $choices[] = $title . ' – Chess Opening Moves & Win Rates';
-    $choices[] = $title . ': Chess Moves & Win Rates';
-    $choices[] = $title . ': Moves & Win Rates';
-    foreach ($choices as $choice) {
-        if (mb_strlen($choice) <= 60) { $title = $choice; break; }
-    }
-}
-// Search results cut a title near 60 characters: a long name keeps its words
-// and loses the ECO code (still in the heading and the description).
-if (mb_strlen($title) > 70) $title = str_replace(' (' . $o['eco'] . ')', '', $title);
+// The partials (templates/partials/opening_*.php) and layout.php read these by name too.
+[
+    'title'              => $title,
+    'lineTail'           => $lineTail,
+    'aliases'            => $aliases,
+    'lead'               => $lead,
+    'crumbs'             => $crumbs,
+    'currentCrumb'       => $currentCrumb,
+    'plies'              => $plies,
+    'diagramUrl'         => $diagramUrl,
+    'lastMoveText'       => $lastMoveText,
+    'movePairs'          => $movePairs,
+    'shareUrl'           => $shareUrl,
+    'shareText'          => $shareText,
+    'ownSide'            => $ownSide,
+    'stats'              => $stats,
+    'statsTotal'         => $statsTotal,
+    'statsRows'          => $statsRows,
+    'wPct'               => $wPct,
+    'dPct'               => $dPct,
+    'bPct'               => $bPct,
+    'pct'                => $pct,
+    'barLabel'           => $barLabel,
+    'trans'              => $trans,
+    'nextLines'          => $nextLines,
+    'overviewHtml'       => $overviewHtml,
+    'renderedDesc'       => $renderedDesc,
+    'toc'                => $toc,
+    'answersTitle'       => $answersTitle,
+    'answersHtml'        => $answersHtml,
+    'whiteToMove'        => $whiteToMove,
+    'yearsSentence'      => $yearsSentence,
+    'yearsChart'         => $yearsChart,
+    'yearsLast'          => $yearsLast,
+    'yearsUntil'         => $yearsUntil,
+    'opening_short_name' => $opening_short_name,
+    'opening_crumb'      => $opening_crumb,
+    'island'             => $island,
+    'canonical'          => $canonical,
+    'noindex'            => $noindex,
+    'description'        => $description,
+    'jsonLd'             => $jsonLd,
+] = $page;
+$o       = $opening;
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
-
-// ----------------------------------------------------------------------
-// The overview: what the line is, how it scores on Lichess and where it
-// leads — facts from the data only, no filler. Rendered only when there is
-// no written description, so human prose isn't preceded by a summary.
-// ----------------------------------------------------------------------
-$ecoGroup      = substr((string) $o['eco'], 0, 1);
-$ecoGroupLabel = t('group.' . $ecoGroup);
-$plies         = (int) $o['move_count'];
-$movesPretty   = trim((string) $o['pgn_moves']);
-
-$rootAncestor  = !empty($ancestors) ? $ancestors[0] : null;
-$childCount    = count($children);
-$siblingCount  = count($siblings);
-
-$nameEsc       = htmlspecialchars((string) $o['name'], ENT_QUOTES, 'UTF-8');
-$ecoEsc        = htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8');
-$movesEsc      = '<code class="opening-overview-moves">' . htmlspecialchars($movesPretty, ENT_QUOTES, 'UTF-8') . '</code>';
-$diagramUrl    = $baseUrl . Opening::diagramPath((string) $o['slug'], true);   // WebP, as shown on the page
-// "5…a6": the move that reaches the position.
-$sans          = preg_split('/\s+/', trim((string) preg_replace('/\d+\.+\s*/', ' ', $movesPretty))) ?: [];
-$lastMoveText  = $plies > 0 && $sans ? (intdiv($plies - 1, 2) + 1) . (($plies - 1) % 2 === 0 ? '. ' : '…') . end($sans) : '';
-$isGambit      = Opening::isGambit((string) $o['name']);
-// "Queen's Gambit Declined: …" and the like: named after a gambit that isn't taken.
-$isDeclined    = !$isGambit && stripos((string) $o['name'], 'Gambit') !== false;
-
-// Lichess numbers from the server-side cache, printed into the HTML: they
-// show at once, and search engines see them at all (/api/ is closed to
-// crawlers). app.js fetches only when nothing is cached yet or the
-// numbers are over a week old — same markup as its renderStats().
-$stats      = StatsCache::cached(Opening::uci($o));
-$statsTotal = $stats ? $stats['white'] + $stats['black'] + $stats['draws'] : 0;
-$pct        = static fn (int $n, int $of): string => number_format($of > 0 ? $n * 100 / $of : 0, 1, '.', '');
-$barLabel   = static fn (string $w, string $d, string $b): string => "White $w%, Draw $d%, Black $b%";
-[$wPct, $dPct, $bPct] = [$pct($stats['white'] ?? 0, $statsTotal), $pct($stats['draws'] ?? 0, $statsTotal), $pct($stats['black'] ?? 0, $statsTotal)];
-$statsRows  = [];
-foreach ($stats['top_moves'] ?? [] as $m) {
-    $mt = (int) $m['white'] + (int) $m['black'] + (int) $m['draws'];
-    if ($mt > 0) $statsRows[] = [$m['san'], $mt, $pct((int) $m['white'], $mt), $pct((int) $m['draws'], $mt), $pct((int) $m['black'], $mt)];
-}
-
-// Moves from here that reach a named line — the variations one move on, and
-// the lines a move transposes into — for the statistics table: SAN => link.
-$trans     = Opening::transpositions((int) $o['id']);
-$nextLines = [];
-$lastSan   = static function (string $pgn): string {
-    $tokens = preg_split('/\s+/', trim($pgn)) ?: [];
-    return (string) preg_replace('/^\d+\.+/', '', (string) end($tokens));
-};
-foreach ($children as $c) {
-    if ((int) $c['move_count'] !== $plies + 1) continue;
-    $short = $opening_short_name((string) $c['name'], (string) $o['name']);
-    // A line under this very name but another ECO code is told apart by the code.
-    if ($short === (string) $o['name']) $short = (string) $c['eco'] !== (string) $o['eco'] ? (string) $c['eco'] : 'same name';
-    $nextLines[$lastSan((string) $c['pgn_moves'])] ??= [
-        'name' => $short,
-        'url'  => $baseUrl . '/openings/' . $c['slug'],
-    ];
-}
-foreach ($trans['to'] as [$t, $san]) {
-    $nextLines[(string) $san] ??= ['name' => (string) $t['name'], 'url' => $baseUrl . '/openings/' . $t['slug']];
-}
-foreach ($nextLines as $san => $line) {
-    if ($line['name'] === 'same name') unset($nextLines[$san]);
-}
-
-$h    = static fn ($s): string => htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
-$link = static fn (array $r, ?string $text = null): string =>
-    '<a href="' . $h($baseUrl . '/openings/' . $r['slug']) . '">' . $h($text ?? $r['name']) . '</a>';
-$kind = $isGambit ? 'a gambit' : ($isDeclined ? 'a declined gambit' : null);
-$overview = [$parent
-    ? sprintf('<strong>%s</strong> (ECO %s, %s) is %s %s, reached after %s (%s).', $nameEsc, $ecoEsc, $h($ecoGroupLabel),
-        $kind ?? 'a variation', ($kind ? 'in ' : 'of ') . Opening::article((string) $parent['name']) . $link($parent),
-        $movesEsc, Opening::movesLabel($plies))
-    : sprintf('<strong>%s</strong> (ECO %s, %s) is %s that starts %s.', $nameEsc, $ecoEsc, $h($ecoGroupLabel), $kind ?? 'a chess opening', $movesEsc)];
-if ($statsTotal > 0) {
-    $sentence = sprintf('In %s rated Lichess games between players rated 1600 to 2500, White won %s%%, Black %s%% and %s%% were drawn.',
-        number_format($statsTotal), $wPct, $bPct, $dPct);
-    $top      = $stats['top_moves'][0] ?? null;
-    $topGames = $top ? (int) $top['white'] + (int) $top['black'] + (int) $top['draws'] : 0;
-    if ($topGames > 0) {
-        $whiteNext = $plies % 2 === 0;
-        $sentence .= sprintf(' %s most played move here is <strong>%s</strong>, in %d%% of those games.',
-            $whiteNext ? "White's" : "Black's",
-            $h((intdiv($plies, 2) + 1) . ($whiteNext ? '. ' : '…') . $top['san']),
-            (int) round($topGames * 100 / $statsTotal));
-    }
-    if ($statsTotal < Opening::FEW_GAMES) $sentence .= ' That is too few games for the percentages to mean much.';
-    $overview[] = $sentence;
-}
-if ($childCount > 0) {
-    // The most played, by full name; deeper lines that keep this very name say nothing new.
-    $byGames = array_filter($children, static fn (array $c): bool => $c['name'] !== $o['name']);
-    usort($byGames, static fn (array $a, array $b): int => (int) $b['popularity'] <=> (int) $a['popularity']);
-    $named = array_map($link, array_slice($byGames, 0, 2));
-    $sentence = match (true) {
-        $childCount === 1 => 'It continues into one named variation' . ($named ? ', ' . $named[0] : '') . '.',
-        $named === []     => sprintf('It branches into %d named variations.', $childCount),
-        default           => sprintf('It branches into %d named variations; the most played %s %s.', $childCount,
-                                 count($named) === 1 ? 'is' : 'are', implode(' and ', $named)),
-    };
-    if ($descendantCount > $childCount) $sentence .= sprintf(' In all, %d named lines continue from it.', $descendantCount);
-    $overview[] = $sentence;
-}
-$overviewHtml = '<p>' . implode('</p><p>', $overview) . '</p>';
-
-$island = [
-    'id'          => (int) $o['id'],
-    'pgn'         => $o['pgn_moves'],
-    'name'        => $o['name'],
-    'statsApiUrl' => $baseUrl . '/api/stats',
-    'searchApiUrl' => $baseUrl . '/api/search',
-    'openingPathFmt' => $baseUrl . '/openings/{slug}',
-    'plies'       => $plies,
-    'nextLines'   => (object) $nextLines,
-    'i18n'        => [
-        'loading'     => t('opening.stats.loading'),
-        'no_games'    => t('opening.stats.no_games'),
-        'failed'      => t('opening.stats.failed'),
-        'attribution' => t('opening.stats.attribution'),
-        'show_more'   => t('opening.variations.show', ['count' => count($children)]),
-        'show_less'   => t('opening.variations.hide'),
-    ],
-];
 ?>
 <!-- Hidden data for the Recently viewed history. JS reads this on every
      opening page load and appends to localStorage['codex-recent']. -->
@@ -222,27 +65,8 @@ $island = [
       data-eco="<?= htmlspecialchars((string) $o['eco'], ENT_QUOTES, 'UTF-8') ?>">
 
 <article class="opening">
-    <?php
-    // Breadcrumb. Lichess files one name at several depths ("Sicilian
-    // Defense" is 1…c5, 2. Nf3, 2…d6 and more), so each name appears once, as
-    // its shortest line, and loses the part the name before it already said:
-    // "Sicilian Defense › Modern Variations › Main Line › Najdorf Variation".
-    $crumbs    = [];
-    $crumbSeen = [];
-    $prevName  = null;
-    foreach ($ancestors as $a) {
-        $name = (string) $a['name'];
-        if (isset($crumbSeen[$name])) continue;
-        $crumbSeen[$name] = true;
-        $crumbs[] = [$a, $opening_crumb($name, $prevName)];
-        $prevName = $name;
-    }
-    $currentCrumb = $opening_crumb((string) $o['name'], $prevName);
-    if (isset($crumbSeen[(string) $o['name']]) && $parent) {
-        // Same name as a line above it: the moves tell it apart.
-        $currentCrumb .= ' (' . Opening::movesFrom((string) $o['pgn_moves'], (int) $parent['move_count']) . ')';
-    }
-    ?>
+    <?php /* Each name once, as its shortest line, without what the one before
+             it said (OpeningPage::crumb()). */ ?>
     <nav class="opening-breadcrumb" aria-label="Breadcrumb">
         <ol>
             <li><a href="<?= $baseEsc . htmlspecialchars('/openings', ENT_QUOTES, 'UTF-8') ?>">Openings</a></li>
@@ -263,24 +87,18 @@ $island = [
             <p class="opening-aka">Also known as <?= implode(' or ', array_map(
                 static fn (string $a): string => '<strong>' . htmlspecialchars($a, ENT_QUOTES, 'UTF-8') . '</strong>', $aliases)) ?></p>
         <?php endif; ?>
-        <?php if (!empty($o['description']) && ($lead = Opening::leadSentence((string) $o['description'])) !== null): ?>
+        <?php if ($lead !== null): ?>
             <p class="opening-lead"><?= htmlspecialchars($lead, ENT_QUOTES, 'UTF-8') ?>
                 <a href="#description">Read the guide</a></p>
         <?php endif; ?>
     </header>
 
-    <?php
-    // Share and export — no third-party JS, no tracking: copy buttons, the
-    // device's own share sheet where the browser has one (app.js), the PGN.
-    $shareUrl  = $siteUrl . $baseUrl . '/openings/' . $o['slug'];
-    $shareText = $o['name'] . ' (' . $o['eco'] . ') — Caissa Codex';
-    // The side that makes the line's last move is the one choosing it.
-    $ownSide   = $plies % 2 === 1 ? 'white' : 'black';
-    ?>
+    <?php /* Share and export — no third-party JS, no tracking: copy buttons, the
+             device's own share sheet where the browser has one (app.js), the PGN. */ ?>
     <div class="opening-grid">
         <div class="opening-board-wrap">
             <div id="board" class="opening-board"><img class="board-still" src="<?= htmlspecialchars($diagramUrl, ENT_QUOTES, 'UTF-8') ?>" width="720" height="720"
-                 fetchpriority="high" alt="Chess diagram: <?= $nameEsc ?><?= $lastMoveText !== '' ? ' after ' . htmlspecialchars($lastMoveText, ENT_QUOTES, 'UTF-8') : '' ?>"></div>
+                 fetchpriority="high" alt="Chess diagram: <?= htmlspecialchars((string) $o['name'], ENT_QUOTES, 'UTF-8') ?><?= $lastMoveText !== '' ? ' after ' . htmlspecialchars($lastMoveText, ENT_QUOTES, 'UTF-8') : '' ?>"></div>
             <div class="board-controls" role="group" aria-label="Board">
                 <button id="board-reset" type="button" title="Back to the starting position"><?= htmlspecialchars(t('opening.board.reset'), ENT_QUOTES, 'UTF-8') ?></button>
                 <button id="board-prev" type="button" class="board-step" aria-label="Previous move" title="Previous move (←)">‹</button>
@@ -297,7 +115,7 @@ $island = [
             <h2><?= htmlspecialchars(t('opening.moves'), ENT_QUOTES, 'UTF-8') ?></h2>
             <?php /* The same list app.js builds (and rebuilds), so the line's moves are in the HTML. */ ?>
             <ol id="move-list" class="move-list move-list-paired" aria-label="<?= htmlspecialchars(t('opening.moves'), ENT_QUOTES, 'UTF-8') ?>">
-                <?php foreach (array_chunk(array_values(array_filter($sans, fn (string $s): bool => $s !== '')), 2) as $k => $pairSans): ?>
+                <?php foreach ($movePairs as $k => $pairSans): ?>
                 <li><span class="move-no"><?= $k + 1 ?>.</span><?php foreach ($pairSans as $j => $san): ?><button type="button" data-idx="<?= 2 * $k + $j + 1 ?>"><?= htmlspecialchars($san, ENT_QUOTES, 'UTF-8') ?></button><?php endforeach; ?></li>
                 <?php endforeach; ?>
             </ol>
@@ -426,35 +244,7 @@ $island = [
             <?= htmlspecialchars(t('opening.description.title'), ENT_QUOTES, 'UTF-8') ?>
         </h2>
         <?php endif; ?>
-        <?php if (!empty($o['description'])):
-            $pd = new Parsedown();
-            $pd->setSafeMode(true);
-            $renderedDesc = $pd->text((string) $o['description']);
-
-            // Auto-TOC: extract <h2>/<h3> from the rendered description, add
-            // anchor IDs, and emit a small TOC at the top so long pieces of
-            // theory (1000+ words) become scannable. Skip when there are
-            // fewer than 3 headings — TOC for one entry is overkill.
-            $toc       = [];
-            $usedSlugs = [];
-            $renderedDesc = preg_replace_callback(
-                '#<(h[23])>(.*?)</\1>#i',
-                static function ($m) use (&$toc, &$usedSlugs) {
-                    $level = strtolower($m[1]);
-                    $text  = trim(strip_tags($m[2]));
-                    if ($text === '') return $m[0];
-                    $slug  = strtolower((string) preg_replace('/[^a-z0-9]+/i', '-', $text));
-                    $slug  = trim($slug, '-');
-                    if ($slug === '') $slug = 'section';
-                    $base  = $slug; $n = 1;
-                    while (isset($usedSlugs[$slug])) $slug = $base . '-' . (++$n);
-                    $usedSlugs[$slug] = true;
-                    $toc[] = ['level' => $level, 'text' => $text, 'slug' => $slug];
-                    return '<' . $level . ' id="' . htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') . '">' . $m[2] . '</' . $level . '>';
-                },
-                $renderedDesc
-            );
-        ?>
+        <?php if (!empty($o['description'])): ?>
             <?php if (count($toc) >= 3): ?>
                 <nav class="description-toc" aria-label="Table of contents">
                     <p class="description-toc-title">In this section</p>
@@ -477,50 +267,23 @@ $island = [
         <?php if (!empty($o['description'])) $renderSuggest(); ?>
     </section>
 
-    <?php
-    // How the side to move answers the line, from the same Lichess numbers:
-    // the reply that scores best, the most played one and the lowest of the
-    // main ones (Replies), headed the way people search: "How to play against
-    // the London System". Where that would be wrong — a line that shares its
-    // name, or one whose name is the side to move's own (King's Indian
-    // Defense, after 3. Nc3) — it names the last move instead.
-    $whiteToMove = $plies % 2 === 0;
-    $mainReplies = $statsTotal > 0 ? Replies::main($stats['top_moves'] ?? [], $statsTotal, $whiteToMove) : [];
-    if ($mainReplies):
-        $answersTitle = $lineTail === '' && Opening::nameSide((string) $o['name'], $plies) !== ($whiteToMove ? 'white' : 'black')
-            ? 'How to play against ' . Opening::article((string) $o['name']) . $o['name']
-            : 'How to answer ' . $lastMoveText;
-        $lineOf = static fn (string $san): ?array => isset($nextLines[$san]) && !preg_match('/^[A-E]\d\d$/', $nextLines[$san]['name'])
-            ? [$nextLines[$san]['name'], $nextLines[$san]['url']]
-            : null;
-    ?>
+    <?php if ($answersTitle !== null): ?>
     <section class="opening-answers" aria-labelledby="opening-answers-title">
         <h2 id="opening-answers-title"><?= htmlspecialchars($answersTitle, ENT_QUOTES, 'UTF-8') ?></h2>
-        <p><?= Replies::html($mainReplies, $whiteToMove, (intdiv($plies, 2) + 1) . ($whiteToMove ? '. ' : '…'), $lineOf,
-            isset($eval) && !empty($eval['pv']) ? (string) $eval['pv'][0] : null) ?></p>
+        <p><?= $answersHtml ?></p>
         <p class="opening-answers-note"><small>Main answers: those played in at least 5% of these games. Score: <?= $whiteToMove ? 'White' : 'Black' ?>'s wins
             plus half the draws, in rated Lichess games between players rated 1600 to 2500.
             <a href="<?= $baseEsc . htmlspecialchars('/how-to-play-against', ENT_QUOTES, 'UTF-8') ?>">How to play against other popular openings</a></small></p>
     </section>
     <?php endif; ?>
 
-    <?php
-    // How often the line is played year by year: its share of the games, from
-    // the explorer's history (YearStats, fetched for the most-played lines).
-    // A line that shares its name is "this line", as in the answers above.
-    $years = YearStats::forOpening((int) $o['id']);
-    $yearsSentence = $years ? YearStats::sentence($years,
-        $lineTail === '' ? ucfirst(Opening::article((string) $o['name']) . $o['name']) : 'This line') : null;
-    if ($yearsSentence !== null):
-        $yearsLast = max(array_keys($years));
-        $yearsPartial = $years[$yearsLast]['months'] < 12;
-    ?>
+    <?php if ($yearsSentence !== null): ?>
     <section class="opening-years" aria-labelledby="opening-years-title">
         <h2 id="opening-years-title">Popularity by year</h2>
         <p><?= htmlspecialchars($yearsSentence, ENT_QUOTES, 'UTF-8') ?></p>
-        <?= TrendChart::years($years, 'Line chart: share of games by year, ' . YearStats::FIRST_YEAR . ' to ' . $yearsLast . '. The numbers are in the table below.') ?>
+        <?= $yearsChart ?>
         <p class="trend-caption">Share of rated Lichess games between players rated 1600 to 2500 (blitz, rapid and classical)
-            that reach this position, by year<?= $yearsPartial ? '; ' . $yearsLast . ': January to ' . date('F', (int) mktime(0, 0, 0, $years[$yearsLast]['months'], 1)) : '' ?>.
+            that reach this position, by year<?= $yearsUntil !== '' ? '; ' . $yearsLast . ': January to ' . $yearsUntil : '' ?>.
             <a href="<?= $baseEsc . htmlspecialchars('/opening-trends', ENT_QUOTES, 'UTF-8') ?>">Which openings are rising and falling</a></p>
     </section>
     <?php endif; ?>
@@ -549,138 +312,5 @@ $needsBoard = true;
 // OG type "article" gives Facebook / LinkedIn / Telegram richer cards
 // (author, published time) than the default "website".
 $ogType = 'article';
-
-$canonical = $siteUrl . $baseUrl . '/openings/' . $o['slug'];
-$noindex   = !Opening::indexedLine(!empty($o['description']), Opening::lineRank($o), (string) $o['slug']);
-
-// SEO description, in the order searchers scan it: name and ECO code, how
-// the line scores on Lichess (the one thing the title can't say), Stockfish's
-// evaluation, its first moves, the variations. Whole parts only, up to 160 characters, so search
-// results never show it cut mid-phrase.
-// The first moves, cut after a whole move ("1. e4 e5 2. Nf3 Nc6…").
-$moveSnippet = $movesPretty;
-if (mb_strlen($moveSnippet) > 24) {
-    $cut = mb_substr($moveSnippet, 0, 25);
-    $cut = mb_substr($cut, 0, (int) mb_strrpos($cut, ' '));
-    $moveSnippet = preg_replace('/\s*\d+\.+$/', '', $cut) . '…';   // no dangling "3."
-}
-$descParts = [$o['name'] . ' (' . $o['eco'] . ')'];
-if ($statsTotal > 0) {
-    $descParts[] = sprintf('White wins %d%%, Black %d%%, draws %d%% in %s Lichess games',
-        (int) round((float) $wPct), (int) round((float) $bPct), (int) round((float) $dPct),
-        Rankings::compact($statsTotal));
-}
-// Stockfish's verdict on the final position: "Stockfish +0.34".
-if ($descEval = EngineEval::forFen((string) ($o['fen'] ?? ''))) {
-    $descParts[] = 'Stockfish ' . EngineEval::scoreText($descEval);
-}
-// Same-name lines share their first moves; their ending is what differs.
-$descParts[] = $lineTail !== '' ? 'line ending ' . $lineTail : $moveSnippet;
-if ($childCount > 0) {
-    $descParts[] = $childCount . ($childCount === 1 ? ' variation' : ' variations');
-}
-$descParts[] = 'Interactive board' . ($statsTotal > 0 ? '' : ', Lichess statistics') . ', play vs Stockfish.';
-$description = '';
-foreach ($descParts as $i => $part) {
-    $next = $description === '' ? $part : $description . ' · ' . $part;
-    if (mb_strlen($next) > 160 && $i > 0) continue;   // skip a part that doesn't fit, try the shorter ones after it
-    $description = $next;
-}
-// A described line leads with its description's first sentence, which says
-// what the line is, then as much of the numbers as fits.
-$lead = !empty($o['description']) ? Opening::leadSentence((string) $o['description']) : null;
-if ($lead !== null && mb_strlen($lead) <= 160) {
-    $results = sprintf('White wins %d%%, Black %d%%', (int) round((float) $wPct), (int) round((float) $bPct));
-    $tries = $statsTotal > 0 ? [
-        sprintf('%s, draws %d%% in %s Lichess games', $results, (int) round((float) $dPct), Rankings::compact($statsTotal))
-            . ($descEval ? '; Stockfish ' . EngineEval::scoreText($descEval) : '') . '.',
-        sprintf('%s, draws %d%% in %s Lichess games.', $results, (int) round((float) $dPct), Rankings::compact($statsTotal)),
-        $results . ' on Lichess.',
-    ] : [];
-    $description = $lead;
-    foreach ($tries as $try) {
-        if (mb_strlen($lead . ' ' . $try) <= 160) { $description = $lead . ' ' . $try; break; }
-    }
-}
-
-// OG image absolute URL for the JSON-LD `image`: the same URL as og:image in
-// layout.php, including its ?v=.
-$ogImageUrl = $siteUrl . $baseUrl . '/og.php?slug=' . urlencode($o['slug']) . '&v=' . Opening::OG_VERSION;
-
-$breadcrumbs = [
-    ['name' => t('site.name'), 'url' => $siteUrl . $baseUrl . '/'],
-    ['name' => 'ECO ' . $o['eco'], 'url' => $siteUrl . $baseUrl . '/eco/' . $o['eco']],
-];
-if ($parent) {
-    $breadcrumbs[] = ['name' => $parent['name'], 'url' => $siteUrl . $baseUrl . '/openings/' . $parent['slug']];
-}
-$breadcrumbs[] = ['name' => $o['name'], 'url' => $canonical];
-
-$siteRootUrl  = $siteUrl . $baseUrl . '/';
-$publisherLd  = [
-    '@type' => 'Organization',
-    'name'  => t('site.name'),
-    'url'   => $siteRootUrl,
-    'logo'  => [
-        '@type' => 'ImageObject',
-        'url'   => $siteUrl . $baseUrl . '/public/icon-512.png',
-    ],
-];
-
-$jsonLd = [
-    '@context' => 'https://schema.org',
-    '@graph'   => [
-        [
-            '@type'            => 'Article',
-            'headline'         => $title,
-            'name'             => $o['name'],
-        ] + ($aliases ? ['alternateName' => $aliases] : []) + [
-            'description'      => $description,
-            'url'              => $canonical,
-            'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonical],
-            'image'            => [
-                // The square diagram too: Google prefers several aspect ratios.
-                ['@type' => 'ImageObject', 'url' => $siteUrl . $diagramUrl, 'width' => 720, 'height' => 720],
-                ['@type' => 'ImageObject', 'url' => $ogImageUrl, 'width' => 1200, 'height' => 630],
-            ],
-            'inLanguage'    => 'en',
-            'articleSection'=> $ecoGroupLabel,
-            'keywords'      => implode(', ', array_filter([
-                $o['name'],
-                $o['eco'],
-                $ecoGroupLabel,
-                'chess opening',
-                'chess theory',
-                $parent['name'] ?? null,
-            ])),
-            // Full ISO 8601 with offset — Google flags date-only values.
-            // dateModified is when the Lichess numbers on the page were last
-            // fetched: a real change, unlike "today" on every crawl.
-            // The site went live on 2026-09-25.
-            'datePublished' => '2026-09-25T12:00:00+02:00',
-            'dateModified'  => $statsTotal > 0 && !empty($stats['cached_at'])
-                ? (new DateTimeImmutable((string) $stats['cached_at']))->format(DATE_ATOM)
-                : '2026-09-25T12:00:00+02:00',
-            'author'        => $publisherLd,
-            'publisher'     => $publisherLd,
-            'isPartOf'      => [
-                '@type' => 'WebSite',
-                'name'  => t('site.name'),
-                'url'   => $siteRootUrl,
-            ],
-        ],
-        [
-            '@type' => 'BreadcrumbList',
-            'itemListElement' => array_map(static function ($i, $b) {
-                return [
-                    '@type'    => 'ListItem',
-                    'position' => $i + 1,
-                    'name'     => $b['name'],
-                    'item'     => $b['url'],
-                ];
-            }, array_keys($breadcrumbs), $breadcrumbs),
-        ],
-    ],
-];
 
 require __DIR__ . '/layout.php';
