@@ -59,7 +59,7 @@ ob_start();
                    value="<?= htmlspecialchars((string) ($filters['since'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
         </label>
         <button type="submit">Filter</button>
-        <a class="admin-edit-cancel" href="<?= $baseEsc ?>/admin">Reset</a>
+        <a class="admin-filter-reset" href="<?= $baseEsc ?>/admin">Reset</a>
     </form>
     <?php if (empty($pending)): ?>
         <p class="admin-empty">No pending submissions.</p>
@@ -73,7 +73,7 @@ ob_start();
                 </label>
                 <span class="admin-bulk-selected" id="admin-bulk-selected">0 selected</span>
                 <button type="submit" name="bulk_accept" value="1" class="admin-btn-accept" disabled
-                        data-confirm="Accept selected submissions? Each one will replace the opening's description.">
+                        data-confirm="Accept selected submissions? They are only marked accepted; the descriptions stay as they are.">
                     Bulk accept
                 </button>
                 <button type="submit" name="bulk_reject" value="1" class="admin-btn-reject" disabled

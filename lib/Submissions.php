@@ -108,38 +108,27 @@ final class Submissions
     }
 
     /**
-     * Accept the submission: replace the opening's description, mark
-     * submission accepted with optional reviewer notes.
+     * Mark the submission accepted, with optional reviewer notes. The opening's
+     * description is not touched: accepted text goes live only once it is
+     * copied into db/descriptions/<slug>.md and imported.
      */
     public static function accept(int $id, ?string $notes = null): bool
     {
-        $pdo = chess_codex_db();
-        $sub = self::findById($id);
-        if (!$sub || $sub['status'] !== 'pending') return false;
-
-        $pdo->beginTransaction();
-        try {
-            $pdo->prepare("UPDATE codex_openings SET description = :d WHERE id = :id")
-                ->execute(['d' => $sub['markdown'], 'id' => (int) $sub['opening_id']]);
-            $pdo->prepare(
-                "UPDATE codex_submissions
-                 SET status = 'accepted', reviewed_at = :now, review_notes = :n
-                 WHERE id = :id"
-            )->execute(['now' => date('Y-m-d H:i:s'), 'n' => $notes, 'id' => $id]);
-            $pdo->commit();
+        $stmt = chess_codex_db()->prepare(
+            "UPDATE codex_submissions
+             SET status = 'accepted', reviewed_at = :now, review_notes = :n
+             WHERE id = :id AND status = 'pending'"
+        );
+        $stmt->execute(['now' => date('Y-m-d H:i:s'), 'n' => $notes, 'id' => $id]);
+        $ok = $stmt->rowCount() > 0;
+        if ($ok) {
             Logger::info('admin.submission.accept', [
                 'submission_id' => $id,
-                'opening_id'    => (int) $sub['opening_id'],
-                'opening_slug'  => $sub['opening_slug'] ?? null,
                 'admin'         => Auth::user(),
                 'notes'         => $notes,
             ]);
-            return true;
-        } catch (Throwable $e) {
-            $pdo->rollBack();
-            Logger::error('admin.submission.accept.fail', ['id' => $id, 'msg' => $e->getMessage()]);
-            throw $e;
         }
+        return $ok;
     }
 
     public static function reject(int $id, ?string $notes = null): bool

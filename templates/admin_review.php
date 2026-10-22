@@ -53,7 +53,7 @@ ob_start();
             </h3>
             <div class="description-body admin-rendered">
                 <?php if ($renderedCur === ''): ?>
-                    <p class="admin-diff-empty-body"><em>No description yet — accepting will create one.</em></p>
+                    <p class="admin-diff-empty-body"><em>No description yet.</em></p>
                 <?php else: ?>
                     <?= $renderedCur ?>
                 <?php endif; ?>
@@ -81,12 +81,13 @@ ob_start();
 
     <?php if ($s['status'] === 'pending'): ?>
         <h2>Actions</h2>
+        <p>Accepting only marks the suggestion. The text goes live after it is copied into <code>db/descriptions/&lt;slug&gt;.md</code>.</p>
         <div class="admin-actions">
             <?php if (!$isReport): ?>
             <form method="post" action="<?= $baseEsc ?>/admin/review/<?= (int) $s['id'] ?>/accept">
                 <input type="hidden" name="csrf" value="<?= $csrf ?>">
                 <label>Optional reviewer note<input type="text" name="notes" maxlength="255"></label>
-                <button type="submit" class="admin-btn-accept">Accept &amp; publish</button>
+                <button type="submit" class="admin-btn-accept">Accept</button>
             </form>
             <?php endif; ?>
             <form method="post" action="<?= $baseEsc ?>/admin/review/<?= (int) $s['id'] ?>/reject">

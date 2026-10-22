@@ -70,8 +70,6 @@ $router->add('/admin/logout',        [Routes::class, 'adminLogout']);
 $router->add('#^/admin/review/(\d+)$#',        [Routes::class, 'adminReview']);
 $router->add('#^/admin/review/(\d+)/accept$#', [Routes::class, 'adminAccept']);
 $router->add('#^/admin/review/(\d+)/reject$#', [Routes::class, 'adminReject']);
-$router->add('#^/admin/edit/([a-z0-9-]+)/?$#', [Routes::class, 'adminEditOpening']);
-$router->add('/admin/preview',       [Routes::class, 'adminPreview']);
 $router->add('/admin/bulk',          [Routes::class, 'adminBulk']);
 $router->add('/search',              [Routes::class, 'search']);
 $router->add('/openings',            [Routes::class, 'openingsIndex']);

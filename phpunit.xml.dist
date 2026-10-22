@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- tools/check.sh runs the unit tests; the smoke tests check a running site over HTTP (tests/SmokeTest.php). -->
+<!-- tools/check.sh runs the unit tests; the smoke tests check a running site over HTTP (tests/SmokeTest.php);
+     the admin suite (tests/AdminTest.php) drives the admin panel of the local copy only. -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="_composer_vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="_composer_vendor/autoload.php"
@@ -10,9 +11,13 @@
         <testsuite name="unit">
             <directory>tests</directory>
             <exclude>tests/SmokeTest.php</exclude>
+            <exclude>tests/AdminTest.php</exclude>
         </testsuite>
         <testsuite name="smoke">
             <file>tests/SmokeTest.php</file>
+        </testsuite>
+        <testsuite name="admin">
+            <file>tests/AdminTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

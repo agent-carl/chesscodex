@@ -145,32 +145,6 @@
     font-weight: 600;
     line-height: 1;
 }
-/* "Edit description →" link next to the section heading on opening pages. */
-.admin-edit-link {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--accent);
-    margin-left: var(--space-3);
-    vertical-align: middle;
-    font-family: var(--font-body);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 2px;
-}
-.admin-edit-link:hover { color: var(--accent-hover); }
-.admin-edit-form textarea {
-    width: 100%;
-    min-height: 24rem;
-    padding: var(--space-3);
-    font: 0.95rem/1.55 var(--font-mono);
-    background: var(--bg-elevated);
-    color: var(--fg);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius);
-    resize: vertical;
-    box-sizing: border-box;
-}
-.admin-edit-form textarea:focus,
 #suggest-form input[type="text"]:focus,
 #suggest-form input[type="email"]:focus,
 #suggest-form textarea:focus,
@@ -183,30 +157,7 @@
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-soft);
 }
-.admin-edit-hint {
-    display: block;
-    font-weight: 400;
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-top: 0.15rem;
-}
-.admin-edit-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    margin-top: var(--space-4);
-}
-.admin-edit-actions button {
-    padding: 0.55rem 1.2rem;
-    background: var(--accent);
-    color: #fff;
-    border: 0;
-    border-radius: var(--radius);
-    font-weight: 600;
-    cursor: pointer;
-}
-.admin-edit-actions button:hover { background: var(--accent-hover); }
-.admin-edit-cancel { color: var(--muted); }
+.admin-filter-reset { color: var(--muted); }
 .admin-flash {
     padding: var(--space-3) var(--space-4);
     border-radius: var(--radius);
@@ -259,33 +210,6 @@
 .admin-diff-col .admin-rendered { padding: var(--space-3); }
 .admin-raw-details { margin-top: var(--space-3); }
 .admin-raw-details summary { cursor: pointer; color: var(--accent); padding: 0.3rem 0; }
-/* Admin edit page: Markdown beside its preview. */
-.admin-edit-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-4);
-    margin-top: var(--space-2);
-}
-.admin-edit-side { display: flex; flex-direction: column; }
-.admin-edit-side-md textarea { min-height: 30rem; height: 100%; }
-.admin-edit-side-preview {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    min-height: 30rem;
-}
-.admin-edit-preview-heading {
-    margin: 0;
-    padding: var(--space-2) var(--space-3);
-    background: var(--bg-subtle);
-    border-bottom: 1px solid var(--border);
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--fg-soft);
-}
-#admin-edit-preview { padding: var(--space-3); overflow-y: auto; max-height: calc(100% - 3rem); }
-.admin-preview-empty { color: var(--muted); }
 .admin-bulk-form { margin-top: var(--space-3); }
 .admin-bulk-bar {
     display: flex;
@@ -329,7 +253,6 @@
 /* Form buttons in the suggest and admin pages share one minimum height and
    padding. */
 #suggest-form button,
-.admin-edit-actions button,
 .admin-login button,
 .admin-actions button,
 .admin-logout button,
@@ -460,9 +383,6 @@
 }
 @media (max-width: 768px) {
     .admin-diff { grid-template-columns: 1fr; }
-    .admin-edit-grid { grid-template-columns: 1fr; }
-    .admin-edit-side-md textarea { min-height: 18rem; }
-    .admin-edit-side-preview { min-height: 14rem; }
 }
 @media (max-width: 540px) {
     .admin-bulk-bar { font-size: 0.85rem; }

@@ -2,7 +2,8 @@
 # Local copy of the site on http://127.0.0.1:8099 for testing changes before a
 # deploy: php -S with tools/dev/router.php (the nginx rules and security
 # headers). The copy lives in .dev/site (git-ignored) with its own config.php —
-# SQLite, no Lichess token, admin login disabled — and a database from the
+# SQLite, no Lichess token, the test admin login from tests/admin-test-credentials
+# (local only, used by tests/AdminTest.php) — and a database from the
 # newest backup, so nothing touches the live site.
 #
 #   bash tools/dev/serve.sh              copy the code, start the server
@@ -57,6 +58,11 @@ return [
     'admin'         => ['username' => 'CHANGE_ME', 'password_hash' => 'CHANGE_ME'],
 ];
 PHP
+fi
+# A config that still has the disabled CHANGE_ME admin gets the test login
+# (username and password: tests/admin-test-credentials, two lines).
+if grep -q "'username' => 'CHANGE_ME'" "$DEV/config.php"; then
+    php tools/dev/set-admin.php "$DEV/config.php"
 fi
 
 if [ "$MODE" = "--sync" ]; then

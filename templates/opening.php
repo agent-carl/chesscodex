@@ -418,29 +418,13 @@ $island = [
     <?php endif; ?>
 
 
-    <?php
-    // Admin-only inline edit link. Same trick as in layout.php — only touch
-    // the session if the admin cookie is present, otherwise we turn every
-    // public opening page into a Set-Cookie + uncacheable.
-    $isAdmin = false;
-    if (isset($_COOKIE['codex_admin'])) {
-        $isAdmin = Auth::isLoggedIn();
-    }
-    $editLink = $isAdmin
-        ? '<a class="admin-edit-link" href="' . $baseEsc . '/admin/edit/' . htmlspecialchars($o['slug'], ENT_QUOTES, 'UTF-8') . '">'
-          . (empty($o['description']) ? 'Write description →' : 'Edit description →') . '</a>'
-        : '';
-    ?>
     <section class="opening-description" id="description">
         <?php /* No "Description" heading without a description: an empty
                  section on every page reads as thin content. */ ?>
         <?php if (!empty($o['description'])): ?>
         <h2>
             <?= htmlspecialchars(t('opening.description.title'), ENT_QUOTES, 'UTF-8') ?>
-            <?= $editLink ?>
         </h2>
-        <?php elseif ($editLink !== ''): ?>
-        <p><?= $editLink ?></p>
         <?php endif; ?>
         <?php if (!empty($o['description'])):
             $pd = new Parsedown();

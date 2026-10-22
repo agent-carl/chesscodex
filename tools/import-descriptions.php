@@ -4,13 +4,13 @@ declare(strict_types=1);
 /**
  * Loads opening descriptions from db/descriptions/<slug>.md into
  * codex_openings.description. The files are the source of truth for these
- * texts; the admin editor still works for everything else.
+ * texts; accepted visitor suggestions are copied into them by hand.
  *
  *   php tools/import-descriptions.php [--dry-run] [--force]
  *
  * An opening whose description is empty gets the file's text. One that
- * already has a different description (edited in the admin, or accepted from
- * a submission) is skipped unless --force is given, so nothing written on
+ * already has a different description (written in the database by hand) is
+ * skipped unless --force is given, so nothing written on
  * the site is overwritten by accident.
  */
 

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * The admin area (login-protected, behind Cloudflare Access too): login,
- * dashboard, review of submissions, bulk actions, description editing. Part
+ * dashboard, review of submissions, bulk actions. Part
  * of Routes (a trait, so the route table in index.php names them
  * Routes::adminX like the pages).
  */
@@ -110,38 +110,6 @@ trait RoutesAdmin
     }
 
     /**
-     * Live markdown preview for the admin edit / review pages.
-     * POSTs markdown text → returns server-rendered HTML, same Parsedown
-     * (safe mode) the public pages use, so the admin sees exactly what
-     * users will see. Auth-only.
-     */
-    public static function adminPreview(): void
-    {
-        global $baseUrl;
-        Auth::requireLogin($baseUrl . '/admin/login');
-
-        header('Content-Type: text/html; charset=utf-8');
-        header('Cache-Control: no-store');
-
-        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
-            http_response_code(405);
-            echo '<p>POST only.</p>';
-            return;
-        }
-        if (!Auth::checkCsrf($_POST['csrf'] ?? null)) {
-            http_response_code(400);
-            echo '<p>CSRF token mismatch — reload the page.</p>';
-            return;
-        }
-        $md = (string) ($_POST['markdown'] ?? '');
-        if ($md === '') { echo '<p class="admin-preview-empty"><em>Nothing to preview yet.</em></p>'; return; }
-        if (mb_strlen($md) > 50000) { echo '<p>Too long.</p>'; return; }
-        $pd = new Parsedown();
-        $pd->setSafeMode(true);
-        echo $pd->text($md);
-    }
-
-    /**
      * Bulk accept/reject for the admin dashboard. Accepts a POST with
      * `ids[]` array of submission IDs and either `bulk_accept` or
      * `bulk_reject` button name. Processes each one inside a single
@@ -187,41 +155,5 @@ trait RoutesAdmin
         );
         header('Location: ' . $baseUrl . '/admin');
         exit;
-    }
-
-    /**
-     * Inline-edit an opening's description from the admin panel.
-     * GET shows a form pre-filled with current markdown; POST saves it.
-     * No submission record is created — this is a direct admin edit.
-     */
-    public static function adminEditOpening(string $slug): void
-    {
-        global $baseUrl, $siteUrl, $render404;
-        Auth::requireLogin($baseUrl . '/admin/login', '/admin/edit/' . $slug);
-
-        $opening = Opening::findBySlug($slug);
-        if ($opening === null) { $render404('No opening matches that URL.'); return; }
-
-        $saved = false;
-        $error = null;
-
-        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-            if (!Auth::checkCsrf($_POST['csrf'] ?? null)) {
-                $error = 'CSRF token mismatch — reload the page and try again.';
-            } else {
-                $md = trim((string) ($_POST['markdown'] ?? ''));
-                if (mb_strlen($md) > 20000) {
-                    $error = 'Description is too long (max 20,000 characters).';
-                } else {
-                    $stmt = chess_codex_db()->prepare(
-                        "UPDATE codex_openings SET description = :d WHERE id = :id"
-                    );
-                    $stmt->execute(['d' => $md === '' ? null : $md, 'id' => (int) $opening['id']]);
-                    $opening['description'] = $md === '' ? null : $md;
-                    $saved = true;
-                }
-            }
-        }
-        require __DIR__ . '/../templates/admin_edit.php';
     }
 }

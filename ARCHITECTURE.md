@@ -109,7 +109,7 @@ codex_openings              ← 3,690 rows, the canonical opening list
 ├── depth, move_count, popularity (Lichess game count)
 ├── fen, pgn_moves, pgn_canon   (indexed: eco, parent_id, pgn_canon, fen)
 ├── uci                      the moves in UCI ('e2e4 c7c5') — the key of the Lichess numbers
-└── description              admin-edited Markdown, NULL for most
+└── description              Markdown loaded from db/descriptions/<slug>.md, NULL for most
 
 codex_stats_cache            ← Lichess explorer results per position (fen_hash PK)
 codex_level_stats            ← results by rating band + master games (tools/fetch-levels.php)
