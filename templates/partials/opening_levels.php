@@ -3,7 +3,7 @@
  * An opening page's results by rating band and in master games.
  * Included by templates/opening.php, in its scope (all its variables).
  *
- * @var array $o
+ * @var array<string, mixed> $o
  * @var int   $plies
  * @var Closure(int, int): string $pct
  * @var Closure(string, string, string): string $barLabel

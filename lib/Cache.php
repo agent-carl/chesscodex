@@ -35,6 +35,8 @@ final class Cache
      * Get-or-set: return cached value if fresh, else compute, store, return.
      * $ttl is in seconds. $compute MUST return an array (callers can wrap
      * scalars in [v => x] if they need to cache primitives).
+     *
+     * @return array<mixed>
      */
     public static function remember(string $key, int $ttl, callable $compute): array
     {
@@ -50,6 +52,8 @@ final class Cache
 
     /**
      * Raw fetch. Returns null on miss / stale / empty / parse error.
+     *
+     * @return array<mixed>|null
      */
     public static function get(string $key, int $ttl): ?array
     {
@@ -63,6 +67,9 @@ final class Cache
         return $data;
     }
 
+    /**
+     * @param array<mixed> $value
+     */
     public static function set(string $key, array $value): void
     {
         $path = self::path($key);

@@ -31,7 +31,11 @@ class Opening
         return $described || $rank <= self::INDEXED_LINES || isset($keep[$slug]);
     }
 
-    /** A line's place among those without a description, in the sitemap's order (most played first). */
+    /**
+     * A line's place among those without a description, in the sitemap's order (most played first).
+     *
+     * @param array<string, mixed> $o
+     */
     public static function lineRank(array $o): int
     {
         $stmt = chess_codex_db()->prepare(
@@ -55,6 +59,9 @@ class Opening
         return '/og.php?slug=' . urlencode($slug) . '&kind=diagram' . ($webp ? '&format=webp' : '') . '&v=' . self::OG_VERSION;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public static function findBySlug(string $slug): ?array
     {
         $stmt = chess_codex_db()->prepare(
@@ -66,6 +73,9 @@ class Opening
         return $row ?: null;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public static function findById(int $id): ?array
     {
         $stmt = chess_codex_db()->prepare(
@@ -82,6 +92,8 @@ class Opening
      * 'from' — lines whose position plus a move gives this one; 'to' — lines
      * a move from this position leads into. Each item: [row, SAN], the row
      * with id, eco, name, slug, move_count.
+     *
+     * @return array{from: list<array{0: array<string, mixed>, 1: string}>, to: list<array{0: array<string, mixed>, 1: string}>}
      */
     public static function transpositions(int $id): array
     {
@@ -108,7 +120,11 @@ class Opening
         return $pairs;
     }
 
-    /** The opening's moves in UCI (['e2e4', 'c7c5', 'g1f3']), or null for an unknown id. */
+    /**
+     * The opening's moves in UCI (['e2e4', 'c7c5', 'g1f3']), or null for an unknown id.
+     *
+     * @return list<string>|null
+     */
     public static function uciById(int $id): ?array
     {
         $stmt = chess_codex_db()->prepare('SELECT uci FROM codex_openings WHERE id = :id LIMIT 1');
@@ -120,6 +136,9 @@ class Opening
     /**
      * A row's moves in UCI as a list, from its uci column ("e2e4 c7c5 g1f3",
      * written by tools/seed.php) — the key of its Lichess statistics.
+     *
+     * @param array<string, mixed> $row
+     * @return list<string>
      */
     public static function uci(array $row): array
     {
@@ -136,6 +155,8 @@ class Opening
      * apart. '' when the name is unique, and for the name's main line — the
      * shortest, then the most played, as in the breadcrumb — whose page is
      * the one people mean by the name: "Caro-Kann Defense" is 1. e4 c6.
+     *
+     * @param array<string, mixed> $opening
      */
     public static function distinguishingTail(array $opening): string
     {
@@ -154,7 +175,11 @@ class Opening
         return count(self::sameName($name));
     }
 
-    /** Every line with this exact name, its main line (see distinguishingTail()) first. */
+    /**
+     * Every line with this exact name, its main line (see distinguishingTail()) first.
+     *
+     * @return list<array<string, mixed>>
+     */
     private static function sameName(string $name): array
     {
         static $memo = [];
@@ -198,6 +223,9 @@ class Opening
      * and ECO code with another row of $rows — or only its name, with
      * $ignoreEco, for lists where two "Benko Gambit" entries would otherwise
      * differ only by their ECO tag.
+     *
+     * @param list<array<string, mixed>> $rows
+     * @return array<int, string>
      */
     public static function lineTails(array $rows, bool $ignoreEco = false): array
     {
@@ -224,7 +252,11 @@ class Opening
         return (bool) preg_match('/gambit(?!\s+declined)/i', $name);
     }
 
-    /** The shortest numbered ending of $pgn that none of $otherPgns ends with. */
+    /**
+     * The shortest numbered ending of $pgn that none of $otherPgns ends with.
+     *
+     * @param list<string> $otherPgns
+     */
     private static function tailAgainst(string $pgn, array $otherPgns): string
     {
         $others = array_map([self::class, 'sanTokens'], $otherPgns);
@@ -256,6 +288,8 @@ class Opening
      *   'moves' => that line's moves ("1. c4 e5"), which tell apart the
      *              many codes that share a label ("English Opening"),
      * ]. Cached on disk for an hour.
+     *
+     * @return array<string, array{count: int, label: string, slug: string, moves: string}>
      */
     public static function ecoCodes(): array
     {
@@ -280,7 +314,11 @@ class Opening
         });
     }
 
-    /** All lines filed under one ECO code, shortest first, with their cached Lichess game counts. */
+    /**
+     * All lines filed under one ECO code, shortest first, with their cached Lichess game counts.
+     *
+     * @return list<array<string, mixed>>
+     */
     public static function byEco(string $eco): array
     {
         $stmt = chess_codex_db()->prepare(
@@ -295,6 +333,9 @@ class Opening
      * The line and every named line that continues it (slug, name, eco,
      * pgn_moves, popularity), shortest first — what a PGN download of the
      * tree holds, and what the trainer drills.
+     *
+     * @param array<string, mixed> $opening
+     * @return list<array<string, mixed>>
      */
     public static function withContinuations(array $opening): array
     {
@@ -314,6 +355,8 @@ class Opening
      * pgn_moves, move_count, popularity), most played first: the openings
      * /train and /how-to-play-against list, and whose trainer pages are
      * indexed.
+     *
+     * @return list<array<string, mixed>>
      */
     public static function described(): array
     {
@@ -323,7 +366,11 @@ class Opening
         )->fetchAll();
     }
 
-    /** How many lines withContinuations() gives for this line, itself included. */
+    /**
+     * How many lines withContinuations() gives for this line, itself included.
+     *
+     * @param array<string, mixed> $opening
+     */
     public static function continuationCount(array $opening): int
     {
         $canon = chess_codex_canonicalize_pgn((string) $opening['pgn_moves']);
@@ -334,7 +381,12 @@ class Opening
         return (int) $stmt->fetchColumn();
     }
 
-    /** Rows (slug, name, eco, pgn_moves, popularity) for up to 200 slugs, in the order given. */
+    /**
+     * Rows (slug, name, eco, pgn_moves, popularity) for up to 200 slugs, in the order given.
+     *
+     * @param array<mixed> $slugs
+     * @return list<array<string, mixed>>
+     */
     public static function bySlugs(array $slugs): array
     {
         $slugs = array_slice(array_values(array_unique(array_filter($slugs,
@@ -380,6 +432,8 @@ class Opening
      * Other names a line goes by (db/aliases.tsv: "Spanish Opening" for the
      * Ruy Lopez, "Stonewall Dutch"), each checked against the line's
      * Wikipedia article. [] for most lines.
+     *
+     * @return list<string>
      */
     public static function aliases(string $name): array
     {
@@ -417,6 +471,8 @@ class Opening
      * opening ("Sicilian Defense: Najdorf Variation" for B90, not just
      * "Sicilian Defense"); otherwise the opening, or "X & Y" / "X, Y & more"
      * when the code mixes several.
+     *
+     * @param list<string> $names
      */
     public static function ecoLabel(array $names): string
     {
@@ -456,7 +512,11 @@ class Opening
         return preg_match('/^(.+?[.!?])(?=\s+["“(A-Z]|$)/u', $para, $m) ? $m[1] : $para;
     }
 
-    /** "1. e4 c5 2. Nf3" → ['e4', 'c5', 'Nf3'] (check marks kept). */
+    /**
+     * "1. e4 c5 2. Nf3" → ['e4', 'c5', 'Nf3'] (check marks kept).
+     *
+     * @return list<string>
+     */
     private static function sanTokens(string $pgn): array
     {
         $tokens = preg_split('/\s+/', trim($pgn)) ?: [];
@@ -468,7 +528,11 @@ class Opening
         return $sans;
     }
 
-    /** Numbered SAN starting at 0-based ply $firstPly: "6…a6 7. Re1". */
+    /**
+     * Numbered SAN starting at 0-based ply $firstPly: "6…a6 7. Re1".
+     *
+     * @param array<int, string> $sans
+     */
     private static function formatPlies(array $sans, int $firstPly): string
     {
         $out = [];
@@ -482,7 +546,11 @@ class Opening
         return implode(' ', $out);
     }
 
-    /** Direct children (depth + 1), sorted by name. */
+    /**
+     * Direct children (depth + 1), sorted by name.
+     *
+     * @return list<array<string, mixed>>
+     */
     public static function children(int $parentId): array
     {
         $stmt = chess_codex_db()->prepare(
@@ -496,6 +564,8 @@ class Opening
     /**
      * Counts per ECO group (A..E), keyed by group letter.
      * Cached on disk for 1h via the Cache helper.
+     *
+     * @return array<string, int>
      */
     public static function countsByGroup(): array
     {
@@ -529,6 +599,8 @@ class Opening
      * Find the deepest opening whose canonical PGN equals the query, or is
      * a strict prefix of it (closest known ancestor when the query went past
      * documented theory). Returns null if no opening matches.
+     *
+     * @return array<string, mixed>|null
      */
     public static function searchByCanon(string $canonQuery): ?array
     {
@@ -570,6 +642,8 @@ class Opening
      * Find all openings that arrive at the exact same final FEN. This is the
      * transposition lookup — the same position reached through different
      * move orders. Returns an array sorted by move_count ASC (shortest first).
+     *
+     * @return list<array<string, mixed>>
      */
     public static function searchByFen(string $fen): array
     {
@@ -605,6 +679,8 @@ class Opening
      * game counts the top is generic first-move umbrellas ("King's Pawn Game",
      * "Queen's Pawn Game", "Indian Defense"), several of them twice under the
      * same name.
+     *
+     * @return list<array<string, mixed>>
      */
     public static function topPopular(int $limit = 12): array
     {
@@ -619,6 +695,8 @@ class Opening
      * Queen's Gambit Accepted, which the popular strip shows): by game count
      * seven of the top twelve "Gambit" names are Queen's Gambit lines, five
      * of them Declined variations.
+     *
+     * @return list<array<string, mixed>>
      */
     public static function topGambits(int $limit = 12): array
     {
@@ -639,6 +717,8 @@ class Opening
      * the step above already says ("Closed" under 1…c5 Sicilian Defense, ''
      * for the same name) — and share: its part of the games after the step
      * above (of all games for a first move). Cached on disk for 6 h.
+     *
+     * @return array{main: list<array<string, mixed>>, other: list<array<string, mixed>>}
      */
     public static function firstMoveTree(): array
     {
@@ -759,6 +839,9 @@ class Opening
      * Looks up each name with both exact match AND a "starts with" fallback,
      * preserving the input order. Prefers shortest variation (root) when the
      * name has multiple matches. Returns at most $limit rows.
+     *
+     * @param list<string> $names
+     * @return list<array<string, mixed>>
      */
     private static function resolveCuratedNames(array $names, int $limit): array
     {
@@ -832,6 +915,8 @@ class Opening
      * Dragon Variation before the Hyperaccelerated Dragon), then popularity.
      * Each name appears once. ALSO matches the ECO code when the query looks
      * like one ("B20", "C45").
+     *
+     * @return list<array<string, mixed>>
      */
     public static function searchByName(string $q, int $limit = 10): array
     {
@@ -880,6 +965,9 @@ class Opening
      * 'starts', the first word of each part of the name ("Sicilian Defense",
      * "Dragon Variation", "Yugoslav Attack"), which gets a bonus, and
      * 'aliases', the nameKeys of its other names (aliases()).
+     *
+     * @param array<string, mixed> $r
+     * @return array<string, mixed>
      */
     public static function indexRow(array $r): array
     {
@@ -897,6 +985,9 @@ class Opening
     /**
      * The matching and ordering behind searchByName(), on rows prepared by
      * indexRow(). Separate so the tests can run it without a database.
+     *
+     * @param list<array<string, mixed>> $rows
+     * @return list<array<string, mixed>>
      */
     public static function rankByName(array $rows, string $q, int $limit = 10): array
     {
@@ -993,6 +1084,8 @@ class Opening
      * Walk the parent_id chain from the given opening up to the root. Returns
      * ancestors in root-first order (e.g. [Sicilian, Sicilian: Open, Najdorf]).
      * Caps at 20 hops to defend against any accidental cycle in data.
+     *
+     * @return list<array<string, mixed>>
      */
     public static function ancestors(int $id): array
     {
@@ -1050,6 +1143,8 @@ class Opening
      * Picks from openings with a curated description — these render the
      * most polished featured card. Falls back to any shallow root opening
      * if that set is empty.
+     *
+     * @return array<string, mixed>|null
      */
     public static function ofTheDay(): ?array
     {
@@ -1090,6 +1185,8 @@ class Opening
      * Strategy: tokenize the failed slug on hyphens, score every opening by
      * how many tokens match (as substrings or prefixes) against its slug, then
      * fall back to plain LIKE substring matching. Cheap enough to run per 404.
+     *
+     * @return list<array<string, mixed>>
      */
     public static function suggestSimilar(string $failedSlug, int $limit = 5): array
     {
@@ -1176,6 +1273,8 @@ class Opening
      * Other openings that share the same parent — sibling variations. Used
      * for the "Related" internal-link section, which gives Google a denser
      * link graph and helps users discover sister lines.
+     *
+     * @return list<array<string, mixed>>
      */
     public static function siblings(int $id, int $parentId, int $limit = 8): array
     {
@@ -1222,6 +1321,8 @@ class Opening
      * Flat list of every descendant of $parentId at any depth. Uses MySQL 8's
      * recursive CTE — falls back to iterative PHP traversal if the CTE fails
      * (very old MySQL on a hypothetical migration target).
+     *
+     * @return list<array<string, mixed>>
      */
     public static function descendants(int $parentId, int $hardLimit = 2000): array
     {
@@ -1269,6 +1370,8 @@ class Opening
      * import. Output shape: ['A' => [row, ...], 'B' => [...], ...]. Rows that
      * share a name + ECO code carry their distinguishing moves in 'tail'
      * (up to 14 rows would otherwise read the same).
+     *
+     * @return array<string, list<array<string, mixed>>>
      */
     public static function allAlphabetical(): array
     {
@@ -1297,6 +1400,8 @@ class Opening
      * letter => [name => ['name', 'slug', 'eco', 'lines']]. The link goes to
      * the family's own line — its shortest, when several share the name — or
      * to its shortest line when none has the bare name.
+     *
+     * @return array<string, array<string, array{name: string, slug: string, eco: string, lines: int}>>
      */
     public static function familiesByLetter(): array
     {
@@ -1321,6 +1426,8 @@ class Opening
      * Up to $limit openings whose canonical PGN starts with $canonQuery
      * followed by at least one more ply — i.e., possible continuations
      * from the player's current position.
+     *
+     * @return list<array<string, mixed>>
      */
     public static function continuationsFrom(string $canonQuery, int $limit = 5): array
     {

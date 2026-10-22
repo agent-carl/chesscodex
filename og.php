@@ -322,6 +322,8 @@ function og_ttf_width(string $ttf, float $size, string $s): int
 /**
  * Splits a title into the pieces a line may break between: words, and the
  * parts of hyphenated words (after each "-"). Returns [[text, spaceBefore], …].
+ *
+ * @return list<array{0: string, 1: bool}>
  */
 function og_pieces(string $text): array
 {
@@ -334,7 +336,12 @@ function og_pieces(string $text): array
     return $pieces;
 }
 
-/** Greedy wrap of og_pieces() into lines no wider than $maxW where possible. */
+/**
+ * Greedy wrap of og_pieces() into lines no wider than $maxW where possible.
+ *
+ * @param list<array{0: string, 1: bool}> $pieces
+ * @return list<string>
+ */
 function og_wrap(array $pieces, int $maxW, callable $measure): array
 {
     $lines = [];
@@ -356,6 +363,9 @@ function og_wrap(array $pieces, int $maxW, callable $measure): array
  * Keeps at most $maxLines lines. The last kept line of a longer title, and
  * any line still wider than $maxW, lose words (or letters, for one long
  * word) until they fit with $ellipsis appended.
+ *
+ * @param list<string> $lines
+ * @return list<string>
  */
 function og_fit_lines(array $lines, int $maxLines, int $maxW, callable $measure, string $ellipsis): array
 {

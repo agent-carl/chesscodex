@@ -6,7 +6,7 @@
 /** @var string|null $description */
 /** @var string|null $canonical */
 /** @var bool|null $noindex */
-/** @var array|null $jsonLd */
+/** @var array<string, mixed>|null $jsonLd */
 $title = $title ?? t('site.name');
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 $description = $description ?? t('home.description', ['count' => '3,690']);

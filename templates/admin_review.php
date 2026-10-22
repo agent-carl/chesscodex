@@ -2,7 +2,7 @@
 /** @var string $baseUrl */
 /** @var string $siteUrl */
 /** @var array  $submission */
-/** @var array|null $opening   Current opening (for side-by-side diff). */
+/** @var array<string, mixed>|null $opening   Current opening (for side-by-side diff). */
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 $csrf    = htmlspecialchars(Auth::csrfToken(), ENT_QUOTES, 'UTF-8');
 $s       = $submission;

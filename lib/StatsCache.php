@@ -19,6 +19,9 @@ final class StatsCache
      * flight, or Lichess asked us to slow down — try again after retry_after.
      * On Lichess failure with stale cache: returns the stale data.
      * $wait queues for the Lichess lock instead (batch jobs like prewarm.php).
+     *
+     * @param list<string> $uciMoves
+     * @return array<string, mixed>
      */
     public static function getOrFetch(array $uciMoves, bool $wait = false): array
     {
@@ -67,6 +70,9 @@ final class StatsCache
      * What's cached for a line, without contacting Lichess: the getOrFetch()
      * shape plus 'fresh' (younger than TTL_FRESH_DAYS), or null when nothing
      * is cached. Lets the opening page print the numbers into its HTML.
+     *
+     * @param list<string> $uciMoves
+     * @return array<string, mixed>|null
      */
     public static function cached(array $uciMoves): ?array
     {
@@ -76,11 +82,17 @@ final class StatsCache
         return self::shape($row) + ['fresh' => $ageDays < self::TTL_FRESH_DAYS];
     }
 
+    /**
+     * @param list<string> $uciMoves
+     */
     public static function keyFor(array $uciMoves): string
     {
         return hash('sha256', implode(',', $uciMoves));
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     private static function loadRow(string $key): ?array
     {
         $stmt = chess_codex_db()->prepare(
@@ -92,7 +104,12 @@ final class StatsCache
         return $row ?: null;
     }
 
-    /** Hits Lichess, writes a fresh row, returns the row in DB shape. */
+    /**
+     * Hits Lichess, writes a fresh row, returns the row in DB shape.
+     *
+     * @param list<string> $uciMoves
+     * @return array<string, mixed>
+     */
     private static function refresh(string $key, array $uciMoves, bool $wait): array
     {
         $data = LichessExplorer::fetch($uciMoves, $wait);
@@ -142,7 +159,12 @@ final class StatsCache
         ];
     }
 
-    /** Shape a DB row for the JSON response. */
+    /**
+     * Shape a DB row for the JSON response.
+     *
+     * @param array<string, mixed> $row
+     * @return array<string, mixed>
+     */
     private static function shape(array $row): array
     {
         return [

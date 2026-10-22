@@ -6,7 +6,11 @@ use PHPUnit\Framework\TestCase;
 
 final class SearchTest extends TestCase
 {
-    /** The top names rankByName() gives for $q over a fixed list, indexed the way searchByName() does it. */
+    /**
+     * The top names rankByName() gives for $q over a fixed list, indexed the way searchByName() does it.
+     *
+     * @return list<string>
+     */
     private static function names(string $q): array
     {
         static $rows = null;

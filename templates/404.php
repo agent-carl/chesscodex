@@ -3,7 +3,7 @@
 /** @var string $siteUrl */
 /** @var string $title */
 /** @var string $failedSlug   Slug from the failed URL, if it looked like an opening. */
-/** @var array  $suggestions  Up to 5 similar opening rows. */
+/** @var list<array<string, mixed>> $suggestions  Up to 5 similar opening rows. */
 $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 ob_start();
 ?>

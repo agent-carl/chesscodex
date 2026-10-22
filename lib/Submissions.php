@@ -37,6 +37,9 @@ final class Submissions
      * Filterable submissions search for the admin dashboard.
      * $filters keys (all optional): status, opening_q (LIKE on name/slug),
      * author_q (LIKE on author_name/email), since (Y-m-d).
+     *
+     * @param array<string, mixed> $filters
+     * @return list<array<string, mixed>>
      */
     public static function search(array $filters, int $limit = 100): array
     {
@@ -75,6 +78,9 @@ final class Submissions
         return $stmt->fetchAll();
     }
 
+    /**
+     * @return array<string, int>
+     */
     public static function counts(): array
     {
         $rows = chess_codex_db()->query(
@@ -85,6 +91,9 @@ final class Submissions
         return $counts;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public static function findById(int $id): ?array
     {
         $stmt = chess_codex_db()->prepare(

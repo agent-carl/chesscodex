@@ -12,6 +12,9 @@ use PHPUnit\Framework\TestCase;
  */
 final class SmokeTest extends TestCase
 {
+    /**
+     * @return array<string, array{0: string, 1: int, 2: string}>
+     */
     public static function routes(): array
     {
         $base  = self::base();

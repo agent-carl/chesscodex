@@ -44,6 +44,8 @@ final class LevelStats
     /**
      * level => ['white', 'draws', 'black', 'games', 'games_list', 'fetched_at'] for
      * one opening, in LEVELS order; [] when nothing was fetched (or no table yet).
+     *
+     * @return array<string, array{white: int, draws: int, black: int, games: int, games_list: array<mixed>, fetched_at: string}>
      */
     public static function forOpening(int $openingId): array
     {
@@ -74,6 +76,8 @@ final class LevelStats
      * score of $side (the side whose move ends the line) under 1400 and at
      * 2200 and up, plus master games when there are enough of them. Null
      * without enough games at both ends. $levels is forOpening()'s array.
+     *
+     * @param array<string, array{white: int, draws: int, black: int, games: int}> $levels
      */
     public static function trend(array $levels, string $side): ?string
     {
@@ -106,7 +110,11 @@ final class LevelStats
         }
     }
 
-    /** opening_id => ['white', 'draws', 'black', 'games'] at one level, for the rankings. */
+    /**
+     * opening_id => ['white', 'draws', 'black', 'games'] at one level, for the rankings.
+     *
+     * @return array<int, array{white: int, draws: int, black: int, games: int}>
+     */
     public static function allAtLevel(string $level): array
     {
         try {
@@ -139,7 +147,11 @@ final class LevelStats
         return $at === false ? null : (string) $at;
     }
 
-    /** Asks Lichess for one line at one level (waiting for the shared lock) and stores the answer. */
+    /**
+     * Asks Lichess for one line at one level (waiting for the shared lock) and stores the answer.
+     *
+     * @param list<string> $uciMoves
+     */
     public static function fetchAndStore(int $openingId, array $uciMoves, string $level): void
     {
         $ratings = self::LEVELS[$level]['ratings'];

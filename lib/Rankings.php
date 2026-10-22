@@ -45,6 +45,8 @@ final class Rankings
      * move_count, games, white, draws, black, updated (Y-m-d of the numbers)
      * — most-played first. It looks up all 3,690 lines, so the list is kept
      * for six hours.
+     *
+     * @return list<array<string, mixed>>
      */
     public static function all(): array
     {
@@ -81,6 +83,9 @@ final class Rankings
      */
     public const MIN_GAMES_AT_LEVEL = ['masters' => 300, 'default' => 50000];
 
+    /**
+     * @return list<array<string, mixed>>
+     */
     public static function rows(string $page, ?string $level = null): array
     {
         $all = self::all();
@@ -119,6 +124,8 @@ final class Rankings
      * Every gambit line (Opening::isGambit), A–Z as in Opening::allAlphabetical()
      * — with its "tail" where several lines share a name — plus its cached
      * Lichess game count where there is one (0 otherwise).
+     *
+     * @return list<array<string, mixed>>
      */
     public static function allGambits(): array
     {
@@ -135,7 +142,11 @@ final class Rankings
         return $out;
     }
 
-    /** $side's score in the line's games: wins plus half the draws, 0–1. */
+    /**
+     * $side's score in the line's games: wins plus half the draws, 0–1.
+     *
+     * @param array<string, mixed> $r
+     */
     public static function score(array $r, string $side): float
     {
         return ($r[$side] + $r['draws'] / 2) / max(1, $r['games']);
@@ -162,6 +173,8 @@ final class Rankings
      *              and up: + 'side', 'low', 'high', 'masters' (null below 300 games).
      * Eight of each, one per opening family, most played first / biggest fall
      * first; kept six hours.
+     *
+     * @return array{dubious: list<array<string, mixed>>, fading: list<array<string, mixed>>}
      */
     public static function gambitInsights(): array
     {
@@ -207,6 +220,8 @@ final class Rankings
      * moved most in points; 'firstMoves': White's first moves, most played
      * first; 'lines': how many lines have numbers by year. Each row: id, slug,
      * name, eco, moves, years (year => share), first, last, ratio. Kept six hours.
+     *
+     * @return array<string, mixed>
      */
     public static function trends(): array
     {
@@ -260,6 +275,8 @@ final class Rankings
      * lines whose page asks "How to play against …": the name's main line,
      * with the other side to move (Opening::nameSide()), and two or more main
      * answers (Replies::main()). Kept six hours.
+     *
+     * @return array<string, list<array<string, mixed>>>
      */
     public static function answers(): array
     {
@@ -299,6 +316,8 @@ final class Rankings
      * gambit (gambitKey) — each with 'low' (score under 1400, 0–100), 'games'
      * (games under 1400), 'high' (score at 2200+, null below 10,000 games)
      * and 'eval' (EngineEval row or null). BEST_GAMBITS each; kept six hours.
+     *
+     * @return array<string, list<array<string, mixed>>>
      */
     public static function bestGambitsForBeginners(): array
     {
@@ -356,6 +375,8 @@ final class Rankings
      * "King's Gambit Accepted: King's Knight's Gambit" it is White's 2. f4,
      * though Black and then White moved last. When that name ends in
      * "Accepted" or "Defense", its last move was the other side's.
+     *
+     * @param array<string, mixed> $line
      */
     public static function gambitSide(array $line): string
     {
@@ -376,6 +397,10 @@ final class Rankings
         return (int) $line['move_count'] % 2 === 1 ? 'white' : 'black';
     }
 
+    /**
+     * @param array<array<string, mixed>> $rows
+     * @return list<array<string, mixed>>
+     */
     private static function onePerName(array $rows): array
     {
         $seen = [];
@@ -388,7 +413,12 @@ final class Rankings
         return $out;
     }
 
-    /** The first row for each key, in order: one line per opening family, say. */
+    /**
+     * The first row for each key, in order: one line per opening family, say.
+     *
+     * @param array<array<string, mixed>> $rows
+     * @return list<array<string, mixed>>
+     */
     private static function firstPer(array $rows, callable $key): array
     {
         $first = [];

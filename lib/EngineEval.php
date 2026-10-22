@@ -28,6 +28,8 @@ final class EngineEval
     /**
      * ['depth', 'cp', 'mate', 'pv' (SAN list), 'engine', 'evaluated_at'] for a
      * position; null when it wasn't evaluated (or there's no table yet).
+     *
+     * @return array{depth: int, cp: int|null, mate: int|null, pv: list<string>, engine: string, evaluated_at: string}|null
      */
     public static function forFen(string $fen): ?array
     {
@@ -54,6 +56,9 @@ final class EngineEval
     /**
      * opening id => ['cp', 'mate'] for those of these openings whose final
      * position was evaluated, in one query (for the ranking tables).
+     *
+     * @param array<int, int|string> $ids
+     * @return array<int, array{cp: int|null, mate: int|null}>
      */
     public static function forOpenings(array $ids): array
     {
@@ -83,6 +88,9 @@ final class EngineEval
      * side clearly better (1.5 pawns or more), yet the other side still scores
      * 45% or more in the Lichess games of $stats (['white', 'draws', 'black']).
      * Null otherwise.
+     *
+     * @param array{cp: int|null, mate: int|null} $e
+     * @param array<string, int> $stats
      */
     public static function practice(array $e, array $stats): ?string
     {
@@ -104,6 +112,9 @@ final class EngineEval
         return $d === false ? null : (int) $d;
     }
 
+    /**
+     * @param list<string> $pvSan
+     */
     public static function store(string $fen, int $depth, ?int $cp, ?int $mate, array $pvSan, string $engine): void
     {
         $upsert = 'ON CONFLICT (fen) DO UPDATE SET depth = excluded.depth, score_cp = excluded.score_cp,
@@ -117,7 +128,11 @@ final class EngineEval
         ]);
     }
 
-    /** "+0.35", "−1.20", "0.00", "#3", "−#2" — the usual engine notation. */
+    /**
+     * "+0.35", "−1.20", "0.00", "#3", "−#2" — the usual engine notation.
+     *
+     * @param array{cp: int|null, mate: int|null} $e
+     */
     public static function scoreText(array $e): string
     {
         if ($e['mate'] !== null) return ($e['mate'] < 0 ? '−' : '') . '#' . abs($e['mate']);
@@ -126,7 +141,11 @@ final class EngineEval
         return ($v > 0 ? '+' : '−') . number_format(abs($v), 2);
     }
 
-    /** Plain-words verdict for the score, as chess books put it. */
+    /**
+     * Plain-words verdict for the score, as chess books put it.
+     *
+     * @param array{cp: int|null, mate: int|null} $e
+     */
     public static function verdict(array $e): string
     {
         if ($e['mate'] !== null) return ($e['mate'] > 0 ? 'White' : 'Black') . ' mates in ' . abs($e['mate']);
@@ -143,6 +162,8 @@ final class EngineEval
     /**
      * The main line with move numbers, from the position's side to move:
      * "3. Nf3 Nf6 4. d4" or "3... Nf6 4. d4".
+     *
+     * @param list<string> $pv
      */
     public static function lineText(string $fen, array $pv): string
     {

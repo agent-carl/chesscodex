@@ -55,6 +55,9 @@ function chess_codex_count_plies(string $pgn): int
  * of this row's canonical PGN, restricted to rows in the same ECO group.
  *
  * O(n^2) per group — fine for ~800 rows per group, well under 1s.
+ *
+ * @param array<int|string, array<string, mixed>> $rows
+ * @return array<int|string, int|string|null>
  */
 function chess_codex_resolve_parents(array $rows): array
 {

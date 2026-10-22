@@ -10,8 +10,8 @@ declare(strict_types=1);
 final class PgnTree
 {
     /**
-     * @param array $lines   rows with name, eco, pgn_moves and popularity (orders the branches)
-     * @param array $headers extra tag pairs after the seven required ones, e.g. ['ECO' => 'B90']
+     * @param list<array<string, mixed>> $lines   rows with name, eco, pgn_moves and popularity (orders the branches)
+     * @param array<string, string> $headers extra tag pairs after the seven required ones, e.g. ['ECO' => 'B90']
      */
     public static function build(array $lines, string $event, string $site, array $headers = []): string
     {
@@ -47,7 +47,11 @@ final class PgnTree
         return ['kids' => [], 'weight' => 0, 'names' => []];
     }
 
-    /** Movetext from $node on, the heaviest branch first; $ply 0 = White to move. */
+    /**
+     * Movetext from $node on, the heaviest branch first; $ply 0 = White to move.
+     *
+     * @param array<string, mixed> $node
+     */
     private static function line(array $node, int $ply, bool $numberBlack): string
     {
         if ($node['kids'] === []) return '';
@@ -75,13 +79,20 @@ final class PgnTree
         return ($numberBlack ? $n . '... ' : '') . $san;
     }
 
+    /**
+     * @param array<string, mixed> $node
+     */
     private static function comment(array $node): string
     {
         if ($node['names'] === []) return '';
         return ' { ' . str_replace(['{', '}'], ['(', ')'], implode('; ', $node['names'])) . ' }';
     }
 
-    /** "1. e4 c5 2. Nf3" → ['e4', 'c5', 'Nf3']. */
+    /**
+     * "1. e4 c5 2. Nf3" → ['e4', 'c5', 'Nf3'].
+     *
+     * @return list<string>
+     */
     private static function sans(string $pgn): array
     {
         $sans = [];

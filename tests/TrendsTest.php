@@ -6,7 +6,12 @@ use PHPUnit\Framework\TestCase;
 
 final class TrendsTest extends TestCase
 {
-    /** YearStats::forOpening()-shaped years from shares, 2016 on; the last one partial when $lastMonths < 12. */
+    /**
+     * YearStats::forOpening()-shaped years from shares, 2016 on; the last one partial when $lastMonths < 12.
+     *
+     * @param array<int, float> $shares
+     * @return array<int, array{games: int, share: float, white: int, draws: int, black: int, months: int}>
+     */
     private static function years(array $shares, int $lastMonths = 12): array
     {
         $years = [];

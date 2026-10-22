@@ -160,7 +160,11 @@ function seed_openings_count(PDO $pdo): int
     return (int) $pdo->query('SELECT COUNT(*) FROM codex_openings')->fetchColumn();
 }
 
-/** The FEN after the moves and the moves in UCI ("e2e4 c7c5"); [null, ''] when a move is illegal. */
+/**
+ * The FEN after the moves and the moves in UCI ("e2e4 c7c5"); [null, ''] when a move is illegal.
+ *
+ * @return array{0: string|null, 1: string}
+ */
 function seed_play(string $pgn): array
 {
     $chess = new Chess();

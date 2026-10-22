@@ -4,11 +4,11 @@
  * whole sub-variation tree of an opening page.
  * Included by templates/opening.php, in its scope (all its variables).
  *
- * @var array      $o
- * @var array|null $parent
- * @var array      $children
+ * @var array<string, mixed> $o
+ * @var array<string, mixed>|null $parent
+ * @var list<array<string, mixed>> $children
  * @var int        $descendantCount
- * @var array      $trans            Opening::transpositions()
+ * @var array{from: list<array{0: array<string, mixed>, 1: string}>, to: list<array{0: array<string, mixed>, 1: string}>} $trans         Opening::transpositions()
  * @var int        $plies
  * @var string     $baseUrl
  * @var string     $baseEsc

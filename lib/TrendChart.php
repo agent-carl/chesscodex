@@ -15,6 +15,8 @@ final class TrendChart
      * One line's share of games by year, with the numbers in a table under it.
      * $years: YearStats::forOpening(); a year of fewer than 12 months (the
      * last) is drawn as provisional. $label names the chart for screen readers.
+     *
+     * @param array<int, array{games: int, white: int, draws: int, black: int, months: int, share: float}> $years
      */
     public static function years(array $years, string $label): string
     {
@@ -124,6 +126,8 @@ final class TrendChart
      * The y scale for shares up to $max: the top (a share, with room above the
      * highest point for its value) and the gridlines as [percent of the plot
      * height, label], three to five of them on round numbers.
+     *
+     * @return array{0: float, 1: list<array{0: float, 1: string}>}
      */
     private static function scale(float $max): array
     {

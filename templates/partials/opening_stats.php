@@ -4,11 +4,11 @@
  * next moves (second column beside the board on a wide screen).
  * Included by templates/opening.php, in its scope (all its variables).
  *
- * @var array      $o
+ * @var array<string, mixed> $o
  * @var int        $plies       the line's length in plies
- * @var array|null $stats       cached Lichess numbers
+ * @var array<string, mixed>|null $stats       cached Lichess numbers
  * @var int        $statsTotal  games in them
- * @var array      $statsRows   the next moves
+ * @var list<array{0: string, 1: int, 2: string, 3: string, 4: string}> $statsRows   the next moves
  * @var string     $wPct
  * @var string     $dPct
  * @var string     $bPct

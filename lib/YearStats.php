@@ -38,6 +38,8 @@ final class YearStats
      * and stores it by year, counting no month after $lastMonth ('Y-m', '' =
      * all). Returns the last month in the answer: the explorer runs months
      * behind, and a line fetched later must not count months the totals lack.
+     *
+     * @param list<string> $uciMoves
      */
     public static function fetchAndStore(int $openingId, array $uciMoves, string $lastMonth = ''): string
     {
@@ -90,6 +92,8 @@ final class YearStats
      * year => ['games', 'share' (0–1), 'white', 'draws', 'black', 'months'] from
      * FIRST_YEAR on, for one line; [] without numbers. A year counts only when
      * the line and every game cover the same months of it.
+     *
+     * @return array<int, array{games: int, white: int, draws: int, black: int, months: int, share: float}>
      */
     public static function forOpening(int $openingId): array
     {
@@ -106,6 +110,8 @@ final class YearStats
     /**
      * opening_id => [year => share] of the full years from FIRST_YEAR on, for
      * every line with numbers by year (one query; the rankings use it).
+     *
+     * @return array<int, array<int, float>>
      */
     public static function allShares(): array
     {
@@ -128,7 +134,11 @@ final class YearStats
         return $out;
     }
 
-    /** opening_id => the day its numbers by year were fetched ('Y-m-d'), for the sitemap. */
+    /**
+     * opening_id => the day its numbers by year were fetched ('Y-m-d'), for the sitemap.
+     *
+     * @return array<int, string>
+     */
     public static function fetchedDates(): array
     {
         try {
@@ -181,6 +191,8 @@ final class YearStats
      * full year, with its peak when that stands out; null without every full
      * year from FIRST_YEAR on. $subject starts the sentence ("The Caro-Kann
      * Defense", "This line"). Plain text.
+     *
+     * @param array<int, array{games: int, white: int, draws: int, black: int, months: int, share: float}> $years
      */
     public static function sentence(array $years, string $subject): ?string
     {
@@ -238,7 +250,11 @@ final class YearStats
         }
     }
 
-    /** year => ['games', 'white', 'draws', 'black', 'months'] for one opening id, as stored. */
+    /**
+     * year => ['games', 'white', 'draws', 'black', 'months'] for one opening id, as stored.
+     *
+     * @return array<int, array{games: int, white: int, draws: int, black: int, months: int}>
+     */
     private static function rows(int $openingId): array
     {
         static $memo = [];

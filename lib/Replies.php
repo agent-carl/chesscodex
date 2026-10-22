@@ -15,6 +15,9 @@ final class Replies
      * The main replies, most played first, each with san, games and the
      * percentages for the side to move: win, loss and score (wins plus half
      * the draws). Empty when fewer than two qualify: one reply is no choice.
+     *
+     * @param list<array<string, mixed>> $topMoves
+     * @return list<array{san: string, games: int, win: float, loss: float, score: float}>
      */
     public static function main(array $topMoves, int $total, bool $whiteToMove): array
     {
@@ -35,7 +38,12 @@ final class Replies
         return count($rows) >= 2 ? $rows : [];
     }
 
-    /** [most played, highest score, lowest score] of main()'s rows; a tie goes to the more played reply. */
+    /**
+     * [most played, highest score, lowest score] of main()'s rows; a tie goes to the more played reply.
+     *
+     * @param list<array{san: string, games: int, win: float, loss: float, score: float}> $main
+     * @return list<array{san: string, games: int, win: float, loss: float, score: float}>
+     */
     public static function picks(array $main): array
     {
         [$best, $worst] = [$main[0], $main[0]];
@@ -52,6 +60,8 @@ final class Replies
      * scores lowest, then Stockfish's first choice ($engineSan). $moveNo is
      * "3…" or "4. "; $lineOf(san) gives the named line a reply leads to as
      * [name, url], or null.
+     *
+     * @param list<array{san: string, games: int, win: float, loss: float, score: float}> $main
      */
     public static function html(array $main, bool $whiteToMove, string $moveNo, callable $lineOf, ?string $engineSan): string
     {

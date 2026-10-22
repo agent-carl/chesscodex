@@ -19,10 +19,22 @@ final class Logger
     public const LEVEL_WARN  = 'warn';
     public const LEVEL_ERROR = 'error';
 
+    /**
+     * @param array<string, mixed> $ctx
+     */
     public static function info(string $event, array $ctx = []): void  { self::write(self::LEVEL_INFO,  $event, $ctx); }
+    /**
+     * @param array<string, mixed> $ctx
+     */
     public static function warn(string $event, array $ctx = []): void  { self::write(self::LEVEL_WARN,  $event, $ctx); }
+    /**
+     * @param array<string, mixed> $ctx
+     */
     public static function error(string $event, array $ctx = []): void { self::write(self::LEVEL_ERROR, $event, $ctx); }
 
+    /**
+     * @param array<string, mixed> $ctx
+     */
     private static function write(string $level, string $event, array $ctx): void
     {
         try {

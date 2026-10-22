@@ -58,6 +58,9 @@ final class LichessExplorer
     /**
      * Results only (no moves or games) in rated blitz, rapid and classical
      * games of one Lichess rating band, e.g. '1400,1600' for 1400–1799.
+     *
+     * @param list<string> $uciMoves
+     * @return array<string, mixed>
      */
     public static function fetchRatings(array $uciMoves, string $ratings, bool $wait = false): array
     {
@@ -72,7 +75,12 @@ final class LichessExplorer
         ], $wait);
     }
 
-    /** Results and the $topGames best-known games from the masters database (over the board, 2200+). */
+    /**
+     * Results and the $topGames best-known games from the masters database (over the board, 2200+).
+     *
+     * @param list<string> $uciMoves
+     * @return array<string, mixed>
+     */
     public static function fetchMasters(array $uciMoves, int $topGames, bool $wait = false): array
     {
         return self::request(self::MASTERS, [
@@ -86,6 +94,9 @@ final class LichessExplorer
      * Results with their month-by-month history ('history': [{month: 'Y-m',
      * white, draws, black}, …]) in the games fetch() counts; [] moves = every
      * game. For tools/fetch-years.php, which waits longer than a page would.
+     *
+     * @param list<string> $uciMoves
+     * @return array<string, mixed>
      */
     public static function fetchHistory(array $uciMoves): array
     {
@@ -101,7 +112,12 @@ final class LichessExplorer
         ], true, 20);
     }
 
-    /** One explorer request under the lock; the decoded JSON. */
+    /**
+     * One explorer request under the lock; the decoded JSON.
+     *
+     * @param array<string, int|string> $params
+     * @return array<string, mixed>
+     */
     private static function request(string $endpoint, array $params, bool $wait, int $timeout = self::TIMEOUT_S): array
     {
         $token = self::token();

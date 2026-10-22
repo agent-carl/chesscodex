@@ -5,6 +5,8 @@ declare(strict_types=1);
  * A UI string from lib/lang/en.php by key, with {placeholder} substitution:
  * t('error.500.title'), t('some.key', ['n' => 3]). An unknown key comes back
  * as itself.
+ *
+ * @param array<string, int|string> $replace
  */
 function t(string $key, array $replace = []): string
 {
