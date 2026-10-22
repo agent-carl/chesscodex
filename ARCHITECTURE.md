@@ -45,6 +45,14 @@ PHP classes are loaded by Composer's autoloader (`lib/<Class>.php`, with
 libraries (Parsedown, p-chess/chess) come from `composer.lock`, and the server
 gets them without the development tools.
 
+The opening data is split by concern: `OpeningRows` (rows by slug, id and ECO
+code), `OpeningTree` (parent chain, children, sister lines, continuations,
+transpositions), `OpeningNames` (what to call a line: same-name tails, family,
+aliases, moves numbered), `OpeningSearch` (by moves, position and name),
+`OpeningLists` (the browse indexes), `CuratedLists` (the homepage's picks) and
+`Indexing` (which pages are indexed). `Opening` keeps every old method name as
+a pass-through to them, so pages, tools and tests call `Opening::…` as before.
+
 ## Data flow for /openings/<slug>
 
 The opening page is the most complex template. Order of operations:
@@ -56,8 +64,11 @@ The opening page is the most complex template. Order of operations:
    - `Opening::siblings($id, $parentId)` — other children of the same parent
    - `Opening::descendantCount($id)` — recursive count for the "Show all" label
    - `Opening::descendants($id)` — inlined IF count ≤ 50, else lazy via /api/subtree
+   - `OpeningPage::build(...)` — everything the page prints worked out from
+     those rows: title, meta description, overview, statistics, breadcrumb,
+     answers, popularity by year, JSON-LD
 
-2. **templates/opening.php** assembles the article HTML:
+2. **templates/opening.php** prints them as the article HTML (markup only):
    - Breadcrumb from `$ancestors` (each name once, shortened by the one before)
    - Board with Start / ‹ / › / Flip (the `og.php` diagram sits in `#board`
      as its still picture until chessground mounts); beside it the moves and

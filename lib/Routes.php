@@ -390,6 +390,7 @@ final class Routes
         $descendants     = ($descendantCount > 0 && $descendantCount <= 50)
             ? Opening::descendants((int) $opening['id'])
             : [];
+        $page = OpeningPage::build($opening, $parent, $children, $ancestors, $descendantCount, $baseUrl, $siteUrl);
         require __DIR__ . '/../templates/opening.php';
     }
 
