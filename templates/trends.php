@@ -108,7 +108,7 @@ ob_start();
     </p>
 </article>
 <?php if ($ready): ?>
-<script defer src="<?= $baseEsc ?>/public/charts.min.js?v=<?= @filemtime(__DIR__ . '/../public/charts.min.js') ?: 1 ?>"></script>
+<script type="module" src="<?= $baseEsc ?>/public/charts.min.js?v=<?= @filemtime(__DIR__ . '/../public/charts.min.js') ?: 1 ?>"></script>
 <?php endif;
 $body        = ob_get_clean();
 $title       = 'Chess Opening Trends' . ($ready ? " {$from}–{$to}" : '') . ': Rising and Falling Openings';

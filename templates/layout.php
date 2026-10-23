@@ -137,7 +137,7 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
              An external file, not inline, so the CSP can forbid inline scripts. */ ?>
     <script src="<?= $asset('/public/theme.min.js') ?>" data-base="<?= $baseEsc ?>"></script>
     <?php /* Name search suggestions and the "/" shortcut, on every page. */ ?>
-    <script defer src="<?= $asset('/public/site.min.js') ?>" data-base="<?= $baseEsc ?>"></script>
+    <script type="module" src="<?= $asset('/public/site.min.js') ?>" data-base="<?= $baseEsc ?>"></script>
     <?php /* Render-blocking on purpose: loading it async let the page paint
              half-styled and then reflow (PageSpeed CLS 0.72 on mobile). Being
              blocking, it made an inlined "critical CSS" block pointless: every

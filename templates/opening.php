@@ -297,9 +297,9 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
     <ul class="recent-strip-list" id="recent-strip-list"></ul>
 </aside>
 
-<script defer src="<?= $baseEsc ?>/public/opening.min.js?v=<?= @filemtime(__DIR__ . '/../public/opening.min.js') ?: 1 ?>"></script>
+<script type="module" src="<?= $baseEsc ?>/public/opening.min.js?v=<?= @filemtime(__DIR__ . '/../public/opening.min.js') ?: 1 ?>"></script>
 <?php if ($yearsSentence !== null): ?>
-<script defer src="<?= $baseEsc ?>/public/charts.min.js?v=<?= @filemtime(__DIR__ . '/../public/charts.min.js') ?: 1 ?>"></script>
+<script type="module" src="<?= $baseEsc ?>/public/charts.min.js?v=<?= @filemtime(__DIR__ . '/../public/charts.min.js') ?: 1 ?>"></script>
 <?php endif; ?>
 
 <script type="application/json" id="opening-data">

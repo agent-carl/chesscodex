@@ -1,5 +1,6 @@
 import { Chess } from '../vendor/chess.min.js';
 import { Chessground } from '../vendor/chessground.min.js';
+import { plain, label } from './lib/helpers.js';
 
 // Opening trainer (/train/<slug>): the user plays one side of a line, the
 // other side's moves are played for them. Lines come from the page (this
@@ -59,8 +60,6 @@ if (node) {
     }
 
     const sansOf = (pgn) => { const c = new Chess(); c.load_pgn(pgn, { sloppy: true }); return c.history(); };
-    const plain = (san) => san.replace(/[+#?!]/g, '');
-    const label = (ply, san) => (Math.floor(ply / 2) + 1) + (ply % 2 === 0 ? '. ' : '…') + san;
     const status = (text) => { $('train-status').textContent = text; };
 
     const chess = new Chess();

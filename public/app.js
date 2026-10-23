@@ -1,5 +1,6 @@
 import { Chess } from '../vendor/chess.min.js';
 import { Chessground } from '../vendor/chessground.min.js';
+import { moveNoOf, updatedLabel, barLabel, compactCount } from './lib/helpers.js';
 
 // ----------------------------------------------------------------------
 // Recently viewed openings — passive browser-history-style log of the
@@ -375,7 +376,6 @@ if (!dataNode) {
     let explore = null;   // { base, chess }
     const exploreEl = document.getElementById('board-explore');
     let exploreLookup = 0;
-    const moveNoOf = (ply) => Math.floor(ply / 2) + 1 + (ply % 2 === 0 ? '. ' : '… ');
 
     function renderExplore() {
         const c = explore.chess;
@@ -620,12 +620,6 @@ if (!dataNode) {
     }
 }
 
-// "Sep 25, 2026" from the cache's "2026-09-25 19:55:16".
-function updatedLabel(at) {
-    const d = at ? new Date(String(at).replace(' ', 'T')) : null;
-    return d && !isNaN(d) ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-}
-
 // The server derives the moves from the opening id. It fetches from Lichess
 // one request at a time and answers 503 + Retry-After while another one is
 // in flight, so retry a couple of times before giving up.
@@ -731,20 +725,6 @@ function renderStats(rootEl, data) {
     const attribution = rootEl.querySelector('.stats-attribution');
     rootEl.querySelector('.stats-cached-at').textContent = updatedLabel(data.cached_at);
     attribution.hidden = false;
-}
-
-// Text alternative for a white/draw/black bar (same wording as the PHP side).
-function barLabel(w, d, b) {
-    return `White ${w.toFixed(1)}%, Draw ${d.toFixed(1)}%, Black ${b.toFixed(1)}%`;
-}
-
-// 209,140,943 → "209.1M" (same thresholds as Rankings::compact in PHP).
-function compactCount(n) {
-    const one = (x) => String(Number(x.toFixed(1)));
-    if (n >= 999950000) return one(n / 1e9) + 'B';
-    if (n >= 999500) return one(n / 1e6) + 'M';
-    if (n >= 10000) return Math.round(n / 1000) + 'K';
-    return n.toLocaleString('en-US');
 }
 
 function renderStatsError(rootEl, message) {

@@ -6,6 +6,9 @@
 # and `npm ci`.
 #
 #   bash tools/check.sh
+#
+# Browser tests (puppeteer-core driving Edge; need the local site, so not run here):
+#   SMOKE_BASE=http://127.0.0.1:8099 npm run test:e2e
 set -uo pipefail
 cd "$(dirname "$0")/.."
 fail=0

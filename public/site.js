@@ -7,19 +7,15 @@
  * suggestion; with none highlighted, moves ("1.e4 e5", "e4 c5 Nf3") go to
  * the identifier on /search and a name goes to its first suggestion.
  */
+import { looksLikeMoves, movesLabel } from './lib/helpers.js';
+
 (function () {
-    const script = document.currentScript;
+    // Every page script carries the same data-base; a module has no document.currentScript.
+    const script = document.querySelector('script[data-base]');
     const base = (script && script.dataset.base) || '';
     const apiUrl = base + '/api/search';
     const openingPath = base + '/openings/';
     const searchPath = base + '/search';
-
-    // SAN moves, optionally numbered: the whole query has to be made of them.
-    const MOVE = '(?:\\d+\\.+\\s*)?(?:O-O(?:-O)?|0-0(?:-0)?|[KQRBNkqrn]?[a-h]?[1-8]?x?[a-h][1-8](?:=[QRBNqrbn])?)[+#]?';
-    const MOVES_RE = new RegExp('^\\s*' + MOVE + '(?:\\s+' + MOVE + ')*\\s*$');
-    const looksLikeMoves = function (q) { return /\d|^[a-h][1-8]\b/.test(q) && MOVES_RE.test(q); };
-
-    const movesLabel = function (plies) { const n = Math.ceil(plies / 2); return n === 1 ? '1 move' : n + ' moves'; };
 
     function setUp(input) {
         const list = document.getElementById(input.dataset.nameSearch);

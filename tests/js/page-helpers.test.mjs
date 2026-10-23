@@ -1,9 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { helper } from './extract.mjs';
+import { guessCastling, sanTokens, tryMove, looksLikeMoves, shortName, movesLabel, fold, norm, gamePgn, plain, label, moveNoOf } from '../../public/lib/helpers.js';
 
-test('search.js guessCastling: rights follow king and rook on their first squares', () => {
-  const guessCastling = helper('search.js', 'guessCastling');
+test('guessCastling: rights follow king and rook on their first squares', () => {
   assert.equal(guessCastling('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'), 'KQkq');
   assert.equal(guessCastling('r3k2r/8/8/8/8/8/8/R3K2R'), 'KQkq');
   assert.equal(guessCastling('r3k3/8/8/8/8/8/8/4K2R'), 'Kq');
@@ -12,10 +11,8 @@ test('search.js guessCastling: rights follow king and rook on their first square
   assert.equal(guessCastling('rnbq1bnr/pppkpppp/8/8/8/8/PPPPPPPP/RNBQKBNR'), 'KQ', 'king moved off e8');
 });
 
-const LOOK = ['LOOKALIKES', 'RU_PIECES'];
 
-test('search.js sanTokens: PGN furniture is removed, only moves stay', () => {
-  const sanTokens = helper('search.js', 'sanTokens', LOOK);
+test('sanTokens: PGN furniture is removed, only moves stay', () => {
   assert.deepEqual(sanTokens('1. e4 e5 2. Nf3 Nc6'), ['e4', 'e5', 'Nf3', 'Nc6']);
   assert.deepEqual(sanTokens('1.e4 e5 2.Nf3'), ['e4', 'e5', 'Nf3']);
   assert.deepEqual(sanTokens('1. e4 {best by test} e5 (1... c5 (1... e6) 2. Nf3) 2. Nf3 $1 *'), ['e4', 'e5', 'Nf3']);
@@ -29,8 +26,7 @@ test('search.js sanTokens: PGN furniture is removed, only moves stay', () => {
   assert.deepEqual(sanTokens('   \n  '), []);
 });
 
-test('search.js sanTokens: zero castling and Russian notation', () => {
-  const sanTokens = helper('search.js', 'sanTokens', LOOK);
+test('sanTokens: zero castling and Russian notation', () => {
   assert.deepEqual(sanTokens('0-0 0-0-0'), ['O-O', 'O-O-O']);
   assert.deepEqual(sanTokens('0-0+'), ['O-O+']);
   // Cyrillic lookalikes for files and "x"; Russian piece letters at the start of a move.
@@ -40,8 +36,7 @@ test('search.js sanTokens: zero castling and Russian notation', () => {
   assert.deepEqual(sanTokens('О-О'), ['O-O']);
 });
 
-test('opening.js shortName: the part of the name after the parent\'s name', () => {
-  const shortName = helper('opening.js', 'shortName');
+test('shortName: the part of the name after the parent\'s name', () => {
   assert.equal(shortName('Sicilian Defense: Najdorf Variation', 'Sicilian Defense'), 'Najdorf Variation');
   assert.equal(shortName('Sicilian Defense: Najdorf Variation, English Attack', 'Sicilian Defense: Najdorf Variation'), 'English Attack');
   assert.equal(shortName('Vienna Gambit, with Max Lange Defense', 'Vienna Gambit'), 'with Max Lange Defense');
@@ -53,8 +48,7 @@ test('opening.js shortName: the part of the name after the parent\'s name', () =
   assert.equal(shortName('Sicilian Defense Extra: X', 'Sicilian Defense'), 'Sicilian Defense Extra: X', 'a longer word is not the parent');
 });
 
-test('opening.js movesLabel: plies to full moves, same as Opening::movesLabel in PHP', () => {
-  const movesLabel = helper('opening.js', 'movesLabel');
+test('movesLabel: plies to full moves, same as Opening::movesLabel in PHP', () => {
   assert.equal(movesLabel(0), '0 moves');
   assert.equal(movesLabel(1), '1 move');
   assert.equal(movesLabel(2), '1 move');
@@ -62,33 +56,28 @@ test('opening.js movesLabel: plies to full moves, same as Opening::movesLabel in
   assert.equal(movesLabel(20), '10 moves');
 });
 
-test('opening.js fold: accents and apostrophes gone, lower case', () => {
-  const fold = helper('opening.js', 'fold');
+test('fold: accents and apostrophes gone, lower case', () => {
   assert.equal(fold("Queen's Gambit"), 'queens gambit');
   assert.equal(fold('Queen’s Gambit'), 'queens gambit');
   assert.equal(fold('Grünfeld Défense'), 'grunfeld defense');
   assert.equal(fold(''), '');
 });
 
-test('gambits.js norm: lower case, accents folded, punctuation to single spaces', () => {
-  const norm = helper('gambits.js', 'norm');
+test('norm: lower case, accents folded, punctuation to single spaces', () => {
   assert.equal(norm('Grünfeld Defense: Lutikov Gambit (D80)'), 'grunfeld defense lutikov gambit d80');
   assert.equal(norm("  King's   Gambit  "), 'king s gambit');
   assert.equal(norm('---'), '');
   assert.equal(norm(''), '');
 });
 
-test('play.js gamePgn: move numbers before White\'s moves only', () => {
-  const gamePgn = helper('play.js', 'gamePgn');
+test('gamePgn: move numbers before White\'s moves only', () => {
   assert.equal(gamePgn([]), '');
   assert.equal(gamePgn(['e4']), '1. e4');
   assert.equal(gamePgn(['e4', 'e5', 'Nf3']), '1. e4 e5 2. Nf3');
   assert.equal(gamePgn(['e4', 'e5', 'Nf3', 'Nc6']), '1. e4 e5 2. Nf3 Nc6');
 });
 
-test('train.js plain and label', () => {
-  const plain = helper('train.js', 'plain');
-  const label = helper('train.js', 'label');
+test('plain and label', () => {
   assert.equal(plain('Nf3+'), 'Nf3');
   assert.equal(plain('Qxf7#'), 'Qxf7');
   assert.equal(plain('e4!?'), 'e4');
@@ -99,10 +88,31 @@ test('train.js plain and label', () => {
   assert.equal(label(5, 'Bc5'), '3…Bc5');
 });
 
-test('app.js moveNoOf: "3. " for White, "3… " for Black', () => {
-  const moveNoOf = helper('app.js', 'moveNoOf');
+test('moveNoOf: "3. " for White, "3… " for Black', () => {
   assert.equal(moveNoOf(0), '1. ');
   assert.equal(moveNoOf(1), '1… ');
   assert.equal(moveNoOf(4), '3. ');
   assert.equal(moveNoOf(5), '3… ');
+});
+
+test('looksLikeMoves: only whole queries made of SAN moves count', () => {
+  assert.equal(looksLikeMoves('e4 c5 Nf3 d6'), true);
+  assert.equal(looksLikeMoves('1.e4 e5 2.Nf3'), true);
+  assert.equal(looksLikeMoves('e4'), true);
+  assert.equal(looksLikeMoves('1. e4'), true);
+  assert.equal(looksLikeMoves('O-O-O'), false, 'no digit or square to start from');
+  assert.equal(looksLikeMoves('najdorf'), false);
+  assert.equal(looksLikeMoves('sicilian 1.e4'), false);
+  assert.equal(looksLikeMoves('b4'), true);
+});
+
+test('tryMove: lower-case piece letters work, "b" first as a pawn move', async () => {
+  const { Chess } = await import('../../vendor/chess.min.js');
+  const c = new Chess();
+  assert.equal(tryMove(c, 'e4').san, 'e4');
+  assert.equal(tryMove(c, 'e5').san, 'e5');
+  assert.equal(tryMove(c, 'nf3').san, 'Nf3');
+  assert.equal(tryMove(c, 'nc6').san, 'Nc6');
+  assert.equal(tryMove(c, 'bb5').san, 'Bb5');
+  assert.equal(tryMove(c, 'Ke4'), null);
 });

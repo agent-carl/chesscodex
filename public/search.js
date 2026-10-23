@@ -1,5 +1,6 @@
 import { Chess } from '../vendor/chess.min.js';
 import { Chessground } from '../vendor/chessground.min.js';
+import { sanTokens, tryMove, guessCastling } from './lib/helpers.js';
 
 const dataNode = document.getElementById('search-data');
 if (dataNode) {
@@ -230,38 +231,6 @@ if (dataNode) {
         pasteStatus.hidden = text === '';
     }
 
-    // Russian move text: Cyrillic letters that look like Latin files and
-    // signs ("е4", "с5", "exd5" with "х", "О-О"), and the Russian piece
-    // letters at the start of a move — Кр king, К knight, Ф queen, Л rook,
-    // С bishop ("Кf3" is Nf3).
-    const LOOKALIKES = { 'а': 'a', 'е': 'e', 'с': 'c', 'х': 'x', 'О': 'O' };
-    const RU_PIECES = [[/^Кр/, 'K'], [/^К/, 'N'], [/^Ф/, 'Q'], [/^Л/, 'R'], [/^С/, 'B']];
-
-    // Move text or a PGN → its moves: headers, comments, variations, move
-    // numbers, NAGs, annotations and the result go.
-    function sanTokens(text) {
-        let t = text
-            .replace(/\[[^\]]*\]/g, ' ')
-            .replace(/\{[^}]*\}/g, ' ')
-            .replace(/;[^\n]*/g, ' ')
-            .replace(/\$\d+/g, ' ');
-        let prev;
-        do { prev = t; t = t.replace(/\([^()]*\)/g, ' '); } while (t !== prev);
-        return t.split(/\s+/)
-            .map((tok) => tok.replace(/^\d+\.+/, ''))
-            .map((tok) => RU_PIECES.reduce((m, [re, to]) => m.replace(re, to), tok).replace(/[аесхО]/g, (ch) => LOOKALIKES[ch]))
-            .map((tok) => tok.replace(/[!?]+$/, '').replace(/^0-0(-0)?/, (m) => m.replace(/0/g, 'O')))
-            .filter((tok) => tok !== '' && !/^(1-0|0-1|1\/2-1\/2|½-½|\*)$/.test(tok));
-    }
-
-    // One move, also in lower case ("nf3", "qxd4"). "b…" is tried as a pawn
-    // move first, then as a bishop move.
-    function tryMove(c, tok) {
-        const m = c.move(tok, { sloppy: true });
-        if (m || !/^[nbrqk]/.test(tok)) return m;
-        return c.move(tok[0].toUpperCase() + tok.slice(1), { sloppy: true });
-    }
-
     function loadMoves(text) {
         if (/\[\s*(FEN|SetUp)\s/i.test(text)) {
             showPasteStatus('Only games from the standard starting position can be identified.');
@@ -351,20 +320,6 @@ if (dataNode) {
             movable: { color: turnColor(chess), dests: legalDests(chess) },
             lastMove: undefined,
         });
-    }
-
-    // Castling rights for a bare piece placement: a side keeps them while its
-    // king and that rook stand on their first squares — true in almost every
-    // opening position, where the named lines are stored with them.
-    function guessCastling(placement) {
-        const rows = placement.split('/').map((r) => r.replace(/\d/g, (n) => '.'.repeat(Number(n))));
-        const [top, bottom] = [rows[0], rows[7]];
-        let c = '';
-        if (bottom[4] === 'K' && bottom[7] === 'R') c += 'K';
-        if (bottom[4] === 'K' && bottom[0] === 'R') c += 'Q';
-        if (top[4] === 'k' && top[7] === 'r') c += 'k';
-        if (top[4] === 'k' && top[0] === 'r') c += 'q';
-        return c || '-';
     }
 
     const fenForm = document.getElementById('search-fen-form');

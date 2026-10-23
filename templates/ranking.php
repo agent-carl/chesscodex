@@ -357,7 +357,7 @@ ob_start();
         </section>
         <?php endforeach; ?>
     </section>
-    <script defer src="<?= $baseEsc ?>/public/gambits.min.js?v=<?= @filemtime(__DIR__ . '/../public/gambits.min.js') ?: 1 ?>"></script>
+    <script type="module" src="<?= $baseEsc ?>/public/gambits.min.js?v=<?= @filemtime(__DIR__ . '/../public/gambits.min.js') ?: 1 ?>"></script>
     <?php endif; ?>
 </article>
 <?php
