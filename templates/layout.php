@@ -193,7 +193,7 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
             $navAria = static fn (string $route): string =>
                 $navPath === $route ? ' aria-current="page"' : '';
             ?>
-            <nav class="site-nav">
+            <nav class="site-nav" aria-label="Main">
                 <a href="<?= $baseEsc . $esc('/openings') ?>"<?= $navAria('/openings') ?>>Openings</a>
                 <a href="<?= $baseEsc . $esc('/eco') ?>" title="Openings by ECO code"<?= $navAria('/eco') ?>>ECO</a>
                 <a href="<?= $baseEsc . $esc('/rankings') ?>"<?= $navAria('/rankings') ?>>Rankings</a>

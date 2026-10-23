@@ -131,6 +131,10 @@ p a:not([class]),
     text-decoration-thickness: 1px;
     text-underline-offset: 2px;
 }
+/* The same for links inside a line of other text (credits, about lists): the
+   text beside them is the same weight, so colour alone cannot tell them apart. */
+.about-section li a:not([class]),
+.footer-credit a { text-decoration: underline; }
 
 /* Focus */
 /* Keyboard focus: a visible ring on tab navigation, none on mouse click. */
