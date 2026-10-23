@@ -10,6 +10,20 @@ final class Submissions
     /** Starts the text of a problem report (the suggest form's "A mistake on this page"). */
     public const REPORT_MARK = '[report] ';
 
+    /** At most this many suggestions still pending from the last 24 hours, from everyone together (/api/suggest answers 429). */
+    public const DAILY_CAP = 50;
+
+    /** Authors' IP addresses are kept this long, for spotting abuse, then erased. */
+    public const IP_KEEP_DAYS = 30;
+
+    /** How many suggestions made since $since ('Y-m-d H:i:s') still wait for review. */
+    public static function pendingSince(string $since): int
+    {
+        $stmt = chess_codex_db()->prepare("SELECT COUNT(*) FROM codex_submissions WHERE status = 'pending' AND created_at >= :s");
+        $stmt->execute(['s' => $since]);
+        return (int) $stmt->fetchColumn();
+    }
+
     public static function create(
         int $openingId,
         ?string $authorName,
@@ -17,6 +31,9 @@ final class Submissions
         string $markdown,
         ?string $ip = null
     ): int {
+        chess_codex_db()->prepare(
+            'UPDATE codex_submissions SET ip_address = NULL WHERE ip_address IS NOT NULL AND created_at < :cut'
+        )->execute(['cut' => date('Y-m-d H:i:s', time() - self::IP_KEEP_DAYS * 86400)]);
         $stmt = chess_codex_db()->prepare(
             "INSERT INTO codex_submissions
                 (opening_id, author_name, author_email, markdown, status, created_at, ip_address)

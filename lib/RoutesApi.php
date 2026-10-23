@@ -39,7 +39,8 @@ trait RoutesApi
 
         $fen = (string) ($_GET['fen'] ?? '');
         if ($fen !== '') {
-            if (!preg_match('#^[a-zA-Z0-9/]+ [wb] [-KQkq]+ [-a-h0-9]+( \d+ \d+)?$#', $fen)) {
+            // The longest legal FEN is under 100 characters.
+            if (strlen($fen) > 100 || !preg_match('#^[a-zA-Z0-9/]+ [wb] [-KQkq]+ [-a-h0-9]+( \d+ \d+)?$#', $fen)) {
                 http_response_code(400);
                 echo json_encode(['error' => 'Invalid FEN parameter']);
                 return;
@@ -191,6 +192,18 @@ trait RoutesApi
         if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'POST only']);
+            return;
+        }
+        // Only the site's own form: browsers mark a post from another site, so a
+        // hidden form elsewhere can't fill the queue from its visitors' IPs.
+        if (($_SERVER['HTTP_SEC_FETCH_SITE'] ?? 'same-origin') !== 'same-origin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Please use the form on the opening page.']);
+            return;
+        }
+        if (Submissions::pendingSince(date('Y-m-d H:i:s', time() - 86400)) >= Submissions::DAILY_CAP) {
+            http_response_code(429);
+            echo json_encode(['error' => 'Too many suggestions today. Please try again tomorrow.']);
             return;
         }
 

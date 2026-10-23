@@ -126,10 +126,10 @@ $baseEsc = htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8');
 </article>
 
 <script type="application/json" id="search-data">
-<?= htmlspecialchars(json_encode([
+<?= json_encode([
     'searchApiUrl'   => $baseUrl . '/api/search',
     'openingPathFmt' => $baseUrl . '/openings/{slug}',
-], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR), ENT_NOQUOTES, 'UTF-8') ?>
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_THROW_ON_ERROR) ?>
 </script>
 <script type="module" src="<?= $baseEsc ?>/public/search.min.js?v=<?= @filemtime(__DIR__ . '/../public/search.min.js') ?: 1 ?>"></script>
 <?php

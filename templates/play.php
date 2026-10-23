@@ -119,7 +119,7 @@ $island = [
 </article>
 
 <script type="application/json" id="play-data">
-<?= htmlspecialchars(json_encode($island, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR), ENT_NOQUOTES, 'UTF-8') ?>
+<?= json_encode($island, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_THROW_ON_ERROR) ?>
 </script>
 <script type="module" src="<?= $baseEsc ?>/public/play.min.js?v=<?= @filemtime(__DIR__ . '/../public/play.min.js') ?: 1 ?>"></script>
 <?php

@@ -90,7 +90,7 @@ ob_start();
         </p>
     </section>
 </article>
-<script type="application/json" id="train-data"><?= htmlspecialchars(json_encode($island, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR), ENT_NOQUOTES, 'UTF-8') ?></script>
+<script type="application/json" id="train-data"><?= json_encode($island, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_THROW_ON_ERROR) ?></script>
 <script type="module" src="<?= $baseEsc ?>/public/train.min.js?v=<?= @filemtime(__DIR__ . '/../public/train.min.js') ?: 1 ?>"></script>
 <?php
 $body       = ob_get_clean();

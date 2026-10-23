@@ -43,10 +43,11 @@ if (isset($_COOKIE['codex_admin'])) {
 
 // Pages anonymous visitors see may be kept by Cloudflare for 10 minutes, and
 // served from its cache for up to a day if the server can't answer. Browsers
-// still check back every time (max-age=0). Admins, the admin area, errors
+// still check back every time (max-age=0). Anyone with the admin cookie (a
+// session was started above, even for a made-up one), the admin area, errors
 // and anything but GET/HEAD send no such header, so they're never cached.
 $pagePath = chess_codex_request_path();
-if (!headers_sent() && $adminPending === null
+if (!headers_sent() && !isset($_COOKIE['codex_admin'])
     && in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)
     && in_array(http_response_code(), [200, 404], true)
     && !preg_match('#^' . preg_quote($baseUrl, '#') . '/admin(/|$)#', $pagePath)) {

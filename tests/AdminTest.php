@@ -33,9 +33,10 @@ final class AdminTest extends TestCase
 
     /**
      * @param array<string, string|list<string>>|null $fields
+     * @param list<string> $headers extra request headers ("Name: value")
      * @return array{0: int, 1: string, 2: string} status, body, Location header
      */
-    private function request(string $path, ?array $fields = null): array
+    private function request(string $path, ?array $fields = null, array $headers = []): array
     {
         $ch = curl_init($this->base . $path);
         /** @var array<int, mixed> $options */
@@ -47,6 +48,7 @@ final class AdminTest extends TestCase
             CURLOPT_COOKIEJAR      => $this->jar,
             CURLOPT_COOKIEFILE     => $this->jar,
             CURLOPT_HEADER         => true,
+            CURLOPT_HTTPHEADER     => $headers,
         ];
         if ($fields !== null) {
             $options[CURLOPT_POST]       = true;
@@ -132,6 +134,12 @@ final class AdminTest extends TestCase
         foreach (['accept', 'reject', 'bulk-accept', 'bulk-reject'] as $what) {
             $ids[$what] = $this->suggest($openingId, "Suggestion for the $what check, $tag. It is long enough to be accepted by the form.");
         }
+        // A post from another site's page is refused.
+        [$status] = $this->request('/api/suggest', [
+            'opening_id' => (string) $openingId,
+            'markdown'   => "Cross-site post, $tag. It is long enough to be accepted by the form.",
+        ], ['Sec-Fetch-Site: cross-site']);
+        $this->assertSame(403, $status);
 
         // They show on the dashboard and on their review pages.
         [, $dashboard] = $this->request('/admin');

@@ -27,6 +27,7 @@ header('Cache-Control: public, max-age=2592000, immutable');
 if (!function_exists('imagecreatetruecolor')) {
     // GD missing — fall back to the static branded card.
     http_response_code(500);
+    header('Cache-Control: no-store');   // errors are not cached for 30 days
     exit;
 }
 
@@ -53,6 +54,7 @@ $webp = $diagram && ($_GET['format'] ?? '') === 'webp' && function_exists('image
 if ($webp) header('Content-Type: image/webp');
 if ($diagram && $validatedSlug === '') {   // nothing to draw
     http_response_code(404);
+    header('Cache-Control: no-store');   // the line may exist later
     exit;
 }
 
