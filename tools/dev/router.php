@@ -9,7 +9,8 @@ declare(strict_types=1);
  * headers too, so the strict CSP applies locally. Not deployed.
  */
 
-$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+// The path as sent, like nginx sees it (parse_url() would read "//x/…" as a host).
+$path = explode('?', (string) ($_SERVER['REQUEST_URI'] ?? '/'), 2)[0] ?: '/';
 $root = $_SERVER['DOCUMENT_ROOT'];
 
 $deny = static function (int $code): bool {

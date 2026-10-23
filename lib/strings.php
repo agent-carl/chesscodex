@@ -19,3 +19,13 @@ function t(string $key, array $replace = []): string
     foreach ($replace as $k => $v) $s = str_replace('{' . $k . '}', (string) $v, $s);
     return $s;
 }
+
+/**
+ * The request's path exactly as sent, without the query string. Not
+ * parse_url(): it reads "//x/admin" as host "x" and path "/admin", while
+ * nginx and Cloudflare Access see the path "/x/admin".
+ */
+function chess_codex_request_path(): string
+{
+    return explode('?', (string) ($_SERVER['REQUEST_URI'] ?? '/'), 2)[0] ?: '/';
+}

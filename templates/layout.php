@@ -45,7 +45,7 @@ if (isset($_COOKIE['codex_admin'])) {
 // served from its cache for up to a day if the server can't answer. Browsers
 // still check back every time (max-age=0). Admins, the admin area, errors
 // and anything but GET/HEAD send no such header, so they're never cached.
-$pagePath = (string) (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/');
+$pagePath = chess_codex_request_path();
 if (!headers_sent() && $adminPending === null
     && in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)
     && in_array(http_response_code(), [200, 404], true)
@@ -186,9 +186,9 @@ $asset = static function (string $path) use ($baseEsc, $projectRoot): string {
             <?php
             // Compute current path once for aria-current marking. Strip query +
             // base prefix to match the routes in index.php.
-            $navPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
-            if ($baseUrl !== '' && strpos((string) $navPath, $baseUrl) === 0) {
-                $navPath = substr((string) $navPath, strlen($baseUrl)) ?: '/';
+            $navPath = chess_codex_request_path();
+            if ($baseUrl !== '' && strpos($navPath, $baseUrl) === 0) {
+                $navPath = substr($navPath, strlen($baseUrl)) ?: '/';
             }
             $navAria = static fn (string $route): string =>
                 $navPath === $route ? ' aria-current="page"' : '';

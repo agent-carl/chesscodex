@@ -38,6 +38,10 @@ final class SmokeTest extends TestCase
             '/admin'                         => ['/admin', 302, ''],
             // On the live site Cloudflare Access answers first, with a redirect to its login.
             '/admin/login'                   => ['/admin/login', $local ? 200 : 302, ''],
+            // A path starting with "//" must not reach a route: parse_url() would read
+            // "//x/admin" as host "x" + path "/admin", past Cloudflare Access and limit_req.
+            '//x/admin/login'                => ['//x/admin/login', 404, ''],
+            '//x/api/search'                 => ['//x/api/search?name=naj', 404, ''],
             '/openings/this-does-not-exist'  => ['/openings/this-does-not-exist', 404, 'Did you mean'],
             '/nonsense-page'                 => ['/nonsense-page', 404, 'Page not found'],
             '/og.php'                        => ['/og.php?slug=sicilian-defense', 200, ''],
@@ -51,6 +55,7 @@ final class SmokeTest extends TestCase
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => false,    // a 302 is what we check
+            CURLOPT_PATH_AS_IS     => true,     // send "//x/…" unchanged
             CURLOPT_TIMEOUT        => 10,
             CURLOPT_USERAGENT      => 'caissa-codex-smoke/1.0',
         ]);
