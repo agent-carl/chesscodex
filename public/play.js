@@ -1,5 +1,6 @@
 import { Chess } from '../vendor/chess.min.js';
 import { Chessground } from '../vendor/chessground.min.js';
+import { gamePgn } from './lib/helpers.js';
 
 const dataNode = document.getElementById('play-data');
 if (dataNode) {
@@ -318,7 +319,6 @@ if (dataNode) {
     // the Najdorf reads "6. Bg5", not "1. Bg5".
     const openingSans = opening.history();
     const lichessLink = document.getElementById('play-lichess');
-    const gamePgn = (sans) => sans.map((san, i) => (i % 2 === 0 ? (i / 2 + 1) + '. ' : '') + san).join(' ');
     document.getElementById('play-copy-pgn').addEventListener('click', async (e) => {
         const btn = e.currentTarget;
         const text = gamePgn(openingSans.concat(chess.history()));

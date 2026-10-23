@@ -118,7 +118,7 @@ ob_start();
     <?php endif; ?>
 </div>
 
-<script defer src="<?= $baseEsc ?>/public/admin.min.js?v=<?= @filemtime(__DIR__ . '/../public/admin.min.js') ?: 1 ?>"></script>
+<script type="module" src="<?= $baseEsc ?>/public/admin.min.js?v=<?= @filemtime(__DIR__ . '/../public/admin.min.js') ?: 1 ?>"></script>
 <?php
 $body = ob_get_clean();
 $title = 'Admin dashboard · Caissa Codex';

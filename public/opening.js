@@ -3,13 +3,12 @@
  * lazy-loaded sub-variation tree and the Stockfish prefetch. Kept out of the
  * HTML so the Content-Security-Policy can forbid inline scripts.
  */
+import { movesLabel, shortName, fold } from './lib/helpers.js';
 
 // Lazy-load the descendant subtree on first <details> open. Only fires when
 // the section has a data-lazy="N" attribute (set by the PHP template when
 // the subtree exceeds the inline-render threshold).
 (function () {
-    // A line's length in full moves (move_count counts plies: one side's move).
-    const movesLabel = (plies) => { const n = Math.ceil(plies / 2); return n === 1 ? '1 move' : n + ' moves'; };
     const details = document.querySelector('.opening-subtree details[data-lazy]');
     if (!details) return;
     let loaded = false;
@@ -58,16 +57,6 @@
             if (status) status.dataset.state = 'error';
         }
     });
-    // Same delta-name logic as the PHP $opening_short_name helper.
-    function shortName(name, parentName) {
-        if (!parentName) return name;
-        if (name === parentName) return name.split(/: |, /).pop();
-        for (const sep of [': ', ', ']) {
-            const prefix = parentName + sep;
-            if (name.indexOf(prefix) === 0) return name.slice(prefix.length);
-        }
-        return name;
-    }
 })();
 
 // Filter the sub-variation list by name or ECO code (the title holds the
@@ -76,7 +65,6 @@
     const input = document.querySelector('.opening-subtree-filter');
     if (!input) return;
     const none = document.querySelector('.opening-subtree-none');
-    const fold = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/['’]/g, '').toLowerCase();
     input.addEventListener('input', () => {
         const words = fold(input.value).split(/\s+/).filter(Boolean);
         let shown = 0;

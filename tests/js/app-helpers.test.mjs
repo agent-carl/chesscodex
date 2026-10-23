@@ -1,10 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { helper } from './extract.mjs';
+import { compactCount, barLabel, updatedLabel } from '../../public/lib/helpers.js';
 
-const compactCount = helper('app.js', 'compactCount');
-const barLabel = helper('app.js', 'barLabel');
-const updatedLabel = helper('app.js', 'updatedLabel');
 
 test('compactCount: same thresholds as Rankings::compact in PHP', () => {
   assert.equal(compactCount(0), '0');
@@ -34,8 +31,4 @@ test('updatedLabel: the cache timestamp as "Sep 25, 2026"; empty for missing or 
   assert.equal(updatedLabel(null), '');
   assert.equal(updatedLabel(undefined), '');
   assert.equal(updatedLabel('not a date'), '');
-});
-
-test('helper: a missing function is an error, not undefined', () => {
-  assert.throws(() => helper('app.js', 'noSuchFunction'), /no function or const named/);
 });

@@ -1,5 +1,7 @@
 // /gambits: filter the A–Z list of gambits by name, and fold the long list
 // of openings above it on phones. Without JS the full list simply shows.
+import { norm } from './lib/helpers.js';
+
 (() => {
     const box   = document.querySelector('.gambits-filter');
     const input = document.getElementById('gambits-q');
@@ -8,10 +10,6 @@
     const nav   = document.getElementById('gambits-contents');
     const empty = document.querySelector('.gambits-filter-empty');
     const count = box.querySelector('.gambits-filter-count');
-
-    // "Grünfeld Defense: Lutikov Gambit (D80)" → "grunfeld defense lutikov gambit d80"
-    const norm = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
-        .replace(/[^a-z0-9]+/g, ' ').trim();
 
     const groups = [...document.querySelectorAll('#all-gambits .openings-family')].map((g) => ({
         el: g,

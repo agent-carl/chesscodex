@@ -30,7 +30,9 @@ await build({
     banner: { js: chess.slice(0, chess.indexOf('*/') + 2) },
 });
 
-const modules = ['app', 'play', 'search', 'train', 'repertoire'];
+// Everything but theme.js (applies the saved theme before first paint, so it must block, and
+// reads document.currentScript), home.js (blocking on purpose, same) and sw.js (a service worker).
+const modules = ['app', 'play', 'search', 'train', 'repertoire', 'opening', 'gambits', 'site', 'charts', 'admin'];
 await build({
     entryPoints: modules.map((name) => `${pub}/${name}.js`),
     outdir: pub,
