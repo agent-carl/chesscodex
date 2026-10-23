@@ -17,8 +17,8 @@ test('by name: typing "najdorf" lists suggestions that link to Najdorf openings'
   try {
     await go(page, '/search');
     await page.type('#search-name-input', 'najdorf');
-    await page.waitForSelector('#search-name-results li[role="option"] a');
-    const hrefs = await page.$$eval('#search-name-results li[role="option"] a', (as) => as.map((a) => new URL(a.href).pathname));
+    await page.waitForSelector('#search-name-results a[role="option"]');
+    const hrefs = await page.$$eval('#search-name-results a[role="option"]', (as) => as.map((a) => new URL(a.href).pathname));
     assert.ok(hrefs.length > 0);
     assert.ok(hrefs.every((h) => h.startsWith('/openings/') && h.includes('najdorf')), hrefs.join(' '));
     // Enter follows the first suggestion.
@@ -34,7 +34,7 @@ test('by name on the home page: suggestions, and "/" focuses the field', async (
     await page.keyboard.press('/');
     assert.equal(await page.evaluate(() => document.activeElement.id), 'hero-search-input');
     await page.keyboard.type('sicilian');
-    await page.waitForSelector('#hero-search-results li[role="option"] a');
+    await page.waitForSelector('#hero-search-results a[role="option"]');
     assert.ok(await page.$eval('#hero-search-results', (l) => !l.hidden));
     assert.equal(await page.$eval('#hero-search-input', (i) => i.getAttribute('aria-expanded')), 'true');
     await page.keyboard.press('Escape');

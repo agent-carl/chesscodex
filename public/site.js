@@ -32,6 +32,7 @@ import { looksLikeMoves, movesLabel } from './lib/helpers.js';
         function clear() {
             list.innerHTML = '';
             cursor = -1;
+            input.removeAttribute('aria-activedescendant');
             close();
         }
         function open() {
@@ -40,22 +41,32 @@ import { looksLikeMoves, movesLabel } from './lib/helpers.js';
             input.setAttribute('aria-expanded', 'true');
         }
 
+        // One suggestion. The link itself is the option (an option wrapping a
+        // link would be two controls in one); the arrow keys choose it and the
+        // input announces it (aria-activedescendant), so it stays out of the
+        // tab order.
+        function addOption(a) {
+            const li = document.createElement('li');
+            li.setAttribute('role', 'none');
+            a.setAttribute('role', 'option');
+            a.id = list.id + '-opt-' + list.children.length;
+            a.tabIndex = -1;
+            li.appendChild(a);
+            list.appendChild(li);
+        }
+
         function render(matches, q) {
             list.innerHTML = '';
             cursor = -1;
+            input.removeAttribute('aria-activedescendant');
             if (looksLikeMoves(q)) {
-                const li = document.createElement('li');
-                li.setAttribute('role', 'option');
                 const a = document.createElement('a');
                 a.href = searchPath + '?moves=' + encodeURIComponent(q);
                 a.className = 'search-by-name-moves';
                 a.textContent = 'Identify the opening after ' + q + '';
-                li.appendChild(a);
-                list.appendChild(li);
+                addOption(a);
             }
             matches.forEach(function (m) {
-                const li = document.createElement('li');
-                li.setAttribute('role', 'option');
                 const a = document.createElement('a');
                 a.href = openingPath + encodeURIComponent(m.slug);
                 const tag = document.createElement('span');
@@ -70,8 +81,7 @@ import { looksLikeMoves, movesLabel } from './lib/helpers.js';
                 a.appendChild(tag);
                 a.appendChild(name);
                 a.appendChild(plies);
-                li.appendChild(a);
-                list.appendChild(li);
+                addOption(a);
             });
             if (!list.children.length) {
                 const empty = document.createElement('li');
@@ -99,13 +109,14 @@ import { looksLikeMoves, movesLabel } from './lib/helpers.js';
         }
 
         function move(delta) {
-            const items = list.querySelectorAll('li[role="option"]');
+            const items = list.querySelectorAll('[role="option"]');
             if (!items.length) return;
             cursor = (cursor + delta + items.length) % items.length;
-            items.forEach(function (li, i) {
-                li.classList.toggle('is-active', i === cursor);
-                li.setAttribute('aria-selected', i === cursor ? 'true' : 'false');
+            items.forEach(function (a, i) {
+                a.parentNode.classList.toggle('is-active', i === cursor);
+                a.setAttribute('aria-selected', i === cursor ? 'true' : 'false');
             });
+            input.setAttribute('aria-activedescendant', items[cursor].id);
             items[cursor].scrollIntoView({ block: 'nearest' });
         }
 
@@ -132,7 +143,7 @@ import { looksLikeMoves, movesLabel } from './lib/helpers.js';
                 location.href = searchPath + '?moves=' + encodeURIComponent(q);
                 return;
             }
-            if (!target && q === lastQuery) target = list.querySelector('li[role="option"] a');
+            if (!target && q === lastQuery) target = list.querySelector('[role="option"]');
             if (target) {
                 e.preventDefault();
                 location.href = target.href;
