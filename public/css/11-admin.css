@@ -140,7 +140,7 @@
     justify-content: center;
     border-radius: 999px;
     background: var(--accent);
-    color: #fff;
+    color: var(--bg-elevated);
     font-size: 0.75rem;
     font-weight: 600;
     line-height: 1;
@@ -314,7 +314,7 @@
     margin-top: var(--space-2);
     padding: 0.6rem;
     background: var(--accent);
-    color: #fff;
+    color: var(--bg-elevated);
     border: 0;
     border-radius: var(--radius);
     font: inherit;
@@ -365,7 +365,7 @@
 .admin-filters button {
     padding: 0.5rem 1rem;
     background: var(--accent);
-    color: #fff;
+    color: var(--bg-elevated);
     border: 0;
     border-radius: var(--radius-sm);
     cursor: pointer;

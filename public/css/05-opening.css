@@ -177,7 +177,6 @@
 .opening-more-menu a:focus-visible {
     background: var(--accent-soft);
     color: var(--accent);
-    outline: none;
     text-decoration: none;
 }
 .opening-more-menu small {
@@ -294,7 +293,6 @@ body:not(.has-board) .opening-board:empty { display: none; }
 .move-list button:hover,
 .move-list button:focus-visible {
     background: var(--accent-soft);
-    outline: none;
 }
 .move-list button:active { background: var(--accent); color: var(--bg-elevated); }
 /* The move the board shows now gets a thin outline instead of a solid fill. */

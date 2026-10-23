@@ -42,7 +42,7 @@ $island = [
         </p>
     </header>
 
-    <div class="play-color-pick" role="radiogroup" aria-label="Pick your color">
+    <div class="play-color-pick" role="group" aria-label="Pick your color">
         <span class="play-color-pick-label">Play as:</span>
         <button type="button" class="play-color-btn is-active" data-play-color="white" aria-pressed="true">
             <span class="play-color-piece" aria-hidden="true">&#9817;&#xFE0E;</span> White

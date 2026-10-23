@@ -97,7 +97,7 @@
     /* Allow soft hyphens to break "Inter­mediate" on narrow buttons. */
     hyphens: manual;
 }
-.play-difficulty .diff-elo { font-family: var(--font-num); font-size: 0.75rem; opacity: 0.8; }
+.play-difficulty .diff-elo { font-family: var(--font-num); font-size: 0.75rem; opacity: 0.85; }
 .play-difficulty-desc {
     margin: var(--space-2) 0 0;
     color: var(--muted);
